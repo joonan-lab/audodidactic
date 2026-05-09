@@ -369,37 +369,75 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
 .note{border:1px solid var(--line);border-radius:8px;padding:14px;background:var(--soft);min-height:160px}
 .note h4{margin:0 0 8px;font-size:14px}
 .note p{margin:0;color:#465160;font-size:13px}
-.deep-sections{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-  padding:14px;
-}
-.deep-section{
-  border:1px solid var(--line);
-  border-radius:8px;
-  background:#fff;
-  padding:15px;
-  min-height:260px;
-}
-.deep-section h4{margin:0 0 8px;font-size:16px}
-.deep-section p{margin:0 0 10px;color:#465160;font-size:13px}
-.deep-list{display:grid;gap:8px;margin-top:10px}
-.deep-item{
-  border:1px solid #e8edf4;
-  border-radius:8px;
-  background:var(--soft);
-  padding:9px 10px;
-  font-size:12.5px;
-  color:#344054;
-}
-.deep-item b{display:block;color:#202938;margin-bottom:3px}
-.source-line{display:block;margin-top:10px;color:#667085;font-size:11.5px}
-.legend{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 14px}
+	.deep-panel{scroll-margin-top:16px}
+	.deep-layout{
+	  display:grid;
+	  grid-template-columns:minmax(0,1.1fr) minmax(340px,.9fr);
+	  gap:14px;
+	  padding:14px;
+	}
+	.deep-main,.deep-side{display:grid;gap:12px;align-content:start}
+	.deep-copy{
+	  border:1px solid var(--line);
+	  border-radius:8px;
+	  background:#fff;
+	  padding:15px;
+	}
+	.deep-copy h4{margin:0 0 8px;font-size:17px;line-height:1.25}
+	.deep-copy p{margin:0 0 10px;color:#394454;font-size:13.5px}
+	.deep-copy p:last-child{margin-bottom:0}
+	.concept-grid{
+	  display:grid;
+	  grid-template-columns:repeat(2,minmax(0,1fr));
+	  gap:10px;
+	}
+	.concept-card{
+	  border:1px solid #e4e9f1;
+	  border-radius:8px;
+	  background:var(--soft);
+	  padding:12px;
+	  font-size:12.5px;
+	  color:#344054;
+	}
+	.concept-card b{display:block;color:#202938;margin-bottom:4px;font-size:13px}
+	.deep-table{
+	  overflow:auto;
+	  border:1px solid var(--line);
+	  border-radius:8px;
+	  background:#fff;
+	}
+	.deep-table table{min-width:760px}
+	.deep-table th{position:static}
+	.step-list{display:grid;gap:8px}
+	.step-item{
+	  display:grid;
+	  grid-template-columns:32px 1fr;
+	  gap:10px;
+	  align-items:start;
+	  border:1px solid #e4e9f1;
+	  border-radius:8px;
+	  background:#fff;
+	  padding:10px;
+	}
+	.step-num{
+	  display:grid;
+	  place-items:center;
+	  width:28px;
+	  height:28px;
+	  border-radius:8px;
+	  background:#202938;
+	  color:#fff;
+	  font-weight:800;
+	  font-size:12px;
+	}
+	.step-item b{display:block;margin-bottom:2px;font-size:13px;color:#202938}
+	.step-item span{font-size:12.5px;color:#465160}
+	.source-line{display:block;color:#667085;font-size:11.5px}
+	.legend{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 14px}
 .legend span{font-size:11px;color:#4b5565;display:inline-flex;align-items:center;gap:5px}
 .swatch{width:10px;height:10px;border-radius:3px;display:inline-block}
 @media (max-width:1120px){
-  .hero,.layout,.main-grid,.basic-grid,.method-grid,.qc-grid,.workflow,.organ-body,.deep-sections{grid-template-columns:1fr}
+	  .hero,.layout,.main-grid,.basic-grid,.method-grid,.qc-grid,.workflow,.organ-body,.deep-layout,.concept-grid{grid-template-columns:1fr}
   .filters,.detail{position:static}
 }
 @media (max-width:680px){
@@ -427,7 +465,10 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
       <a href="#primer">개념</a>
       <a href="#database">데이터베이스</a>
       <a href="#culture">배양 로직</a>
-      <a href="#themes">심화 개념</a>
+      <a href="#assembloid">Assembloid</a>
+      <a href="#development">발생 모델</a>
+      <a href="#disease-model">질환 모델</a>
+      <a href="#drug-development">약물개발</a>
       <a href="#synthesis">해석</a>
     </nav>
   </header>
@@ -570,7 +611,7 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
         <div class="panel-head">
           <div>
             <h3>배양 로직 매트릭스</h3>
-            <p>기관별 요약뿐 아니라 패터닝 신호, 배양 형식, niche 설계, QC/readout, 질환·약물 관점으로 나눠 읽습니다.</p>
+            <p>기관별 요약뿐 아니라 패터닝 신호, 배양 형식, niche 설계, QC/readout, 질환·약물 축으로 나눠 읽습니다.</p>
           </div>
         </div>
         <div class="culture-tabs" id="cultureTabs" aria-label="Culture matrix tabs"></div>
@@ -582,57 +623,201 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
         </div>
       </section>
 
-      <section class="panel" id="themes">
+      <section class="panel deep-panel" id="assembloid">
         <div class="panel-head">
           <div>
-            <h3>네 가지 심화 관점</h3>
-            <p>오가노이드를 처음 배우는 학생이 데이터베이스를 읽기 전에 잡아야 할 큰 축입니다.</p>
+            <h3>Assembloid를 먼저 이해하기</h3>
+            <p>Assembloid는 여러 organoid나 세포 집단을 조립해, 단일 organoid가 빠뜨리는 조직 간 상호작용을 실험 가능한 형태로 되살린 모델입니다.</p>
           </div>
         </div>
-        <div class="deep-sections">
-          <article class="deep-section">
-            <h4>Assembloid는 한 가지가 아닙니다</h4>
-            <p>Assembloid는 “두 덩어리를 붙였다”는 형식보다, 어떤 빠진 상호작용을 다시 넣었는지가 중요합니다. 같은 단어를 쓰더라도 신경 회로, 면역 niche, 혈관 niche, stromal niche, 스크리닝 플랫폼은 서로 다른 질문에 답합니다.</p>
-            <div class="deep-list">
-              <div class="deep-item"><b>Region-to-region circuit</b>Thalamic-cortical, cortico-striatal, ascending sensory pathway처럼 서로 다른 신경 영역을 붙여 projection, synchrony, calcium propagation을 관찰합니다.</div>
-              <div class="deep-item"><b>Cell-type complementation</b>Microglia, macrophage, endothelial cell, mesenchyme를 넣어 organoid가 원래 빠뜨리던 niche를 보완합니다.</div>
-              <div class="deep-item"><b>Perturbation screen</b>Meng 2023처럼 dorsal-ventral forebrain assembloid에서 interneuron 생성과 이동을 서로 다른 readout으로 분리합니다.</div>
+        <div class="deep-layout">
+          <div class="deep-main">
+            <div class="deep-copy">
+              <h4>기본 개념</h4>
+              <p>Organoid는 줄기세포가 3차원에서 스스로 조직화하며 특정 장기의 일부 구조와 세포 구성을 흉내 내는 모델입니다. Assembloid는 여기서 한 단계 더 나아가, 따로 만든 organoid나 세포 집단을 같은 공간에 배치해 서로 신호를 주고받게 만든 모델입니다.</p>
+              <p>따라서 핵심 질문은 “몇 개를 붙였는가”가 아니라 “어떤 상호작용을 추가했는가”입니다. 신경 회로에서는 한 영역의 axon이 다른 영역으로 들어가야 하고, 폐와 장에서는 epithelial cell과 macrophage가 대화해야 하며, 간에서는 hepatocyte, cholangiocyte, portal mesenchyme가 같은 periportal niche 안에서 배열되어야 합니다.</p>
             </div>
-            <span class="source-line">주요 예: Xiang 2019, Meng 2023, Kim 2025 sensory assembloid, Kang 2025 alveolar, Yuan 2026 liver</span>
-          </article>
+            <div class="concept-grid">
+              <div class="concept-card"><b>Region-to-region</b>서로 다른 뇌 영역을 따로 패터닝한 뒤 붙입니다. Xiang 2019는 thalamic organoid와 cortical organoid를 붙여 reciprocal projection을 보았고, Miura 2020은 cortical-to-striatal 입력을 재구성했습니다.</div>
+              <div class="concept-card"><b>Multi-step circuit</b>두 영역을 넘어서 긴 경로를 조립합니다. Kim 2025 sensory assembloid는 sensory, dorsal spinal, thalamic, cortical organoid를 순서대로 연결해 통증/감각 신호가 여러 구획으로 전파되는지 보았습니다.</div>
+              <div class="concept-card"><b>Immune niche</b>epithelium-only 모델에 macrophage나 microglia를 넣습니다. Kang 2025 alveolar assembloid는 AT2-like cell이 GM-CSF로 macrophage를 alveolar-like 상태로 적응시키는지 보았습니다.</div>
+              <div class="concept-card"><b>Stromal niche</b>상피나 실질세포만으로 부족한 mesenchyme, vascular, portal niche를 넣습니다. Yuan 2026 liver assembloid는 hepatocyte organoid, cholangiocyte organoid, portal mesenchyme를 조립했습니다.</div>
+            </div>
+            <div class="deep-copy">
+              <h4>논문을 읽을 때 확인할 것</h4>
+              <p>첫째, 각 component가 따로 제대로 만들어졌는지 봅니다. cortical organoid인지, subpallial organoid인지, alveolar epithelial organoid인지, macrophage인지가 먼저 검증되어야 합니다. 둘째, 조립 후 실제 상호작용이 생겼는지 봅니다. axon projection, rabies tracing, calcium propagation, migration distance, cytokine, phagocytosis, fibrosis marker처럼 조립의 목적에 맞는 readout이 필요합니다.</p>
+              <p>셋째, co-culture medium과 비율을 봅니다. 한쪽 세포만 잘 사는 medium이면 다른 component가 스트레스를 받습니다. Kang 2025의 KSFM처럼 epithelial organoid와 macrophage를 동시에 유지하려는 배지 설계가 중요한 이유가 여기에 있습니다.</p>
+            </div>
+          </div>
+          <aside class="deep-side">
+            <div class="step-list">
+              <div class="step-item"><span class="step-num">1</span><div><b>따로 만든다</b><span>각 organoid를 원하는 지역 또는 세포 상태로 먼저 패터닝합니다.</span></div></div>
+              <div class="step-item"><span class="step-num">2</span><div><b>같이 둔다</b><span>fusion, embedding, co-culture, sequential assembly 중 어떤 방식으로 만나는지 확인합니다.</span></div></div>
+              <div class="step-item"><span class="step-num">3</span><div><b>상호작용을 잰다</b><span>projection, migration, cytokine, macrophage adaptation, fibrosis, infection 같은 목적별 readout을 봅니다.</span></div></div>
+              <div class="step-item"><span class="step-num">4</span><div><b>빠진 것을 적는다</b><span>vascular, immune, neural, stromal, maturation 중 무엇이 아직 없는지 해석에 포함합니다.</span></div></div>
+            </div>
+            <div class="deep-table">
+              <table>
+                <thead><tr><th>모델</th><th>조립한 것</th><th>주요 readout</th></tr></thead>
+                <tbody>
+                  <tr><td>Xiang 2019</td><td>Thalamic + cortical</td><td>TC/CT projection, thalamic identity</td></tr>
+                  <tr><td>Miura 2020</td><td>Cortical + striatal</td><td>rabies tracing, optogenetic drive, calcium</td></tr>
+                  <tr><td>Meng 2023</td><td>Subpallial + cortical</td><td>interneuron generation, migration screen</td></tr>
+                  <tr><td>Kang 2025</td><td>Alveolar epithelium + macrophage</td><td>GM-CSF, lipid uptake, cytokine, TB infection</td></tr>
+                  <tr><td>Yuan 2026</td><td>Hepatocyte + cholangiocyte + portal mesenchyme</td><td>periportal architecture, fibrosis interaction</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <span class="source-line">대표 연구: Birey 2017, Xiang 2019, Miura 2020, Meng 2023, Kim 2025, Kang 2025, Han 2025, Yuan 2026</span>
+          </aside>
+        </div>
+      </section>
 
-          <article class="deep-section">
-            <h4>발생 모델이 중심입니다</h4>
-            <p>PSC 유래 오가노이드의 강점은 성체 장기를 완성하는 데보다, 접근하기 어려운 인간 발생 과정을 조작 가능한 시간표로 재현하는 데 있습니다. 그래서 morphogen을 언제 넣었는지와 fetal atlas 매핑이 논문 해석의 중심입니다.</p>
-            <div class="deep-list">
-              <div class="deep-item"><b>패터닝은 시간표입니다</b>WNT, BMP/TGF-beta, SHH, FGF, RA는 “넣었는가”보다 언제, 얼마나, 다음 신호와 어떤 순서로 들어갔는지가 중요합니다.</div>
-              <div class="deep-item"><b>Fetal-like는 실패가 아닙니다</b>ASD/NDD, nephrogenesis, retinal lineage, early cardiogenesis처럼 발생 질문에는 fetal-like state가 오히려 모델의 핵심입니다.</div>
-              <div class="deep-item"><b>Atlas가 기준선입니다</b>HNOCA, HROCA, endoderm atlas, OrganoMetrics는 organoid가 몇 주차, 어떤 cell type, 어떤 divergence program에 놓이는지 정량화합니다.</div>
+      <section class="panel deep-panel" id="development">
+        <div class="panel-head">
+          <div>
+            <h3>발생 모델로 읽기</h3>
+            <p>PSC 유래 organoid는 완성된 성체 장기보다, 인간 발생 과정을 실험실에서 다시 지나가게 만든 모델에 가깝습니다.</p>
+          </div>
+        </div>
+        <div class="deep-layout">
+          <div class="deep-main">
+            <div class="deep-copy">
+              <h4>WNT, BMP, SHH, FGF, RA는 “운명 선택 신호”입니다</h4>
+              <p>발생 과정에서 세포는 주변 신호를 읽고 ectoderm, mesoderm, endoderm, forebrain, kidney, heart, lung 같은 방향으로 운명을 바꿉니다. 실험실에서는 이 신호를 작은 분자나 성장인자로 흉내 냅니다. WNT를 켜는 CHIR99021, WNT를 끄는 IWP2/IWP4, TGF-beta/BMP 축을 조절하는 dual-SMAD inhibition, SHH agonist, FGF, retinoic acid 같은 도구가 여기에 해당합니다.</p>
+              <p>중요한 점은 같은 신호가 항상 같은 결과를 만들지 않는다는 것입니다. WNT는 kidney에서는 intermediate mesoderm과 nephron progenitor를 여는 신호가 될 수 있고, heart에서는 초기에 켠 뒤 다시 꺼야 cardiomyocyte fate가 안정됩니다. spinal cord에서는 CHIR와 RA가 caudal identity를 만들고, striatal organoid에서는 WNT inhibition과 Activin A가 LGE-like fate를 돕습니다.</p>
             </div>
-            <span class="source-line">주요 예: Lancaster 2013, Camp 2015, Takasato 2015, Drakhlis 2021, He 2024 HNOCA, Lee 2025 OrganoMetrics</span>
-          </article>
+            <div class="deep-table">
+              <table>
+                <thead><tr><th>신호</th><th>무엇을 하는가</th><th>장기별 예</th><th>해석 포인트</th></tr></thead>
+                <tbody>
+                  <tr><td>WNT / CHIR</td><td>초기 fate window를 열고 mesoderm/endoderm/caudal program을 밀어줌</td><td>Kidney CHIR 4일 + FGF9, heart CHIR 뒤 IWP2, spinal CHIR + RA, colon mid-hindgut CHIR</td><td>농도와 기간이 바뀌면 다른 장기가 됩니다.</td></tr>
+                  <tr><td>BMP / TGF-beta</td><td>neural induction, colonic specification, endoderm patterning을 조절</td><td>Brain dual-SMAD inhibition, colon BMP2, lung SB431542/dorsomorphin, liver TGF-beta inhibition</td><td>켜야 하는 단계와 꺼야 하는 단계가 다릅니다.</td></tr>
+                  <tr><td>SHH</td><td>ventral identity를 부여</td><td>MGE/interneuron organoid, ventral spinal patterning</td><td>dorsal/ventral 축을 읽는 데 중요합니다.</td></tr>
+                  <tr><td>FGF / EGF</td><td>progenitor 유지, growth, organ-specific expansion</td><td>FGF9 kidney, FGF7/10 lung, EGF/R-spondin gut, EGF/FGF10/HGF liver</td><td>성장인자지만 lineage 선택에도 영향을 줍니다.</td></tr>
+                  <tr><td>RA</td><td>anterior-posterior patterning과 caudalization</td><td>Kidney anterior/posterior IM, spinal cord specification, motor neuron maturation</td><td>RA를 넣는 시점이 regional identity를 바꿉니다.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="concept-grid">
+              <div class="concept-card"><b>Brain</b>Dual-SMAD inhibition으로 neural induction을 시작하고, SHH/WNT/BMP/RA 조합으로 dorsal cortex, MGE, thalamus, striatum, spinal cord 같은 지역을 나눕니다.</div>
+              <div class="concept-card"><b>Kidney</b>Takasato 2015는 CHIR 노출 시간과 RA가 anterior/posterior intermediate mesoderm, ureteric epithelium, metanephric mesenchyme 선택을 바꾼다는 점을 보여 줍니다.</div>
+              <div class="concept-card"><b>Heart</b>Drakhlis 2021은 CHIR로 WNT를 켠 뒤 IWP2로 WNT를 끄는 biphasic WNT modulation을 사용해 early heart-forming organoid를 만들었습니다.</div>
+              <div class="concept-card"><b>Lung, gut, liver</b>endoderm 계열은 Activin A, WNT, BMP, FGF, R-spondin, EGF, TGF-beta inhibition을 조합합니다. adult tissue-derived organoid는 발생 유도보다 stem-cell niche 유지가 중심입니다.</div>
+            </div>
+          </div>
+          <aside class="deep-side">
+            <div class="deep-copy">
+              <h4>Fetal-like는 실패가 아닙니다</h4>
+              <p>많은 PSC-derived organoid는 fetal-like 상태에 머뭅니다. 이것은 성체 독성이나 노화 연구에는 한계지만, ASD/NDD, nephrogenesis, retinal lineage, early cardiogenesis처럼 발생 자체가 질문인 연구에는 장점입니다.</p>
+              <p>그래서 좋은 논문은 marker 몇 개만 보여 주지 않습니다. fetal atlas, single-cell atlas, OrganoMetrics, CellNet/KeyGenes 같은 기준으로 어느 발달 단계와 어떤 세포 상태에 가까운지 비교합니다.</p>
+            </div>
+            <div class="step-list">
+              <div class="step-item"><span class="step-num">1</span><div><b>세포원</b><span>adult stem cell인지, hESC/hiPSC인지, patient iPSC인지 먼저 봅니다.</span></div></div>
+              <div class="step-item"><span class="step-num">2</span><div><b>신호 시간표</b><span>WNT/BMP/SHH/FGF/RA를 언제 켜고 껐는지 읽습니다.</span></div></div>
+              <div class="step-item"><span class="step-num">3</span><div><b>배양 형식</b><span>Matrigel, transwell, suspension, ALI, Heart-Dyno 같은 물리 환경도 발생 결과를 바꿉니다.</span></div></div>
+              <div class="step-item"><span class="step-num">4</span><div><b>기준 atlas</b><span>어느 fetal/adult tissue와 비교했는지 확인해야 maturity 주장을 해석할 수 있습니다.</span></div></div>
+            </div>
+            <span class="source-line">대표 연구: Lancaster 2013, Camp 2015, Takasato 2015, Drakhlis 2021, He 2024 HNOCA, Kriukov 2025 HROCA, Lee 2025 OrganoMetrics</span>
+          </aside>
+        </div>
+      </section>
 
-          <article class="deep-section">
-            <h4>질환 모델은 cohort-scale로 이동 중입니다</h4>
-            <p>초기 질환 organoid는 한 유전자 또는 한 환자 line을 깊게 보는 방식이 많았습니다. 최근에는 환자 iPSC cohort, pooled CRISPR, organoid atlas, in silico perturbation을 합쳐 “변이가 어떤 세포 상태와 경로로 수렴하는가”를 묻습니다.</p>
-            <div class="deep-list">
-              <div class="deep-item"><b>Patient-derived cohort</b>Gordon 2026은 QC를 통과한 hiPSC line 70개와 ASD mutation 8종을 days 25-100 동안 비교해 SWI-SNF 중심 convergence를 찾았습니다.</div>
-              <div class="deep-item"><b>Pooled organoid screen</b>Li 2023 CHOOSE는 cerebral organoid에서 ASD gene 36개를, Meng 2023은 forebrain assembloid에서 NDD gene 425개를 병렬로 테스트했습니다.</div>
-              <div class="deep-item"><b>Atlas-to-model</b>NOCAP/Telen-NOCAP처럼 수백만 세포 atlas에서 perturbation response를 예측하고, 유전학 cohort와 다시 연결하는 구조가 등장했습니다.</div>
+      <section class="panel deep-panel" id="disease-model">
+        <div class="panel-head">
+          <div>
+            <h3>질환 모델과 perturbation 이해하기</h3>
+            <p>질환 organoid 연구는 “환자 세포를 키워봤다”에서 끝나지 않고, 어떤 변화가 질환 원인에 가까운지 perturbation으로 확인하는 방향으로 발전하고 있습니다.</p>
+          </div>
+        </div>
+        <div class="deep-layout">
+          <div class="deep-main">
+            <div class="deep-copy">
+              <h4>Perturbation은 원인을 묻는 실험입니다</h4>
+              <p>Perturbation은 세포나 조직에 의도적으로 변화를 주는 것입니다. 유전자를 knockout/knockdown하거나, 환자 변이를 넣거나, cytokine, virus, drug, environmental exposure를 처리하고, 그 결과 세포 상태와 기능이 어떻게 바뀌는지 봅니다.</p>
+              <p>단순 비교는 “환자 organoid와 대조군 organoid가 다르다”를 말합니다. Perturbation은 한 걸음 더 나아가 “이 유전자, 이 경로, 이 세포 상태를 바꾸면 phenotype이 생기거나 rescue되는가”를 묻습니다. 그래서 CRISPR, CRISPRi, patient-derived iPSC, isogenic correction, pooled screen, in silico perturbation이 질환 모델의 핵심 도구가 됩니다.</p>
             </div>
-            <span class="source-line">주요 예: Li 2023, Meng 2023, Koh 2025, Gordon 2026, Harder 2023</span>
-          </article>
+            <div class="concept-grid">
+              <div class="concept-card"><b>Patient-derived cohort</b>Gordon 2026은 QC를 통과한 hiPSC line 70개, ASD 관련 mutation 8종, days 25-100 RNA-seq을 사용해 early divergence와 SWI-SNF 중심 convergence를 보았습니다.</div>
+              <div class="concept-card"><b>Isogenic model</b>같은 genetic background에서 특정 변이만 바꿉니다. PTEN, SCN2A, USP15, CEP41 같은 모델은 donor 차이와 genotype 효과를 분리하는 데 유리합니다.</div>
+              <div class="concept-card"><b>Pooled CRISPR screen</b>Li 2023 CHOOSE는 ASD gene 36개를 cerebral organoid에서 병렬로 perturb했고, Meng 2023은 NDD gene 425개를 assembloid에서 generation과 migration readout으로 나눠 보았습니다.</div>
+              <div class="concept-card"><b>Atlas-to-model</b>NOCAP/Telen-NOCAP 계열은 organoid single-cell atlas와 perturbation prediction을 연결해 수천 개 유전자의 transcriptional response를 먼저 예측하고, 유전학 cohort와 다시 맞춰 봅니다.</div>
+            </div>
+            <div class="deep-table">
+              <table>
+                <thead><tr><th>질문</th><th>모델</th><th>주요 readout</th><th>해석</th></tr></thead>
+                <tbody>
+                  <tr><td>유전자가 cell fate를 바꾸는가</td><td>CRISPR organoid, CHOOSE</td><td>cell composition, progenitor-to-neuron trajectory, GRN</td><td>ASD gene이 특정 progenitor나 neuron subtype에 더 크게 작용하는지 봅니다.</td></tr>
+                  <tr><td>회로 형성이 깨지는가</td><td>Forebrain assembloid</td><td>interneuron generation, migration distance, calcium, electrophysiology</td><td>cell-autonomous gene effect와 circuit integration effect를 분리합니다.</td></tr>
+                  <tr><td>환자군에서 공통 경로가 있는가</td><td>patient iPSC cohort</td><td>time-course RNA-seq, WGCNA, cell-type deconvolution</td><td>서로 다른 mutation이 같은 pathway로 수렴하는지 봅니다.</td></tr>
+                  <tr><td>환경 위험이 세포 상태를 바꾸는가</td><td>IL-6, VPA, infection model</td><td>radial glia stress, lamination, immune program</td><td>유전자뿐 아니라 prenatal inflammation 같은 exposure를 모델링합니다.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <aside class="deep-side">
+            <div class="deep-copy">
+              <h4>Cohort-scale이 필요한 이유</h4>
+              <p>한 환자 line과 한 대조군 line만 비교하면 line effect, batch effect, differentiation efficiency를 질환 효과로 착각할 수 있습니다. Cohort-scale 모델은 여러 donor, 여러 mutation class, 여러 time point를 놓고 같은 방향의 변화가 반복되는지 확인합니다.</p>
+              <p>질환 모델에서 강한 주장은 보통 세 겹의 증거를 요구합니다. 첫째, genotype 또는 exposure가 phenotype을 만듭니다. 둘째, isogenic correction이나 rescue가 phenotype을 줄입니다. 셋째, 독립 cohort, atlas, human genetics와 같은 외부 증거가 같은 경로를 가리킵니다.</p>
+            </div>
+            <div class="step-list">
+              <div class="step-item"><span class="step-num">1</span><div><b>모델 단위</b><span>환자 line, isogenic line, pooled screen, atlas prediction 중 무엇인지 확인합니다.</span></div></div>
+              <div class="step-item"><span class="step-num">2</span><div><b>perturbation 방식</b><span>knockout, knockdown, mutation, cytokine, drug, infection, in silico prediction을 구분합니다.</span></div></div>
+              <div class="step-item"><span class="step-num">3</span><div><b>readout 층위</b><span>DEG만 보는지, cell fate, migration, calcium, electrophysiology, rescue까지 보는지 봅니다.</span></div></div>
+              <div class="step-item"><span class="step-num">4</span><div><b>반복성</b><span>donor 수, batch 수, time point, independent validation이 충분한지 확인합니다.</span></div></div>
+            </div>
+            <span class="source-line">대표 연구: Kang 2021, Li 2023, Meng 2023, Fleck 2023, Sarieva 2023, Gordon 2026, Koh 2025</span>
+          </aside>
+        </div>
+      </section>
 
-          <article class="deep-section">
-            <h4>약물개발은 기능 readout이 필요합니다</h4>
-            <p>약물개발용 organoid는 marker가 맞는지만으로 부족합니다. 약물 후보가 실제 조직 기능을 바꾸는지, 질환 phenotype을 rescue하는지, 독성 또는 감염 반응을 예측하는지 보여야 합니다.</p>
-            <div class="deep-list">
-              <div class="deep-item"><b>전기·수축·칼슘</b>Pocock 2025 cardiac organoid는 force, calcium handling, Tr50, CiPA drug-risk discrimination 같은 기능 readout으로 성숙과 약물 반응을 판단합니다.</div>
-              <div class="deep-item"><b>상피 기능과 감염</b>Airway/lung organoid는 CFTR swelling, RSV/SARS-CoV-2/TB infection, macrophage-mediated senescence, THBS1 blockade 같은 readout을 씁니다.</div>
-              <div class="deep-item"><b>독성·rescue assay</b>Kidney nephrotoxicity, liver CYP/albumin/injury state, ASD organoid의 PI3K 또는 ASO rescue처럼 질환과 기능을 함께 볼 때 임상 번역 주장이 강해집니다.</div>
+      <section class="panel deep-panel" id="drug-development">
+        <div class="panel-head">
+          <div>
+            <h3>약물개발에서 기능 readout이 중요한 이유</h3>
+            <p>약물개발용 organoid는 marker와 transcriptome만 맞아서는 부족합니다. 약물이 조직 기능을 바꾸고, 질환 phenotype을 줄이며, 독성 범위를 예측하는지 보여야 합니다.</p>
+          </div>
+        </div>
+        <div class="deep-layout">
+          <div class="deep-main">
+            <div class="deep-copy">
+              <h4>Readout은 “무엇이 좋아졌는가”를 숫자로 만드는 장치입니다</h4>
+              <p>Readout은 실험 결과를 판단하는 측정값입니다. 약물개발에서는 marker expression보다 기능 readout이 중요합니다. 심장 organoid라면 contraction force, calcium handling, relaxation time이 중요하고, airway organoid라면 CFTR swelling, ciliary movement, infection response가 중요합니다. 뇌 organoid라면 calcium activity, electrophysiology, migration rescue, synapse marker와 같은 층위를 함께 봅니다.</p>
+              <p>좋은 약물 실험은 dose-response, positive control, toxicity window, rescue specificity를 함께 봅니다. 약물이 세포를 죽여서 phenotype이 사라진 것인지, 특정 경로를 바로잡아서 기능이 회복된 것인지 구분해야 하기 때문입니다.</p>
             </div>
-            <span class="source-line">주요 예: Sachs 2019, Higgins 2018, Kang 2021, Han 2025, Pocock 2025, Liu 2026 NAM</span>
-          </article>
+            <div class="deep-table">
+              <table>
+                <thead><tr><th>응용</th><th>대표 모델</th><th>기능 readout</th><th>무엇을 판단하는가</th></tr></thead>
+                <tbody>
+                  <tr><td>심장 독성/질환</td><td>Pocock 2025 DM-hCO</td><td>force, calcium handling, Tr50, CiPA compound response</td><td>성숙한 cardiac phenotype과 pro-arrhythmia risk를 구분합니다.</td></tr>
+                  <tr><td>폐/기도 질환</td><td>Sachs 2019, Han 2025, Kang 2025</td><td>CFTR swelling, RSV/SARS-CoV-2/TB infection, THBS1 blockade, macrophage cytokine</td><td>상피 기능, 감염 반응, immune-mediated injury를 봅니다.</td></tr>
+                  <tr><td>신장/간 독성</td><td>Takasato 2015, Hess 2023, Yuan 2026</td><td>dextran uptake, cisplatin apoptosis, CYP/albumin, bile canaliculus, fibrosis marker</td><td>세포 identity가 아니라 장기 기능과 손상 반응을 확인합니다.</td></tr>
+                  <tr><td>ASD/NDD 치료</td><td>Kang 2021, Chen 2024, Birey 2017</td><td>PI3K rescue, ASO splice correction, calcium, interneuron migration, dendritic morphology</td><td>인간 세포에서 질환 phenotype이 실제로 줄어드는지 봅니다.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="concept-grid">
+              <div class="concept-card"><b>FXS organoid</b>Kang 2021은 Fragile X forebrain organoid에서 PI3K inhibition이 neurogenesis, synapse, excitability phenotype을 rescue했지만 mGluR5 inhibition은 그렇지 않았다고 보고했습니다.</div>
+              <div class="concept-card"><b>Timothy syndrome ASO</b>Chen 2024는 CACNA1C exon 8A를 조절하는 ASO가 splicing, calcium physiology, assembloid migration, transplanted organoid phenotype까지 이어지는 rescue를 보였습니다.</div>
+              <div class="concept-card"><b>Cardiac organoid</b>Pocock 2025는 AMPK/ERR directed maturation 뒤 CiPA drug panel로 low-risk와 high-risk pro-arrhythmic compound를 더 잘 구분했습니다.</div>
+              <div class="concept-card"><b>Airway/lung organoid</b>Sachs 2019의 CFTR swelling, Han 2025의 THBS1 blockade, Kang 2025의 macrophage infection assay처럼 장기별 기능을 직접 읽는 실험이 필요합니다.</div>
+            </div>
+          </div>
+          <aside class="deep-side">
+            <div class="deep-copy">
+              <h4>NAM과 context of use</h4>
+              <p>NAM(New Approach Methodology)은 동물실험을 보완하거나 일부 맥락에서 대체하기 위한 인간 중심 실험 체계를 뜻합니다. Organoid, organ-on-chip, microphysiological system, AI model, clinical-trial-in-a-dish가 여기에 들어갑니다.</p>
+              <p>규제와 약물개발에서 중요한 말은 context of use입니다. 같은 organoid라도 screening용인지, 독성 예측용인지, 환자 stratification용인지, mechanism follow-up용인지에 따라 필요한 품질 기준과 readout이 달라집니다.</p>
+            </div>
+            <div class="step-list">
+              <div class="step-item"><span class="step-num">1</span><div><b>질환 phenotype</b><span>약물이 줄여야 할 phenotype을 먼저 정의합니다.</span></div></div>
+              <div class="step-item"><span class="step-num">2</span><div><b>기능 readout</b><span>장기 기능을 직접 재는 측정값을 고릅니다.</span></div></div>
+              <div class="step-item"><span class="step-num">3</span><div><b>용량과 독성</b><span>효과가 나는 농도와 세포가 손상되는 농도를 분리합니다.</span></div></div>
+              <div class="step-item"><span class="step-num">4</span><div><b>반복 검증</b><span>여러 donor, 여러 batch, positive/negative control, orthogonal assay로 확인합니다.</span></div></div>
+            </div>
+            <span class="source-line">대표 연구: Sachs 2019, Kang 2021, Chen 2024, Han 2025, Pocock 2025, Kang 2025, Liu 2026 NAM</span>
+          </aside>
         </div>
       </section>
 
