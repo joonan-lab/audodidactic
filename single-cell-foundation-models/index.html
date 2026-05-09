@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>가상세포 파운데이션 모델 (Virtual Cell · Single-cell Foundation Models)</title>
-<meta name="description" content="scBERT(2022)부터 scPRINT-2·Tahoe-x1·Geneformer V2·MaxToki(2025-26)까지, scRNA-seq 기반 가상세포 파운데이션 모델 (scFM)을 한 페이지로 풀어둔 한글 인터랙티브 자료. 8가지 토큰화 전략, HEIMDALL 토크나이저 분해, 16개 모델 비교 테이블, Reality Check 4편 비판, Virtual Cell 비전을 포함.">
+<meta name="description" content="scBERT(2022)부터 scPRINT-2·Tahoe-x1·Geneformer V2·MaxToki(2025-26)까지, scRNA-seq 기반 가상세포 파운데이션 모델 (scFM)을 한 페이지로 풀어둔 한글 인터랙티브 자료. 토큰화 전략, HEIMDALL 토크나이저 분해, 모델 비교 테이블, Reality Check 비판, Virtual Cell 비전을 포함.">
 <style>
 *{box-sizing:border-box}
 :root{
@@ -641,15 +641,13 @@ table.tok-tbl .chip{
     <div class="eyebrow">Virtual Cell · Single-cell Foundation Models · 한글 인터랙티브 해설</div>
     <h1>싱글셀 파운데이션 모델</h1>
     <p class="dek">
-      2022년 scBERT가 BERT를 단세포에 처음 끼워 넣은 뒤, <strong>4년 만에 학습 corpus는 수백만 → 3억 5천만 cells</strong>로,
+      2022년 scBERT가 BERT를 단세포에 처음 끼워 넣은 뒤, <strong>학습 corpus는 수백만 → 3억 5천만 cells</strong>로,
       파라미터는 <strong>10M → 27B</strong>로 커졌다. 핵심 흐름은
-      8가지 토큰화 전략 / 16개 핵심 모델 / 4편의 비판적 벤치마크 / Virtual Cell 비전으로 나뉜다.
-      처음 보는 사람을 위해 scRNA-seq · transformer · 토큰화 · foundation model의 <strong>기초 4가지</strong>도 위에 따로 정리했다.
+      토큰화 전략 / 핵심 모델 / 비판적 벤치마크 / Virtual Cell 비전으로 나뉜다.
+      처음 보는 사람을 위해 scRNA-seq · transformer · 토큰화 · foundation model의 <strong>기초 개념</strong>도 위에 따로 정리했다.
     </p>
   </div>
   <div class="mast-stats">
-    <div class="stat"><b>8<em> strategies</em></b><span>토큰화 전략</span></div>
-    <div class="stat"><b>16<em> 모델</em></b><span>비교 테이블 핵심 라인업</span></div>
     <div class="stat"><b>350<em>M cells</em></b><span>최대 학습 corpus (scPRINT-2)</span></div>
     <div class="stat"><b>27<em>B params</em></b><span>최대 모델 (C2S-Scale)</span></div>
   </div>
@@ -659,7 +657,7 @@ table.tok-tbl .chip{
 <section id="intro">
   <div class="s-head">
     <span class="s-num">00</span>
-    <h2>읽기 전 — <em>4가지 기초</em></h2>
+    <h2>읽기 전 — <em>기초 개념</em></h2>
   </div>
   <p class="s-lede">
     scRNA-seq, transformer, 토큰화, foundation model — 이 네 가지를 모르면 본문이 잘 읽히지 않는다.
@@ -706,7 +704,7 @@ table.tok-tbl .chip{
       <div class="ic-title">Foundation model이란</div>
       <div class="ic-body">
         라벨 없는 큰 데이터로 <strong>자기지도학습 (SSL)</strong>을 한 번만 시켜 두면, 다양한 다운스트림 태스크에 이 가중치를 가져다 쓰는 패러다임.
-        <strong>NLP의 BERT/GPT, 비전의 CLIP/DINO</strong>의 생물학판이다. 단세포에선 cell type annotation, perturbation 예측, batch correction, GRN 추론, expression 복원, drug response 예측 등 6가지 태스크가 표준.
+        <strong>NLP의 BERT/GPT, 비전의 CLIP/DINO</strong>의 생물학판이다. 단세포에선 cell type annotation, perturbation 예측, batch correction, GRN 추론, expression 복원, drug response 예측 등이 표준 태스크다.
         한계는 §07 — "후속 벤치마크에서는 SOTA가 아닐 수 있다"는 비판이 누적되고 있다.
       </div>
       <div class="ic-eq">pretrain (SSL on M cells) → fine-tune (k labels) → predict</div>
@@ -718,7 +716,7 @@ table.tok-tbl .chip{
 <section id="endemic">
   <div class="s-head">
     <span class="s-num">01</span>
-    <h2>scRNA-seq의 <em>세 가지 난제</em> — 왜 일반 Transformer를 그대로 쓸 수 없는가</h2>
+    <h2>scRNA-seq의 <em>난제</em> — 왜 일반 Transformer를 그대로 쓸 수 없는가</h2>
   </div>
   <p class="s-lede">
     일반 Transformer를 단세포에 그대로 들이대면 셋 다 무너진다. 모든 scRNA-seq 파운데이션 모델은 이 셋 중 하나 이상을 어떻게 다룰지에 대한 <strong>설계적 선택</strong>이다.
@@ -764,7 +762,7 @@ table.tok-tbl .chip{
 <section id="timeline">
   <div class="s-head">
     <span class="s-num">02</span>
-    <h2>2022→2026 타임라인 — <em>4년의 가속</em></h2>
+    <h2>scFM 타임라인 — <em>가속하는 corpus와 파라미터</em></h2>
   </div>
   <p class="s-lede">
     슬라이더를 움직이면 그 시점에 발표된 모델이 강조되고, 누적 학습 cell 수와 최대 파라미터가 갱신된다.
@@ -792,39 +790,39 @@ table.tok-tbl .chip{
 <section id="strategies">
   <div class="s-head">
     <span class="s-num">03</span>
-    <h2>8가지 토큰화 전략 — <em>같은 문제, 8가지 답</em></h2>
+    <h2>토큰화 전략 — <em>같은 문제, 다양한 답</em></h2>
   </div>
   <p class="s-lede">
-    "유전자를 어떻게 토큰화할까"에 대한 8가지 답이 8개의 모델 가족을 만들었다. 버튼을 누르면 해당 전략 카드만 강조되고 나머지는 옅어진다.
+    "유전자를 어떻게 토큰화할까"에 대한 답이 여러 모델 가족을 만들었다. 버튼을 누르면 해당 전략 카드만 강조되고 나머지는 옅어진다.
     각 카드의 모델은 <strong>§04 비교 테이블</strong>에서 정확한 파라미터로 다시 만난다.
   </p>
   <div class="strat-bar" id="stratBar">
     <button class="strat-btn active" data-strat="all" style="--btn-color:var(--ink)">
-      <span class="sb-num">all</span><span class="sb-name">전체 보기</span><span class="sb-count">8 strategies</span>
+      <span class="sb-num">all</span><span class="sb-name">전체 보기</span><span class="sb-count">all</span>
     </button>
     <button class="strat-btn" data-strat="rank" style="--btn-color:var(--c-rank)">
-      <span class="sb-num">01 · rank-based</span><span class="sb-name">발현 순위</span><span class="sb-count">3 models</span>
+      <span class="sb-num">01 · rank-based</span><span class="sb-name">발현 순위</span><span class="sb-count">strategy</span>
     </button>
     <button class="strat-btn" data-strat="value" style="--btn-color:var(--c-value)">
-      <span class="sb-num">02 · value-projection</span><span class="sb-name">발현값 직접</span><span class="sb-count">2 models</span>
+      <span class="sb-num">02 · value-projection</span><span class="sb-name">발현값 직접</span><span class="sb-count">strategy</span>
     </button>
     <button class="strat-btn" data-strat="binned" style="--btn-color:var(--c-binned)">
-      <span class="sb-num">03 · binned generative</span><span class="sb-name">vocab으로 이산화</span><span class="sb-count">3 models</span>
+      <span class="sb-num">03 · binned generative</span><span class="sb-name">vocab으로 이산화</span><span class="sb-count">strategy</span>
     </button>
     <button class="strat-btn" data-strat="llm" style="--btn-color:var(--c-llm)">
-      <span class="sb-num">04 · llm-derived</span><span class="sb-name">텍스트 임베딩</span><span class="sb-count">3 models</span>
+      <span class="sb-num">04 · llm-derived</span><span class="sb-name">텍스트 임베딩</span><span class="sb-count">strategy</span>
     </button>
     <button class="strat-btn" data-strat="cross" style="--btn-color:var(--c-cross)">
-      <span class="sb-num">05 · cross-species</span><span class="sb-name">단백질 서열</span><span class="sb-count">1 model</span>
+      <span class="sb-num">05 · cross-species</span><span class="sb-name">단백질 서열</span><span class="sb-count">strategy</span>
     </button>
     <button class="strat-btn" data-strat="base" style="--btn-color:var(--c-base)">
-      <span class="sb-num">06 · llm-as-base</span><span class="sb-name">셀 = 문장</span><span class="sb-count">2 models</span>
+      <span class="sb-num">06 · llm-as-base</span><span class="sb-name">셀 = 문장</span><span class="sb-count">strategy</span>
     </button>
     <button class="strat-btn" data-strat="pert" style="--btn-color:var(--c-pert)">
-      <span class="sb-num">07 · perturbation-aware</span><span class="sb-name">약물·KO 토큰</span><span class="sb-count">2 models</span>
+      <span class="sb-num">07 · perturbation-aware</span><span class="sb-name">약물·KO 토큰</span><span class="sb-count">strategy</span>
     </button>
     <button class="strat-btn" data-strat="spatial" style="--btn-color:var(--c-spatial)">
-      <span class="sb-num">08 · spatial / epi</span><span class="sb-name">위치·chromatin</span><span class="sb-count">3 models</span>
+      <span class="sb-num">08 · spatial / epi</span><span class="sb-name">위치·chromatin</span><span class="sb-count">strategy</span>
     </button>
   </div>
 
@@ -938,7 +936,7 @@ table.tok-tbl .chip{
 <section id="compare">
   <div class="s-head">
     <span class="s-num">04</span>
-    <h2>16개 핵심 모델 — <em>파라미터·corpus·태스크</em> 비교</h2>
+    <h2>핵심 모델 — <em>파라미터·corpus·태스크</em> 비교</h2>
   </div>
   <p class="s-lede">
     헤더 클릭으로 정렬, 검색창에서 키워드 필터. <strong>L</strong> 컬럼은 license — <code>open</code>은 코드+가중치 공개,
@@ -1070,10 +1068,10 @@ table.tok-tbl .chip{
 <section id="tasks">
   <div class="s-head">
     <span class="s-num">06</span>
-    <h2>다운스트림 6 태스크 — <em>cell 임베딩 vs gene 임베딩</em></h2>
+    <h2>다운스트림 태스크 — <em>cell 임베딩 vs gene 임베딩</em></h2>
   </div>
   <p class="s-lede">
-    foundation model의 가치는 결국 다운스트림 성능. cell-level 임베딩이 잘 되는 태스크 3개와, gene-level 임베딩이 잘 되는 태스크 3개로 나뉜다.
+    foundation model의 가치는 결국 다운스트림 성능. cell-level 임베딩이 잘 되는 태스크와 gene-level 임베딩이 잘 되는 태스크로 나뉜다.
     "공식 발표 SOTA"와 "후속 벤치마크"의 결과가 다른 경우를 함께 표기 — 자세한 비판은 §07.
   </p>
   <div class="task-grid">
@@ -1145,8 +1143,8 @@ table.tok-tbl .chip{
     <h2>Reality Check — <em>자체 SOTA</em> vs <em>후속 벤치마크</em></h2>
   </div>
   <p class="s-lede">
-    같은 모델, 다른 평가. 4편의 비판 논문이 같은 구조의 메시지를 보낸다 — <strong>fine-tune 데이터가 작거나 평가 지표가 task-specific일수록 foundation model의 우위가 사라진다.</strong>
-    탭을 클릭해 4편의 핵심 발견을 비교해 보세요.
+    같은 모델, 다른 평가. 비판 논문들이 같은 구조의 메시지를 보낸다 — <strong>fine-tune 데이터가 작거나 평가 지표가 task-specific일수록 foundation model의 우위가 사라진다.</strong>
+    탭을 클릭해 핵심 발견을 비교해 보세요.
   </p>
   <div class="rc-frame">
     <div class="rc-tabs" role="tablist">
@@ -1315,7 +1313,7 @@ table.tok-tbl .chip{
     <h2>리소스 — <em>모델 코드</em>와 <em>출처</em></h2>
   </div>
   <p class="s-lede">
-    바로 받아 쓸 수 있는 6개 핵심 모델의 공식 GitHub/HuggingFace, 그리고 참고 논문 25편의 Google Scholar 검색 링크.
+    바로 받아 쓸 수 있는 핵심 모델의 공식 GitHub/HuggingFace와 참고 논문의 Google Scholar 검색 링크.
   </p>
   <div class="res-grid">
     <a class="res-card" href="https://huggingface.co/ctheodoris/Geneformer" target="_blank" rel="noopener" style="--res-color:var(--c-rank)">

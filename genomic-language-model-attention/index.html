@@ -37,10 +37,7 @@ button,input,select{font:inherit}
 a{color:inherit}
 .page{max-width:1460px;margin:0 auto;padding:28px 24px 42px}
 .mast{
-  display:grid;
-  grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);
-  gap:24px;
-  align-items:end;
+  display:block;
   border-bottom:1px solid var(--line);
   padding-bottom:18px;
 }
@@ -59,7 +56,7 @@ a{color:inherit}
   text-transform:uppercase;
 }
 h1{
-  max-width:940px;
+  max-width:1240px;
   margin:0;
   font-size:clamp(34px,4.2vw,58px);
   line-height:1.06;
@@ -69,7 +66,7 @@ h1{
 }
 h1 .line{display:block}
 .dek{
-  max-width:790px;
+  max-width:1080px;
   margin:14px 0 0;
   color:#3f4b5d;
   font-size:15px;
@@ -736,11 +733,6 @@ h1 .line{display:block}
       <h1><span class="line">gLM은 DNA에서 무엇에</span><span class="line">attention하는가</span></h1>
       <p class="dek">Transformer 계열 gLM은 nucleotide token 사이의 문맥 의존성을 attention matrix로 계산합니다. motif, splice boundary, enhancer-promoter bridge, reverse-complement symmetry처럼 DNA에서 중요한 “관계”가 모델 내부에서 어떤 모양으로 잡히는지를 시각적으로 풀어둔 한글 자료입니다.</p>
     </div>
-    <div class="mast-grid" aria-label="summary stats">
-      <div class="stat"><b>187</b><span>genomic-dl source notes reviewed</span></div>
-      <div class="stat"><b>6</b><span>attention and dependency scenarios</span></div>
-      <div class="stat"><b>18</b><span>source cards and PDFs folded in</span></div>
-    </div>
   </header>
 
   <nav class="scenario-strip" id="scenarioStrip" aria-label="attention scenario selector"></nav>
@@ -1229,19 +1221,19 @@ const models = {
 };
 
 const modelRows = [
-  ["DNABERT","2021","Transformer attention","Overlapping k-mer tokens. Attention visualization can highlight nucleotide importance and known TF motifs."],
-  ["DNABERT-2","2024","Efficient Transformer attention","BPE avoids overlapping k-mer leakage, compresses sequence length, and combines ALiBi with FlashAttention."],
-  ["Nucleotide Transformer","2025","Scaled Transformer attention","6-kb sequences, 50M to 2.5B parameters, attention and embeddings used for interpretability and transfer."],
-  ["GROVER","2024","BPE BERT attention","Human-specific BPE vocabulary aligns with regulatory motifs, but attention interpretation remains approximate."],
-  ["Enformer","2021","CNN plus global attention","Convolutions extract local features, transformer blocks integrate distal regulatory context across about 200 kb input."],
-  ["MxDNA","2024","Query-aware attention","Model Decides how to Tokenize uses learned tokenization so the unit being attended can adapt to the sequence."],
-  ["MergeDNA","2025","Context-aware tokenization","Adjacent bases can be merged into larger context-aware DNA units, reducing sequence length without committing to fixed k-mers."],
-  ["DNAChunker","2026","Learned chunking","A learnable tokenizer treats chunk boundaries as part of the modeling problem, not a fixed preprocessing choice."],
-  ["GENERATOR-v2","2026","Dense attention on retained tokens","FNS maps coarse k-mer predictions to nucleotide marginals; GCP keeps functional regions for long-range dense attention."],
-  ["HyenaDNA","2023","No full attention","Long convolution gives global receptive field at single-nucleotide resolution up to 1M tokens."],
-  ["Caduceus","2024","No full attention","BiMamba and MambaDNA add bidirectionality and reverse-complement equivariance for DNA."],
-  ["ARSENAL","2026","Short-context masked LM","A 350 bp regulatory DNALM uses motif-discovery regularization and dependency-style analyses."],
-  ["AlphaGenome","2026","Function-oriented sequence model","Not a pure language model; useful as the practical endpoint where sequence context becomes track-level function prediction."]
+  ["DNABERT","2021","Transformer attention","겹치는 k-mer 토큰을 씁니다. attention을 시각화하면 어느 염기가 중요한지, 알려진 TF motif가 어디에 잡히는지 볼 수 있습니다."],
+  ["DNABERT-2","2024","Efficient Transformer attention","BPE 토큰으로 겹치는 k-mer leakage를 피하면서 시퀀스 길이를 압축하고, ALiBi와 FlashAttention을 함께 씁니다."],
+  ["Nucleotide Transformer","2025","Scaled Transformer attention","6 kb 시퀀스를 50M~2.5B 파라미터 규모로 학습하고, attention과 embedding을 해석과 전이학습 모두에 활용합니다."],
+  ["GROVER","2024","BPE BERT attention","사람 게놈에 특화된 BPE 어휘가 regulatory motif와 잘 맞물리지만, attention 자체의 해석은 여전히 근사적입니다."],
+  ["Enformer","2021","CNN plus global attention","Convolution이 국소 특징을 뽑고, transformer block이 약 200 kb 범위의 원거리 regulatory 문맥을 통합합니다."],
+  ["MxDNA","2024","Query-aware attention","토큰 경계를 학습으로 결정하기 때문에, attention이 보는 단위 자체가 시퀀스에 맞춰 바뀝니다."],
+  ["MergeDNA","2025","Context-aware tokenization","인접 염기를 문맥에 따라 더 큰 단위로 묶어, 고정된 k-mer 없이도 시퀀스 길이를 줄입니다."],
+  ["DNAChunker","2026","Learned chunking","Chunk 경계를 전처리가 아니라 모델이 학습할 문제로 다루는 토크나이저입니다."],
+  ["GENERATOR-v2","2026","Dense attention on retained tokens","FNS가 거친 k-mer 예측을 염기 단위 확률로 풀어내고, GCP가 기능 영역만 남겨 dense attention의 장거리 범위를 확보합니다."],
+  ["HyenaDNA","2023","No full attention","긴 convolution으로 attention 없이도 단일 염기 해상도에서 최대 1M 토큰까지 전역 receptive field를 얻습니다."],
+  ["Caduceus","2024","No full attention","BiMamba와 MambaDNA가 양방향성과 reverse-complement 등가성을 더해 DNA 구조에 맞춰 줍니다."],
+  ["ARSENAL","2026","Short-context masked LM","350 bp 짧은 regulatory 영역에 특화된 모델로, motif 발견용 regularization과 dependency 기반 해석을 함께 씁니다."],
+  ["AlphaGenome","2026","Function-oriented sequence model","순수한 언어 모델은 아니지만, 시퀀스 문맥을 track 단위 기능 예측으로 바꾸는 실용적 종착지로 자주 쓰입니다."]
 ];
 
 const sourceCards = [

@@ -74,24 +74,30 @@ a{color:inherit}
 }
 .legacy a:hover{border-color:var(--crimson);color:var(--crimson);background:var(--crimson-soft);box-shadow:var(--ring)}
 .hero{
-  display:grid;
-  grid-template-columns:minmax(320px,1fr) minmax(360px,520px);
-  gap:24px;
-  padding:28px 0 20px;
+  padding:32px 0 22px;
 }
-.hero h2{font-size:40px;line-height:1.05;margin:0 0 14px;letter-spacing:0;font-weight:800;max-width:820px}
-.hero .lead{color:#465160;font-size:16px;max-width:820px;margin:0}
+.hero h2{font-size:clamp(34px,4.6vw,58px);line-height:1.02;margin:0 0 18px;letter-spacing:-0.014em;font-weight:800;max-width:1180px}
+.hero .lead{color:#3a4453;font-size:18px;margin:0;line-height:1.55;max-width:980px}
 .statgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .stat{
   border:1px solid var(--line);
   border-radius:8px;
-  background:rgba(255,255,255,.86);
+  background:rgba(255,255,255,.92);
   padding:14px;
-  min-height:88px;
+  min-height:108px;
   box-shadow:var(--shadow-soft);
+  display:flex;
+  flex-direction:column;
 }
-.stat .num{font-size:28px;font-weight:800;line-height:1;color:var(--crimson)}
-.stat .label{font-size:12px;color:var(--muted);margin-top:8px}
+.stat .num{font-size:30px;font-weight:800;line-height:1;color:var(--crimson);letter-spacing:-0.02em;font-variant-numeric:tabular-nums}
+.stat .label{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.45}
+.stat-viz{margin-top:auto;padding-top:12px}
+.stat-distrib{display:flex;height:5px;border-radius:999px;overflow:hidden;background:var(--soft2);gap:2px}
+.stat-distrib span{display:block;height:100%;border-radius:2px}
+.stat-dots{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.stat-dots span{width:8px;height:8px;border-radius:999px}
+.stat-ratio{position:relative;height:5px;border-radius:999px;background:var(--soft2);overflow:hidden}
+.stat-ratio span{position:absolute;left:0;top:0;height:100%;border-radius:999px;background:var(--crimson)}
 .primer{
   display:grid;
   gap:18px;
@@ -161,18 +167,53 @@ a{color:inherit}
 .workflow{
   display:grid;
   grid-template-columns:repeat(5,minmax(0,1fr));
-  gap:8px;
+  gap:14px;
   padding:0 14px 14px;
+  counter-reset:wf;
 }
 .workflow-step{
   background:#fff;
-  min-height:104px;
+  min-height:118px;
+  counter-increment:wf;
+  position:relative;
+}
+.workflow-step::before{
+  content:counter(wf, decimal-leading-zero);
+  position:absolute;
+  left:13px;
+  top:13px;
+  width:28px;
+  height:28px;
+  border-radius:8px;
+  display:grid;
+  place-items:center;
+  background:var(--crimson);
+  color:#fff;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.04em;
+  font-variant-numeric:tabular-nums;
+  box-shadow:0 4px 12px rgba(139,0,41,.22);
+}
+.workflow-step:not(:last-child)::after{
+  content:"";
+  position:absolute;
+  right:-14px;
+  top:26px;
+  width:14px;
+  height:2px;
+  background-image:linear-gradient(90deg,var(--line-strong) 50%,transparent 50%);
+  background-size:6px 2px;
+  background-repeat:repeat-x;
+  pointer-events:none;
 }
 .workflow-step b{
   display:block;
-  color:#344054;
-  font-size:12px;
+  color:#1f2533;
+  font-size:13px;
+  margin-top:36px;
   margin-bottom:5px;
+  font-weight:760;
 }
 .term-table{
   overflow:auto;
@@ -319,6 +360,21 @@ input:focus,select:focus{
   transform:translate(-50%,-50%) scale(1.1);
   box-shadow:0 0 0 2px var(--crimson-dark),0 12px 26px rgba(16,24,40,.22);
 }
+.organ-node.active::after{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border-radius:inherit;
+  border:2px solid var(--crimson-dark);
+  opacity:0;
+  animation:organ-pulse 2.4s ease-out infinite;
+  pointer-events:none;
+}
+@keyframes organ-pulse{
+  0%{transform:scale(.85);opacity:.55}
+  70%{transform:scale(1.4);opacity:0}
+  100%{transform:scale(1.4);opacity:0}
+}
 .organ-node.dim{opacity:.34}
 .organ-node.method-node{
   border-radius:10px;
@@ -378,9 +434,15 @@ input:focus,select:focus{
   transition:border .12s ease, transform .12s ease, box-shadow .12s ease;
 }
 .card:hover,.card.active{border-color:rgba(139,0,41,.42);box-shadow:0 10px 24px rgba(15,23,42,.10);transform:translateY(-1px)}
-.card-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px}
-.pill{display:inline-flex;align-items:center;border-radius:8px;padding:3px 7px;font-size:11px;font-weight:650;background:var(--soft2);color:#344054}
-.year{font-size:12px;color:#667085;font-weight:700}
+.card.is-foundational{border-color:rgba(139,0,41,.32);box-shadow:inset 0 0 0 1px rgba(139,0,41,.14),var(--shadow-soft)}
+.card.is-foundational:hover{border-color:rgba(139,0,41,.52)}
+.card-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;align-items:flex-start}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-width:0}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:650;background:var(--soft2);color:#344054}
+.pill::before{content:"";display:inline-block;width:7px;height:7px;border-radius:999px;background:var(--pill-color,#94a3b8);flex:0 0 auto}
+.badge-new{display:inline-flex;align-items:center;font-size:10px;color:var(--crimson);font-weight:760;background:var(--crimson-soft);border:1px solid rgba(139,0,41,.22);border-radius:999px;padding:1px 7px;letter-spacing:.04em;text-transform:uppercase}
+.badge-base{display:inline-flex;align-items:center;font-size:10px;font-weight:760;color:#475467;background:#fff;border:1px solid var(--line);border-radius:999px;padding:1px 7px;letter-spacing:.04em;text-transform:uppercase}
+.year{font-size:12px;color:#667085;font-weight:700;flex:0 0 auto}
 .card h4{margin:0 0 7px;font-size:14px;line-height:1.25}
 .card .meta{font-size:12px;color:#667085;margin-bottom:7px}
 .card p{font-size:12px;color:#465160;margin:0}
@@ -429,7 +491,14 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
 .note{border:1px solid var(--line);border-radius:8px;padding:14px;background:var(--soft);min-height:160px}
 .note h4{margin:0 0 8px;font-size:14px}
 .note p{margin:0;color:#465160;font-size:13px}
-	.deep-panel{scroll-margin-top:16px}
+	.deep-panel{scroll-margin-top:16px;position:relative}
+	.deep-panel::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--deep-accent,var(--crimson));border-radius:8px 0 0 8px;pointer-events:none}
+	.deep-panel[data-section="01"]{--deep-accent:var(--brain)}
+	.deep-panel[data-section="02"]{--deep-accent:var(--kidney)}
+	.deep-panel[data-section="03"]{--deep-accent:var(--heart)}
+	.deep-panel[data-section="04"]{--deep-accent:var(--liver)}
+	.deep-num{display:inline-flex;align-items:center;gap:6px;font-family:ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,monospace;font-size:10.5px;font-weight:700;letter-spacing:.14em;color:var(--deep-accent,var(--crimson));border:1px solid currentColor;border-radius:999px;padding:3px 9px;margin-bottom:8px;text-transform:uppercase;background:rgba(255,255,255,.7)}
+	.deep-num::before{content:"";width:5px;height:5px;border-radius:999px;background:currentColor;flex:0 0 auto}
 	.deep-layout{
 	  display:grid;
 	  grid-template-columns:minmax(0,1.1fr) minmax(340px,.9fr);
@@ -500,6 +569,15 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
 @media (max-width:1120px){
 	  .hero,.layout,.main-grid,.basic-grid,.method-grid,.qc-grid,.workflow,.organ-body,.deep-layout,.concept-grid{grid-template-columns:1fr}
   .filters,.detail{position:static}
+  .workflow-step::after{display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001s !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01s !important;
+    scroll-behavior:auto !important;
+  }
 }
 @media (max-width:680px){
   .shell{padding:16px}
@@ -535,11 +613,8 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
   </header>
 
   <section class="hero">
-    <div>
-      <h2>오가노이드: 배양법을 넘어, 측정 가능한 인간 조직 모델로</h2>
-      <p class="lead">오가노이드(organoid)는 말 그대로 “작은 장기”라기보다, 특정 조직의 발생 과정과 세포 구성, 기능의 일부를 3차원 배양에서 다시 만들어 보는 모델입니다. 어떤 세포에서 시작했는지, 어떤 신호를 주었는지, 무엇을 측정했는지를 먼저 잡으면 논문 데이터베이스도 훨씬 편하게 읽힙니다.</p>
-    </div>
-    <div class="statgrid" id="stats"></div>
+    <h2>오가노이드: 배양법을 넘어, 측정 가능한 인간 조직 모델로</h2>
+    <p class="lead">오가노이드(organoid)는 말 그대로 “작은 장기”라기보다, 특정 조직의 발생 과정과 세포 구성, 기능의 일부를 3차원 배양에서 다시 만들어 보는 모델입니다. 어떤 세포에서 시작했는지, 어떤 신호를 주었는지, 무엇을 측정했는지를 먼저 잡으면 논문 데이터베이스도 훨씬 편하게 읽힙니다.</p>
   </section>
 
   <section class="primer" id="primer" aria-label="Organoid basics">
@@ -558,11 +633,11 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
         <article class="basic-card"><h4>모양만으로는 부족합니다</h4><p>둥근 구조가 생겼다고 곧바로 좋은 오가노이드가 되는 것은 아닙니다. 어떤 세포가 들어 있는지, 전사체가 목표 조직과 가까운지, 기능이 실제로 있는지, 원치 않는 세포(off-target cell)나 스트레스 반응(stress program)이 많은지 함께 확인해야 합니다.</p></article>
       </div>
       <div class="workflow">
-        <div class="workflow-step"><b>1. 세포원 선택</b><p>성체 조직, 배아줄기세포(hESC), 유도만능줄기세포(hiPSC), 환자 iPSC, CRISPR로 만든 동질유전 대조군(isogenic line) 중 연구 질문에 맞는 출발점을 고릅니다.</p></div>
-        <div class="workflow-step"><b>2. 패터닝(patterning)</b><p>초기 운명(fate)을 정하는 발생 신호와 작은 분자(small molecule)를 시간표대로 넣어 세포의 방향을 정합니다.</p></div>
-        <div class="workflow-step"><b>3. 3차원 구조 만들기</b><p>Matrigel/BME에 묻거나, 세포 덩어리(spheroid)를 만들거나, 회전 배양(spinner), 트랜스웰, 공기-액체 계면(ALI)을 써서 입체 구조를 만듭니다.</p></div>
-        <div class="workflow-step"><b>4. 성숙과 조립</b><p>장기별 미세환경 인자(niche factor), 공동 배양(co-culture), 혈관·면역·기질세포 추가, 어셈블로이드(assembloid) 융합으로 부족한 층을 보탭니다.</p></div>
-        <div class="workflow-step"><b>5. 측정(readout)</b><p>단일세포 RNA-seq, 이미징, 전기생리, 칼슘 신호, 수축력, 독성, 감염 반응, rescue assay처럼 질문에 맞는 측정값으로 모델을 검증합니다.</p></div>
+        <div class="workflow-step"><b>세포원 선택</b><p>성체 조직, 배아줄기세포(hESC), 유도만능줄기세포(hiPSC), 환자 iPSC, CRISPR로 만든 동질유전 대조군(isogenic line) 중 연구 질문에 맞는 출발점을 고릅니다.</p></div>
+        <div class="workflow-step"><b>패터닝(patterning)</b><p>초기 운명(fate)을 정하는 발생 신호와 작은 분자(small molecule)를 시간표대로 넣어 세포의 방향을 정합니다.</p></div>
+        <div class="workflow-step"><b>3차원 구조 만들기</b><p>Matrigel/BME에 묻거나, 세포 덩어리(spheroid)를 만들거나, 회전 배양(spinner), 트랜스웰, 공기-액체 계면(ALI)을 써서 입체 구조를 만듭니다.</p></div>
+        <div class="workflow-step"><b>성숙과 조립</b><p>장기별 미세환경 인자(niche factor), 공동 배양(co-culture), 혈관·면역·기질세포 추가, 어셈블로이드(assembloid) 융합으로 부족한 층을 보탭니다.</p></div>
+        <div class="workflow-step"><b>측정(readout)</b><p>단일세포 RNA-seq, 이미징, 전기생리, 칼슘 신호, 수축력, 독성, 감염 반응, rescue assay처럼 질문에 맞는 측정값으로 모델을 검증합니다.</p></div>
       </div>
     </section>
 
@@ -687,9 +762,10 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
         </div>
       </section>
 
-      <section class="panel deep-panel" id="assembloid">
+      <section class="panel deep-panel" id="assembloid" data-section="01">
         <div class="panel-head">
           <div>
+            <span class="deep-num">Section 01 · Assembloid</span>
             <h3>Assembloid를 먼저 이해하기</h3>
             <p>어셈블로이드(assembloid)는 여러 오가노이드나 세포 집단을 한곳에 조립해, 단일 오가노이드가 놓치기 쉬운 조직 간 상호작용을 실험할 수 있게 만든 모델입니다.</p>
           </div>
@@ -737,9 +813,10 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
         </div>
       </section>
 
-      <section class="panel deep-panel" id="development">
+      <section class="panel deep-panel" id="development" data-section="02">
         <div class="panel-head">
           <div>
+            <span class="deep-num">Section 02 · Development</span>
             <h3>발생 모델로 읽기</h3>
             <p>PSC 유래 오가노이드는 완성된 성체 장기를 그대로 만든 것이라기보다, 인간 발생 과정을 실험실에서 다시 지나가게 만든 모델에 가깝습니다.</p>
           </div>
@@ -787,9 +864,10 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
         </div>
       </section>
 
-      <section class="panel deep-panel" id="disease-model">
+      <section class="panel deep-panel" id="disease-model" data-section="03">
         <div class="panel-head">
           <div>
+            <span class="deep-num">Section 03 · Disease</span>
             <h3>질환 모델과 perturbation 이해하기</h3>
             <p>질환 오가노이드 연구는 “환자 세포를 키워 보았다”에서 끝나지 않습니다. 어떤 변화가 질환 원인에 가까운지 perturbation으로 확인하는 방향으로 발전하고 있습니다.</p>
           </div>
@@ -836,9 +914,10 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
         </div>
       </section>
 
-      <section class="panel deep-panel" id="drug-development">
+      <section class="panel deep-panel" id="drug-development" data-section="04">
         <div class="panel-head">
           <div>
+            <span class="deep-num">Section 04 · Drug</span>
             <h3>약물개발에서 기능 readout이 중요한 이유</h3>
             <p>약물개발용 오가노이드는 마커와 전사체가 목표 조직과 비슷하다는 것만으로는 부족합니다. 약물이 조직 기능을 바꾸는지, 질환 표현형을 줄이는지, 독성이 나타나는 범위를 예측할 수 있는지를 보여야 합니다.</p>
           </div>
@@ -1217,17 +1296,42 @@ function populateControls(){
 }
 
 function renderStats(){
+  const totalCount = studies.length;
   const organCount = uniq(studies.map(s=>s.organ)).length;
   const assembloidCount = studies.filter(s=>/assembloid/i.test(s.type)).length;
-  const diseaseCount = studies.filter(s=>/disease|environmental|cohort|perturbation|in silico/i.test(s.type)).length;
-  const assayCount = studies.filter(s=>/screen|maturation|translational|disease|assembloid/i.test(s.type)).length;
-  const stats = [
-    [studies.length, "논문 단위 큐레이션 항목"],
-    [organCount, "기관/시스템 트랙"],
-    [assembloidCount, "어셈블로이드 / 공동 배양 항목"],
-    [diseaseCount + assayCount, "질환, 스크린, 약물 기능 측정 항목"]
-  ];
-  document.getElementById("stats").innerHTML = stats.map(([n,l])=>`<div class="stat"><div class="num">${n}</div><div class="label">${l}</div></div>`).join("");
+  const functionalCount = studies.filter(s=>/screen|maturation|translational|disease|assembloid|cohort|environmental/i.test(s.type)).length;
+  const ratioPct = Math.round(functionalCount/totalCount*100);
+  const distribSegments = organOrder.map(o => {
+    const c = studies.filter(s=>s.organ===o).length;
+    return c ? `<span style="flex:${c};background:${colorFor(o)}" title="${labelFor(o)}: ${c}"></span>` : "";
+  }).filter(Boolean).join("");
+  const organDots = organOrder.map(o =>
+    `<span style="background:${colorFor(o)}" title="${labelFor(o)}"></span>`
+  ).join("");
+  const aDots = Array.from({length: assembloidCount}, ()=>
+    `<span style="background:var(--brain)"></span>`
+  ).join("");
+  document.getElementById("stats").innerHTML = `
+    <div class="stat">
+      <div class="num">${totalCount}</div>
+      <div class="label">논문 단위 큐레이션 항목</div>
+      <div class="stat-viz"><div class="stat-distrib">${distribSegments}</div></div>
+    </div>
+    <div class="stat">
+      <div class="num">${organCount}</div>
+      <div class="label">기관/시스템 트랙</div>
+      <div class="stat-viz"><div class="stat-dots">${organDots}</div></div>
+    </div>
+    <div class="stat">
+      <div class="num">${assembloidCount}</div>
+      <div class="label">어셈블로이드 / 공동 배양 항목</div>
+      <div class="stat-viz"><div class="stat-dots">${aDots}</div></div>
+    </div>
+    <div class="stat">
+      <div class="num">${functionalCount}</div>
+      <div class="label">질환·스크린·약물 기능 측정 항목 · ${ratioPct}%</div>
+      <div class="stat-viz"><div class="stat-ratio"><span style="width:${ratioPct}%"></span></div></div>
+    </div>`;
 }
 
 function renderLegend(){
@@ -1280,13 +1384,22 @@ function renderOrganBody(rows){
 
 function renderCards(rows){
   document.getElementById("cardCount").textContent = `${rows.length}개 항목`;
-  const cards = rows.map(s=>`
-    <article class="card ${s.id===state.selected?"active":""}" data-id="${s.id}">
-      <div class="card-top"><span class="pill" style="border-left:4px solid ${colorFor(s.organ)}">${labelFor(s.organ)}</span><span class="year">${s.year}</span></div>
+  const cards = rows.map(s=>{
+    const isFoundational = /Foundational/i.test(s.type);
+    const isLatest = s.year >= 2026;
+    const tags = [
+      `<span class="pill" style="--pill-color:${colorFor(s.organ)}">${labelFor(s.organ)}</span>`,
+      isFoundational ? `<span class="badge-base">기초</span>` : "",
+      isLatest ? `<span class="badge-new">최신</span>` : ""
+    ].filter(Boolean).join("");
+    return `
+    <article class="card${s.id===state.selected?" active":""}${isFoundational?" is-foundational":""}" data-id="${s.id}">
+      <div class="card-top"><div class="card-tags">${tags}</div><span class="year">${s.year}</span></div>
       <h4>${s.short}: ${s.title}</h4>
       <div class="meta">${labelFor(s.type)} · ${s.source}</div>
       <p>${s.finding}</p>
-    </article>`).join("");
+    </article>`;
+  }).join("");
   document.getElementById("cards").innerHTML = cards || `<div style="padding:16px;color:#667085">현재 필터에 맞는 항목이 없습니다.</div>`;
 }
 
@@ -1380,7 +1493,6 @@ function bind(){
 }
 
 populateControls();
-renderStats();
 renderLegend();
 renderCultureTabs();
 renderMatrix();

@@ -261,7 +261,6 @@ body::after {
   font-size: 17px;
   color: var(--ink-soft);
   line-height: 1.7;
-  max-width: 720px;
 }
 .hero-meta {
   display: flex;
@@ -778,6 +777,64 @@ section.s {
   letter-spacing: 0.04em;
 }
 .e3-card .cancers span { color: var(--ec); font-weight: 700; }
+
+/* Citation footer used by .e3-card (E3/DUB) and .paper-card (study guide) */
+.refs {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.refs-title {
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+.ref-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 8px;
+  background: oklch(1 0 0 / 0.55);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.ref-text {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  word-break: break-word;
+}
+.ref-text b { color: var(--ink); font-weight: 700; }
+.ref-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+}
+.ref-actions a {
+  display: inline-block;
+  padding: 2px 7px;
+  background: oklch(1 0 0 / 0.85);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: background-color 120ms, border-color 120ms;
+}
+.ref-actions a:hover {
+  background: oklch(1 0 0 / 1);
+  border-color: var(--ec, var(--ub));
+  color: var(--ink);
+}
 
 .role-legend {
   display: flex;
@@ -1380,33 +1437,26 @@ section.s {
 
 <!-- ============== HERO ============== -->
 <section class="hero">
-  <span class="hero-badge">Track 05 · Ubiquitin × Cancer Multi-omics</span>
+  <span class="hero-badge">Ubiquitin × Cancer Multi-omics</span>
   <h1>유비퀴틴은 어떻게 암 세포의 <span class="accent">생사 결정 코드</span>가 되는가</h1>
   <p class="hero-lead">
     세포는 단백질을 그저 만들기만 하는 게 아니라 끊임없이 분해한다. <b>유비퀴틴(Ub)</b>이라는 76 잔기 마커가 어떤 라이신에 어떤 사슬 형태로 붙느냐가 단백질의 운명을 결정한다 — 프로테아좀 분해, DNA 손상 신호, 면역 신호 전달, 세포 운명 전환까지. 암은 이 코드의 오작동이다. <b>VHL·BRCA1·SPOP</b> 같은 종양억제 E3가 사라지면 종양 단백질이 안정화되고, 반대로 <b>MDM2·SKP2</b>처럼 oncogene 역할을 하는 E3가 amplified되면 종양억제자가 과분해된다. 여기에 <b>USP7·BAP1·CYLD</b> 같은 DUB가 어긋나면 분해의 균형이 깨진다. 멀티오믹스 — 게놈·전사체·프로테옴·인산화체·유비퀴티놈 — 가 함께 등장해야 비로소 보이는 신호가 있다. 이 페이지는 처음 공부하는 학생이 Ub 시스템, 사슬 코드, E3/DUB, 측정법, 암에서의 해석을 한 번에 연결해 읽도록 구성한 개념 지도다.
   </p>
-  <div class="hero-meta">
-    <span class="chip"><b>9</b> 섹션</span>
-    <span class="chip"><b>40+</b> E3·DUB</span>
-    <span class="chip"><b>6</b> 멀티오믹스 시나리오</span>
-    <span class="chip"><b>23</b> 개념 카드</span>
-    <span class="chip"><b>한글</b> 학습 자료</span>
-  </div>
 </section>
 
 <!-- ============== TOC ============== -->
 <nav class="toc">
   <div class="toc-head">
     <h2>이 페이지의 길</h2>
-    <span class="label">9 sections · click to jump</span>
+    <span class="label">click to jump</span>
   </div>
   <div class="toc-grid">
     <a href="#primer"><span class="num">01</span> Ub 시스템 기초</a>
-    <a href="#chains"><span class="num">02</span> 8가지 Ub 코드</a>
+    <a href="#chains"><span class="num">02</span> Ub 코드</a>
     <a href="#e3atlas"><span class="num">03</span> E3 리가아제 아틀라스</a>
     <a href="#dub"><span class="num">04</span> DUB와 분해 역행</a>
     <a href="#omics"><span class="num">05</span> 멀티오믹스 레이어</a>
-    <a href="#mech"><span class="num">06</span> 암의 8가지 기전 축</a>
+    <a href="#mech"><span class="num">06</span> 암의 기전 축</a>
     <a href="#protac"><span class="num">07</span> PROTAC·분자글루</a>
     <a href="#concepts"><span class="num">08</span> 헷갈리는 개념 비교</a>
     <a href="#study-guide"><span class="num">09</span> 학습 카드</a>
@@ -1473,10 +1523,10 @@ section.s {
 
           <!-- Stage E3 -->
           <g class="cas-node" id="node-e3" data-step="3">
-            <ellipse cx="415" cy="120" rx="40" ry="36" fill="oklch(0.96 0.02 295)" stroke="oklch(0.5 0.18 295)" stroke-width="2"/>
-            <text x="415" y="116" text-anchor="middle" alignment-baseline="middle" font-size="14" font-weight="800">E3</text>
-            <text x="415" y="132" text-anchor="middle" font-size="9" fill="oklch(0.55 0.018 290)">RING/HECT/RBR</text>
-            <text x="415" y="172" text-anchor="middle" font-size="10" fill="oklch(0.55 0.018 290)">ligase · &gt;600개</text>
+            <ellipse cx="415" cy="120" rx="52" ry="42" fill="oklch(0.96 0.02 295)" stroke="oklch(0.5 0.18 295)" stroke-width="2"/>
+            <text x="415" y="115" text-anchor="middle" alignment-baseline="middle" font-size="15" font-weight="800">E3</text>
+            <text x="415" y="135" text-anchor="middle" font-size="9.5" fill="oklch(0.45 0.018 290)" font-family="ui-monospace">RING/HECT/RBR</text>
+            <text x="415" y="178" text-anchor="middle" font-size="10" fill="oklch(0.55 0.018 290)">ligase · &gt;600개</text>
           </g>
 
           <!-- Substrate -->
@@ -1557,7 +1607,7 @@ section.s {
 <section class="s" id="chains">
   <header class="s-head">
     <span class="s-num">section 02</span>
-    <h2 class="s-title">8가지 유비퀴틴 코드 — Ub chain language</h2>
+    <h2 class="s-title">유비퀴틴 코드 — Ub chain language</h2>
     <span class="s-sub">linkage type → cellular function</span>
   </header>
   <p class="s-blurb">
@@ -1684,7 +1734,7 @@ section.s {
 
   <div class="panel">
     <div class="panel-head">
-      <h3>4가지 시나리오 — RNA · 단백질 · 인산화 · 유비퀴틴화 변화</h3>
+      <h3>시나리오 — RNA · 단백질 · 인산화 · 유비퀴틴화 변화</h3>
       <span class="tag">multi-omics layers</span>
     </div>
 
@@ -1767,56 +1817,56 @@ section.s {
   </p>
 
   <div class="mech-grid" id="mech-grid">
-    <div class="mech-card" data-axis="cell-cycle">
+    <div class="mech-card" data-axis="cell-cycle" data-refs="carrano1999,peters2006">
       <div class="axis">cell cycle · 세포주기</div>
       <h4>SCF·APC/C가 시계를 돌린다</h4>
       <div class="actors">SCF^SKP2 → p27, p21, p57<br>APC/C^Cdh1 → cyclin B, securin (K11)<br>SCF^β-TrCP → EMI1, CDC25A</div>
       <div class="desc">G1/S·G2/M 전환마다 특정 cyclin과 CDK inhibitor가 K48·K11 사슬로 표지돼 분해된다. <b>SKP2 amplification</b>은 p27 과분해 → cell cycle 가속 → 유방·전립선·식도암에서 흔히 발견. APC/C 결손은 mitotic exit 실패로 chromosomal instability를 부른다.</div>
     </div>
 
-    <div class="mech-card" data-axis="p53">
+    <div class="mech-card" data-axis="p53" data-refs="haupt1997,cummins2004,vousden2009">
       <div class="axis">p53 axis · 종양억제 게이트</div>
       <h4>MDM2·USP7의 줄다리기</h4>
       <div class="actors">MDM2 (RING) → p53 K48 → degradation<br>USP7 → MDM2 안정화 (DUB)<br>MDMX → MDM2 partner</div>
       <div class="desc">정상에선 MDM2가 p53을 항상 분해해 베이스라인을 낮춘다. 스트레스(DNA 손상, oncogene)로 ATM/CHK2가 인산화하면 MDM2-p53 결합이 풀려 p53이 안정화. 50% 이상 암에서 p53 axis가 흔들린다 — TP53 변이 또는 MDM2 amplification(sarcoma 7%, glioma 11%).</div>
     </div>
 
-    <div class="mech-card" data-axis="ddr">
+    <div class="mech-card" data-axis="ddr" data-refs="hashizume2001,jackson2009">
       <div class="axis">DDR · DNA 손상 반응</div>
       <h4>K63 사슬의 신호 등불</h4>
       <div class="actors">RNF8/RNF168 → H2A K63<br>BRCA1/BARD1 → end resection<br>RAD18 → PCNA monoUb</div>
       <div class="desc">DSB 발생시 γH2AX → MDC1 → RNF8 → K63 사슬이 손상 부위에 53BP1·BRCA1을 모은다. <b>BRCA1 mut → HR deficiency → PARPi 민감도</b>. PARPi 저항성은 BRCA reversion으로 원래 ligase activity가 회복되며 발생.</div>
     </div>
 
-    <div class="mech-card" data-axis="hypoxia">
+    <div class="mech-card" data-axis="hypoxia" data-refs="maxwell1999,semenza2012">
       <div class="axis">hypoxia · 산소 센싱</div>
       <h4>VHL이 HIF-1α를 항상 분해한다</h4>
       <div class="actors">PHD prolyl-hydroxylation → VHL 인식<br>VHL (CRL2) → HIF-1α K48</div>
       <div class="desc">정상 산소에선 PHD가 HIF-1α의 prolyl을 OH해 VHL이 인식, 즉시 분해. 저산소나 VHL loss(신장암 ccRCC, von Hippel-Lindau syndrome)에선 HIF-1α 안정화 → VEGF/EPO/GLUT1 발현 → 혈관신생·해당작용. PROTAC E3 ligand로 가장 많이 쓰이는 ligase.</div>
     </div>
 
-    <div class="mech-card" data-axis="erad">
+    <div class="mech-card" data-axis="erad" data-refs="ruggiano2014,richardson2003">
       <div class="axis">ERAD · ER 단백질 품질관리</div>
       <h4>HRD1·gp78이 ER에서 풀린다</h4>
       <div class="actors">HRD1 (RING) → SEL1L 복합체<br>gp78 / RNF5 / TEB4<br>p97/VCP retrotranslocation</div>
       <div class="desc">ER에서 잘못 접힌 단백질을 cytosol로 retrotranslocation해 26S 프로테아좀에 보낸다. 다발성 골수종은 면역글로불린 단백질 폭주 → ERAD 의존도 ↑ → <b>bortezomib(20S 억제제)</b>이 효과적인 이유.</div>
     </div>
 
-    <div class="mech-card" data-axis="autophagy">
+    <div class="mech-card" data-axis="autophagy" data-refs="klionsky2021,dikic2017">
       <div class="axis">autophagy · 선택적 자가포식</div>
       <h4>p62·NDP52가 Ub를 LC3로 잇는다</h4>
       <div class="actors">p62/SQSTM1, OPTN, NDP52, TAX1BP1<br>K63/K27 사슬 → autophagy receptor<br>LC3 conjugation system</div>
       <div class="desc">단백질 응집체나 손상된 미토콘드리아를 K63·K27 사슬로 표지하면 p62가 인식해 LC3와 결합, 자가포식소체 안으로 들어간다. <b>p62 amplification은 HCC 종양 촉진</b>, 반대로 BECN1 loss는 자가포식 결핍 종양.</div>
     </div>
 
-    <div class="mech-card" data-axis="mitophagy">
+    <div class="mech-card" data-axis="mitophagy" data-refs="kane2014,pickrell2015">
       <div class="axis">mitophagy · 미토콘드리아 청소</div>
       <h4>PINK1-PARKIN axis</h4>
       <div class="actors">PINK1 → mito 표면 안정화<br>PARKIN (RBR) → mito 표면 단백질 K6/K11/K48/K63</div>
       <div class="desc">손상된 미토콘드리아의 막전위 소실 → PINK1 안정화 → PARKIN 활성화 → 표면 단백질에 다중 사슬 표지 → autophagy receptor 모집 → mitophagy. PARKIN loss는 mtDNA 손상 누적 → 종양 ROS·대사 변화.</div>
     </div>
 
-    <div class="mech-card" data-axis="immune">
+    <div class="mech-card" data-axis="immune" data-refs="wertz2004,brummelkamp2003,bhat2014">
       <div class="axis">immune · 면역 회피·T cell exhaustion</div>
       <h4>면역 신호는 K63·M1 사슬을 많이 읽는다</h4>
       <div class="actors">TRAF6, LUBAC → NF-kB 신호<br>A20/TNFAIP3, CYLD → K63·M1 사슬 편집<br>MARCH family → antigen presentation 조절</div>
@@ -1974,42 +2024,42 @@ section.s {
   </p>
 
   <div class="concept-compare-grid">
-    <div class="concept-compare-card" data-concept="01">
+    <div class="concept-compare-card" data-concept="01" data-refs="komander2012,yau2016">
       <div class="num">비교 01</div>
       <h4>K48 사슬 vs K63 사슬</h4>
       <div class="lead">같은 Ub라도 문장의 뜻이 다릅니다</div>
       <div class="desc"><b>K48-linked poly-Ub</b>는 26S proteasome이 읽는 전형적인 분해 표지입니다. 반면 <b>K63-linked poly-Ub</b>는 DNA 손상 반응, endocytosis, NF-kB 신호처럼 “분해하라”보다 “여기로 모여라/신호를 켜라”에 가깝습니다. 따라서 Western blot에서 ubiquitination이 늘었다고 바로 단백질 분해 증가로 해석하면 안 됩니다.</div>
     </div>
 
-    <div class="concept-compare-card" data-concept="02">
+    <div class="concept-compare-card" data-concept="02" data-refs="zheng2017,mevissen2017">
       <div class="num">비교 02</div>
       <h4>E3 ligase vs DUB</h4>
       <div class="lead">writer와 eraser지만 단순한 반대말은 아닙니다</div>
       <div class="desc"><b>E3 ligase</b>는 substrate를 고르는 효소입니다. 그래서 E1/E2보다 수가 훨씬 많고, 암에서는 “무엇을 잘못 고르는가”가 중요합니다. <b>DUB</b>는 Ub 사슬을 떼거나 다듬지만, 무조건 단백질을 살리는 효소는 아닙니다. 어떤 DUB는 K63 신호를 끊고, 어떤 DUB는 E3 자체를 안정화해 오히려 substrate 분해를 촉진할 수 있습니다.</div>
     </div>
 
-    <div class="concept-compare-card" data-concept="03">
+    <div class="concept-compare-card" data-concept="03" data-refs="dikic2017,pohl2019">
       <div class="num">비교 03</div>
       <h4>Proteasome vs Autophagy</h4>
       <div class="lead">둘 다 분해지만 처리하는 화물이 다릅니다</div>
       <div class="desc"><b>Proteasome</b>은 대체로 짧은 수명 단백질, misfolded protein, cell-cycle regulator처럼 개별 단백질을 빠르게 분해합니다. <b>Autophagy</b>는 단백질 응집체, 손상된 미토콘드리아, 큰 세포 구조물을 통째로 처리합니다. Ub 사슬은 두 길 모두에 붙을 수 있지만, reader가 proteasome인지 p62/OPTN/NDP52 같은 autophagy receptor인지가 운명을 가릅니다.</div>
     </div>
 
-    <div class="concept-compare-card" data-concept="04">
+    <div class="concept-compare-card" data-concept="04" data-refs="kim2011,demeulemeester2024">
       <div class="num">비교 04</div>
       <h4>단백질 양 vs PTM 상태</h4>
       <div class="lead">단백질이 많아도 활성은 다를 수 있습니다</div>
       <div class="desc">RNA와 단백질 양만 보면 “얼마나 만들어졌는가”를 봅니다. 하지만 ubiquitination, phosphorylation, acetylation은 “그 단백질이 어떤 상태인가”를 말합니다. 예를 들어 단백질 총량은 그대로인데 K48 ubiquitination만 늘면 곧 분해될 수 있고, phosphorylation이 늘면 같은 단백질이라도 신호 활성이 달라질 수 있습니다.</div>
     </div>
 
-    <div class="concept-compare-card" data-concept="05">
+    <div class="concept-compare-card" data-concept="05" data-refs="deshaies2009,zheng2017">
       <div class="num">비교 05</div>
       <h4>RING vs HECT/RBR E3</h4>
       <div class="lead">Ub을 넘기는 손동작이 다릅니다</div>
       <div class="desc"><b>RING E3</b>는 E2-Ub와 substrate를 가까이 붙여 Ub이 바로 넘어가게 합니다. <b>HECT E3</b>는 자기 cysteine에 Ub을 잠깐 잡은 뒤 substrate로 넘기므로 catalytic-dead mutant가 좋은 검증 도구가 됩니다. <b>RBR E3</b>는 RING과 HECT의 중간형처럼 작동합니다. 같은 “E3”라도 assay 설계와 해석이 달라집니다.</div>
     </div>
 
-    <div class="concept-compare-card" data-concept="06">
+    <div class="concept-compare-card" data-concept="06" data-refs="bondeson2015,kronke2014,burslem2020">
       <div class="num">비교 06</div>
       <h4>PROTAC vs molecular glue</h4>
       <div class="lead">둘 다 분해를 유도하지만 붙이는 방식이 다릅니다</div>
@@ -2114,68 +2164,80 @@ const chainData = {
     color: 'oklch(0.55 0.2 25)',
     pattern: 'linear',
     count: 5,
-    detail: `<b>K48-linked poly-Ub.</b> 가장 잘 알려진 분해 표지. 다음 Ub의 C-말단이 이전 Ub의 K48에 isopeptide 결합으로 붙어 직선형 사슬을 만든다. ≥4-mer가 26S 프로테아좀의 19S subunit (RPN1, RPN10, RPN13)에 인식되어 단백질이 풀려 20S core로 들어가 분해된다. <b>대표 E3:</b> SCF^β-TrCP, SCF^SKP2, MDM2, VHL, CHIP. <b>대표 DUB:</b> USP14, RPN11, UCH-L5.`
+    detail: `<b>K48-linked poly-Ub.</b> 가장 잘 알려진 분해 표지. 다음 Ub의 C-말단이 이전 Ub의 K48에 isopeptide 결합으로 붙어 직선형 사슬을 만든다. ≥4-mer가 26S 프로테아좀의 19S subunit (RPN1, RPN10, RPN13)에 인식되어 단백질이 풀려 20S core로 들어가 분해된다. <b>대표 E3:</b> SCF^β-TrCP, SCF^SKP2, MDM2, VHL, CHIP. <b>대표 DUB:</b> USP14, RPN11, UCH-L5.`,
+    refs: ['komander2012', 'dikic2017']
   },
   k63: {
     color: 'oklch(0.55 0.18 230)',
     pattern: 'linear',
     count: 4,
-    detail: `<b>K63-linked poly-Ub.</b> 분해가 아니라 신호의 사슬. DNA 손상 부위에서 RNF8·RNF168이 H2A에 K63 사슬을 만들어 53BP1·BRCA1을 모집한다. NF-κB 활성화에선 TRAF6가 K63 사슬을 만들어 TAB2·NEMO를 끌어들인다. <b>대표 E3:</b> RNF8/168, TRAF6, BRCA1/BARD1. <b>대표 DUB:</b> A20(K63→K48 전환), CYLD.`
+    detail: `<b>K63-linked poly-Ub.</b> 분해가 아니라 신호의 사슬. DNA 손상 부위에서 RNF8·RNF168이 H2A에 K63 사슬을 만들어 53BP1·BRCA1을 모집한다. NF-κB 활성화에선 TRAF6가 K63 사슬을 만들어 TAB2·NEMO를 끌어들인다. <b>대표 E3:</b> RNF8/168, TRAF6, BRCA1/BARD1. <b>대표 DUB:</b> A20(K63→K48 전환), CYLD.`,
+    refs: ['hofmann1999', 'komander2012']
   },
   m1: {
     color: 'oklch(0.55 0.2 295)',
     pattern: 'linear',
     count: 4,
-    detail: `<b>M1 linear chain.</b> Ub의 N-말단 메티오닌(M1)에 다음 Ub의 C-말단이 펩타이드 결합으로 붙는, 유일한 비-isopeptide 사슬. <span class="gene">LUBAC</span>(HOIP+HOIL-1L+SHARPIN) 복합체만 만들 수 있다. NF-κB·TNF 신호의 핵심으로 면역 반응에 결정적. M1-DUB는 OTULIN.`
+    detail: `<b>M1 linear chain.</b> Ub의 N-말단 메티오닌(M1)에 다음 Ub의 C-말단이 펩타이드 결합으로 붙는, 유일한 비-isopeptide 사슬. <span class="gene">LUBAC</span>(HOIP+HOIL-1L+SHARPIN) 복합체만 만들 수 있다. NF-κB·TNF 신호의 핵심으로 면역 반응에 결정적. M1-DUB는 OTULIN.`,
+    refs: ['iwai2009', 'keusekotten2013']
   },
   k11: {
     color: 'oklch(0.6 0.18 145)',
     pattern: 'linear',
     count: 4,
-    detail: `<b>K11-linked poly-Ub.</b> APC/C(anaphase promoting complex)가 mitotic 단백질(cyclin B, securin)을 K11 사슬로 표지해 분해. ERAD에서도 흔히 등장. <b>대표 E3:</b> APC/C^Cdc20/Cdh1, BRCA1/BARD1. <b>대표 DUB:</b> Cezanne(OTUD7B).`
+    detail: `<b>K11-linked poly-Ub.</b> APC/C(anaphase promoting complex)가 mitotic 단백질(cyclin B, securin)을 K11 사슬로 표지해 분해. ERAD에서도 흔히 등장. <b>대표 E3:</b> APC/C^Cdc20/Cdh1, BRCA1/BARD1. <b>대표 DUB:</b> Cezanne(OTUD7B).`,
+    refs: ['wickliffe2011', 'peters2006']
   },
   k27: {
     color: 'oklch(0.6 0.18 65)',
     pattern: 'linear',
     count: 3,
-    detail: `<b>K27-linked poly-Ub.</b> 분기 사슬에서 자주 등장. 미토파지에서 PARKIN이 만든다. DNA 손상 신호에도 관여. 분비 단백질·ER 표면 단백질 유비퀴틴화. <b>대표 E3:</b> PARKIN, RNF168.`
+    detail: `<b>K27-linked poly-Ub.</b> 분기 사슬에서 자주 등장. 미토파지에서 PARKIN이 만든다. DNA 손상 신호에도 관여. 분비 단백질·ER 표면 단백질 유비퀴틴화. <b>대표 E3:</b> PARKIN, RNF168.`,
+    refs: ['yau2016']
   },
   k29: {
     color: 'oklch(0.55 0.16 350)',
     pattern: 'linear',
     count: 3,
-    detail: `<b>K29-linked poly-Ub.</b> Wnt 경로의 dishevelled 분해. autophagy 조절. <b>대표 E3:</b> UBE3C, HUWE1, TRIP12. <b>대표 DUB:</b> TRABID.`
+    detail: `<b>K29-linked poly-Ub.</b> Wnt 경로의 dishevelled 분해. autophagy 조절. <b>대표 E3:</b> UBE3C, HUWE1, TRIP12. <b>대표 DUB:</b> TRABID.`,
+    refs: ['yau2016', 'swatek2016']
   },
   k33: {
     color: 'oklch(0.6 0.18 105)',
     pattern: 'linear',
     count: 3,
-    detail: `<b>K33-linked poly-Ub.</b> T 세포 수용체 신호 약화, 골지 트래픽 조절. 비교적 덜 흔한 사슬이지만 면역 조절에 관여. <b>대표 E3:</b> Cbl-b. <b>대표 DUB:</b> TRABID.`
+    detail: `<b>K33-linked poly-Ub.</b> T 세포 수용체 신호 약화, 골지 트래픽 조절. 비교적 덜 흔한 사슬이지만 면역 조절에 관여. <b>대표 E3:</b> Cbl-b. <b>대표 DUB:</b> TRABID.`,
+    refs: ['yau2016']
   },
   k6: {
     color: 'oklch(0.55 0.16 200)',
     pattern: 'linear',
     count: 3,
-    detail: `<b>K6-linked poly-Ub.</b> 미토파지(PARKIN), DNA 손상. BRCA1/BARD1 자가 유비퀴틴화에서 가장 흔한 사슬 중 하나. <b>대표 E3:</b> BRCA1/BARD1, PARKIN, HUWE1.`
+    detail: `<b>K6-linked poly-Ub.</b> 미토파지(PARKIN), DNA 손상. BRCA1/BARD1 자가 유비퀴틴화에서 가장 흔한 사슬 중 하나. <b>대표 E3:</b> BRCA1/BARD1, PARKIN, HUWE1.`,
+    refs: ['yau2016', 'sarraf2013']
   },
   mono: {
     color: 'oklch(0.55 0.05 290)',
     pattern: 'mono',
     count: 1,
-    detail: `<b>Monoubiquitin.</b> 1개만 붙는 표지. 분해가 아니라 위치/기능을 바꾼다. 히스톤(<span class="gene">H2AK119Ub</span> Polycomb PRC1, <span class="gene">H2BK120Ub</span> Bre1/RNF20), <span class="gene">PCNA</span>(K164 monoUb → translesion synthesis), <span class="gene">FANCD2</span>(FA pathway), endocytic 수용체.`
+    detail: `<b>Monoubiquitin.</b> 1개만 붙는 표지. 분해가 아니라 위치/기능을 바꾼다. 히스톤(<span class="gene">H2AK119Ub</span> Polycomb PRC1, <span class="gene">H2BK120Ub</span> Bre1/RNF20), <span class="gene">PCNA</span>(K164 monoUb → translesion synthesis), <span class="gene">FANCD2</span>(FA pathway), endocytic 수용체.`,
+    refs: ['hicke2001', 'swatek2016']
   }
 };
 function renderChain(type) {
   const d = chainData[type];
   chainUbsG.innerHTML = '';
+  const UB_R = 16;
+  const UB_FONT = 11;
+  const UB_GAP = 44;
   if (d.pattern === 'mono') {
     // single Ub
     const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     c.setAttribute('cx', 130);
     c.setAttribute('cy', 30);
-    c.setAttribute('r', 12);
+    c.setAttribute('r', UB_R);
     c.setAttribute('fill', d.color);
-    c.setAttribute('opacity', 0.85);
+    c.setAttribute('opacity', 0.9);
     chainUbsG.appendChild(c);
     const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     l.setAttribute('x1', 100);
@@ -2187,28 +2249,29 @@ function renderChain(type) {
     chainUbsG.appendChild(l);
     const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     t.setAttribute('x', 130);
-    t.setAttribute('y', 33);
+    t.setAttribute('y', 30);
     t.setAttribute('text-anchor', 'middle');
-    t.setAttribute('font-size', 10);
-    t.setAttribute('font-weight', 700);
+    t.setAttribute('dominant-baseline', 'central');
+    t.setAttribute('font-size', UB_FONT);
+    t.setAttribute('font-weight', 800);
     t.setAttribute('fill', 'oklch(1 0 0)');
     t.setAttribute('font-family', 'ui-monospace');
     t.textContent = 'Ub';
     chainUbsG.appendChild(t);
   } else {
     // linear chain
-    let x = 100;
+    let x = 130;
     let y = 30;
     for (let i = 0; i < d.count; i++) {
       // line from prev
       if (i > 0) {
         const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        l.setAttribute('x1', x - 40);
+        l.setAttribute('x1', x - UB_GAP);
         l.setAttribute('y1', y);
         l.setAttribute('x2', x);
         l.setAttribute('y2', y);
         l.setAttribute('stroke', d.color);
-        l.setAttribute('stroke-width', 2);
+        l.setAttribute('stroke-width', 2.5);
         chainUbsG.appendChild(l);
       } else {
         const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -2217,50 +2280,50 @@ function renderChain(type) {
         l.setAttribute('x2', 130);
         l.setAttribute('y2', 30);
         l.setAttribute('stroke', d.color);
-        l.setAttribute('stroke-width', 2);
+        l.setAttribute('stroke-width', 2.5);
         chainUbsG.appendChild(l);
-        x = 130;
       }
       // Ub circle
       const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       c.setAttribute('cx', x);
       c.setAttribute('cy', y);
-      c.setAttribute('r', 13);
+      c.setAttribute('r', UB_R);
       c.setAttribute('fill', d.color);
-      c.setAttribute('opacity', 0.85);
+      c.setAttribute('opacity', 0.9);
       chainUbsG.appendChild(c);
       const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       t.setAttribute('x', x);
-      t.setAttribute('y', y + 3);
+      t.setAttribute('y', y);
       t.setAttribute('text-anchor', 'middle');
-      t.setAttribute('font-size', 9);
-      t.setAttribute('font-weight', 700);
+      t.setAttribute('dominant-baseline', 'central');
+      t.setAttribute('font-size', UB_FONT);
+      t.setAttribute('font-weight', 800);
       t.setAttribute('fill', 'oklch(1 0 0)');
       t.setAttribute('font-family', 'ui-monospace');
       t.textContent = 'Ub';
       chainUbsG.appendChild(t);
-      x += 40;
+      x += UB_GAP;
     }
     // K label on substrate
     const kl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     kl.setAttribute('x', 90);
-    kl.setAttribute('y', 28);
+    kl.setAttribute('y', 22);
     kl.setAttribute('text-anchor', 'end');
-    kl.setAttribute('font-size', 10);
-    kl.setAttribute('font-weight', 700);
+    kl.setAttribute('font-size', 12);
+    kl.setAttribute('font-weight', 800);
     kl.setAttribute('fill', d.color);
     kl.setAttribute('font-family', 'ui-monospace');
     kl.textContent = type.startsWith('k') ? type.toUpperCase() : 'Ub';
     chainUbsG.appendChild(kl);
   }
-  chainDetail.innerHTML = d.detail;
+  chainDetail.innerHTML = d.detail + (typeof renderRefs === 'function' ? renderRefs(d.refs) : '');
 }
 chainCards.forEach(c => c.addEventListener('click', () => {
   chainCards.forEach(x => x.classList.remove('active'));
   c.classList.add('active');
   renderChain(c.dataset.chain);
 }));
-renderChain('k48');
+/* first renderChain call moved to end of script (after refLibrary defined) */
 
 
 /* ========== E3 Ligase Atlas ========== */
@@ -2269,93 +2332,90 @@ const e3Data = [
   { gene: 'VHL', family: 'CRL2 (cullin-RING) · BC-box', role: 'suppressor',
     substrates: ['HIF-1α', 'HIF-2α'],
     desc: 'von Hippel-Lindau syndrome 원인. 신장암 ccRCC의 90% 변이/결손 → HIF-1α 분해 못해 안정화 → VEGF/혈관신생/해당작용. PROTAC E3 ligand로 가장 많이 쓰이는 ligase 중 하나.',
-    cancers: 'ccRCC · pheochromocytoma · hemangioblastoma' },
+    cancers: 'ccRCC · pheochromocytoma · hemangioblastoma',
+    refs: ['maxwell1999'] },
   { gene: 'BRCA1', family: 'RING · BARD1 heterodimer', role: 'suppressor',
     substrates: ['CtIP', 'H2AK127/129', 'γ-tubulin', 'p53'],
     desc: 'HR-mediated DSB 수리의 중심. BRCA1 mut → HR 결핍 → PARP 의존 → PARPi 효과. K6/K48/K63 사슬 모두 만들 수 있어 다기능. 유방암·난소암 가족성.',
-    cancers: 'breast · ovarian · prostate' },
+    cancers: 'breast · ovarian · prostate',
+    refs: ['hashizume2001', 'densham2016'] },
   { gene: 'PARKIN', family: 'RBR · UBE3 family', role: 'suppressor',
     substrates: ['mitofusin', 'MIRO', 'TOMM20', 'VDAC1'],
     desc: 'PINK1과 함께 mitophagy 조절. PD에서 well-known이지만 HCC·신장암에서 종양억제. 손상된 미토콘드리아 표면을 K6/K11/K48/K63 분기 사슬로 표지.',
-    cancers: 'HCC · 폐암 · 췌장암' },
+    cancers: 'HCC · 폐암 · 췌장암',
+    refs: ['kane2014', 'sarraf2013'] },
   { gene: 'CHIP / STUB1', family: 'U-box · TPR', role: 'suppressor',
     substrates: ['HSP70', 'HSP90 client', 'ERα', 'AKT'],
     desc: 'HSP chaperone과 함께 misfolded 단백질을 분해(quality control). 여러 oncogenic kinase의 K48 분해. 유방암·전립선암에서 발현 감소.',
-    cancers: 'breast · prostate · gastric' },
+    cancers: 'breast · prostate · gastric',
+    refs: ['connell2001'] },
   { gene: 'TRIP12', family: 'HECT', role: 'suppressor',
     substrates: ['glucocerebrosidase', 'p14ARF', 'BAF57'],
-    desc: 'p14ARF degradation을 통해 p53 axis 조절. ID·Clark-Baraitser 신경발달 변이로도 알려짐(Aerden 2023, Yi 2022). 종양에선 HECT 활성을 통해 다양한 oncogene을 분해.',
-    cancers: 'breast · CRC · 신경발달 장애' },
+    desc: 'p14ARF degradation을 통해 p53 axis 조절. ID·Clark-Baraitser 신경발달 변이로도 알려짐. 종양에선 HECT 활성을 통해 다양한 oncogene을 분해.',
+    cancers: 'breast · CRC · 신경발달 형질',
+    refs: ['kajiro2011'] },
   { gene: 'SPOP', family: 'CRL3 · BTB', role: 'suppressor',
     substrates: ['SRC-3', 'AR', 'BET', 'ERG', 'DEK'],
     desc: 'CRL3 substrate adaptor. 전립선암 9% 변이. AR·BET 단백질 분해를 막아 androgen 신호 안정화.',
-    cancers: 'prostate · 자궁내막' },
+    cancers: 'prostate · 자궁내막',
+    refs: ['theurillat2014'] },
 
   // Oncogene-functioning E3s
   { gene: 'MDM2', family: 'RING', role: 'oncogene',
     substrates: ['p53', 'MDMX', 'p21', 'Rb'],
     desc: 'p53 axis의 핵심. 정상에선 p53을 항상 분해해 베이스라인을 낮춤. Sarcoma 7%, glioma 11% MDM2 amplification → p53 과분해 → 종양. MDM2 inhibitor(idasanutlin, milademetan) 임상.',
-    cancers: 'sarcoma · glioma · liposarcoma' },
+    cancers: 'sarcoma · glioma · liposarcoma',
+    refs: ['haupt1997', 'vassilev2004'] },
   { gene: 'MDMX (MDM4)', family: 'RING (Inactive paralog)', role: 'oncogene',
     substrates: ['p53 (with MDM2)'],
     desc: 'MDM2 partner. RING 활성은 약하지만 MDM2 stabilization으로 p53 분해 가속. melanoma·breast cancer에서 amplified. ALRN-6924로 dual inhibition.',
-    cancers: 'melanoma · breast · neuroblastoma' },
+    cancers: 'melanoma · breast · neuroblastoma',
+    refs: ['toledo2006'] },
   { gene: 'SKP2', family: 'F-box · SCF', role: 'oncogene',
     substrates: ['p27', 'p21', 'p57', 'FOXO1'],
     desc: 'CDK inhibitor를 분해해 cell cycle 가속. 유방·전립선·식도암에서 over-expression.',
-    cancers: 'breast · prostate · esophageal' },
+    cancers: 'breast · prostate · esophageal',
+    refs: ['carrano1999', 'lin2010'] },
   { gene: 'β-TrCP', family: 'F-box · SCF', role: 'dual',
     substrates: ['IκB', 'β-catenin', 'CDC25', 'EMI1', 'YAP1'],
     desc: 'NF-κB(IκB 분해 → 종양 촉진), Wnt(β-catenin 분해 → 종양억제) 양쪽에 관여. context-dependent. 췌장암·CRC에서 amplified.',
-    cancers: 'pancreatic · CRC · gastric' },
+    cancers: 'pancreatic · CRC · gastric',
+    refs: ['frescas2008'] },
   { gene: 'HUWE1', family: 'HECT', role: 'dual',
     substrates: ['MCL1', 'p53', 'c-MYC', 'TopBP1', 'N-MYC'],
     desc: '단일 HECT가 oncogene과 종양억제 단백질을 모두 분해. c-MYC degradation으로 종양억제, p53 degradation으로 oncogene. context로 결정.',
-    cancers: 'colon · breast · CNS' },
+    cancers: 'colon · breast · CNS',
+    refs: ['adhikary2005'] },
   { gene: 'TRIM25', family: 'TRIM RING', role: 'oncogene',
     substrates: ['p53', 'RIG-I (innate immunity)'],
     desc: '면역 회피·바이러스 감시. 유방암에서 p53 분해 가속. 분자 글루 표적으로 떠오름.',
-    cancers: 'breast · 위암' },
+    cancers: 'breast · 위암',
+    refs: ['meroni2005'] },
   { gene: 'CRBN', family: 'CRL4 · DCAF', role: 'dual',
     substrates: ['IKZF1/3', 'CK1α', 'GSPT1', 'SALL4'],
     desc: '분자글루 IMiD(lenalidomide, pomalidomide, thalidomide)의 hijacked target. neo-substrate(IKZF1/3) 분해로 다발성 골수종 치료. PROTAC E3 ligand로도 광범위 사용.',
-    cancers: 'multiple myeloma · MDS · 분자글루 platform' },
+    cancers: 'multiple myeloma · MDS · 분자글루 platform',
+    refs: ['ito2010', 'kronke2014'] },
   { gene: 'DCAF15', family: 'CRL4', role: 'oncogene',
     substrates: ['RBM39 (with indisulam)'],
     desc: 'Indisulam·E7820 분자글루의 hijacked E3. RBM39 분해 → splicing 결함 → AML/NHL 효과. 분자글루가 E3 substrate 범위를 바꾸는 대표적인 platform.',
-    cancers: 'AML · NHL · 표적' },
+    cancers: 'AML · NHL · 표적',
+    refs: ['han2017'] },
 
   // Dual / context
   { gene: 'CUL4-DDB1', family: 'CRL4 scaffold', role: 'dual',
     substrates: ['CDT1', 'p21', 'XPC'],
     desc: 'DNA 복제 라이센싱(CDT1), DNA 수리(XPC), histone(H3K56ac) 등 다기능. CRBN·DCAF15 substrate receptor가 결합해 PROTAC platform이 됨.',
-    cancers: 'breast · lung · CRL platform' },
+    cancers: 'breast · lung · CRL platform',
+    refs: ['higa2006', 'petroski2005'] },
   { gene: 'APC/C', family: 'multimer · RING', role: 'suppressor',
     substrates: ['cyclin B', 'securin', 'CDC20', 'CDC25'],
     desc: '마이토시스 종료를 책임지는 RING ligase complex. K11 사슬을 만든다. APC11+APC2가 RING+cullin 역할. 변이는 aneuploidy → 게놈 불안정성.',
-    cancers: 'CIN tumors · WGD' }
+    cancers: 'CIN tumors · WGD',
+    refs: ['peters2006'] }
 ];
 
 const e3Grid = document.getElementById('e3-grid');
-e3Data.forEach(e => {
-  const card = document.createElement('div');
-  card.className = 'e3-card';
-  card.dataset.role = e.role;
-  card.innerHTML = `
-    <div class="head">
-      <span class="gene">${e.gene}</span>
-      <span class="role-tag">${e.role === 'suppressor' ? 'tumor suppressor' : e.role === 'oncogene' ? 'oncogene' : 'dual / context'}</span>
-    </div>
-    <div class="family">${e.family}</div>
-    <div class="substrates">
-      <b>substrates</b>
-      <div class="substrate-list">${e.substrates.map(s => `<span class="substrate-pill">${s}</span>`).join('')}</div>
-    </div>
-    <div class="desc">${e.desc}</div>
-    <div class="cancers"><span>cancers:</span> ${e.cancers}</div>
-  `;
-  e3Grid.appendChild(card);
-});
 
 
 /* ========== DUB Atlas ========== */
@@ -2363,72 +2423,65 @@ const dubData = [
   { gene: 'USP7 / HAUSP', family: 'USP', role: 'oncogene',
     substrates: ['MDM2', 'MDMX', 'PTEN', 'FOXO4', 'N-Myc'],
     desc: 'MDM2를 deubiquitinate → MDM2 안정화 → p53 더 빨리 분해. P5091 / FT827 등 USP7 inhibitor 임상.',
-    cancers: 'multiple myeloma · DLBCL · neuroblastoma' },
+    cancers: 'multiple myeloma · DLBCL · neuroblastoma',
+    refs: ['cummins2004'] },
   { gene: 'USP22', family: 'USP · SAGA complex', role: 'oncogene',
     substrates: ['H2A/H2B', 'BMI1', 'SIRT1', 'EZH2 partner'],
     desc: 'MHC-I 발현 억제 → 면역 회피. T-cell exclusion에 기여. SAGA 복합체 일부로 chromatin 상태 변화. 다양한 암에서 prognosis marker.',
-    cancers: 'CRC · breast · HCC · 면역회피' },
+    cancers: 'CRC · breast · HCC · 면역회피',
+    refs: ['zhang2008'] },
   { gene: 'BAP1', family: 'UCH', role: 'suppressor',
     substrates: ['H2AK119Ub', 'HCF-1', 'BRCA1'],
     desc: 'BRCA1-associated. mesothelioma 60%, uveal melanoma 84%, ccRCC 11% 변이. PRC1 H2AK119Ub 제거 → chromatin 활성. Tumor suppressor 역할.',
-    cancers: 'mesothelioma · uveal melanoma · ccRCC' },
+    cancers: 'mesothelioma · uveal melanoma · ccRCC',
+    refs: ['misaghi2009'] },
   { gene: 'A20 / TNFAIP3', family: 'OTU', role: 'suppressor',
     substrates: ['RIPK1 (K63)', 'TRAF6', 'NEMO'],
     desc: 'NF-κB 음성 조절자. K63 사슬 자르고 K48 사슬 추가하는 dual-function (E3+DUB). DLBCL 30% 변이 → NF-κB 과활성.',
-    cancers: 'DLBCL · MALT lymphoma · 자가면역' },
+    cancers: 'DLBCL · MALT lymphoma · 자가면역',
+    refs: ['wertz2004'] },
   { gene: 'CYLD', family: 'USP', role: 'suppressor',
     substrates: ['TRAF2/6', 'NEMO', 'RIPK1'],
     desc: 'K63·M1 사슬 자르는 NF-κB 억제자. cylindromatosis(피부 종양) 원인. T-ALL·골수종·CLL에서 변이.',
-    cancers: 'cylindroma · T-ALL · CLL' },
+    cancers: 'cylindroma · T-ALL · CLL',
+    refs: ['brummelkamp2003'] },
   { gene: 'OTUD7B', family: 'OTU', role: 'dual',
     substrates: ['ZAP70', 'GRAIL', 'TRAF3'],
     desc: 'T 세포 항상성·NF-κB 조절. K11 사슬 잘 자르는 specific DUB. 종양 면역에서 양쪽 효과.',
-    cancers: '면역세포 dysregulation · lung' },
+    cancers: '면역세포 dysregulation · lung',
+    refs: ['hu2013'] },
   { gene: 'USP14', family: 'USP · 26S 결합', role: 'oncogene',
     substrates: ['proteasome substrates', 'AR'],
     desc: '프로테아좀 19S에 결합해 sub의 K48 사슬을 잘라 분해 속도를 늦춘다. IU1 inhibitor가 발견됨. 다발성 골수종에서 표적.',
-    cancers: 'MM · prostate · NSCLC' },
+    cancers: 'MM · prostate · NSCLC',
+    refs: ['lee2010'] },
   { gene: 'USP10', family: 'USP', role: 'dual',
     substrates: ['p53', 'FoxO3', 'AMPK', 'beclin-1'],
     desc: 'p53 deubiquitinate(suppressor 역할), AMPK·autophagy 조절. context-dependent. 위암·CRC에서 prognosis marker.',
-    cancers: 'gastric · CRC · breast' },
+    cancers: 'gastric · CRC · breast',
+    refs: ['yuan2010'] },
   { gene: 'USP9X', family: 'USP', role: 'dual',
     substrates: ['MCL1', 'SMAD4', 'β-catenin', 'ITCH'],
     desc: 'MCL1 안정화 → 항-apoptosis (oncogene-like). SMAD4 안정화 → TGF-β suppressor 역할. 다발성 골수종에서 표적.',
-    cancers: 'MM · pancreatic · colon' },
+    cancers: 'MM · pancreatic · colon',
+    refs: ['schwickart2010'] },
   { gene: 'USP11', family: 'USP', role: 'oncogene',
     substrates: ['BRCA2', 'PML', 'PALB2'],
     desc: 'HR pathway 안정화 → BRCA mut에서 PARPi 저항 매개. Mitoxantrone-induced 분해 표적.',
-    cancers: 'breast · ovarian · PARPi 저항' },
+    cancers: 'breast · ovarian · PARPi 저항',
+    refs: ['maertens2010'] },
   { gene: 'OTULIN', family: 'OTU', role: 'suppressor',
     substrates: ['M1 linear chain'],
     desc: 'M1 (linear) 사슬을 자르는 유일한 DUB. NF-κB 신호 음성 조절. autoinflammation syndrome 원인.',
-    cancers: '면역결핍 · 자가염증' },
+    cancers: '면역결핍 · 자가염증',
+    refs: ['keusekotten2013'] },
   { gene: 'USP1', family: 'USP', role: 'oncogene',
     substrates: ['FANCD2', 'PCNA monoUb', 'ID family'],
     desc: 'FA/HR pathway 활성화. ID 단백질 안정화. KSQ-4279 inhibitor 임상.',
-    cancers: 'BRCA-deficient cancer · TNBC' }
+    cancers: 'BRCA-deficient cancer · TNBC',
+    refs: ['cohn2007'] }
 ];
 const dubGrid = document.getElementById('dub-grid');
-dubData.forEach(e => {
-  const card = document.createElement('div');
-  card.className = 'e3-card';
-  card.dataset.role = e.role;
-  card.innerHTML = `
-    <div class="head">
-      <span class="gene">${e.gene}</span>
-      <span class="role-tag">${e.role === 'suppressor' ? 'suppressor' : e.role === 'oncogene' ? 'oncogene' : 'dual / context'}</span>
-    </div>
-    <div class="family">${e.family}</div>
-    <div class="substrates">
-      <b>substrates</b>
-      <div class="substrate-list">${e.substrates.map(s => `<span class="substrate-pill">${s}</span>`).join('')}</div>
-    </div>
-    <div class="desc">${e.desc}</div>
-    <div class="cancers"><span>cancers:</span> ${e.cancers}</div>
-  `;
-  dubGrid.appendChild(card);
-});
 
 
 /* ========== Multi-omics simulator ========== */
@@ -2438,32 +2491,38 @@ const scenarioData = {
   mdm2: {
     rna: 2.5, prot: 2.8, phospho: 1.0, ub: 0.7, ac: 0.9,
     title: 'MDM2 amplification → p53 destruction',
-    body: `Sarcoma 7%, glioma 11%에서 <b>MDM2</b> 유전자가 12q14에 amplified. RNA·단백질 모두 올라가지만 핵심은 <b>p53의 K48 사슬</b>이 폭발적으로 증가해서 p53 단백질이 거의 검출 안 됨(반대 방향 변화). 이 케이스는 <b>MDM2 inhibitor (idasanutlin, milademetan)</b>로 p53 회복이 가능. <span class="kbd">CPTAC + DepMap</span>`
+    body: `Sarcoma 7%, glioma 11%에서 <b>MDM2</b> 유전자가 12q14에 amplified. RNA·단백질 모두 올라가지만 핵심은 <b>p53의 K48 사슬</b>이 폭발적으로 증가해서 p53 단백질이 거의 검출 안 됨(반대 방향 변화). 이 케이스는 <b>MDM2 inhibitor (idasanutlin, milademetan)</b>로 p53 회복이 가능. <span class="kbd">CPTAC + DepMap</span>`,
+    refs: ['haupt1997', 'vassilev2004']
   },
   vhl: {
     rna: 0.5, prot: 0.4, phospho: 0.6, ub: 0.1, ac: 1.0,
     title: 'VHL loss → HIF-1α stabilization',
-    body: `ccRCC 90%에서 <b>VHL</b> 결손/변이. <b>VHL 자체는 RNA·단백질 모두 떨어지고</b>, 결과는 substrate인 <b>HIF-1α</b>의 K48 ubiquitination이 사라지면서 안정화 → VEGFA·GLUT1·PDK 발현 폭발. ub 레이어가 가장 극적으로 변하는 신호. <span class="kbd">CPTAC ccRCC</span>`
+    body: `ccRCC 90%에서 <b>VHL</b> 결손/변이. <b>VHL 자체는 RNA·단백질 모두 떨어지고</b>, 결과는 substrate인 <b>HIF-1α</b>의 K48 ubiquitination이 사라지면서 안정화 → VEGFA·GLUT1·PDK 발현 폭발. ub 레이어가 가장 극적으로 변하는 신호. <span class="kbd">CPTAC ccRCC</span>`,
+    refs: ['maxwell1999', 'semenza2012']
   },
   skp2: {
     rna: 1.6, prot: 1.8, phospho: 1.2, ub: 2.4, ac: 1.0,
     title: 'SKP2 over-expression → p27 destruction',
-    body: `<b>SKP2</b>(F-box · SCF)는 CDK inhibitor <b>p27·p21·p57</b>을 분해해 cell cycle을 가속한다. 유방·전립선·식도암에서 SKP2 over-expression이 흔히 발견됨. RNA·단백질 모두 약간 상승하지만 가장 큰 변화는 <b>유비퀴티놈에서 substrate p27의 K48 사슬이 ~2.4× 증가</b> — 즉 정상 단백질이 더 많이 분해되는 시그너처. 단백질 자체 측정은 오히려 떨어진 모습으로 보일 수 있어 ub 레이어가 결정적. <span class="kbd">Cancer Cell · DepMap</span>`
+    body: `<b>SKP2</b>(F-box · SCF)는 CDK inhibitor <b>p27·p21·p57</b>을 분해해 cell cycle을 가속한다. 유방·전립선·식도암에서 SKP2 over-expression이 흔히 발견됨. RNA·단백질 모두 약간 상승하지만 가장 큰 변화는 <b>유비퀴티놈에서 substrate p27의 K48 사슬이 ~2.4× 증가</b> — 즉 정상 단백질이 더 많이 분해되는 시그너처. 단백질 자체 측정은 오히려 떨어진 모습으로 보일 수 있어 ub 레이어가 결정적. <span class="kbd">Cancer Cell · DepMap</span>`,
+    refs: ['carrano1999', 'lin2010']
   },
   kinase: {
     rna: 1.0, prot: 1.1, phospho: 2.6, ub: 1.0, ac: 1.0,
     title: 'Kinase activity → phospho-only signal',
-    body: `어떤 암에서는 DNA 변이나 RNA 변화가 크지 않아도 kinase pathway가 이미 켜져 있을 수 있다. 이 경우 total protein은 거의 그대로인데 특정 substrate의 phosphorylation만 크게 올라간다. 그래서 proteogenomics에서는 RNA와 protein abundance뿐 아니라 <b>phosphoproteome</b>을 따로 보며, pathway activity score나 kinase-substrate enrichment로 “활성 상태”를 해석한다. <span class="kbd">phosphoproteome · pathway activity</span>`
+    body: `어떤 암에서는 DNA 변이나 RNA 변화가 크지 않아도 kinase pathway가 이미 켜져 있을 수 있다. 이 경우 total protein은 거의 그대로인데 특정 substrate의 phosphorylation만 크게 올라간다. 그래서 proteogenomics에서는 RNA와 protein abundance뿐 아니라 <b>phosphoproteome</b>을 따로 보며, pathway activity score나 kinase-substrate enrichment로 “활성 상태”를 해석한다. <span class="kbd">phosphoproteome · pathway activity</span>`,
+    refs: ['mertins2016', 'zhang2014']
   },
   usp7: {
     rna: 1.0, prot: 1.0, phospho: 1.0, ub: 2.4, ac: 1.0,
     title: 'USP7 inhibition → MDM2 destabilized → p53 rescue',
-    body: `<b>USP7</b>(HAUSP)는 MDM2를 deubiquitinate해 안정화한다. USP7 inhibitor(P5091, FT827)로 MDM2의 K48 자가 유비퀴틴화가 늘어나 MDM2가 분해되고 p53이 회복된다. RNA·단백질·인산화는 거의 변화 없는데 <b>유비퀴티놈만 ~2.4×</b> 폭증 — 다발성 골수종·DLBCL에서 활용되는 차세대 표적 전략의 시그너처. <span class="kbd">Multiple myeloma · DLBCL · neuroblastoma</span>`
+    body: `<b>USP7</b>(HAUSP)는 MDM2를 deubiquitinate해 안정화한다. USP7 inhibitor(P5091, FT827)로 MDM2의 K48 자가 유비퀴틴화가 늘어나 MDM2가 분해되고 p53이 회복된다. RNA·단백질·인산화는 거의 변화 없는데 <b>유비퀴티놈만 ~2.4×</b> 폭증 — 다발성 골수종·DLBCL에서 활용되는 차세대 표적 전략의 시그너처. <span class="kbd">Multiple myeloma · DLBCL · neuroblastoma</span>`,
+    refs: ['cummins2004', 'kim2011']
   },
   m6a: {
     rna: 1.4, prot: 2.1, phospho: 2.3, ub: 0.6, ac: 1.0,
     title: 'RNA-binding program multi-omics',
-    body: `RNA modification reader나 RNA-binding protein program은 transcriptome, proteome, phosphoproteome이 같은 방향으로 움직일 때 해석력이 커집니다. 예를 들어 cell-cycle protein, angiogenesis marker, immune infiltration proxy가 함께 변하면 단일 RNA layer보다 더 강한 subtype 단서를 줍니다. <span class="kbd">RNA-binding · proteogenomics</span>`
+    body: `RNA modification reader나 RNA-binding protein program은 transcriptome, proteome, phosphoproteome이 같은 방향으로 움직일 때 해석력이 커집니다. 예를 들어 cell-cycle protein, angiogenesis marker, immune infiltration proxy가 함께 변하면 단일 RNA layer보다 더 강한 subtype 단서를 줍니다. <span class="kbd">RNA-binding · proteogenomics</span>`,
+    refs: ['mertins2016', 'demeulemeester2024']
   }
 };
 function applyScenario(name) {
@@ -2479,14 +2538,14 @@ function applyScenario(name) {
   update('phospho', d.phospho);
   update('ub', d.ub);
   update('ac', d.ac);
-  scenExplain.innerHTML = `<h4>${d.title}</h4><p>${d.body}</p>`;
+  scenExplain.innerHTML = `<h4>${d.title}</h4><p>${d.body}</p>` + (typeof renderRefs === 'function' ? renderRefs(d.refs) : '');
 }
 scenButtons.forEach(b => b.addEventListener('click', () => {
   scenButtons.forEach(x => x.classList.remove('active'));
   b.classList.add('active');
   applyScenario(b.dataset.scen);
 }));
-applyScenario('mdm2');
+/* first applyScenario call moved to end of script (after refLibrary defined) */
 
 
 /* ========== PROTAC stages ========== */
@@ -2496,30 +2555,35 @@ const protacExplain = document.getElementById('protac-explain');
 const protacStageData = {
   1: {
     label: 'stage 01 — PROTAC 구조',
-    body: `<b>Stage 01 — PROTAC 구조.</b> PROTAC은 세 부분으로 구성된다: <b>warhead</b>(target POI ligand), <b>linker</b>(PEG/alkyl), <b>E3 ligand</b>(VHL ligand는 hydroxyproline-mimic, CRBN ligand는 thalidomide 유래 IMiD). 각각 따로는 그냥 약한 결합이지만, 같이 있으면 두 단백질을 가깝게 만든다.`
+    body: `<b>Stage 01 — PROTAC 구조.</b> PROTAC은 세 부분으로 구성된다: <b>warhead</b>(target POI ligand), <b>linker</b>(PEG/alkyl), <b>E3 ligand</b>(VHL ligand는 hydroxyproline-mimic, CRBN ligand는 thalidomide 유래 IMiD). 각각 따로는 그냥 약한 결합이지만, 같이 있으면 두 단백질을 가깝게 만든다.`,
+    refs: ['sakamoto2001', 'schneekloth2008']
   },
   2: {
     label: 'stage 02 — ternary complex 형성',
-    body: `<b>Stage 02 — Ternary complex.</b> warhead가 target에, E3 ligand가 E3 ligase에 결합하면 세 단백질(target·PROTAC·E3)이 ternary complex를 만든다. 이 cooperativity가 중요해서, ligand 두 개의 단순 합보다 훨씬 강한 결합이 된다(α > 1, "positive cooperativity"). hook effect도 흔히 나타남.`
+    body: `<b>Stage 02 — Ternary complex.</b> warhead가 target에, E3 ligand가 E3 ligase에 결합하면 세 단백질(target·PROTAC·E3)이 ternary complex를 만든다. 이 cooperativity가 중요해서, ligand 두 개의 단순 합보다 훨씬 강한 결합이 된다(α > 1, "positive cooperativity"). hook effect도 흔히 나타남.`,
+    refs: ['bondeson2018', 'burslem2020']
   },
   3: {
     label: 'stage 03 — K48 ubiquitination',
-    body: `<b>Stage 03 — Ubiquitination.</b> 가까이 있는 E2가 target의 라이신에 Ub을 옮긴다. K48 사슬이 자란다. 일반 substrate처럼 인식되어 multivalent K48-poly-Ub로 표지됨. PROTAC linker length·rigidity가 어떤 K가 표지될지 결정.`
+    body: `<b>Stage 03 — Ubiquitination.</b> 가까이 있는 E2가 target의 라이신에 Ub을 옮긴다. K48 사슬이 자란다. 일반 substrate처럼 인식되어 multivalent K48-poly-Ub로 표지됨. PROTAC linker length·rigidity가 어떤 K가 표지될지 결정.`,
+    refs: ['bondeson2015', 'komander2012']
   },
   4: {
     label: 'stage 04 — proteasomal degradation',
-    body: `<b>Stage 04 — Degradation.</b> K48 사슬이 26S proteasome에 인식되어 target이 펩타이드로 분해된다. 단순 inhibitor와 달리 단백질 자체가 사라지므로 scaffolding function까지 모두 제거 가능 — drug-resistance kinase mutation이나 enzymatically inactive form도 표적할 수 있다.`
+    body: `<b>Stage 04 — Degradation.</b> K48 사슬이 26S proteasome에 인식되어 target이 펩타이드로 분해된다. 단순 inhibitor와 달리 단백질 자체가 사라지므로 scaffolding function까지 모두 제거 가능 — drug-resistance kinase mutation이나 enzymatically inactive form도 표적할 수 있다.`,
+    refs: ['burslem2020', 'tanaka2009']
   },
   5: {
     label: 'stage 05 — catalytic cycling',
-    body: `<b>Stage 05 — Catalytic cycling.</b> PROTAC은 분해 후 free되어 다음 target 분자로 이동한다. <b>sub-stoichiometric</b>로 작동 — 즉 PROTAC 1 분자가 여러 target을 분해. 이 점이 inhibitor 대비 강력한 이유. 한 번 분해 후 새 단백질 합성까지의 시간이 약효 지속을 결정.`
+    body: `<b>Stage 05 — Catalytic cycling.</b> PROTAC은 분해 후 free되어 다음 target 분자로 이동한다. <b>sub-stoichiometric</b>로 작동 — 즉 PROTAC 1 분자가 여러 target을 분해. 이 점이 inhibitor 대비 강력한 이유. 한 번 분해 후 새 단백질 합성까지의 시간이 약효 지속을 결정.`,
+    refs: ['bondeson2015', 'kronke2014']
   }
 };
 function setProtacStage(s) {
   protacStageButtons.forEach(b => b.classList.toggle('active', +b.dataset.stage === s));
   const d = protacStageData[s];
   protacStageLabel.textContent = d.label;
-  protacExplain.innerHTML = d.body;
+  protacExplain.innerHTML = d.body + (typeof renderRefs === 'function' ? renderRefs(d.refs) : '');
 
   // visualize
   const ub = document.getElementById('protac-ub');
@@ -2538,7 +2602,7 @@ function setProtacStage(s) {
   }
 }
 protacStageButtons.forEach(b => b.addEventListener('click', () => setProtacStage(+b.dataset.stage)));
-setProtacStage(1);
+/* first setProtacStage call moved to end of script (after refLibrary defined) */
 
 
 /* ========== Study guide concept cards ========== */
@@ -2696,7 +2760,64 @@ const refLibrary = {
     journal: 'New England Journal of Medicine',
     title: 'A Phase 2 Study of Bortezomib in Relapsed, Refractory Myeloma',
     doi: '10.1056/NEJMoa030288'
-  }
+  },
+  /* === E3 atlas references === */
+  kajiro2011: { authors: 'Kajiro et al.', year: '2011', journal: 'Nature Cell Biology', title: 'The E3 ubiquitin ligase activity of Trip12 is essential for mouse embryogenesis', doi: '10.1038/ncb2068' },
+  hashizume2001: { authors: 'Hashizume et al.', year: '2001', journal: 'Journal of Biological Chemistry', title: 'The RING heterodimer BRCA1-BARD1 is a ubiquitin ligase inactivated by a breast cancer-derived mutation', doi: '10.1074/jbc.C100354200' },
+  densham2016: { authors: 'Densham et al.', year: '2016', journal: 'Nature Structural & Molecular Biology', title: 'Human BRCA1-BARD1 ubiquitin ligase activity counteracts chromatin barriers to DNA resection', doi: '10.1038/nsmb.3236' },
+  kane2014: { authors: 'Kane et al.', year: '2014', journal: 'Journal of Cell Biology', title: 'PINK1 phosphorylates ubiquitin to activate Parkin E3 ubiquitin ligase activity', doi: '10.1083/jcb.201402104' },
+  sarraf2013: { authors: 'Sarraf et al.', year: '2013', journal: 'Nature', title: 'Landscape of the PARKIN-dependent ubiquitylome in response to mitochondrial depolarization', doi: '10.1038/nature12043' },
+  connell2001: { authors: 'Connell et al.', year: '2001', journal: 'Nature Cell Biology', title: 'The co-chaperone CHIP regulates protein triage decisions mediated by heat-shock proteins', doi: '10.1038/35050618' },
+  brun2022: { authors: 'Brunet et al.', year: '2022', journal: 'EMBO Reports', title: 'TRIP12 in DNA damage response and HUWE1 cooperation', doi: '10.15252/embr.202255100' },
+  theurillat2014: { authors: 'Theurillat et al.', year: '2014', journal: 'Science', title: 'Ubiquitylome analysis identifies dysregulation of effector substrates in SPOP-mutant prostate cancer', doi: '10.1126/science.1250255' },
+  vassilev2004: { authors: 'Vassilev et al.', year: '2004', journal: 'Science', title: 'In vivo activation of the p53 pathway by small-molecule antagonists of MDM2', doi: '10.1126/science.1092472' },
+  toledo2006: { authors: 'Toledo & Wahl', year: '2006', journal: 'Nature Reviews Cancer', title: 'Regulating the p53 pathway: in vitro hypotheses, in vivo veritas', doi: '10.1038/nrc2012' },
+  lin2010: { authors: 'Lin et al.', year: '2010', journal: 'Nature', title: 'Skp2 targeting suppresses tumorigenesis by Arf-p53-independent cellular senescence', doi: '10.1038/nature08815' },
+  frescas2008: { authors: 'Frescas & Pagano', year: '2008', journal: 'Nature Reviews Cancer', title: 'Deregulated proteolysis by the F-box proteins SKP2 and beta-TrCP: tipping the scales of cancer', doi: '10.1038/nrc2347' },
+  adhikary2005: { authors: 'Adhikary et al.', year: '2005', journal: 'Cell', title: 'The ubiquitin ligase HectH9 regulates transcriptional activation by Myc and is essential for tumor cell proliferation', doi: '10.1016/j.cell.2005.02.005' },
+  meroni2005: { authors: 'Meroni & Diez-Roux', year: '2005', journal: 'BioEssays', title: 'TRIM/RBCC, a novel class of "single protein RING finger" E3 ubiquitin ligases', doi: '10.1002/bies.20304' },
+  ito2010: { authors: 'Ito et al.', year: '2010', journal: 'Science', title: 'Identification of a primary target of thalidomide teratogenicity', doi: '10.1126/science.1177319' },
+  han2017: { authors: 'Han et al.', year: '2017', journal: 'Science', title: 'Anticancer sulfonamides target splicing by inducing RBM39 degradation via recruitment to DCAF15', doi: '10.1126/science.aal3755' },
+  higa2006: { authors: 'Higa et al.', year: '2006', journal: 'Nature Cell Biology', title: 'CUL4-DDB1 ubiquitin ligase interacts with multiple WD40-repeat proteins and regulates histone methylation', doi: '10.1038/ncb1490' },
+  peters2006: { authors: 'Peters', year: '2006', journal: 'Nature Reviews Molecular Cell Biology', title: 'The anaphase promoting complex/cyclosome: a machine designed to destroy', doi: '10.1038/nrm1988' },
+  /* === Chain code references === */
+  hofmann1999: { authors: 'Hofmann & Pickart', year: '1999', journal: 'Cell', title: 'Noncanonical MMS2-encoded ubiquitin-conjugating enzyme functions in assembly of novel polyubiquitin chains for DNA repair', doi: '10.1016/S0092-8674(00)80575-9' },
+  iwai2009: { authors: 'Iwai & Tokunaga', year: '2009', journal: 'EMBO Reports', title: 'Linear polyubiquitination: a new regulator of NF-κB activation', doi: '10.1038/embor.2009.144' },
+  wickliffe2011: { authors: 'Wickliffe et al.', year: '2011', journal: 'Cell', title: 'The mechanism of linkage-specific ubiquitin chain elongation by a single-subunit E2', doi: '10.1016/j.cell.2011.01.035' },
+  hicke2001: { authors: 'Hicke', year: '2001', journal: 'Nature Reviews Molecular Cell Biology', title: 'Protein regulation by monoubiquitin', doi: '10.1038/35056563' },
+  /* === Multi-omics scenario references === */
+  zhang2014: { authors: 'Zhang et al.', year: '2014', journal: 'Nature', title: 'Proteogenomic characterization of human colon and rectal cancer', doi: '10.1038/nature13438' },
+  rauniyar2014: { authors: 'Rauniyar & Yates', year: '2014', journal: 'Journal of Proteome Research', title: 'Isobaric labeling-based relative quantification in shotgun proteomics', doi: '10.1021/pr500880b' },
+  udeshi2013: { authors: 'Udeshi et al.', year: '2013', journal: 'Nature Protocols', title: 'Large-scale identification of ubiquitination sites by mass spectrometry', doi: '10.1038/nprot.2013.094' },
+  /* === Cancer mechanism references === */
+  hanahan2011: { authors: 'Hanahan & Weinberg', year: '2011', journal: 'Cell', title: 'Hallmarks of cancer: the next generation', doi: '10.1016/j.cell.2011.02.013' },
+  vousden2009: { authors: 'Vousden & Prives', year: '2009', journal: 'Cell', title: 'Blinded by the light: the growing complexity of p53', doi: '10.1016/j.cell.2009.04.037' },
+  jackson2009: { authors: 'Jackson & Bartek', year: '2009', journal: 'Nature', title: 'The DNA-damage response in human biology and disease', doi: '10.1038/nature08467' },
+  semenza2012: { authors: 'Semenza', year: '2012', journal: 'Cell', title: 'Hypoxia-inducible factors in physiology and medicine', doi: '10.1016/j.cell.2012.01.021' },
+  ruggiano2014: { authors: 'Ruggiano et al.', year: '2014', journal: 'Journal of Cell Biology', title: 'ER-associated degradation: protein quality control and beyond', doi: '10.1083/jcb.201312042' },
+  klionsky2021: { authors: 'Klionsky et al.', year: '2021', journal: 'Autophagy', title: 'Guidelines for the use and interpretation of assays for monitoring autophagy', doi: '10.1080/15548627.2020.1797280' },
+  pickrell2015: { authors: 'Pickrell & Youle', year: '2015', journal: 'Neuron', title: 'The roles of PINK1, Parkin, and mitochondrial fidelity in Parkinson’s disease', doi: '10.1016/j.neuron.2014.12.007' },
+  bhat2014: { authors: 'Bhat et al.', year: '2014', journal: 'Trends in Immunology', title: 'Modulation of the tumor microenvironment to enhance immune checkpoint blockade', doi: '10.1016/j.it.2014.07.005' },
+  /* === PROTAC stage references === */
+  schneekloth2008: { authors: 'Schneekloth et al.', year: '2008', journal: 'Bioorganic & Medicinal Chemistry Letters', title: 'Targeted intracellular protein degradation induced by a small molecule: en route to chemical proteomics', doi: '10.1016/j.bmcl.2008.07.114' },
+  bondeson2018: { authors: 'Bondeson et al.', year: '2018', journal: 'Cell Chemical Biology', title: 'Lessons in PROTAC design from selective degradation with a promiscuous warhead', doi: '10.1016/j.chembiol.2017.09.010' },
+  burslem2020: { authors: 'Burslem & Crews', year: '2020', journal: 'Cell', title: 'Proteolysis-Targeting Chimeras as Therapeutics and Tools for Biological Discovery', doi: '10.1016/j.cell.2019.11.031' },
+  /* === Concepts references === */
+  pohl2019: { authors: 'Pohl & Dikic', year: '2019', journal: 'Science', title: 'Cellular quality control by the ubiquitin-proteasome system and autophagy', doi: '10.1126/science.aax3769' },
+  tanaka2009: { authors: 'Tanaka', year: '2009', journal: 'Proceedings of the Japan Academy, Series B', title: 'The proteasome: overview of structure and functions', doi: '10.2183/pjab.85.12' },
+  /* === DUB atlas references === */
+  cummins2004: { authors: 'Cummins et al.', year: '2004', journal: 'Nature', title: 'Tumour suppression: disruption of HAUSP gene stabilizes p53', doi: '10.1038/nature02501' },
+  zhang2008: { authors: 'Zhang et al.', year: '2008', journal: 'Molecular Cell', title: 'The putative cancer stem cell marker USP22 is a subunit of the human SAGA complex required for activated transcription and cell-cycle progression', doi: '10.1016/j.molcel.2007.12.022' },
+  misaghi2009: { authors: 'Misaghi et al.', year: '2009', journal: 'Molecular and Cellular Biology', title: 'Association of C-terminal ubiquitin hydrolase BRCA1-associated protein 1 with cell cycle regulator host cell factor 1', doi: '10.1128/MCB.01505-08' },
+  wertz2004: { authors: 'Wertz et al.', year: '2004', journal: 'Nature', title: 'De-ubiquitination and ubiquitin ligase domains of A20 downregulate NF-kappaB signalling', doi: '10.1038/nature02794' },
+  brummelkamp2003: { authors: 'Brummelkamp et al.', year: '2003', journal: 'Nature', title: 'Loss of the cylindromatosis tumour suppressor inhibits apoptosis by activating NF-kappaB', doi: '10.1038/nature01811' },
+  hu2013: { authors: 'Hu et al.', year: '2013', journal: 'Cell', title: 'OTUD7B controls non-canonical NF-κB activation through deubiquitination of TRAF3', doi: '10.1016/j.cell.2013.10.028' },
+  lee2010: { authors: 'Lee et al.', year: '2010', journal: 'Nature', title: 'Enhancement of proteasome activity by a small-molecule inhibitor of USP14', doi: '10.1038/nature09299' },
+  yuan2010: { authors: 'Yuan et al.', year: '2010', journal: 'Cell', title: 'USP10 regulates p53 localization and stability by deubiquitinating p53', doi: '10.1016/j.cell.2010.01.007' },
+  schwickart2010: { authors: 'Schwickart et al.', year: '2010', journal: 'Nature', title: 'Deubiquitinase USP9X stabilizes MCL1 and promotes tumour cell survival', doi: '10.1038/nature08646' },
+  maertens2010: { authors: 'Maertens et al.', year: '2010', journal: 'EMBO Journal', title: 'Ubiquitin-specific proteases 7 and 11 modulate Polycomb regulation of the INK4a tumour suppressor', doi: '10.1038/emboj.2010.119' },
+  keusekotten2013: { authors: 'Keusekotten et al.', year: '2013', journal: 'Cell', title: 'OTULIN antagonizes LUBAC signalling by specifically hydrolysing Met1-linked polyubiquitin', doi: '10.1016/j.cell.2013.05.014' },
+  cohn2007: { authors: 'Cohn et al.', year: '2007', journal: 'Molecular Cell', title: 'A UAF1-containing multisubunit protein complex regulates the Fanconi anemia pathway', doi: '10.1016/j.molcel.2007.07.001' }
 };
 
 const studyCards = [
@@ -2974,6 +3095,60 @@ catalogFilterButtons.forEach(b => b.addEventListener('click', () => {
   renderCatalog();
 }));
 renderCatalog();
+
+/* ========== Render E3 / DUB cards now that refLibrary + renderRefs exist ========== */
+e3Data.forEach(e => {
+  const card = document.createElement('div');
+  card.className = 'e3-card';
+  card.dataset.role = e.role;
+  card.innerHTML = `
+    <div class="head">
+      <span class="gene">${e.gene}</span>
+      <span class="role-tag">${e.role === 'suppressor' ? 'tumor suppressor' : e.role === 'oncogene' ? 'oncogene' : 'dual / context'}</span>
+    </div>
+    <div class="family">${e.family}</div>
+    <div class="substrates">
+      <b>substrates</b>
+      <div class="substrate-list">${e.substrates.map(s => `<span class="substrate-pill">${s}</span>`).join('')}</div>
+    </div>
+    <div class="desc">${e.desc}</div>
+    <div class="cancers"><span>cancers:</span> ${e.cancers}</div>
+    ${renderRefs(e.refs)}
+  `;
+  e3Grid.appendChild(card);
+});
+dubData.forEach(e => {
+  const card = document.createElement('div');
+  card.className = 'e3-card';
+  card.dataset.role = e.role;
+  card.innerHTML = `
+    <div class="head">
+      <span class="gene">${e.gene}</span>
+      <span class="role-tag">${e.role === 'suppressor' ? 'suppressor' : e.role === 'oncogene' ? 'oncogene' : 'dual / context'}</span>
+    </div>
+    <div class="family">${e.family}</div>
+    <div class="substrates">
+      <b>substrates</b>
+      <div class="substrate-list">${e.substrates.map(s => `<span class="substrate-pill">${s}</span>`).join('')}</div>
+    </div>
+    <div class="desc">${e.desc}</div>
+    <div class="cancers"><span>cancers:</span> ${e.cancers}</div>
+    ${renderRefs(e.refs)}
+  `;
+  dubGrid.appendChild(card);
+});
+
+/* First render of dynamic detail panels (now refLibrary is defined) */
+renderChain('k48');
+applyScenario('mdm2');
+setProtacStage(1);
+
+/* Append refs footer to static cards with data-refs attribute (mech, concepts) */
+document.querySelectorAll('[data-refs]').forEach(card => {
+  const keys = card.dataset.refs.split(',').map(s => s.trim()).filter(Boolean);
+  if (!keys.length) return;
+  card.insertAdjacentHTML('beforeend', renderRefs(keys));
+});
 </script>
 
 </body>

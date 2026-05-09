@@ -11,3 +11,6 @@
 # logs / temp
 *.log
 *.tmp
+
+# Claude Code workspace and skill metadata
+.claude/

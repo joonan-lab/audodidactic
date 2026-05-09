@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>멀티모달 파운데이션 모델 — 레이어, 토큰, 패턴 | Autodidact</title>
-<meta name="description" content="single-cell·protein·DNA·structure·image를 한 모델로 묶는 멀티모달 파운데이션 모델 방법론. Transformer/VAE/Discrete Diffusion 수식, 7가지 토큰화 전략, 9가지 아키텍처 패턴, 2024–2026 트렌드, 30+ 모델 카탈로그를 한 페이지로.">
+<meta name="description" content="single-cell·protein·DNA·structure·image를 한 모델로 묶는 멀티모달 파운데이션 모델 방법론. Transformer/VAE/Discrete Diffusion 수식, 토큰화 전략, 아키텍처 패턴, 2024–2026 트렌드, 모델 카탈로그를 한 페이지로.">
 <style>
 :root{
   --bg: oklch(0.985 0.005 240);
@@ -893,31 +893,30 @@ section.s { margin-bottom: 80px; }
 </header>
 
 <section class="hero">
-  <span class="hero-badge">Track 06 · Multimodal Foundation Model Methodology</span>
+  <span class="hero-badge">Multimodal Foundation Model Methodology</span>
   <h1>여러 modality를 한 모델로 묶으면 <span class="accent">무엇이 가능해지는가</span></h1>
   <p class="hero-lead">
-    파운데이션 모델이 single-cell RNA에서 protein·DNA·structure·image·spatial까지 확장된다. 어떤 <b>레이어 수학</b>(Transformer/VAE/Discrete Diffusion)을 쓰는지, gene/cell/residue를 어떻게 <b>토큰화</b>하는지, 어떤 <b>태스크</b>는 single modality로 풀리고 어떤 것은 paired multimodal이 필수인지, 그리고 <b>9가지 아키텍처 패턴</b>이 그 위에서 어떻게 골라지는지를 한 페이지에 정리했다. 2024–2026 사이에 scaling laws, token unification, perturbation atlases, geometric DL 같은 새 흐름이 굳어지고 있고 — 이 페이지는 우리 wiki에 정리된 <b>30+ 모델</b>과 <b>9가지 트렌드</b>를 인터랙티브로 따라간다.
+    파운데이션 모델이 single-cell RNA에서 protein·DNA·structure·image·spatial까지 확장된다. 어떤 <b>레이어 수학</b>(Transformer/VAE/Discrete Diffusion)을 쓰는지, gene/cell/residue를 어떻게 <b>토큰화</b>하는지, 어떤 <b>태스크</b>는 single modality로 풀리고 어떤 것은 paired multimodal이 필수인지, 그리고 <b>아키텍처 패턴</b>이 그 위에서 어떻게 골라지는지를 한 페이지에 정리했다. 2024–2026 사이에 scaling laws, token unification, perturbation atlases, geometric DL 같은 새 흐름이 굳어지고 있고 — 이 페이지는 우리 wiki에 정리된 <b>모델 카탈로그</b>와 <b>최신 트렌드</b>를 인터랙티브로 따라간다.
   </p>
   <div class="hero-meta">
-    <span class="chip"><b>9</b> 섹션</span>
-    <span class="chip"><b>3</b> layer math</span>
-    <span class="chip"><b>7</b> 토큰화 전략</span>
-    <span class="chip"><b>9</b> 아키텍처 패턴</span>
-    <span class="chip"><b>9</b> 최신 트렌드</span>
-    <span class="chip"><b>30+</b> 모델</span>
+    <span class="chip">layer math</span>
+    <span class="chip">토큰화 전략</span>
+    <span class="chip">아키텍처 패턴</span>
+    <span class="chip">최신 트렌드</span>
+    <span class="chip">모델 카탈로그</span>
   </div>
 </section>
 
 <nav class="toc">
   <div class="toc-head">
     <h2>이 페이지의 길</h2>
-    <span class="label">9 sections · click to jump</span>
+    <span class="label">click to jump</span>
   </div>
   <div class="toc-grid">
-    <a href="#layers"><span class="num">01</span> 3가지 layer math</a>
-    <a href="#tokens"><span class="num">02</span> 7가지 토큰화</a>
+    <a href="#layers"><span class="num">01</span> layer math</a>
+    <a href="#tokens"><span class="num">02</span> 토큰화 전략</a>
     <a href="#tasks"><span class="num">03</span> single vs multi tasks</a>
-    <a href="#patterns"><span class="num">04</span> 9가지 아키텍처 패턴</a>
+    <a href="#patterns"><span class="num">04</span> 아키텍처 패턴</a>
     <a href="#trends"><span class="num">05</span> 2024–2026 트렌드</a>
     <a href="#models"><span class="num">06</span> 모델 카탈로그</a>
     <a href="#recs"><span class="num">07</span> 목적별 추천</a>
@@ -930,7 +929,7 @@ section.s { margin-bottom: 80px; }
 <section class="s" id="layers">
   <header class="s-head">
     <span class="s-num">section 01</span>
-    <h2 class="s-title">3가지 layer math — Transformer · VAE · Discrete Diffusion</h2>
+    <h2 class="s-title">Layer math — Transformer · VAE · Discrete Diffusion</h2>
     <span class="s-sub">attention · ELBO · absorbing kernel</span>
   </header>
   <p class="s-blurb">
@@ -973,7 +972,7 @@ output: Concat(head_1, …, head_h) W_O</div>
 <section class="s" id="tokens">
   <header class="s-head">
     <span class="s-num">section 02</span>
-    <h2 class="s-title">7가지 토큰화 전략 — 같은 셀, 다른 어휘</h2>
+    <h2 class="s-title">토큰화 전략 — 같은 셀, 다른 어휘</h2>
     <span class="s-sub">rank · bin · projection · text · epigenome · perturbation</span>
   </header>
   <p class="s-blurb">
@@ -1072,11 +1071,11 @@ output: Concat(head_1, …, head_h) W_O</div>
 <section class="s" id="patterns">
   <header class="s-head">
     <span class="s-num">section 04</span>
-    <h2 class="s-title">9가지 아키텍처 패턴 — 어떻게 modality를 묶을 것인가</h2>
+    <h2 class="s-title">아키텍처 패턴 — 어떻게 modality를 묶을 것인가</h2>
     <span class="s-sub">fusion · alignment · diffusion · graph</span>
   </header>
   <p class="s-blurb">
-    멀티모달 파운데이션 모델 corpus를 펼치면 9가지 패턴으로 환원된다. 가장 단순한 <b>concatenation</b>(거의 안 쓰임)부터 Seurat의 <b>WNN</b>, totalVI/Matilda의 <b>shared-latent VAE</b>, scButterfly의 <b>dual-aligned</b>, UnitedNet의 <b>multi-task fusion</b>, scGPT의 <b>condition token</b>, Cui 2025 비전인 <b>CLIP-style</b>, DPLM-2의 <b>discrete diffusion</b>, 그리고 PINNACLE/ATOMICA의 <b>geometric DL</b>까지. 패턴 버튼을 누르면 architecture 다이어그램이 바뀐다.
+    멀티모달 파운데이션 모델 corpus를 펼치면 몇 가지 패턴으로 환원된다. 가장 단순한 <b>concatenation</b>(거의 안 쓰임)부터 Seurat의 <b>WNN</b>, totalVI/Matilda의 <b>shared-latent VAE</b>, scButterfly의 <b>dual-aligned</b>, UnitedNet의 <b>multi-task fusion</b>, scGPT의 <b>condition token</b>, Cui 2025 비전인 <b>CLIP-style</b>, DPLM-2의 <b>discrete diffusion</b>, 그리고 PINNACLE/ATOMICA의 <b>geometric DL</b>까지. 패턴 버튼을 누르면 architecture 다이어그램이 바뀐다.
   </p>
 
   <div class="pat-wrap">
@@ -1143,11 +1142,11 @@ output: Concat(head_1, …, head_h) W_O</div>
 <section class="s" id="trends">
   <header class="s-head">
     <span class="s-num">section 05</span>
-    <h2 class="s-title">2024–2026 트렌드 9가지 — 패턴 위에서 어디로 움직이는가</h2>
+    <h2 class="s-title">2024–2026 트렌드 — 패턴 위에서 어디로 움직이는가</h2>
     <span class="s-sub">scaling · token unification · perturbation · CLIP · geometric</span>
   </header>
   <p class="s-blurb">
-    "8 패턴 steady state"가 끝나고, 2024–2026년에는 그 위에서 <b>scaling laws</b>가 경험적으로 확정되고, <b>token unification</b>이 protein → 중심 dogma 전체로 확장되고, <b>perturbation atlas</b>가 1급 modality로 들어오고, general LLM 재활용·spatial native·tri-modal CLIP·평가 강화·virtual cell·geometric DL 같은 갈래가 자리잡았다. 9가지 트렌드를 카드로.
+    "패턴 steady state"가 끝나고, 2024–2026년에는 그 위에서 <b>scaling laws</b>가 경험적으로 확정되고, <b>token unification</b>이 protein → 중심 dogma 전체로 확장되고, <b>perturbation atlas</b>가 1급 modality로 들어오고, general LLM 재활용·spatial native·tri-modal CLIP·평가 강화·virtual cell·geometric DL 같은 갈래가 자리잡았다. 트렌드를 카드로.
   </p>
 
   <div class="trend-grid">
@@ -1212,7 +1211,7 @@ output: Concat(head_1, …, head_h) W_O</div>
 <section class="s" id="models">
   <header class="s-head">
     <span class="s-num">section 06</span>
-    <h2 class="s-title">모델 카탈로그 — 30+ 멀티모달 파운데이션 모델</h2>
+    <h2 class="s-title">모델 카탈로그 — 멀티모달 파운데이션 모델</h2>
     <span class="s-sub">single-cell · protein · DNA · spatial · multimodal-anchor</span>
   </header>
   <p class="s-blurb">
@@ -1243,7 +1242,7 @@ output: Concat(head_1, …, head_h) W_O</div>
     <span class="s-sub">goal → pattern → why</span>
   </header>
   <p class="s-blurb">
-    9가지 패턴 중 하나를 고르는 기준은 결국 "어떤 데이터가 있고, 어떤 deliverable이 필요한가"다. wiki 자료 기반 추천 매트릭스. 왼쪽에 task, 가운데 추천 패턴/모델, 오른쪽에 그렇게 고르는 이유.
+    패턴 중 하나를 고르는 기준은 결국 "어떤 데이터가 있고, 어떤 deliverable이 필요한가"다. wiki 자료 기반 추천 매트릭스. 왼쪽에 task, 가운데 추천 패턴/모델, 오른쪽에 그렇게 고르는 이유.
   </p>
 
   <div class="rec-grid">
@@ -1378,7 +1377,7 @@ output: Concat(head_1, …, head_h) W_O</div>
 <footer class="foot">
   <div>
     <strong>joonan-lab</strong> · autodidact 학생용 학습 지도<br>
-    출처: <code>wiki/overviews/multimodal-foundation-model-methodology.md</code> + 30+ 개별 모델 페이지.<br>
+    출처: <code>wiki/overviews/multimodal-foundation-model-methodology.md</code>와 개별 모델 페이지.<br>
     인용은 Google Scholar로 연결.
   </div>
   <div class="right">
@@ -2296,7 +2295,7 @@ const papers = [
     tags: ['review'], blurb: 'AIVC를 cancer research에 어떻게 적용할지 — multi-omics 통합으로 cellular process simulation.', scholar: 'Yang 2024 build virtual cell AI cancer research' },
 
   { title: 'Embedding strategies in biological foundation models — overview', authors: 'concept overview', year: 2026, venue: 'autodidact learning note',
-    tags: ['overview'], blurb: '7가지 토큰화 전략 taxonomy.', scholar: 'embedding strategies biological foundation model' },
+    tags: ['overview'], blurb: '토큰화 전략 taxonomy.', scholar: 'embedding strategies biological foundation model' },
   { title: 'Multimodal single-cell omics — overview', authors: 'concept overview', year: 2026, venue: 'autodidact learning note',
     tags: ['overview'], blurb: 'CITE-seq · 10x Multiome · 컴퓨터 method timeline.', scholar: 'multimodal single cell omics integration' }
 ];
