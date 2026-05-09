@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Autodidact — joonan-lab 학습 시각화</title>
-<meta name="description" content="joonan-lab의 새 주제 학습용 인터랙티브 자료. 유전학, 가상세포, DNA 언어 모델, 질환 모델, 암 멀티오믹스·분해생물학 5개 트랙에 걸친 11개 한글 인터랙티브.">
+<meta name="description" content="고려대 인간유전체 연구실에 온보딩 하는 학생들과 새로운 주제를 공부하는 학생들을 위한 유전학, 오믹스 인공지능 모델, 생물학 기초 학습 사이트.">
 <style>
 :root{
   /* surfaces */
@@ -131,9 +131,10 @@ body::after {
 
 /* ============== HERO ============== */
 .hero {
-  display: block;
+  position: relative;
   margin-bottom: 72px;
-  max-width: 920px;
+  min-height: 430px;
+  padding-right: min(36vw, 390px);
 }
 
 .brand {
@@ -196,29 +197,55 @@ body::after {
   color: var(--ink-soft);
   line-height: 1.7;
   max-width: 580px;
-  margin-bottom: 28px;
+  margin-bottom: 18px;
+}
+.hero .lede a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.hero .lede a:hover { color: var(--ink); }
+.autodidact-note {
+  max-width: 560px;
+  padding-left: 16px;
+  border-left: 2px solid oklch(from var(--t-stat) l c h / 0.45);
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--muted);
+}
+.autodidact-note strong {
+  color: var(--ink);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.hero-logo {
+  position: absolute;
+  top: 42px;
+  right: clamp(0px, 3vw, 28px);
+  width: clamp(210px, 25vw, 330px);
+  max-width: 34%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 32px oklch(0.2 0.04 30 / 0.12));
+  opacity: 0.94;
 }
 
-.hero-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+@media (max-width: 900px) {
+  .hero {
+    min-height: 0;
+    padding-right: 0;
+  }
+  .hero-logo {
+    position: relative;
+    top: auto;
+    right: auto;
+    display: block;
+    width: min(240px, 58vw);
+    max-width: none;
+    margin: 30px 0 0;
+  }
 }
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 14px;
-  background: var(--surface-glass);
-  backdrop-filter: blur(12px) saturate(1.4);
-  -webkit-backdrop-filter: blur(12px) saturate(1.4);
-  border: 1px solid var(--line);
-  border-radius: var(--r-pill);
-  font-size: 12.5px;
-  color: var(--ink-soft);
-  font-variant-numeric: tabular-nums;
-}
-.chip b { color: var(--ink); font-weight: 700; font-family: var(--f-mono); }
 
 /* ============== TRACKS ============== */
 .tracks {
@@ -293,13 +320,6 @@ body::after {
   color: var(--ink);
   margin: 0;
   line-height: 1.15;
-}
-.track-sub {
-  font-family: var(--f-mono);
-  font-size: 12px;
-  color: var(--muted);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 .track-blurb {
   font-size: 15px;
@@ -414,23 +434,6 @@ body::after {
   color: var(--ink-soft);
   line-height: 1.7;
   flex-grow: 1;
-}
-
-.card-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 4px;
-}
-.card-meta span {
-  padding: 4px 10px;
-  background: oklch(1 0 0 / 0.55);
-  border: 1px solid var(--line-soft);
-  border-radius: var(--r-pill);
-  font-family: var(--f-mono);
-  font-size: 11px;
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
 }
 
 .card-cta {
@@ -558,132 +561,24 @@ body::after {
   </div>
   <h1>새 주제를 한 페이지로<br><span class="accent">스스로 익힌다</span></h1>
   <p class="lede">
-    학생이 GWAS·RNA-seq DEG·variant effect assay·단세포·foundation model·ASD cohort·organoid 같은 주제에 처음 들어갈 때 텍스트만으로 잘 잡히지 않는 직관을, 한 페이지짜리 인터랙티브로 익히는 학습 자료입니다. 모든 페이지는 공개 문헌과 개념 정리에서 출발하고, 필요하면 공개 문헌 검색으로 이어집니다.
+    본 페이지는 고려대 인간유전체 연구실(<a href="https://joonanlab.github.io/">https://joonanlab.github.io/</a>)에 온보딩 하는 학생들을 위해, 그리고 새로운 주제를 공부하기 위해 만든 사이트입니다. 유전학, 오믹스 인공지능 모델, 생물학에 대한 기초를 다룹니다.
   </p>
-  <div class="hero-meta">
-    <span class="chip"><b>11</b> 인터랙티브</span>
-    <span class="chip"><b>5</b> 연구 트랙</span>
-    <span class="chip"><b>한글</b> 학습 자료</span>
-  </div>
+  <p class="autodidact-note">
+    <strong>Autodidact</strong>는 그리스어 <strong>αὐτός</strong>(스스로)와 <strong>διδακτός</strong>(배운)에서 온 말입니다. 낯선 연구 주제를 자기 속도로 질문하고, 만지고, 다시 설명하며 익히는 태도를 뜻합니다.
+  </p>
+  <img class="hero-logo" src="assets/joonan-lab-logo.png" alt="AN LAB">
 </header>
 
 <!-- ================ TRACKS ================ -->
 <main class="tracks">
 
-  <!-- TRACK 01 — STATISTICAL GENETICS -->
-  <section class="track" data-track="stat" aria-labelledby="t01">
+  <!-- TRACK 01 — VIRTUAL CELL -->
+  <section class="track" data-track="cell" aria-labelledby="t01">
     <header class="track-head">
       <div class="track-title-group">
         <span class="track-num">track 01</span>
-        <h2 class="track-title" id="t01">유전학</h2>
+        <h2 class="track-title" id="t01">가상세포</h2>
       </div>
-      <span class="track-sub">GWAS · CWAS · Fine-mapping · Tandem Repeat · Variant Effect · RNA-seq DEG</span>
-    </header>
-    <p class="track-blurb">
-      Common SNP에서 rare variant까지, GWAS peak를 causal variant로 좁히는 fine-mapping, tandem repeat의 motif·copy-number·context 해석, genetic variant의 functional effect를 측정하는 MPRA·perturbation assay, RNA-seq count에서 DEG를 찾는 negative-binomial 모델까지. 통계 모델과 실험 readout이 어디서 신호를 잡고 어디서 막히는지를 조작해보며 익힙니다.
-    </p>
-    <div class="cards split">
-      <a class="card" href="genetic-association-methods/index.html">
-        <span class="card-tag">methodology · 방법론</span>
-        <h3 class="card-title">유전 연관분석 방법 — GWAS, TADA, Burden, SKAT, CWAS</h3>
-        <p class="card-desc">
-          Common SNP, de novo variant, rare coding burden, rare noncoding CWAS, SKAT/SKAT-O, GLMM/REGENIE, LDSC/S-LDSC, MAGMA, PRS가 각각 어떤 신호를 포착하는지 설명하는 한글 인터랙티브. 대립유전자 빈도 / 효과 크기 지형도, 방법 선택기, GWAS·희귀변이·TADA 직관 콘솔, 분석 워크플로우, 핵심·예시 출처 링크를 포함합니다.
-        </p>
-        <div class="card-meta">
-          <span>9 methods</span><span>4 simulators</span><span>2026.05.09</span>
-        </div>
-        <div class="card-cta">
-          <span class="card-cta-text">페이지로 들어가기</span>
-          <span class="card-cta-mark" aria-hidden="true">
-            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-        </div>
-      </a>
-      <a class="card" href="gwas-fine-mapping/index.html">
-        <span class="card-tag">interactive · locus plot</span>
-        <h3 class="card-title">GWAS Fine-Mapping — PIP, Credible Set, Functional Prior</h3>
-        <p class="card-desc">
-          GWAS peak를 causal variant 후보로 좁히는 과정을 조작형 locus plot으로 풀어둔 한글 인터랙티브. LD block 폭, GWAS 정보량, 기능 prior, ancestry LD 다양성, secondary signal을 바꾸며 PIP와 95% credible set이 어떻게 움직이는지 확인하고, SuSiE/FINEMAP/PolyFun/colocalization/MPRA/cross-ancestry 문헌 지형까지 이어서 읽을 수 있습니다.
-        </p>
-        <div class="card-meta">
-          <span>5 scenarios</span><span>26 paper atlas</span><span>2026.05.09</span>
-        </div>
-        <div class="card-cta">
-          <span class="card-cta-text">페이지로 들어가기</span>
-          <span class="card-cta-mark" aria-hidden="true">
-            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-        </div>
-      </a>
-      <a class="card" href="variant-effect-measurement/index.html">
-        <span class="card-tag">MPRA · perturbation · MAVE</span>
-        <h3 class="card-title">Variant Effect Measurement — MPRA와 Perturbation Methods</h3>
-        <p class="card-desc">
-          genetic variants의 effect를 어디서 측정하는지 정리한 한글 인터랙티브. MPRA/lentiMPRA, native QTL, CRISPRi/a와 deletion scanning, Perturb-seq/CROP-seq, MAVE/DMS/SGE, base·prime editing, in silico mutagenesis와 foundation model을 assay ladder로 비교하고, 연구 질문별 추천 stack과 claim strength, 문헌 지도를 함께 봅니다.
-        </p>
-        <div class="card-meta">
-          <span>8 assay families</span><span>6 study frames</span><span>visual guide</span>
-        </div>
-        <div class="card-cta">
-          <span class="card-cta-text">페이지로 들어가기</span>
-          <span class="card-cta-mark" aria-hidden="true">
-            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-        </div>
-      </a>
-      <a class="card" href="tandem-repeat/index.html">
-        <span class="card-tag">STR · VNTR · expansion</span>
-        <h3 class="card-title">Tandem Repeat Atlas — motif, expansion, technology</h3>
-        <p class="card-desc">
-          tandem repeat을 motif, copy number, genomic context, sequencing technology까지 함께 움직이며 이해하는 한글 인터랙티브. STR/VNTR, repeat expansion, short-read genotyping, EHdn/STRling outlier screen, TRGT/TRExplorer/vclust long-read resolution, ASD·disease-locus 해석과 문헌 지도를 한 화면에서 비교합니다.
-        </p>
-        <div class="card-meta">
-          <span>5 scenarios</span><span>4 method stacks</span><span>8 paper atlas</span>
-        </div>
-        <div class="card-cta">
-          <span class="card-cta-text">페이지로 들어가기</span>
-          <span class="card-cta-mark" aria-hidden="true">
-            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-        </div>
-      </a>
-      <a class="card" href="rna-seq-deg/index.html">
-        <span class="card-tag">RNA-seq · DEG · pseudobulk</span>
-        <h3 class="card-title">RNA-seq DEG와 Pseudobulk 분석 — count에서 조건 효과까지</h3>
-        <p class="card-desc">
-          RNA-seq differential expression의 원리를 초보자용 수식과 시뮬레이터로 익히는 한글 인터랙티브. count matrix, size factor, negative binomial dispersion, log2FC, Wald test, FDR, DESeq2/edgeR/MAST, single-cell pseudo-replication, donor 단위 pseudobulk, batch/confounder 체크리스트와 40편 문헌 지도를 함께 봅니다.
-        </p>
-        <div class="card-meta">
-          <span>2 simulators</span><span>40 paper atlas</span><span>pseudobulk primer</span>
-        </div>
-        <div class="card-cta">
-          <span class="card-cta-text">페이지로 들어가기</span>
-          <span class="card-cta-mark" aria-hidden="true">
-            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-        </div>
-      </a>
-    </div>
-  </section>
-
-  <!-- TRACK 02 — SINGLE-CELL BIOLOGY -->
-  <section class="track" data-track="cell" aria-labelledby="t02">
-    <header class="track-head">
-      <div class="track-title-group">
-        <span class="track-num">track 02</span>
-        <h2 class="track-title" id="t02">가상세포</h2>
-      </div>
-      <span class="track-sub">Atlas · Foundation Model · Multimodal</span>
     </header>
     <p class="track-blurb">
       단일세포 시퀀싱이 인간 뇌를 어떻게 그려내는지(atlas)에서 출발해, 그 위에 학습되는 foundation model이 어떤 어휘로 셀을 다루는지(scFM), RNA·protein·DNA·structure·spatial까지 묶는 멀티모달 파운데이션 모델로 어떻게 확장되는지까지. <b>가상세포(Virtual Cell)</b>를 만드는 흐름을 atlas → scFM → 멀티모달 세 카드로 따라갑니다.
@@ -695,9 +590,6 @@ body::after {
         <p class="card-desc">
           BrainSpan부터 BICCN, MERFISH, multiome, aging, Tri-IPC, cortical regionality까지 인간 뇌 single-cell/single-nucleus sequencing 연구를 연대별 발견과 셀타입 의미로 정리한 한글 학습 지도입니다. 그래픽 요약, 논문 타임라인, 하위 셀타입 quick map, regional-specific 발견 매트릭스, 검색 가능한 카탈로그를 포함합니다.
         </p>
-        <div class="card-meta">
-          <span>35 studies</span><span>50+ subtype/regional axes</span><span>2026.05.09</span>
-        </div>
         <div class="card-cta">
           <span class="card-cta-text">페이지로 들어가기</span>
           <span class="card-cta-mark" aria-hidden="true">
@@ -709,13 +601,10 @@ body::after {
       </a>
       <a class="card" href="single-cell-foundation-models/index.html">
         <span class="card-tag">foundation model</span>
-        <h3 class="card-title">가상세포 파운데이션 모델 — scFM 풍경</h3>
+        <h3 class="card-title">싱글셀 파운데이션 모델</h3>
         <p class="card-desc">
           scBERT(2022)부터 Tahoe-x1·scPRINT-2·Geneformer V2(2025-26)까지 scRNA-seq 기반 가상세포 파운데이션 모델 (scFM)의 4년 가속을 한 페이지로. 기초 4가지(scRNA-seq·transformer·토큰화·foundation model) → 8가지 토큰화 전략 풍경 → 16개 모델 비교 테이블(파라미터·corpus·context·objective·license) → HEIMDALL 토크나이저 분해(FG×FE×ORDER) → Reality Check 4편(Kedzierska·Csendes·Wei·Bereket) → Virtual Cell 1·2·3세대 비전.
         </p>
-        <div class="card-meta">
-          <span>16 models</span><span>8 strategies</span><span>4 reality checks</span>
-        </div>
         <div class="card-cta">
           <span class="card-cta-text">페이지로 들어가기</span>
           <span class="card-cta-mark" aria-hidden="true">
@@ -731,9 +620,6 @@ body::after {
         <p class="card-desc">
           single-cell·protein·DNA·structure·spatial을 한 모델로 묶는 방법론을 한 페이지로. 3가지 layer math(Transformer·VAE·Discrete Diffusion) 수식, 7가지 토큰화 전략(rank·bin·projection·LLM-text·cCRE·perturbation·structure) 인터랙티브, single-modal vs multimodal-only 태스크 비교, 9가지 아키텍처 패턴(Concatenation·WNN·Joint VAE·Dual-aligned VAE·UnitedNet·scGPT·CLIP-style·DPLM-2·Geometric DL) 다이어그램 switcher, 2024–2026 9가지 트렌드(scaling laws·token unification·perturbation atlases·CLIP·virtual cell), 30+ 모델 카탈로그·35편 논문 검색을 포함합니다.
         </p>
-        <div class="card-meta">
-          <span>9 patterns</span><span>7 tokenizations</span><span>30+ models</span>
-        </div>
         <div class="card-cta">
           <span class="card-cta-text">페이지로 들어가기</span>
           <span class="card-cta-mark" aria-hidden="true">
@@ -746,14 +632,13 @@ body::after {
     </div>
   </section>
 
-  <!-- TRACK 03 — DNA LANGUAGE MODELS -->
-  <section class="track" data-track="dna" aria-labelledby="t03">
+  <!-- TRACK 02 — DNA LANGUAGE MODELS -->
+  <section class="track" data-track="dna" aria-labelledby="t02">
     <header class="track-head">
       <div class="track-title-group">
-        <span class="track-num">track 03</span>
-        <h2 class="track-title" id="t03">DNA 언어 모델</h2>
+        <span class="track-num">track 02</span>
+        <h2 class="track-title" id="t02">DNA 언어 모델</h2>
       </div>
-      <span class="track-sub">gLM Attention · Tokenization</span>
     </header>
     <p class="track-blurb">
       Transformer 계열 genomic language model이 DNA에서 무엇에 attention하는지. 토큰화 차이가 motif·splice boundary·enhancer-promoter bridge에서 어떻게 다르게 보이는지를 시각화 렌즈로 풀어둡니다.
@@ -765,9 +650,96 @@ body::after {
         <p class="card-desc">
           DNABERT, DNABERT-2, Nucleotide Transformer, GROVER, Enformer, HyenaDNA, Caduceus, ARSENAL을 중심으로 tokenization, self-attention, long-range regulatory context, reverse-complement prior, nucleotide dependency map을 비교하는 학습용 인터랙티브입니다.
         </p>
-        <div class="card-meta">
-          <span>6 scenarios</span><span>8 model families</span><span>2026.05.09</span>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
         </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- TRACK 03 — STATISTICAL GENETICS -->
+  <section class="track" data-track="stat" aria-labelledby="t03">
+    <header class="track-head">
+      <div class="track-title-group">
+        <span class="track-num">track 03</span>
+        <h2 class="track-title" id="t03">유전학</h2>
+      </div>
+    </header>
+    <p class="track-blurb">
+      Common SNP에서 rare variant까지, GWAS peak를 causal variant로 좁히는 fine-mapping, tandem repeat의 motif·copy-number·context 해석, genetic variant의 functional effect를 측정하는 MPRA·perturbation assay, RNA-seq count에서 DEG를 찾는 negative-binomial 모델까지. 통계 모델과 실험 readout이 어디서 신호를 잡고 어디서 막히는지를 조작해보며 익힙니다.
+    </p>
+    <div class="cards split">
+      <a class="card" href="genetic-association-methods/index.html">
+        <span class="card-tag">methodology · 방법론</span>
+        <h3 class="card-title">유전 연관분석 방법 — GWAS, TADA, Burden, SKAT, CWAS</h3>
+        <p class="card-desc">
+          Common SNP, de novo variant, rare coding burden, rare noncoding CWAS, SKAT/SKAT-O, GLMM/REGENIE, LDSC/S-LDSC, MAGMA, PRS가 각각 어떤 신호를 포착하는지 설명하는 한글 인터랙티브. 대립유전자 빈도 / 효과 크기 지형도, 방법 선택기, GWAS·희귀변이·TADA 직관 콘솔, 분석 워크플로우, 핵심·예시 출처 링크를 포함합니다.
+        </p>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+      <a class="card" href="gwas-fine-mapping/index.html">
+        <span class="card-tag">interactive · locus plot</span>
+        <h3 class="card-title">GWAS Fine-Mapping — PIP, Credible Set, Functional Prior</h3>
+        <p class="card-desc">
+          GWAS peak를 causal variant 후보로 좁히는 과정을 조작형 locus plot으로 풀어둔 한글 인터랙티브. LD block 폭, GWAS 정보량, 기능 prior, ancestry LD 다양성, secondary signal을 바꾸며 PIP와 95% credible set이 어떻게 움직이는지 확인하고, SuSiE/FINEMAP/PolyFun/colocalization/MPRA/cross-ancestry 문헌 지형까지 이어서 읽을 수 있습니다.
+        </p>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+      <a class="card" href="variant-effect-measurement/index.html">
+        <span class="card-tag">MPRA · perturbation · MAVE</span>
+        <h3 class="card-title">Variant Effect Measurement — MPRA와 Perturbation Methods</h3>
+        <p class="card-desc">
+          genetic variants의 effect를 어디서 측정하는지 정리한 한글 인터랙티브. MPRA/lentiMPRA, native QTL, CRISPRi/a와 deletion scanning, Perturb-seq/CROP-seq, MAVE/DMS/SGE, base·prime editing, in silico mutagenesis와 foundation model을 assay ladder로 비교하고, 연구 질문별 추천 stack과 claim strength, 문헌 지도를 함께 봅니다.
+        </p>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+      <a class="card" href="tandem-repeat/index.html">
+        <span class="card-tag">STR · VNTR · expansion</span>
+        <h3 class="card-title">Tandem Repeat Atlas — motif, expansion, technology</h3>
+        <p class="card-desc">
+          tandem repeat을 motif, copy number, genomic context, sequencing technology까지 함께 움직이며 이해하는 한글 인터랙티브. STR/VNTR, repeat expansion, short-read genotyping, EHdn/STRling outlier screen, TRGT/TRExplorer/vclust long-read resolution, ASD·disease-locus 해석과 문헌 지도를 한 화면에서 비교합니다.
+        </p>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+      <a class="card" href="rna-seq-deg/index.html">
+        <span class="card-tag">RNA-seq · DEG · pseudobulk</span>
+        <h3 class="card-title">RNA-seq DEG와 Pseudobulk 분석 — count에서 조건 효과까지</h3>
+        <p class="card-desc">
+          RNA-seq differential expression의 원리를 초보자용 수식과 시뮬레이터로 익히는 한글 인터랙티브. count matrix, size factor, negative binomial dispersion, log2FC, Wald test, FDR, DESeq2/edgeR/MAST, single-cell pseudo-replication, donor 단위 pseudobulk, batch/confounder 체크리스트와 40편 문헌 지도를 함께 봅니다.
+        </p>
         <div class="card-cta">
           <span class="card-cta-text">페이지로 들어가기</span>
           <span class="card-cta-mark" aria-hidden="true">
@@ -787,7 +759,6 @@ body::after {
         <span class="track-num">track 04</span>
         <h2 class="track-title" id="t04">질환 유전학과 인간 조직 모델</h2>
       </div>
-      <span class="track-sub">ASD Cohorts · Organoids</span>
     </header>
     <p class="track-blurb">
       자폐 유전체 연구의 코호트, 표현형, 유전적 조성을 먼저 정리하고, 이어서 오가노이드가 어떤 세포원과 배양 로직으로 인간 조직 모델을 만드는지 연결해서 읽습니다.
@@ -799,9 +770,6 @@ body::after {
         <p class="card-desc">
           AGRE, SSC, SPARK, ASC, iPSYCH/PGC, MSSNG, K-ARC, GALA 등 대표 ASD 코호트를 유전체 증거 레이어별로 탐색합니다. 앞부분에서 simplex/multiplex 코호트 구조, ADOS·ADI-R·SRS·Vineland·IQ 같은 표현형 측정, common SNP/PRS·de novo coding·CNV/SV·STR·noncoding WGS·sex/ancestry 효과의 의미와 대략적 기여도를 먼저 잡습니다.
         </p>
-        <div class="card-meta">
-          <span>60 studies</span><span>12 cohorts</span><span>phenotype primer</span>
-        </div>
         <div class="card-cta">
           <span class="card-cta-text">페이지로 들어가기</span>
           <span class="card-cta-mark" aria-hidden="true">
@@ -817,9 +785,6 @@ body::after {
         <p class="card-desc">
           뇌, 신장, 간, 폐/기도, 장, 망막, 심장, NAM/방법론 연구를 논문 단위 데이터베이스로 탐색합니다. 입문 섹션에서 오가노이드의 정의, adult stem cell vs hESC/hiPSC vs patient iPSC, Matrigel/BME·suspension·ALI·assembloid·organ-on-chip 배양 방식, identity·maturity·function·reproducibility 평가 기준을 먼저 확인합니다.
         </p>
-        <div class="card-meta">
-          <span>80 studies</span><span>8 systems</span><span>culture primer</span>
-        </div>
         <div class="card-cta">
           <span class="card-cta-text">페이지로 들어가기</span>
           <span class="card-cta-mark" aria-hidden="true">
@@ -839,7 +804,6 @@ body::after {
         <span class="track-num">track 05</span>
         <h2 class="track-title" id="t05">암 멀티오믹스와 분해생물학</h2>
       </div>
-      <span class="track-sub">Ubiquitin · CPTAC · Proteogenomics · PROTAC</span>
     </header>
     <p class="track-blurb">
       암은 단백질을 만드는 문제이기 전에 <b>분해</b>의 문제다. E3 리가아제와 DUB가 substrate를 잘못 고르는 순간, 종양 단백질이 안정화되거나 종양억제자가 사라진다. 멀티오믹스 — 게놈·전사체·프로테옴·인산화체·유비퀴티놈 — 가 함께 등장해야 보이는 신호를, 유비퀴틴 기초 개념과 암 해석 흐름으로 정리합니다.
@@ -851,9 +815,6 @@ body::after {
         <p class="card-desc">
           유비퀴틴-프로테아좀 시스템(UPS) 기초부터 8가지 사슬 코드(K48·K63·M1·K11·K6·…), 종양억제 vs 종양촉진 E3 리가아제 아틀라스(MDM2·VHL·BRCA1·CRBN·SKP2…), DUB 아틀라스(USP7·BAP1·USP22·CYLD), 멀티오믹스 레이어 시뮬레이터(RNA→단백질→인산화→유비퀴틴화 분기 시나리오), 8개 암 기전 축(cell cycle·p53·DDR·hypoxia·ERAD·autophagy·mitophagy·immune), PROTAC·분자글루 5단계 메커니즘, 헷갈리는 개념 비교, 23개 학습 카드를 한 페이지에 담은 한글 인터랙티브.
         </p>
-        <div class="card-meta">
-          <span>9 sections</span><span>40+ E3·DUB</span><span>6 omics scenarios</span><span>23 concept cards</span>
-        </div>
         <div class="card-cta">
           <span class="card-cta-text">페이지로 들어가기</span>
           <span class="card-cta-mark" aria-hidden="true">

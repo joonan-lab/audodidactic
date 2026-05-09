@@ -526,18 +526,23 @@ h1 {
   top: var(--y);
   width: 11px;
   height: 11px;
-  border-radius: 99px;
-  border: 2px solid #fff;
+  aspect-ratio: 1;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
   background: var(--c);
-  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.24);
+  box-shadow: 0 0 0 0.8px rgba(17, 24, 39, 0.24);
   transform: translate(-50%, -50%);
+  appearance: none;
+  -webkit-appearance: none;
   cursor: pointer;
+  line-height: 0;
 }
 
 .event-dot.selected {
-  width: 15px;
-  height: 15px;
-  box-shadow: 0 0 0 2px var(--ink);
+  width: 16px;
+  height: 16px;
+  box-shadow: 0 0 0 1.4px var(--ink);
 }
 
 .matrix-wrap {
