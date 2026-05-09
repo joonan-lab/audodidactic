@@ -240,9 +240,9 @@ input,select{
 }
 .body-human-art{
   position:absolute;
-  inset:8px 54px 14px;
-  width:calc(100% - 108px);
-  height:calc(100% - 22px);
+  inset:8px 52px 12px;
+  width:calc(100% - 104px);
+  height:calc(100% - 20px);
   object-fit:contain;
   pointer-events:none;
   user-select:none;
@@ -1069,12 +1069,12 @@ const organProfiles = {
 
 const organPositions = {
   "Brain": {x:50,y:14,code:"Br"},
-  "Retina": {x:43,y:19,code:"Re"},
+  "Retina": {x:43,y:17,code:"Re"},
   "Lung/Airway": {x:50,y:37,code:"Lu"},
   "Heart": {x:55,y:41,code:"Ht"},
   "Liver": {x:45,y:49,code:"Li"},
   "Gut/Colon": {x:50,y:61,code:"Gu"},
-  "Kidney": {x:38,y:55,code:"Ki"},
+  "Kidney": {x:39,y:55,code:"Ki"},
   "Methods/NAM": {x:82,y:86,code:"M"}
 };
 
@@ -1170,7 +1170,7 @@ function renderOrganBody(rows){
     const pos = organPositions[organ];
     const count = globalCounts[organ] || 0;
     const visibleCount = counts[organ] || 0;
-    const size = organ === "Methods/NAM" ? 34 : 28 + Math.round((count/maxCount)*12);
+    const size = organ === "Methods/NAM" ? 30 : 24 + Math.round((count/maxCount)*10);
     const active = organ === activeOrgan ? " active" : "";
     const dim = state.organ !== "All" && organ !== state.organ ? " dim" : "";
     const method = organ === "Methods/NAM" ? " method-node" : "";
@@ -1182,7 +1182,7 @@ function renderOrganBody(rows){
   }).join("");
   holder.innerHTML = `
     <div class="body-viz" aria-label="Human body organ map">
-      <img class="body-human-art" src="assets/human-body-organoid-map.svg" alt="" aria-hidden="true">
+      <img class="body-human-art" src="assets/human-body-organoid-map.png" alt="" aria-hidden="true">
       ${nodes}
     </div>
     <div class="body-side">
