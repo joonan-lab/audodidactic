@@ -3,191 +3,804 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Audodidactic — 랩 온보딩 시각화</title>
-<meta name="description" content="joonan-lab의 새 주제 온보딩용 인터랙티브 시각화 모음. GWAS, single-cell, foundation models, organoid 등 위키 정리 문서를 한 페이지짜리 직관 자료로 풉니다.">
+<title>Audodidactic — joonan-lab onboarding 시각화</title>
+<meta name="description" content="joonan-lab의 새 주제 온보딩용 인터랙티브 시각화 자료실. 통계 유전학, 단세포 생물학, DNA 언어 모델 세 트랙에 걸친 5개 한글 인터랙티브.">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --ink:#17202a;
-  --ink-soft:#475569;
-  --muted:#64748b;
-  --line:#e2e4ea;
-  --line-soft:#f0f1f4;
-  --bg:#fff;
-  --bg-soft:#fafbfc;
-  --accent:#4f46e5;
-  --accent-soft:#eef2ff;
+  /* surfaces */
+  --bg: oklch(0.985 0.005 90);
+  --surface: oklch(1 0 0);
+  --surface-glass: oklch(1 0 0 / 0.6);
+  --surface-glass-strong: oklch(1 0 0 / 0.85);
+
+  /* ink */
+  --ink: oklch(0.18 0.02 250);
+  --ink-soft: oklch(0.36 0.02 250);
+  --muted: oklch(0.55 0.015 250);
+  --line: oklch(0.91 0.005 250);
+  --line-soft: oklch(0.94 0.004 250);
+
+  /* track palette — soft, distinct, no AI cliché purple-pink */
+  --t-stat: oklch(0.5 0.12 220);          /* deep teal-blue · statistical genetics */
+  --t-stat-glow: oklch(0.78 0.13 220);
+  --t-stat-tint: oklch(0.96 0.02 220);
+
+  --t-cell: oklch(0.6 0.13 35);           /* warm coral · single-cell biology */
+  --t-cell-glow: oklch(0.82 0.1 35);
+  --t-cell-tint: oklch(0.96 0.02 35);
+
+  --t-dna: oklch(0.5 0.1 160);            /* moss green · DNA language models */
+  --t-dna-glow: oklch(0.76 0.13 160);
+  --t-dna-tint: oklch(0.96 0.02 160);
+
+  /* shadow — layered low-opacity */
+  --shadow-1: 0 1px 2px oklch(0.2 0.02 250 / 0.04), 0 2px 6px oklch(0.2 0.02 250 / 0.04);
+  --shadow-2: 0 2px 4px oklch(0.2 0.02 250 / 0.05), 0 8px 20px oklch(0.2 0.02 250 / 0.05);
+  --shadow-card: 0 1px 2px oklch(0.2 0.02 250 / 0.03),
+                 0 4px 12px oklch(0.2 0.02 250 / 0.04),
+                 0 16px 40px oklch(0.2 0.02 250 / 0.04);
+  --shadow-hover: 0 2px 4px oklch(0.2 0.02 250 / 0.05),
+                  0 12px 28px oklch(0.2 0.02 250 / 0.07),
+                  0 32px 72px oklch(0.2 0.02 250 / 0.09);
+
+  /* radius */
+  --r-card: 24px;
+  --r-inner: 16px;
+  --r-pill: 999px;
+  --r-btn: 12px;
+
+  /* motion */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.4, 1);
+
+  /* type */
+  --f-display: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR",
+               -apple-system, BlinkMacSystemFont, "Segoe UI Variable", system-ui, sans-serif;
+  --f-body: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR",
+            -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+  --f-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
 }
-html{scroll-behavior:smooth}
-body{
-  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  background:var(--bg);
-  color:var(--ink);
-  line-height:1.6;
-  padding:2.5rem 1.75rem 3rem;
-  max-width:920px;
-  margin:0 auto;
-  -webkit-font-smoothing:antialiased;
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--f-body);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  text-wrap: pretty;
+  position: relative;
+  overflow-x: hidden;
+  min-height: 100vh;
 }
-.brand{
-  display:flex;
-  align-items:baseline;
-  gap:0.6rem;
-  margin-bottom:0.4rem;
+
+/* liquid background — gradient mesh blobs that gently drift */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  background:
+    radial-gradient(60% 50% at 12% 8%, oklch(0.78 0.13 220 / 0.16), transparent 60%),
+    radial-gradient(50% 45% at 92% 22%, oklch(0.82 0.1 35 / 0.14), transparent 65%),
+    radial-gradient(55% 50% at 70% 92%, oklch(0.76 0.13 160 / 0.12), transparent 65%),
+    radial-gradient(40% 40% at 35% 60%, oklch(0.85 0.06 250 / 0.08), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: drift 28s ease-in-out infinite alternate;
+  filter: blur(0px);
 }
-h1{
-  font-size:1.95rem;
-  font-weight:700;
-  letter-spacing:-0.015em;
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(oklch(0.2 0.02 250 / 0.012) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: multiply;
 }
-.brand .tag{
-  font-size:0.7rem;
-  font-weight:600;
-  color:var(--accent);
-  background:var(--accent-soft);
-  padding:0.2rem 0.5rem;
-  border-radius:4px;
-  letter-spacing:0.02em;
+@keyframes drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+  50%  { transform: translate3d(2%, -1.5%, 0) scale(1.04) rotate(0.4deg); }
+  100% { transform: translate3d(-1.5%, 2%, 0) scale(1.03) rotate(-0.3deg); }
 }
-.sub{
-  color:var(--muted);
-  margin-bottom:1rem;
-  font-size:0.9rem;
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; }
 }
-.intro{
-  color:var(--ink-soft);
-  margin:1.25rem 0 2.75rem;
-  font-size:0.92rem;
-  line-height:1.75;
-  border-left:3px solid var(--line);
-  padding:0.5rem 0 0.5rem 1.1rem;
+
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 56px 28px 80px;
 }
-.intro strong{color:var(--ink)}
-.intro p+p{margin-top:0.6rem}
-h2{
-  font-size:1.1rem;
-  font-weight:700;
-  margin:2.5rem 0 0.6rem;
-  padding-bottom:0.45rem;
-  border-bottom:2px solid var(--line);
-  display:flex;
-  justify-content:space-between;
-  align-items:baseline;
-  gap:1rem;
+
+/* ============== HERO ============== */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 36px;
+  margin-bottom: 72px;
 }
-h2 .count{
-  font-size:0.72rem;
-  font-weight:500;
-  color:var(--muted);
-  letter-spacing:0.04em;
+@media (min-width: 980px) {
+  .hero {
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.85fr);
+    align-items: end;
+    gap: 56px;
+  }
 }
-ul{list-style:none;padding:0}
-li{
-  border-bottom:1px solid var(--line-soft);
-  padding:0.95rem 0;
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--f-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 20px;
 }
-li:last-child{border-bottom:none}
-a{
-  text-decoration:none;
-  color:var(--ink);
-  display:block;
+.brand-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background:
+    conic-gradient(from 220deg at 50% 50%,
+      var(--t-stat-glow), var(--t-cell-glow) 35%,
+      var(--t-dna-glow) 70%, var(--t-stat-glow) 100%);
+  box-shadow:
+    0 1px 2px oklch(0.2 0.02 250 / 0.1),
+    inset 0 0 0 1.5px oklch(1 0 0 / 0.6),
+    inset 0 -3px 6px oklch(0.2 0.02 250 / 0.1);
+  position: relative;
 }
-a:hover .title{color:var(--accent)}
-.title{
-  font-size:1rem;
-  font-weight:600;
-  margin-bottom:0.25rem;
-  letter-spacing:-0.005em;
+.brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: inset 0 1px 2px oklch(0.2 0.02 250 / 0.06);
 }
-.meta{
-  font-size:0.75rem;
-  color:var(--muted);
-  font-variant-numeric:tabular-nums;
+.brand strong { color: var(--ink); font-weight: 700; }
+
+.hero h1 {
+  font-family: var(--f-display);
+  font-size: clamp(36px, 5.6vw, 64px);
+  font-weight: 850;
+  letter-spacing: -0.022em;
+  line-height: 1.04;
+  margin: 0 0 22px;
+  max-width: 720px;
 }
-.desc{
-  font-size:0.84rem;
-  color:var(--ink-soft);
-  margin-top:0.35rem;
-  line-height:1.55;
+.hero h1 .accent {
+  background: linear-gradient(120deg,
+    var(--t-stat) 0%,
+    var(--t-cell) 55%,
+    var(--t-dna) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
-.empty{
-  font-size:0.82rem;
-  color:#94a3b8;
-  font-style:italic;
-  padding:0.5rem 0;
+
+.hero .lede {
+  font-size: 17px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+  max-width: 580px;
+  margin-bottom: 28px;
 }
-.footer{
-  margin-top:3.5rem;
-  font-size:0.74rem;
-  color:#94a3b8;
-  border-top:1px solid var(--line);
-  padding-top:1.1rem;
-  line-height:1.7;
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
-.footer a{
-  color:var(--muted);
-  text-decoration:underline;
-  display:inline;
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
 }
-.footer a:hover{color:var(--accent)}
-@media (max-width:600px){
-  body{padding:1.75rem 1.1rem 2.5rem}
-  h1{font-size:1.6rem}
-  h2{font-size:1.02rem}
+.chip b { color: var(--ink); font-weight: 700; font-family: var(--f-mono); }
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid oklch(1 0 0 / 0.7);
+  border-radius: var(--r-card);
+  padding: 26px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
 }
+.hero-stats::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 80% at 100% 0%, oklch(0.78 0.13 220 / 0.1), transparent 60%);
+  pointer-events: none;
+}
+.h-stat { display: flex; flex-direction: column; gap: 6px; position: relative; }
+.h-stat-num {
+  font-family: var(--f-mono);
+  font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.h-stat-num small {
+  font-size: 0.5em;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 4px;
+}
+.h-stat-lab {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.01em;
+  line-height: 1.45;
+}
+
+/* ============== TRACKS ============== */
+.tracks {
+  display: grid;
+  gap: 64px;
+}
+
+.track {
+  position: relative;
+  --tc: var(--t-stat);
+  --tc-glow: var(--t-stat-glow);
+  --tc-tint: var(--t-stat-tint);
+}
+.track[data-track="cell"]  { --tc: var(--t-cell); --tc-glow: var(--t-cell-glow); --tc-tint: var(--t-cell-tint); }
+.track[data-track="dna"]   { --tc: var(--t-dna);  --tc-glow: var(--t-dna-glow);  --tc-tint: var(--t-dna-tint);  }
+
+.track-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 8px;
+  padding-bottom: 16px;
+  position: relative;
+}
+.track-head::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right,
+    var(--tc) 0%,
+    var(--line) 25%,
+    var(--line) 100%);
+  opacity: 0.5;
+}
+.track-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.track-num {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--tc);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.track-num::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tc);
+  box-shadow: 0 0 0 4px oklch(from var(--tc) calc(l + 0.05) c h / 0.18);
+}
+.track-title {
+  font-family: var(--f-display);
+  font-size: clamp(24px, 2.6vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.018em;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.15;
+}
+.track-sub {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.track-blurb {
+  font-size: 15px;
+  color: var(--ink-soft);
+  max-width: 680px;
+  line-height: 1.7;
+  margin: 16px 0 28px;
+}
+
+/* ============== CARDS ============== */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+@media (min-width: 720px) {
+  .cards.split { grid-template-columns: repeat(2, 1fr); }
+}
+.cards.solo {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 980px) {
+  .cards.solo { grid-template-columns: minmax(0, 760px); }
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 30px 28px 26px;
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  text-decoration: none;
+  color: var(--ink);
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform 0.5s var(--ease),
+    border-color 0.5s var(--ease),
+    box-shadow 0.5s var(--ease);
+  box-shadow: var(--shadow-1);
+}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(120% 90% at 100% 0%, oklch(from var(--tc-glow) l c h / 0.32), transparent 65%),
+    linear-gradient(135deg, transparent 30%, var(--tc-tint) 100%);
+  opacity: 0.5;
+  transition: opacity 0.5s var(--ease);
+}
+.card::after {
+  /* subtle inner highlight */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, oklch(1 0 0 / 0.4), transparent 30%);
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: oklch(from var(--tc) l c h / 0.4);
+}
+.card:hover::before { opacity: 0.9; }
+.card:focus-visible {
+  outline: 2px solid var(--tc);
+  outline-offset: 4px;
+}
+
+.card-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tc);
+  font-weight: 700;
+  align-self: flex-start;
+}
+.card-tag::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--tc);
+  box-shadow: 0 0 0 3px oklch(from var(--tc) calc(l + 0.05) c h / 0.18);
+}
+
+.card-title {
+  font-family: var(--f-display);
+  font-size: clamp(19px, 1.6vw, 22px);
+  font-weight: 800;
+  letter-spacing: -0.014em;
+  line-height: 1.28;
+  color: var(--ink);
+  margin: 4px 0 2px;
+}
+
+.card-desc {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+  flex-grow: 1;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+.card-meta span {
+  padding: 4px 10px;
+  background: oklch(1 0 0 / 0.55);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-pill);
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.card-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 1px dashed oklch(from var(--tc) l c h / 0.25);
+}
+.card-cta-text {
+  font-size: 13.5px;
+  color: var(--tc);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+.card-cta-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--tc);
+  color: oklch(1 0 0);
+  display: grid;
+  place-items: center;
+  transition: transform 0.4s var(--ease-spring),
+              background 0.3s var(--ease);
+  box-shadow:
+    0 1px 2px oklch(0.2 0.02 250 / 0.1),
+    0 0 0 0 oklch(from var(--tc) l c h / 0);
+}
+.card-cta-mark svg {
+  width: 14px;
+  height: 14px;
+}
+.card:hover .card-cta-mark {
+  transform: translateX(5px) scale(1.05);
+  box-shadow:
+    0 2px 6px oklch(0.2 0.02 250 / 0.12),
+    0 0 0 6px oklch(from var(--tc) l c h / 0.12);
+}
+
+/* ============== UPCOMING ============== */
+.upcoming {
+  margin-top: 72px;
+  padding: 28px 32px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px dashed oklch(from var(--ink) l c h / 0.18);
+  border-radius: var(--r-card);
+}
+.upcoming-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.upcoming-head h3 {
+  font-family: var(--f-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+.upcoming-head .badge {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.upcoming-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+.upcoming-list li {
+  padding: 7px 14px;
+  background: oklch(1 0 0 / 0.55);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+/* ============== FOOT ============== */
+.foot {
+  margin-top: 72px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.75;
+}
+.foot a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.foot a:hover { color: var(--ink); }
+.foot strong { color: var(--ink-soft); font-weight: 700; }
+.foot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.foot-row .right { font-family: var(--f-mono); font-size: 12px; }
 </style>
 </head>
 <body>
+<div class="page">
 
-<div class="brand">
-  <h1>Audodidactic</h1>
-  <span class="tag">joonan-lab</span>
+<!-- ================ HERO ================ -->
+<header class="hero">
+  <div class="hero-text">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span><strong>audodidactic</strong> · joonan-lab onboarding</span>
+    </div>
+    <h1>새 주제를 한 페이지로 <span class="accent">스스로 익힌다</span></h1>
+    <p class="lede">
+      랩원이 GWAS·단세포·foundation model 같은 주제에 처음 들어갈 때 텍스트만으로 잘 잡히지 않는 직관을, 한 페이지짜리 인터랙티브로 풀어둔 자료실. 모든 페이지는 lab 위키의 정리 노트와 원 논문에서 출발하고, 인용은 Google Scholar로 연결됩니다.
+    </p>
+    <div class="hero-meta">
+      <span class="chip"><b>5</b> 인터랙티브</span>
+      <span class="chip"><b>3</b> 연구 트랙</span>
+      <span class="chip"><b>한글</b> 학습 자료</span>
+    </div>
+  </div>
+  <aside class="hero-stats" aria-label="자료실 현황">
+    <div class="h-stat">
+      <div class="h-stat-num">10,473<small>줄</small></div>
+      <div class="h-stat-lab">총 인터랙티브 코드</div>
+    </div>
+    <div class="h-stat">
+      <div class="h-stat-num">100+</div>
+      <div class="h-stat-lab">인용 논문·리소스</div>
+    </div>
+    <div class="h-stat">
+      <div class="h-stat-num">2026.05</div>
+      <div class="h-stat-lab">최종 업데이트</div>
+    </div>
+    <div class="h-stat">
+      <div class="h-stat-num">self-host</div>
+      <div class="h-stat-lab">GitHub Pages 정적 배포</div>
+    </div>
+  </aside>
+</header>
+
+<!-- ================ TRACKS ================ -->
+<main class="tracks">
+
+  <!-- TRACK 01 — STATISTICAL GENETICS -->
+  <section class="track" data-track="stat" aria-labelledby="t01">
+    <header class="track-head">
+      <div class="track-title-group">
+        <span class="track-num">track 01</span>
+        <h2 class="track-title" id="t01">통계 유전학</h2>
+      </div>
+      <span class="track-sub">GWAS · Fine-mapping · Burden</span>
+    </header>
+    <p class="track-blurb">
+      Common SNP에서 rare variant까지, 그리고 GWAS peak를 causal variant로 좁히는 fine-mapping까지. 통계 모델이 어디서 신호를 잡고 어디서 막히는지를 조작해보며 익힙니다.
+    </p>
+    <div class="cards split">
+      <a class="card" href="genetic-association-methods/index.html">
+        <span class="card-tag">methodology · 방법론</span>
+        <h3 class="card-title">유전 연관분석 방법 — GWAS, TADA, Burden, SKAT</h3>
+        <p class="card-desc">
+          Common SNP, de novo variant, rare coding burden, SKAT/SKAT-O, GLMM/REGENIE, LDSC/S-LDSC, MAGMA, PRS가 각각 어떤 신호를 포착하는지 설명하는 한글 인터랙티브. 대립유전자 빈도 / 효과 크기 지형도, 방법 선택기, GWAS·희귀변이·TADA 직관 콘솔, 분석 워크플로우, 핵심·예시 출처 링크를 포함합니다.
+        </p>
+        <div class="card-meta">
+          <span>8 methods</span><span>3 simulators</span><span>2026.05.09</span>
+        </div>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+      <a class="card" href="gwas-fine-mapping/index.html">
+        <span class="card-tag">interactive · locus plot</span>
+        <h3 class="card-title">GWAS Fine-Mapping — PIP, Credible Set, Functional Prior</h3>
+        <p class="card-desc">
+          GWAS peak를 causal variant 후보로 좁히는 과정을 조작형 locus plot으로 풀어둔 한글 인터랙티브. LD block 폭, GWAS 정보량, 기능 prior, ancestry LD 다양성, secondary signal을 바꾸며 PIP와 95% credible set이 어떻게 움직이는지 확인하고, SuSiE/FINEMAP/PolyFun/colocalization/MPRA/cross-ancestry 문헌 지형까지 이어서 읽을 수 있습니다.
+        </p>
+        <div class="card-meta">
+          <span>5 scenarios</span><span>26 paper atlas</span><span>2026.05.09</span>
+        </div>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- TRACK 02 — SINGLE-CELL BIOLOGY -->
+  <section class="track" data-track="cell" aria-labelledby="t02">
+    <header class="track-head">
+      <div class="track-title-group">
+        <span class="track-num">track 02</span>
+        <h2 class="track-title" id="t02">단세포 생물학</h2>
+      </div>
+      <span class="track-sub">Atlas · Foundation Model</span>
+    </header>
+    <p class="track-blurb">
+      단일세포 시퀀싱이 인간 뇌를 어떻게 그려내는지, 그리고 그 위에 학습되는 foundation model이 어떤 어휘로 셀을 다루는지. atlas의 발견과 모델의 토큰화를 함께 봅니다.
+    </p>
+    <div class="cards split">
+      <a class="card" href="human-brain-single-cell/index.html">
+        <span class="card-tag">atlas · timeline</span>
+        <h3 class="card-title">인간 뇌 단일세포 시퀀싱 연구 지도</h3>
+        <p class="card-desc">
+          BrainSpan부터 BICCN, MERFISH, multiome, aging, Tri-IPC, cortical regionality까지 인간 뇌 single-cell/single-nucleus sequencing 연구를 연대별 발견과 셀타입 의미로 정리한 한글 학습 지도입니다. 그래픽 요약, 논문 타임라인, 하위 셀타입 quick map, regional-specific 발견 매트릭스, 검색 가능한 카탈로그를 포함합니다.
+        </p>
+        <div class="card-meta">
+          <span>35 studies</span><span>50+ subtype/regional axes</span><span>2026.05.09</span>
+        </div>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+      <a class="card" href="single-cell-foundation-models/index.html">
+        <span class="card-tag">foundation model</span>
+        <h3 class="card-title">단세포 Foundation Model — 55편의 풍경</h3>
+        <p class="card-desc">
+          scBERT(2022)부터 Tahoe-x1·scPRINT-2·Geneformer V2(2025-26)까지 단세포 RNA-seq foundation model의 4년 가속을 한 페이지로. 기초 4가지(scRNA-seq·transformer·토큰화·foundation model) → 8가지 토큰화 전략 풍경 → 16개 모델 비교 테이블(파라미터·corpus·context·objective·license) → HEIMDALL 토크나이저 분해(FG×FE×ORDER) → Reality Check 4편(Kedzierska·Csendes·Wei·Bereket) → Virtual Cell 1·2·3세대 비전.
+        </p>
+        <div class="card-meta">
+          <span>16 models</span><span>8 strategies</span><span>4 reality checks</span>
+        </div>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- TRACK 03 — DNA LANGUAGE MODELS -->
+  <section class="track" data-track="dna" aria-labelledby="t03">
+    <header class="track-head">
+      <div class="track-title-group">
+        <span class="track-num">track 03</span>
+        <h2 class="track-title" id="t03">DNA 언어 모델</h2>
+      </div>
+      <span class="track-sub">gLM Attention · Tokenization</span>
+    </header>
+    <p class="track-blurb">
+      Transformer 계열 genomic language model이 DNA에서 무엇에 attention하는지. 토큰화 차이가 motif·splice boundary·enhancer-promoter bridge에서 어떻게 다르게 보이는지를 시각화 렌즈로 풀어둡니다.
+    </p>
+    <div class="cards solo">
+      <a class="card" href="genomic-language-model-attention/index.html">
+        <span class="card-tag">attention lens</span>
+        <h3 class="card-title">gLM Attention Lens — genomic language model은 DNA에서 무엇을 보는가</h3>
+        <p class="card-desc">
+          DNABERT, DNABERT-2, Nucleotide Transformer, GROVER, Enformer, HyenaDNA, Caduceus, ARSENAL을 중심으로 tokenization, self-attention, long-range regulatory context, reverse-complement prior, nucleotide dependency map을 비교하는 학습용 인터랙티브입니다.
+        </p>
+        <div class="card-meta">
+          <span>6 scenarios</span><span>8 model families</span><span>2026.05.09</span>
+        </div>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================ COMING SOON ================ -->
+<section class="upcoming" aria-labelledby="upcoming-h">
+  <div class="upcoming-head">
+    <h3 id="upcoming-h">다음 트랙 (작성 중)</h3>
+    <span class="badge">coming soon</span>
+  </div>
+  <ul class="upcoming-list">
+    <li>ASD 유전학·모델</li>
+    <li>Organoid protocols</li>
+    <li>Perturbation atlas</li>
+    <li>Spatial transcriptomics</li>
+    <li>뇌질환 연구 지도</li>
+  </ul>
+</section>
+
+<!-- ================ FOOTER ================ -->
+<footer class="foot">
+  <div class="foot-row">
+    <div>
+      <strong>joonan-lab</strong> · audodidactic onboarding 자료실<br>
+      랩 내부 위키(llm-wiki)의 정리 노트를 토대로 제작 · 인용은 Google Scholar로 연결
+    </div>
+    <div class="right">
+      <a href="https://github.com/joonan-lab/audodidactic" target="_blank" rel="noopener">github.com/joonan-lab/audodidactic</a>
+    </div>
+  </div>
+</footer>
+
 </div>
-<p class="sub">새 주제를 스스로 빠르게 익히기 위한 인터랙티브 시각화 모음</p>
-
-<div class="intro">
-  <p>랩원이 처음 보는 주제 — GWAS, single-cell, foundation models, organoid 등 — 에 진입할 때 텍스트만으로는 잘 잡히지 않는 직관을 한 페이지짜리 인터랙티브로 풀어둔 자료실입니다.</p>
-  <p>출처는 랩 내부 위키의 정리 문서와 원 논문이며, 새 주제가 위키에 추가될 때마다 여기에도 시각화가 점진적으로 늘어납니다. 각 페이지의 인용은 Google Scholar 검색으로 연결됩니다.</p>
-</div>
-
-<h2>방법론 해설 <span class="count">5 items</span></h2>
-<ul>
-  <li><a href="genetic-association-methods/index.html">
-    <div class="title">유전 연관분석 방법 — GWAS, TADA, Burden, SKAT</div>
-    <div class="meta">2026-05-09 · 8 methods · 3 simulators</div>
-    <div class="desc">Common SNP, de novo variant, rare coding burden, SKAT/SKAT-O, GLMM/REGENIE, LDSC/S-LDSC, MAGMA, PRS가 각각 어떤 신호를 포착하는지 설명하는 한글 인터랙티브. 대립유전자 빈도 / 효과 크기 지형도, 방법 선택기, GWAS·희귀변이·TADA 직관 콘솔, 분석 워크플로우, 핵심·예시 출처 링크를 포함합니다.</div>
-  </a></li>
-  <li><a href="genomic-language-model-attention/index.html">
-    <div class="title">gLM Attention Lens — genomic language model은 DNA에서 무엇을 보는가</div>
-    <div class="meta">2026-05-09 · 6 scenarios · 8 model families</div>
-    <div class="desc">DNABERT, DNABERT-2, Nucleotide Transformer, GROVER, Enformer, HyenaDNA, Caduceus, ARSENAL을 중심으로 tokenization, self-attention, long-range regulatory context, reverse-complement prior, nucleotide dependency map을 비교하는 학습용 인터랙티브입니다.</div>
-  </a></li>
-  <li><a href="gwas-fine-mapping/index.html">
-    <div class="title">GWAS Fine-Mapping — PIP, Credible Set, Functional Prior</div>
-    <div class="meta">2026-05-09 · 5 scenarios · 26 paper atlas</div>
-    <div class="desc">GWAS peak를 causal variant 후보로 좁히는 과정을 조작형 locus plot으로 풀어둔 한글 인터랙티브. LD block 폭, GWAS 정보량, 기능 prior, ancestry LD 다양성, secondary signal을 바꾸며 PIP와 95% credible set이 어떻게 움직이는지 확인하고, SuSiE/FINEMAP/PolyFun/colocalization/MPRA/cross-ancestry 문헌 지형까지 이어서 읽을 수 있습니다.</div>
-  </a></li>
-  <li><a href="human-brain-single-cell/index.html">
-    <div class="title">인간 뇌 단일세포 시퀀싱 연구 지도</div>
-    <div class="meta">2026-05-09 · 35 studies · 50+ subtype/regional axes</div>
-    <div class="desc">BrainSpan부터 BICCN, MERFISH, multiome, aging, Tri-IPC, cortical regionality까지 인간 뇌 single-cell/single-nucleus sequencing 연구를 연대별 발견과 셀타입 의미로 정리한 한글 학습 지도입니다. 그래픽 요약, 논문 타임라인, 하위 셀타입 quick map, regional-specific 발견 매트릭스, 검색 가능한 카탈로그를 포함합니다.</div>
-  </a></li>
-  <li><a href="single-cell-foundation-models/index.html">
-    <div class="title">단세포 Foundation Model — 55편의 풍경</div>
-    <div class="meta">2026-05-09 · 16 models · 8 strategies · 4 reality checks</div>
-    <div class="desc">scBERT(2022)부터 Tahoe-x1·scPRINT-2·Geneformer V2(2025-26)까지 단세포 RNA-seq foundation model의 4년 가속을 한 페이지로. 기초 4가지(scRNA-seq·transformer·토큰화·foundation model) → 8가지 토큰화 전략 풍경 → 16개 모델 비교 테이블(파라미터·corpus·context·objective·license) → HEIMDALL 토크나이저 분해(FG×FE×ORDER) → Reality Check 4편(Kedzierska·Csendes·Wei·Bereket) → Virtual Cell 1·2·3세대 비전.</div>
-  </a></li>
-</ul>
-
-<h2>예정 트랙 <span class="count">coming soon</span></h2>
-<ul>
-  <li><div class="empty">ASD 유전학·모델 · organoid protocols · perturbation atlas 등이 순차적으로 추가됩니다.</div></li>
-</ul>
-
-<div class="footer">
-  joonan-lab · <a href="https://github.com/joonan-lab/audodidactic" target="_blank" rel="noopener">github.com/joonan-lab/audodidactic</a><br>
-  랩 내부 위키(llm-wiki)의 정리 문서를 토대로 제작 · 인용은 Google Scholar로 연결
-</div>
-
 </body>
 </html>
