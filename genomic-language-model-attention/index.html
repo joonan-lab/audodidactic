@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>gLM Attention Lens - 학습 인터랙티브</title>
+<meta name="description" content="genomic language model이 DNA sequence context에 attention하거나 dependency를 형성하는 방식을 설명하는 한국어 학습 인터랙티브.">
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#fff;
+  --ink:#17202a;
+  --ink2:#344054;
+  --muted:#667085;
+  --line:#d9dee7;
+  --soft:#f6f8fb;
+  --soft2:#edf2f7;
+  --teal:#19728a;
+  --red:#b23a48;
+  --gold:#a66b13;
+  --green:#19735d;
+  --violet:#6350a8;
+  --blue:#255c99;
+  --shadow:0 12px 28px rgba(23,32,42,.08);
+}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  line-height:1.48;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+button,input,select{font:inherit}
+a{color:inherit}
+.page{max-width:1460px;margin:0 auto;padding:28px 24px 42px}
+.mast{
+  display:grid;
+  grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);
+  gap:24px;
+  align-items:end;
+  border-bottom:1px solid var(--line);
+  padding-bottom:18px;
+}
+.mast>*,
+.workspace>*,
+.quiz-grid>*,
+.concept-grid>*,
+.sources>*,
+.model-row>*{min-width:0}
+.eyebrow{
+  margin:0 0 8px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+h1{
+  max-width:940px;
+  margin:0;
+  font-size:clamp(34px,4.2vw,58px);
+  line-height:1.06;
+  letter-spacing:0;
+  font-weight:850;
+  overflow-wrap:anywhere;
+}
+h1 .line{display:block}
+.dek{
+  max-width:790px;
+  margin:14px 0 0;
+  color:#3f4b5d;
+  font-size:15px;
+  line-height:1.75;
+  overflow-wrap:anywhere;
+}
+.mast-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.stat{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  min-height:96px;
+  padding:12px;
+}
+.stat b{display:block;font-size:24px;line-height:1.1}
+.stat span{display:block;margin-top:7px;color:var(--muted);font-size:12px}
+.scenario-strip{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(118px,1fr));
+  gap:8px;
+  margin:18px 0;
+}
+.scenario-btn,.model-btn,.seg-btn,.quiz-btn{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  border-radius:8px;
+  cursor:pointer;
+  transition:transform .16s ease,border-color .16s ease,background .16s ease,color .16s ease;
+}
+.scenario-btn{
+  min-height:74px;
+  padding:10px 9px;
+  text-align:left;
+}
+.scenario-btn:hover,.model-btn:hover,.seg-btn:hover,.quiz-btn:hover{transform:translateY(-1px);border-color:#9aa7b8}
+.scenario-btn.active,.model-btn.active,.seg-btn.active{
+  border-color:var(--accent);
+  background:color-mix(in srgb,var(--accent) 9%,#fff);
+}
+.scenario-btn .k{display:block;font-size:13px;font-weight:850;line-height:1.18}
+.scenario-btn .s{display:block;color:var(--muted);font-size:11px;margin-top:5px;line-height:1.25}
+.workspace{
+  display:grid;
+  grid-template-columns:minmax(360px,.88fr) minmax(500px,1.24fr) minmax(320px,.88fr);
+  gap:16px;
+  align-items:start;
+}
+.panel{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  overflow:hidden;
+}
+.panel-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  padding:13px 14px 10px;
+  border-bottom:1px solid var(--line);
+}
+.panel-title{
+  font-size:14px;
+  font-weight:850;
+  letter-spacing:.01em;
+}
+.panel-note{
+  max-width:380px;
+  color:var(--muted);
+  font-size:12px;
+  text-align:right;
+}
+.panel-body{padding:14px}
+.control-block{display:grid;gap:12px}
+.profile{
+  border:1px solid var(--line);
+  background:var(--soft);
+  border-radius:8px;
+  padding:13px;
+}
+.profile h2{
+  margin:0;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:25px;
+  line-height:1.08;
+  letter-spacing:0;
+  overflow-wrap:anywhere;
+}
+.profile p{margin:9px 0 0;color:#344053;font-size:13px;line-height:1.65;overflow-wrap:anywhere}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{
+  border:1px solid #cdd5df;
+  background:#fff;
+  border-radius:999px;
+  color:#2f3b4d;
+  font-size:11px;
+  padding:4px 8px;
+  white-space:nowrap;
+}
+.seg-label{
+  font-size:11px;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--muted);
+}
+.segmented{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg-btn{min-height:43px;padding:7px 8px;text-align:center;font-size:12px;font-weight:800}
+.model-list{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.model-btn{
+  min-height:52px;
+  padding:8px;
+  text-align:left;
+}
+.model-btn b{display:block;font-size:12px;line-height:1.2}
+.model-btn span{display:block;color:var(--muted);font-size:10px;margin-top:4px;line-height:1.25}
+.readout-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.readout{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px;
+  min-height:86px;
+  background:#fff;
+}
+.readout .label{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:850;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+.readout .value{
+  margin-top:5px;
+  font-size:18px;
+  font-weight:850;
+  font-variant-numeric:tabular-nums;
+}
+.readout .mini-text{margin-top:4px;color:#475467;font-size:11px;line-height:1.35}
+.lens-stage{display:grid;gap:12px}
+.arc-wrap{
+  position:relative;
+  min-height:248px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:
+    linear-gradient(#fff,#fff),
+    repeating-linear-gradient(90deg,rgba(23,32,42,.05) 0 1px,transparent 1px 26px);
+  overflow:hidden;
+}
+#arcCanvas{display:block;width:100%;height:248px}
+.token-rail{
+  display:grid;
+  grid-template-columns:repeat(var(--token-count),minmax(0,1fr));
+  gap:4px;
+}
+.token{
+  min-width:0;
+  height:44px;
+  border:1px solid #cdd5df;
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 4px;
+  background:#fff;
+  color:#253246;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:clamp(9px,1.2vw,12px);
+  font-weight:800;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.token.query{border-color:var(--red);background:#fff0f3;color:#8e2435}
+.token.key{border-color:var(--teal);background:#eef9fb;color:#135b6d}
+.token.motif{border-color:var(--gold);background:#fff7e8;color:#7c4e0d}
+.token.rc{border-color:var(--violet);background:#f4f1ff;color:#4f3d8a}
+.token.dim{opacity:.55}
+.matrix-wrap{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 154px;
+  gap:12px;
+}
+.heatmap-shell{
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+  background:#fff;
+}
+#heatmapCanvas{display:block;width:100%;height:430px}
+.head-bars{display:grid;gap:8px;align-content:start}
+.head-bar{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px;
+  background:#fff;
+}
+.head-bar b{display:block;font-size:12px;line-height:1.2}
+.bar-track{
+  margin-top:8px;
+  height:8px;
+  border-radius:999px;
+  background:#edf2f7;
+  overflow:hidden;
+}
+.bar-fill{height:100%;width:0;border-radius:999px;background:var(--accent);transition:width .24s ease}
+.head-bar span{display:block;color:var(--muted);font-size:10px;margin-top:7px;line-height:1.3}
+.explain{
+  display:grid;
+  gap:10px;
+}
+.explain-card{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px;
+  background:#fff;
+}
+.explain-card h3{
+  margin:0;
+  font-size:15px;
+  line-height:1.2;
+  color:var(--accent);
+}
+.explain-card p{
+  margin:8px 0 0;
+  color:#344053;
+  font-size:13px;
+  line-height:1.65;
+}
+.steps{
+  counter-reset:item;
+  display:grid;
+  gap:8px;
+}
+.step{
+  position:relative;
+  display:grid;
+  grid-template-columns:28px 1fr;
+  gap:9px;
+  align-items:start;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px;
+  background:#fff;
+}
+.step::before{
+  counter-increment:item;
+  content:counter(item);
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:color-mix(in srgb,var(--accent) 12%,#fff);
+  border:1px solid color-mix(in srgb,var(--accent) 42%,#fff);
+  color:var(--accent);
+  font-weight:850;
+  font-size:12px;
+}
+.step b{display:block;font-size:12px;margin-bottom:3px}
+.step span{display:block;grid-column:2;color:var(--muted);font-size:11px;line-height:1.45}
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:end;
+  margin:30px 0 12px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:8px;
+}
+.section-title h2{
+  margin:0;
+  font-size:20px;
+  line-height:1.2;
+}
+.section-title p{
+  margin:0;
+  max-width:620px;
+  color:var(--muted);
+  font-size:13px;
+  text-align:right;
+}
+.concept-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+.concept{
+  min-height:230px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:14px;
+  background:#fff;
+}
+.concept .num{
+  width:34px;
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--line);
+  border-radius:7px;
+  color:var(--accent);
+  font-weight:900;
+  background:color-mix(in srgb,var(--accent) 9%,#fff);
+  margin-bottom:12px;
+}
+.concept h3{margin:0;font-size:16px;line-height:1.22}
+.concept p{margin:9px 0 0;color:#3f4b5d;font-size:13px;line-height:1.62}
+.concept ul{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.concept li{font-size:12px;color:var(--muted);line-height:1.42;padding-left:12px;position:relative}
+.concept li::before{
+  content:"";
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:var(--accent);
+  position:absolute;
+  left:0;
+  top:.58em;
+}
+.model-map{
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+}
+.model-row{
+  display:grid;
+  grid-template-columns:140px 128px 1fr 1fr;
+  gap:0;
+  min-height:72px;
+  border-bottom:1px solid var(--line);
+}
+.model-row:last-child{border-bottom:none}
+.model-row>div{padding:12px;border-right:1px solid var(--line)}
+.model-row>div:last-child{border-right:none}
+.model-row.header{
+  min-height:auto;
+  background:var(--soft2);
+  color:#475467;
+  font-size:11px;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.model-name b{display:block;font-size:14px}
+.model-name span{display:block;margin-top:4px;color:var(--muted);font-size:11px}
+.pill{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  padding:3px 8px;
+  font-size:11px;
+  font-weight:800;
+  background:#fff;
+  color:#3f4b5d;
+}
+.model-row p{margin:0;color:#344053;font-size:12px;line-height:1.55}
+.quiz-grid{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:14px;
+}
+.quiz-card{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  padding:14px;
+}
+.quiz-card h3{margin:0;font-size:16px}
+.quiz-options{display:grid;gap:8px;margin-top:12px}
+.quiz-btn{
+  min-height:48px;
+  padding:10px 12px;
+  text-align:left;
+  color:#344053;
+  font-size:13px;
+  line-height:1.35;
+}
+.quiz-btn.good{border-color:var(--green);background:#effaf5;color:#115c49}
+.quiz-btn.bad{border-color:var(--red);background:#fff0f3;color:#8e2435}
+.quiz-result{
+  margin-top:12px;
+  min-height:58px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:11px;
+  color:#344053;
+  background:var(--soft);
+  font-size:13px;
+  line-height:1.55;
+}
+.sources{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.source{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px;
+  background:#fff;
+  min-height:150px;
+}
+.source b{display:block;font-size:13px;line-height:1.3}
+.source span{display:block;margin-top:5px;color:var(--muted);font-size:11px}
+.source p{margin:8px 0 0;color:#3f4b5d;font-size:12px;line-height:1.48}
+.source a{
+  display:inline-block;
+  margin-top:9px;
+  color:var(--accent);
+  font-size:12px;
+  font-weight:800;
+  text-decoration:none;
+}
+.footer{
+  margin-top:32px;
+  border-top:1px solid var(--line);
+  padding-top:14px;
+  color:#98a2b3;
+  font-size:12px;
+  line-height:1.7;
+}
+@media(max-width:1180px){
+  .mast,.workspace,.quiz-grid{grid-template-columns:1fr}
+  .mast-grid{max-width:720px}
+  .scenario-strip{grid-template-columns:repeat(3,1fr)}
+  .concept-grid,.sources{grid-template-columns:repeat(2,1fr)}
+  .section-title{align-items:flex-start;flex-direction:column}
+  .section-title p{text-align:left}
+}
+@media(max-width:760px){
+  .page{padding:20px 14px 34px}
+  h1{font-size:32px}
+  .panel-head{flex-direction:column;align-items:flex-start;gap:5px}
+  .panel-note{text-align:left;max-width:none}
+  .profile h2{font-size:22px}
+  .mast-grid,.scenario-strip,.concept-grid,.sources,.readout-grid,.matrix-wrap{grid-template-columns:1fr}
+  .segmented{grid-template-columns:1fr}
+  .model-list{grid-template-columns:1fr}
+  .model-row{grid-template-columns:1fr}
+  .model-row>div{border-right:none;border-bottom:1px solid var(--line)}
+  .model-row>div:last-child{border-bottom:none}
+  .token-rail{grid-template-columns:repeat(auto-fit,minmax(34px,1fr))}
+  #heatmapCanvas{height:360px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="mast">
+    <div>
+      <p class="eyebrow">Genomic Language Model Attention Lens</p>
+      <h1><span class="line">gLM은 DNA에서 무엇에</span><span class="line">attention하는가</span></h1>
+      <p class="dek">Transformer 계열 gLM은 nucleotide token 사이의 문맥 의존성을 attention matrix로 계산합니다. 이 페이지는 motif, splice boundary, enhancer-promoter bridge, reverse-complement symmetry처럼 DNA에서 중요한 “관계”가 모델 내부에서 어떤 모양으로 보일 수 있는지 시각적으로 풀어냅니다.</p>
+    </div>
+    <div class="mast-grid" aria-label="summary stats">
+      <div class="stat"><b>187</b><span>llm-wiki genomic-dl notes scanned</span></div>
+      <div class="stat"><b>6</b><span>attention and dependency scenarios</span></div>
+      <div class="stat"><b>14</b><span>wiki notes and PDFs folded in</span></div>
+    </div>
+  </header>
+
+  <nav class="scenario-strip" id="scenarioStrip" aria-label="attention scenario selector"></nav>
+
+  <section class="workspace" aria-label="interactive attention workspace">
+    <aside class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Lens Controls</div>
+        <div class="panel-note">토큰 경계가 바뀌면 attention의 단위도 바뀝니다.</div>
+      </div>
+      <div class="panel-body control-block">
+        <div class="profile" id="scenarioProfile"></div>
+        <div>
+          <div class="seg-label">Tokenization</div>
+          <div class="segmented" id="tokenControls"></div>
+        </div>
+        <div>
+          <div class="seg-label">Model Family</div>
+          <div class="model-list" id="modelControls"></div>
+        </div>
+        <div class="readout-grid" id="readouts"></div>
+      </div>
+    </aside>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Attention Workspace</div>
+        <div class="panel-note" id="workspaceNote">token x token 관계를 matrix와 arc로 나란히 봅니다.</div>
+      </div>
+      <div class="panel-body lens-stage">
+        <div class="arc-wrap">
+          <canvas id="arcCanvas" width="980" height="360" aria-label="attention arc visualization"></canvas>
+        </div>
+        <div class="token-rail" id="tokenRail" aria-label="token rail"></div>
+        <div class="matrix-wrap">
+          <div class="heatmap-shell">
+            <canvas id="heatmapCanvas" width="760" height="760" aria-label="attention heatmap"></canvas>
+          </div>
+          <div class="head-bars" id="headBars"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Mechanism Notes</div>
+        <div class="panel-note">attention을 해석할 때 남겨야 할 단서입니다.</div>
+      </div>
+      <div class="panel-body explain">
+        <div class="explain-card" id="mechanismCard"></div>
+        <div class="steps" id="steps"></div>
+      </div>
+    </aside>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <h2>학습 포인트</h2>
+      <p>DNA의 “문맥”은 자연어 문맥보다 더 물리적입니다. motif의 내부 염기, TSS와 enhancer 거리, splice donor/acceptor, 양가닥 reverse complement 구조가 모두 attention의 후보 관계가 됩니다.</p>
+    </div>
+    <div class="concept-grid">
+      <article class="concept" style="--accent:var(--teal)">
+        <div class="num">1</div>
+        <h3>Attention 단위는 nucleotide가 아니라 token입니다</h3>
+        <p>DNABERT의 overlapping k-mer, Nucleotide Transformer의 blocked 6-mer, DNABERT-2와 GROVER의 BPE는 같은 DNA라도 다른 matrix를 만듭니다.</p>
+        <ul>
+          <li>k-mer는 motif를 단어처럼 묶지만 mask leakage가 생길 수 있습니다.</li>
+          <li>BPE는 attention pair 수를 줄이지만 boundary가 생물학적 motif와 항상 일치하지는 않습니다.</li>
+        </ul>
+      </article>
+      <article class="concept" style="--accent:var(--red)">
+        <div class="num">2</div>
+        <h3>Head는 서로 다른 관계를 나눠 보는 렌즈입니다</h3>
+        <p>한 head는 promoter motif 내부를, 다른 head는 enhancer-promoter bridge를, 또 다른 head는 positional bias나 splice boundary를 강조할 수 있습니다.</p>
+        <ul>
+          <li>Enformer는 global attention으로 distal regulatory information을 통합합니다.</li>
+          <li>DNABERT는 attention visualization으로 motif discovery를 보였습니다.</li>
+        </ul>
+      </article>
+      <article class="concept" style="--accent:var(--gold)">
+        <div class="num">3</div>
+        <h3>긴 DNA에서는 attention 비용이 병목입니다</h3>
+        <p>Full self-attention은 token 수가 늘수록 pair 수가 제곱으로 늘어납니다. 그래서 BPE, ALiBi, FlashAttention, sparse attention, SSM/Hyena/Mamba 계열이 등장합니다.</p>
+        <ul>
+          <li>HyenaDNA는 1M nucleotide context를 long convolution으로 처리합니다.</li>
+          <li>Caduceus는 BiMamba와 RC equivariance로 DNA 구조 prior를 넣습니다.</li>
+        </ul>
+      </article>
+      <article class="concept" style="--accent:var(--violet)">
+        <div class="num">4</div>
+        <h3>Attention은 설명이 아니라 가설입니다</h3>
+        <p>밝은 attention cell은 생물학적 단서를 줄 수 있지만 causal proof는 아닙니다. Nucleotide dependency analysis처럼 염기를 바꿔 예측 분포가 어떻게 흔들리는지 보는 방식이 더 직접적입니다.</p>
+        <ul>
+          <li>GROVER 노트도 attention 해석의 causal 한계를 명시합니다.</li>
+          <li>Silva 2025는 perturbation 기반 dependency map으로 motif와 RNA contact를 복원합니다.</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <h2>모델별로 “attention한다”의 의미</h2>
+      <p>같은 gLM이라도 attention 기반 Transformer, convolution-hybrid, SSM 계열은 문맥을 섞는 방식이 다릅니다.</p>
+    </div>
+    <div class="model-map" id="modelMap"></div>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <h2>빠른 점검</h2>
+      <p>matrix가 예쁘게 보이는 것과 생물학적으로 맞는 것은 별개의 문제입니다.</p>
+    </div>
+    <div class="quiz-grid">
+      <div class="quiz-card">
+        <h3 id="quizQuestion">Question</h3>
+        <div class="quiz-options" id="quizOptions"></div>
+        <div class="quiz-result" id="quizResult">선택지를 고르면 해설이 표시됩니다.</div>
+      </div>
+      <div class="quiz-card">
+        <h3>Brainstorm에서 남긴 제작 원칙</h3>
+        <div class="steps" style="margin-top:12px">
+          <div class="step"><b>비교보다 메커니즘</b><span>기존 glm-landscape는 모델 지형도입니다. 이 페이지는 attention/dependency의 형태를 학습하는 자료로 역할을 분리했습니다.</span></div>
+          <div class="step"><b>attention과 대안을 같이 배치</b><span>HyenaDNA와 Caduceus를 포함해 “왜 full attention만으로는 긴 genome을 다루기 어렵나”를 같이 보여줍니다.</span></div>
+          <div class="step"><b>해석 caveat 유지</b><span>attention heatmap은 hypothesis generator이고, dependency map과 in silico mutagenesis가 더 직접적인 검증 렌즈라는 점을 페이지 안에 고정했습니다.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <h2>사용한 llm-wiki 노트</h2>
+      <p>링크는 Google Scholar 검색으로 연결됩니다. 원문 PDF 경로는 llm-wiki 노트 frontmatter에 들어 있습니다.</p>
+    </div>
+    <div class="sources" id="sources"></div>
+  </section>
+
+  <div class="footer">
+    Built from `/Users/joonan/Dropbox/References/llm-wiki/wiki/genomic-dl` and `/Users/joonan/Dropbox/References/llm-wiki/interactives/glm/glm-landscape.html`. GPT Image 2 prompt saved at `garden-gpt-image-2/prompt/glm-attention-educational-diagram-20260509.md`.
+  </div>
+</main>
+
+<script>
+const state = {
+  scenario:"motif",
+  tokenization:"char",
+  model:"dnabert"
+};
+
+const palettes = {
+  teal:"#19728a",
+  red:"#b23a48",
+  gold:"#a66b13",
+  green:"#19735d",
+  violet:"#6350a8",
+  blue:"#255c99"
+};
+
+const scenarios = {
+  motif:{
+    name:"Masked motif",
+    short:"MLM이 motif 내부를 복원",
+    accent:palettes.teal,
+    dna:"CCGATGCTATAAAGGCCACGTGACCTGA",
+    title:"Masked token이 주변 motif 문법을 끌어옵니다",
+    desc:"DNABERT와 GROVER류 BERT encoder는 일부 token을 가리고 양쪽 문맥으로 복원합니다. promoter motif처럼 짧은 규칙은 diagonal 근처의 block으로 나타납니다.",
+    note:"query token 주변 motif block이 밝아집니다.",
+    mechanism:"Masked Language Modeling",
+    mechanismText:"attention score는 query token이 어떤 key token을 참고해 masked base/token을 복원할지 정합니다. motif 내부 염기들은 서로의 확률을 강하게 제약합니다.",
+    steps:[
+      ["Tokenize","A/C/G/T, k-mer, BPE 중 하나로 DNA를 discrete unit으로 바꿉니다."],
+      ["Mask","일부 token을 숨기고 주변 context로 복원합니다."],
+      ["Attend","motif 내부와 가까운 flanking context에 높은 weight가 생깁니다."],
+      ["Readout","밝은 block은 motif 후보이지만 causal proof는 아닙니다."]
+    ],
+    query:[10,11],
+    key:[7,8,9,12,13],
+    motif:[7,8,9,10,11,12],
+    rc:[],
+    heads:[
+      ["Motif block",92,palettes.teal,"TATA-like motif 내부 의존성"],
+      ["Flanking context",68,palettes.gold,"주변 GC/AT context"],
+      ["Position bias",46,palettes.blue,"가까운 token 선호"],
+      ["Background",22,palettes.violet,"낮은 복원 정보"]
+    ]
+  },
+  enhancer:{
+    name:"Enhancer bridge",
+    short:"멀리 떨어진 regulatory link",
+    accent:palettes.red,
+    dna:"ATGCCAGTCTTACCGGATCCTGACTGGTATAAACG",
+    title:"distal enhancer와 promoter가 off-diagonal link를 만듭니다",
+    desc:"Enformer의 핵심은 convolution으로 local feature를 압축한 뒤 transformer block에서 distal regulatory information을 섞는 것입니다. matrix에서는 멀리 떨어진 두 영역 사이의 off-diagonal island로 보입니다.",
+    note:"먼 token 사이의 bridge가 matrix 밖쪽에 생깁니다.",
+    mechanism:"Global self-attention over regulatory context",
+    mechanismText:"local motif만으로는 gene expression을 설명하기 어렵습니다. enhancer-promoter coupling은 멀리 떨어진 두 sequence segment가 함께 해석되어야 합니다.",
+    steps:[
+      ["Local extract","초기 CNN이나 token embedding이 motif-level feature를 만듭니다."],
+      ["Global mix","attention이 먼 bin/token 사이의 regulatory coupling을 계산합니다."],
+      ["Task head","CAGE, histone mark, accessibility 같은 track을 예측합니다."],
+      ["Variant effect","염기 하나를 바꿨을 때 예측 track 변화량으로 effect를 읽습니다."]
+    ],
+    query:[28,29,30,31,32],
+    key:[8,9,10,11,12],
+    motif:[27,28,29,30,31,32],
+    rc:[],
+    heads:[
+      ["Enhancer bridge",88,palettes.red,"distal enhancer to promoter"],
+      ["Promoter motif",70,palettes.gold,"TATA-like local signal"],
+      ["Distance basis",62,palettes.blue,"relative position encoding"],
+      ["Cell-context head",54,palettes.green,"track-specific readout"]
+    ]
+  },
+  splice:{
+    name:"Splice boundary",
+    short:"donor/acceptor signal",
+    accent:palettes.gold,
+    dna:"CAGGTAAGTCCGTTCCCTGTTTTCAGGACCT",
+    title:"splice donor와 acceptor는 짧고 강한 문법을 만듭니다",
+    desc:"splice site prediction은 nucleotide-resolution motif가 중요합니다. character tokenization이 유리한 경우가 있고, aggressive compression은 아주 짧은 signal을 흐릴 수 있습니다.",
+    note:"GT donor와 AG acceptor 주변 block이 강조됩니다.",
+    mechanism:"Boundary-aware local attention",
+    mechanismText:"donor GT, acceptor AG, polypyrimidine-like context는 주변 base와 함께 해석됩니다. 이런 task에서는 token boundary가 motif를 잘라내는지가 중요합니다.",
+    steps:[
+      ["Boundary","exon-intron 경계의 짧은 consensus를 찾습니다."],
+      ["Neighborhood","주변 몇십 bp의 base composition이 signal을 보강합니다."],
+      ["Token effect","character token은 염기 하나의 변화가 보존됩니다."],
+      ["Benchmark","Lindsey 2024는 motif-sensitive task에서 character tokenization의 강점을 보고합니다."]
+    ],
+    query:[2,3,25,26],
+    key:[4,5,6,23,24,27],
+    motif:[2,3,4,5,24,25,26,27],
+    rc:[],
+    heads:[
+      ["Donor GT",84,palettes.gold,"5 prime splice boundary"],
+      ["Acceptor AG",78,palettes.red,"3 prime splice boundary"],
+      ["Local grammar",64,palettes.teal,"short motif context"],
+      ["Compression risk",35,palettes.violet,"token boundary sensitivity"]
+    ]
+  },
+  rc:{
+    name:"RC symmetry",
+    short:"양가닥 DNA prior",
+    accent:palettes.violet,
+    dna:"ATGCCGTACGATTCGATCGTACGGCAT",
+    title:"DNA는 reverse complement가 같은 정보를 담습니다",
+    desc:"Caduceus는 attention model은 아니지만, BiMamba와 MambaDNA로 bidirectionality와 reverse-complement equivariance를 설계합니다. 이 prior는 두 strand를 따로 외우지 않게 합니다.",
+    note:"reverse-complement pair가 대칭 link로 보입니다.",
+    mechanism:"Reverse-complement equivariant context mixing",
+    mechanismText:"standard Transformer attention은 RC symmetry를 자동으로 보장하지 않습니다. DNA 전용 inductive bias를 넣으면 더 적은 parameter로도 long-range VEP에서 강한 결과를 낼 수 있습니다.",
+    steps:[
+      ["Forward","한 방향 sequence context를 처리합니다."],
+      ["Backward","반대 방향 context도 처리해 upstream/downstream 정보를 통합합니다."],
+      ["RC path","reverse complement 변환에 대해 일관된 representation을 만듭니다."],
+      ["Compare","여기서는 attention map 대신 RC-consistent dependency link로 표시합니다."]
+    ],
+    query:[4,5,6,20,21,22],
+    key:[4,5,6,20,21,22],
+    motif:[],
+    rc:[0,1,2,3,4,5,22,23,24,25,26,27],
+    heads:[
+      ["Forward path",72,palettes.teal,"left to right context"],
+      ["Backward path",72,palettes.blue,"right to left context"],
+      ["RC equivariance",90,palettes.violet,"strand-consistent signal"],
+      ["Long VEP",66,palettes.red,"distal variant effect"]
+    ]
+  },
+  dependency:{
+    name:"Dependency map",
+    short:"염기 perturbation lens",
+    accent:palettes.green,
+    dna:"GCTAGGCTTACCGGATGCCGTAACCGATTCG",
+    title:"dependency map은 attention보다 직접적으로 기능 결합을 묻습니다",
+    desc:"Silva 2025의 nucleotide dependency analysis는 query nucleotide를 다른 base로 바꿨을 때 target position의 예측 분포가 얼마나 흔들리는지 측정합니다.",
+    note:"attention이 아니라 perturbation influence matrix입니다.",
+    mechanism:"In silico nucleotide substitution",
+    mechanismText:"염기를 바꾸고 다른 위치의 predicted nucleotide probability 변화를 봅니다. motif block, RNA contact, pathogenic noncoding variant influence를 더 직접적으로 드러냅니다.",
+    steps:[
+      ["Substitute","query 위치의 base를 가능한 대안으로 바꿉니다."],
+      ["Observe","target 위치의 predicted distribution 변화를 기록합니다."],
+      ["Aggregate","pairwise dependency나 variant influence score로 요약합니다."],
+      ["Validate","saturation mutagenesis, eQTL, ClinVar 등과 비교합니다."]
+    ],
+    query:[8,9,10,11,12],
+    key:[18,19,20,21,22],
+    motif:[8,9,10,11,12,18,19,20,21,22],
+    rc:[],
+    heads:[
+      ["Pairwise effect",92,palettes.green,"query substitution impact"],
+      ["Motif block",76,palettes.gold,"local co-dependency"],
+      ["Off-diagonal",63,palettes.red,"distant influence"],
+      ["Reconstruction gap",48,palettes.violet,"LM score is insufficient"]
+    ]
+  },
+  long:{
+    name:"Long context",
+    short:"attention 밖의 대안",
+    accent:palettes.blue,
+    dna:"ACGTGCTAGCTAGGATCCGATCGTAGCTAGCATCGTACGAT",
+    title:"1Mb context에서는 full attention만 고집하기 어렵습니다",
+    desc:"HyenaDNA는 long convolution으로, Caduceus는 Mamba SSM으로 long-range context를 처리합니다. 이들은 token x token full attention matrix를 만들지 않아도 문맥을 섞습니다.",
+    note:"matrix보다 global receptive field와 state mixing을 강조합니다.",
+    mechanism:"Subquadratic long-range sequence modeling",
+    mechanismText:"DNA regulation은 긴 거리에서 일어나지만 full attention은 O(n^2) pair를 계산합니다. 긴 context에서는 attention을 압축하거나 대체하는 architecture가 실용적입니다.",
+    steps:[
+      ["Scale pressure","sequence length가 늘면 attention pair가 제곱으로 증가합니다."],
+      ["Compression","BPE, pooling, sparse attention으로 token 수를 줄입니다."],
+      ["Alternative","Hyena/Mamba는 convolution 또는 state로 긴 문맥을 섞습니다."],
+      ["Trade-off","어떤 task에서는 explicit attention이 유리하고, 어떤 task에서는 long context와 inductive bias가 더 중요합니다."]
+    ],
+    query:[6,7,8,34,35,36],
+    key:[14,15,16,38,39,40],
+    motif:[],
+    rc:[],
+    heads:[
+      ["Global field",86,palettes.blue,"long convolution/state mixing"],
+      ["Quadratic avoided",82,palettes.green,"subquadratic path"],
+      ["Resolution",70,palettes.gold,"single nucleotide token"],
+      ["Explicit links",38,palettes.red,"less direct attention map"]
+    ]
+  }
+};
+
+const tokenizers = {
+  char:{name:"1-mer",sub:"base-level"},
+  kmer:{name:"6-mer",sub:"overlap"},
+  bpe:{name:"BPE",sub:"variable"}
+};
+
+const models = {
+  dnabert:{name:"DNABERT",kind:"Transformer",token:"kmer",context:"512 tokens",cost:"full attention",note:"k-mer BERT, motif attention visualization"},
+  dnabert2:{name:"DNABERT-2",kind:"Transformer",token:"bpe",context:"70-10k bp tasks",cost:"BPE + ALiBi + FlashAttention",note:"BPE reduces quadratic attention burden"},
+  nt:{name:"Nucleotide Transformer",kind:"Transformer",token:"kmer",context:"6 kb",cost:"large transformer",note:"attention and embeddings for genomic elements"},
+  enformer:{name:"Enformer",kind:"CNN + Transformer",token:"char",context:"196 kb input",cost:"global attention after CNN",note:"distal enhancer-gene information"},
+  grover:{name:"GROVER",kind:"Transformer",token:"bpe",context:"512 BPE tokens",cost:"BERT-base attention",note:"human-specific BPE regulatory vocabulary"},
+  hyena:{name:"HyenaDNA",kind:"Hyena",token:"char",context:"1M nt",cost:"long convolution",note:"no full attention matrix"},
+  caduceus:{name:"Caduceus",kind:"Mamba SSM",token:"char",context:"~131 kb",cost:"BiMamba + RC equivariance",note:"bidirectional, reverse-complement aware"},
+  arsenal:{name:"ARSENAL",kind:"Masked DNALM",token:"char",context:"350 bp",cost:"short regulatory context",note:"motif-discovery regularization"}
+};
+
+const modelRows = [
+  ["DNABERT","2021","Transformer attention","Overlapping k-mer tokens. Attention visualization can highlight nucleotide importance and known TF motifs."],
+  ["DNABERT-2","2024","Efficient Transformer attention","BPE avoids overlapping k-mer leakage, compresses sequence length, and combines ALiBi with FlashAttention."],
+  ["Nucleotide Transformer","2025","Scaled Transformer attention","6-kb sequences, 50M to 2.5B parameters, attention and embeddings used for interpretability and transfer."],
+  ["GROVER","2024","BPE BERT attention","Human-specific BPE vocabulary aligns with regulatory motifs, but attention interpretation remains approximate."],
+  ["Enformer","2021","CNN plus global attention","Convolutions extract local features, transformer blocks integrate distal regulatory context across about 200 kb input."],
+  ["HyenaDNA","2023","No full attention","Long convolution gives global receptive field at single-nucleotide resolution up to 1M tokens."],
+  ["Caduceus","2024","No full attention","BiMamba and MambaDNA add bidirectionality and reverse-complement equivariance for DNA."],
+  ["ARSENAL","2026","Short-context masked LM","A 350 bp regulatory DNALM uses motif-discovery regularization and dependency-style analyses."]
+];
+
+const sourceCards = [
+  ["Ji et al. 2021","DNABERT","BERT-style bidirectional DNA model using k-mer tokenization; attention visualization for motif discovery.","DNABERT pre-trained Bidirectional Encoder Representations from Transformers model for DNA-language in genome"],
+  ["Avsec et al. 2021","Enformer","Transformer blocks integrate distal regulatory interactions for gene expression and chromatin track prediction.","Effective gene expression prediction from sequence by integrating long-range interactions"],
+  ["Nguyen et al. 2023","HyenaDNA","Long-convolution operator processes up to 1M nucleotides without quadratic attention.","HyenaDNA Long-Range Genomic Sequence Modeling at Single Nucleotide Resolution"],
+  ["Zhou et al. 2024","DNABERT-2","BPE, ALiBi, FlashAttention, and multi-species pretraining reduce cost and improve benchmark transfer.","DNABERT-2 Efficient Foundation Model and Benchmark for Multi-Species Genomes"],
+  ["Sanabria et al. 2024","GROVER","BPE tokens capture human regulatory grammar; attention interpretation remains approximate.","DNA language model GROVER learns sequence context in the human genome"],
+  ["Schiff et al. 2024","Caduceus","BiMamba and reverse-complement equivariance provide DNA-specific long-range inductive bias.","Caduceus Bi-Directional Equivariant Long-Range DNA Sequence Modeling"],
+  ["Silva et al. 2025","Dependency analysis","Systematic nucleotide substitution maps functional dependencies more directly than attention alone.","Nucleotide dependency analysis of genomic language models detects functional elements"],
+  ["Patel and Kundaje 2026","ARSENAL","Short-context regulatory DNALM with motif-discovery regularization emphasizes motif-scale interpretability.","Short-Context Regulatory DNA Language Models with Motif-Discovery Regularization"]
+];
+
+const quizzes = [
+  {
+    q:"어떤 설명이 가장 정확할까요?",
+    options:[
+      ["Attention heatmap은 causal proof이므로 별도 실험 검증이 필요 없다.",false,"아닙니다. attention은 해석 가설에 가깝고 causal relationship은 perturbation, mutagenesis, functional assay로 검증해야 합니다."],
+      ["Attention은 token 사이 관계를 보여주므로 tokenization 선택이 해석을 바꾼다.",true,"맞습니다. 같은 DNA라도 character, k-mer, BPE는 matrix의 행과 열 자체를 다르게 만듭니다."],
+      ["HyenaDNA와 Caduceus는 attention matrix가 없으므로 긴 문맥을 전혀 못 본다.",false,"아닙니다. long convolution이나 state-space mixing으로 full attention 없이도 긴 context를 처리합니다."]
+    ]
+  }
+];
+
+function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
+function activeScenario(){return scenarios[state.scenario];}
+function activeModel(){return models[state.model];}
+function setAccent(color){document.documentElement.style.setProperty("--accent",color);}
+function fmt(n){return new Intl.NumberFormat("en-US").format(n);}
+
+function segmentTokens(dna, mode){
+  if(mode==="char") return dna.split("").map((v,i)=>({label:v,start:i,end:i+1,base:i}));
+  if(mode==="kmer"){
+    const out=[];
+    for(let i=0;i<=dna.length-6;i+=1) out.push({label:dna.slice(i,i+6),start:i,end:i+6,base:i});
+    return out.slice(0,34);
+  }
+  const motifs=["TATAAA","GTAAGT","CAGG","CCGTA","ACGT","GACT","ATGC","GATC","CGTA","TACC","GGCC"];
+  const out=[];
+  let i=0;
+  while(i<dna.length){
+    const hit=motifs.find(m=>dna.slice(i,i+m.length)===m);
+    if(hit){
+      out.push({label:hit,start:i,end:i+hit.length,base:i});
+      i+=hit.length;
+    }else{
+      const len=(i%5===0)?3:((i%3===0)?2:1);
+      out.push({label:dna.slice(i,Math.min(dna.length,i+len)),start:i,end:Math.min(dna.length,i+len),base:i});
+      i+=len;
+    }
+  }
+  return out.slice(0,34);
+}
+
+function tokenMatches(token, positions){
+  return positions.some(p=>p>=token.start && p<token.end);
+}
+
+function renderScenarioStrip(){
+  const wrap=document.getElementById("scenarioStrip");
+  wrap.innerHTML=Object.entries(scenarios).map(([key,s])=>`
+    <button class="scenario-btn ${key===state.scenario?"active":""}" style="--accent:${s.accent}" data-scenario="${key}">
+      <span class="k">${s.name}</span>
+      <span class="s">${s.short}</span>
+    </button>
+  `).join("");
+  wrap.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      state.scenario=btn.dataset.scenario;
+      renderAll();
+    });
+  });
+}
+
+function renderControls(){
+  const tokenWrap=document.getElementById("tokenControls");
+  tokenWrap.innerHTML=Object.entries(tokenizers).map(([key,t])=>`
+    <button class="seg-btn ${key===state.tokenization?"active":""}" data-token="${key}">
+      ${t.name}<br><span style="font-size:10px;color:var(--muted);font-weight:700">${t.sub}</span>
+    </button>
+  `).join("");
+  tokenWrap.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      state.tokenization=btn.dataset.token;
+      renderAll();
+    });
+  });
+
+  const modelWrap=document.getElementById("modelControls");
+  modelWrap.innerHTML=Object.entries(models).map(([key,m])=>`
+    <button class="model-btn ${key===state.model?"active":""}" data-model="${key}">
+      <b>${m.name}</b><span>${m.kind} · ${m.context}</span>
+    </button>
+  `).join("");
+  modelWrap.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      state.model=btn.dataset.model;
+      state.tokenization=models[state.model].token;
+      renderAll();
+    });
+  });
+}
+
+function renderProfile(){
+  const s=activeScenario();
+  document.getElementById("scenarioProfile").innerHTML=`
+    <h2>${s.title}</h2>
+    <p>${s.desc}</p>
+    <div class="chips">
+      <span class="chip">${s.mechanism}</span>
+      <span class="chip">${activeModel().name}</span>
+      <span class="chip">${tokenizers[state.tokenization].name}</span>
+    </div>
+  `;
+}
+
+function renderReadouts(tokens){
+  const model=activeModel();
+  const n=tokens.length;
+  const pairs=n*n;
+  const dnaLen=activeScenario().dna.length;
+  document.getElementById("readouts").innerHTML=`
+    <div class="readout">
+      <div class="label">Visible tokens</div>
+      <div class="value">${n}</div>
+      <div class="mini-text">${dnaLen} bp rendered as ${tokenizers[state.tokenization].name}</div>
+    </div>
+    <div class="readout">
+      <div class="label">Attention pairs</div>
+      <div class="value">${fmt(pairs)}</div>
+      <div class="mini-text">full self-attention proxy: n x n</div>
+    </div>
+    <div class="readout">
+      <div class="label">Context</div>
+      <div class="value" style="font-size:16px">${model.context}</div>
+      <div class="mini-text">${model.note}</div>
+    </div>
+    <div class="readout">
+      <div class="label">Cost model</div>
+      <div class="value" style="font-size:16px">${model.cost}</div>
+      <div class="mini-text">${model.kind}</div>
+    </div>
+  `;
+}
+
+function renderTokens(tokens){
+  const s=activeScenario();
+  const rail=document.getElementById("tokenRail");
+  rail.style.setProperty("--token-count",Math.min(tokens.length,34));
+  rail.innerHTML=tokens.map(t=>{
+    const cls=[
+      "token",
+      tokenMatches(t,s.query)?"query":"",
+      tokenMatches(t,s.key)?"key":"",
+      tokenMatches(t,s.motif)?"motif":"",
+      tokenMatches(t,s.rc)?"rc":""
+    ].filter(Boolean).join(" ");
+    return `<div class="${cls}" title="${t.start}-${t.end}">${t.label}</div>`;
+  }).join("");
+}
+
+function relationWeight(i,j,tokens,s){
+  const ti=tokens[i], tj=tokens[j];
+  let w=0.05;
+  const dist=Math.abs(i-j);
+  w+=Math.max(0,.18-dist*.014);
+  const qi=tokenMatches(ti,s.query), qj=tokenMatches(tj,s.query);
+  const ki=tokenMatches(ti,s.key), kj=tokenMatches(tj,s.key);
+  const mi=tokenMatches(ti,s.motif), mj=tokenMatches(tj,s.motif);
+  const ri=tokenMatches(ti,s.rc), rj=tokenMatches(tj,s.rc);
+  if(mi&&mj) w+=.38;
+  if((qi&&kj)||(qj&&ki)) w+=.52;
+  if(ri&&rj) w+=.34;
+  if(state.scenario==="enhancer" && ((ti.start<14&&tj.start>24)||(tj.start<14&&ti.start>24))) w+=.34;
+  if(state.scenario==="dependency" && ((ti.start>7&&ti.start<14&&tj.start>17&&tj.start<24)||(tj.start>7&&tj.start<14&&ti.start>17&&ti.start<24))) w+=.44;
+  if(state.scenario==="long"){
+    w+=.12*Math.sin((i+j)*.7)+.10*Math.cos((i-j)*.4);
+    if(dist>tokens.length*.45) w+=.22;
+  }
+  if(state.model==="hyena" || state.model==="caduceus"){
+    w*=.66;
+    if(dist>tokens.length*.35) w+=.22;
+  }
+  if(i===j) w+=.18;
+  return Math.max(0,Math.min(1,w));
+}
+
+function colorScale(w,accent){
+  const low=[248,250,252], high=hexToRgb(accent), hot=hexToRgb(palettes.red);
+  const target=w>.72?hot:high;
+  const t=w>.72?(w-.72)/.28:w/.72;
+  const rgb=low.map((v,i)=>Math.round(v+(target[i]-v)*Math.min(1,t)));
+  return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+}
+
+function hexToRgb(hex){
+  const v=hex.replace("#","");
+  return [parseInt(v.slice(0,2),16),parseInt(v.slice(2,4),16),parseInt(v.slice(4,6),16)];
+}
+
+function drawHeatmap(tokens){
+  const s=activeScenario();
+  const canvas=document.getElementById("heatmapCanvas");
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  canvas.width=Math.round(rect.width*dpr);
+  canvas.height=Math.round(rect.height*dpr);
+  const ctx=canvas.getContext("2d");
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const w=rect.width, h=rect.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,w,h);
+  const pad=46;
+  const n=tokens.length;
+  const cell=Math.min((w-pad-12)/n,(h-pad-14)/n);
+  const x0=pad, y0=pad;
+  ctx.font="10px ui-monospace, SFMono-Regular, Menlo, monospace";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  for(let i=0;i<n;i++){
+    for(let j=0;j<n;j++){
+      const wt=relationWeight(i,j,tokens,s);
+      ctx.fillStyle=colorScale(wt,s.accent);
+      ctx.fillRect(x0+j*cell,y0+i*cell,Math.max(1,cell-.7),Math.max(1,cell-.7));
+    }
+  }
+  ctx.strokeStyle="#344054";
+  ctx.lineWidth=1;
+  ctx.strokeRect(x0,y0,n*cell,n*cell);
+  ctx.fillStyle="#667085";
+  const skip=Math.max(1,Math.ceil(n/12));
+  for(let i=0;i<n;i+=skip){
+    const label=tokens[i].label.length>4?tokens[i].label.slice(0,4):tokens[i].label;
+    ctx.save();
+    ctx.translate(x0+i*cell+cell/2,y0-12);
+    ctx.rotate(-Math.PI/5);
+    ctx.fillText(label,0,0);
+    ctx.restore();
+    ctx.fillText(label,x0-18,y0+i*cell+cell/2);
+  }
+  ctx.fillStyle="#17202a";
+  ctx.font="700 12px ui-sans-serif, system-ui";
+  ctx.textAlign="left";
+  ctx.fillText(state.scenario==="dependency"?"nucleotide dependency influence":"token x token attention",12,19);
+  ctx.fillStyle="#667085";
+  ctx.font="11px ui-sans-serif, system-ui";
+  ctx.fillText(s.note,12,34);
+}
+
+function drawArcStage(tokens){
+  const s=activeScenario();
+  const canvas=document.getElementById("arcCanvas");
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  canvas.width=Math.round(rect.width*dpr);
+  canvas.height=Math.round(rect.height*dpr);
+  const ctx=canvas.getContext("2d");
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const w=rect.width, h=rect.height;
+  ctx.clearRect(0,0,w,h);
+  const pad=34;
+  const y=h-56;
+  const n=tokens.length;
+  const step=(w-pad*2)/Math.max(1,n-1);
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,w,h);
+
+  ctx.strokeStyle="#d9dee7";
+  ctx.lineWidth=1;
+  for(let i=0;i<7;i++){
+    const gy=24+i*28;
+    ctx.beginPath();
+    ctx.moveTo(16,gy);
+    ctx.lineTo(w-16,gy);
+    ctx.stroke();
+  }
+
+  function x(i){return pad+i*step}
+  function drawArc(i,j,color,width=2,alpha=.72,dash=false){
+    const xi=x(i), xj=x(j);
+    const mid=(xi+xj)/2;
+    const span=Math.abs(xj-xi);
+    const top=Math.max(28,y-span*.38);
+    ctx.save();
+    ctx.globalAlpha=alpha;
+    ctx.strokeStyle=color;
+    ctx.lineWidth=width;
+    if(dash) ctx.setLineDash([6,5]);
+    ctx.beginPath();
+    ctx.moveTo(xi,y);
+    ctx.quadraticCurveTo(mid,top,xj,y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  const queryIdx=[], keyIdx=[], motifIdx=[], rcIdx=[];
+  tokens.forEach((t,i)=>{
+    if(tokenMatches(t,s.query)) queryIdx.push(i);
+    if(tokenMatches(t,s.key)) keyIdx.push(i);
+    if(tokenMatches(t,s.motif)) motifIdx.push(i);
+    if(tokenMatches(t,s.rc)) rcIdx.push(i);
+  });
+  queryIdx.forEach((qi,idx)=>{
+    const kj=keyIdx[idx%Math.max(1,keyIdx.length)];
+    if(kj!==undefined) drawArc(qi,kj,s.accent,3,.78);
+  });
+  for(let i=0;i<motifIdx.length-1;i++) drawArc(motifIdx[i],motifIdx[i+1],palettes.gold,1.4,.55,true);
+  if(state.scenario==="enhancer"){
+    for(let i=0;i<Math.min(4,queryIdx.length);i++) for(let j=0;j<Math.min(3,keyIdx.length);j++) drawArc(queryIdx[i],keyIdx[j],palettes.red,1.8,.38);
+  }
+  if(state.scenario==="rc"){
+    for(let i=0;i<Math.floor(rcIdx.length/2);i++) drawArc(rcIdx[i],rcIdx[rcIdx.length-1-i],palettes.violet,2,.68,true);
+  }
+  if(state.scenario==="long"){
+    for(let i=0;i<n;i+=5){
+      const j=(i+Math.floor(n*.55))%n;
+      drawArc(i,j,palettes.blue,1.8,.42,true);
+    }
+  }
+
+  ctx.lineWidth=2;
+  ctx.strokeStyle="#344054";
+  ctx.beginPath();
+  ctx.moveTo(pad-6,y);
+  ctx.lineTo(w-pad+6,y);
+  ctx.stroke();
+
+  tokens.forEach((t,i)=>{
+    let fill="#fff", stroke="#cdd5df", color="#253246";
+    if(tokenMatches(t,s.query)){fill="#fff0f3";stroke=palettes.red;color="#8e2435"}
+    else if(tokenMatches(t,s.key)){fill="#eef9fb";stroke=palettes.teal;color="#135b6d"}
+    else if(tokenMatches(t,s.motif)){fill="#fff7e8";stroke=palettes.gold;color="#7c4e0d"}
+    else if(tokenMatches(t,s.rc)){fill="#f4f1ff";stroke=palettes.violet;color="#4f3d8a"}
+    ctx.fillStyle=fill;
+    ctx.strokeStyle=stroke;
+    ctx.lineWidth=1;
+    const bw=Math.min(48,Math.max(24,step*.88));
+    roundRect(ctx,x(i)-bw/2,y-19,bw,36,6,true,true);
+    ctx.fillStyle=color;
+    ctx.font=`800 ${t.label.length>5?9:11}px ui-monospace, SFMono-Regular, Menlo, monospace`;
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.fillText(t.label.length>7?t.label.slice(0,7):t.label,x(i),y-1);
+  });
+
+  ctx.fillStyle="#17202a";
+  ctx.font="800 13px ui-sans-serif, system-ui";
+  ctx.textAlign="left";
+  ctx.fillText(s.mechanism,18,24);
+  ctx.fillStyle="#667085";
+  ctx.font="12px ui-sans-serif, system-ui";
+  ctx.fillText(activeModel().name+" · "+tokenizers[state.tokenization].name+" tokens",18,43);
+}
+
+function roundRect(ctx,x,y,w,h,r,fill,stroke){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+  if(fill) ctx.fill();
+  if(stroke) ctx.stroke();
+}
+
+function renderHeads(){
+  const s=activeScenario();
+  document.getElementById("headBars").innerHTML=s.heads.map(([name,val,color,sub])=>`
+    <div class="head-bar">
+      <b>${name}</b>
+      <div class="bar-track"><div class="bar-fill" style="width:${val}%;background:${color}"></div></div>
+      <span>${sub}</span>
+    </div>
+  `).join("");
+}
+
+function renderMechanism(){
+  const s=activeScenario();
+  document.getElementById("mechanismCard").innerHTML=`
+    <h3>${s.mechanism}</h3>
+    <p>${s.mechanismText}</p>
+  `;
+  document.getElementById("steps").innerHTML=s.steps.map(([a,b])=>`
+    <div class="step"><b>${a}</b><span>${b}</span></div>
+  `).join("");
+}
+
+function renderModelMap(){
+  const header=`<div class="model-row header"><div>Model</div><div>Year / family</div><div>Context mixing</div><div>Teaching takeaway</div></div>`;
+  const rows=modelRows.map(r=>`
+    <div class="model-row">
+      <div class="model-name"><b>${r[0]}</b><span>${r[1]}</span></div>
+      <div><span class="pill">${r[2].split(" ")[0]}</span></div>
+      <div><p>${r[2]}</p></div>
+      <div><p>${r[3]}</p></div>
+    </div>
+  `).join("");
+  document.getElementById("modelMap").innerHTML=header+rows;
+}
+
+function renderSources(){
+  document.getElementById("sources").innerHTML=sourceCards.map(([author,title,desc,query])=>`
+    <article class="source">
+      <b>${title}</b>
+      <span>${author}</span>
+      <p>${desc}</p>
+      <a href="https://scholar.google.com/scholar?q=${encodeURIComponent(query)}" target="_blank" rel="noopener">Google Scholar</a>
+    </article>
+  `).join("");
+}
+
+function renderQuiz(){
+  const q=quizzes[0];
+  document.getElementById("quizQuestion").textContent=q.q;
+  document.getElementById("quizOptions").innerHTML=q.options.map((o,i)=>`
+    <button class="quiz-btn" data-quiz="${i}">${o[0]}</button>
+  `).join("");
+  document.getElementById("quizOptions").querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const item=q.options[Number(btn.dataset.quiz)];
+      document.querySelectorAll(".quiz-btn").forEach(b=>b.classList.remove("good","bad"));
+      btn.classList.add(item[1]?"good":"bad");
+      document.getElementById("quizResult").textContent=item[2];
+    });
+  });
+}
+
+function renderAll(){
+  const s=activeScenario();
+  setAccent(s.accent);
+  renderScenarioStrip();
+  renderControls();
+  renderProfile();
+  const tokens=segmentTokens(s.dna,state.tokenization);
+  renderReadouts(tokens);
+  renderTokens(tokens);
+  renderHeads();
+  renderMechanism();
+  drawArcStage(tokens);
+  drawHeatmap(tokens);
+  document.getElementById("workspaceNote").textContent=s.note;
+}
+
+window.addEventListener("resize",()=>renderAll());
+renderModelMap();
+renderSources();
+renderQuiz();
+renderAll();
+</script>
+</body>
+</html>

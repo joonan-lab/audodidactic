@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인간 뇌 단일세포 시퀀싱 연구 지도</title>
+<meta name="description" content="2011-2026 인간 뇌 single-cell/single-nucleus sequencing 연구의 발견, 셀타입, 의미를 연대별로 학습하는 인터랙티브 시각화">
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#ffffff;
+  --ink:#16202c;
+  --ink-2:#334155;
+  --muted:#687589;
+  --line:#dfe5ee;
+  --line-soft:#edf1f6;
+  --panel:#f8fafc;
+  --teal:#14746f;
+  --blue:#275d9f;
+  --amber:#a76511;
+  --red:#a84042;
+  --green:#2f7d4f;
+  --violet:#6156a8;
+  --slate:#4d5c6f;
+  --soft-teal:#e8f5f3;
+  --soft-blue:#edf4fb;
+  --soft-amber:#fff4df;
+  --soft-red:#faeeee;
+  --soft-green:#ebf6ee;
+  --soft-violet:#f0eff9;
+}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Apple SD Gothic Neo","Pretendard","Noto Sans KR",ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select{font:inherit}
+a{color:inherit}
+.page{max-width:1480px;margin:0 auto;padding:26px 24px 46px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--line);
+}
+.crumb{
+  font-size:12px;
+  color:var(--muted);
+  text-decoration:none;
+}
+.crumb:hover{color:var(--blue)}
+.source-pill{
+  border:1px solid var(--line);
+  color:var(--ink-2);
+  background:#fff;
+  border-radius:6px;
+  padding:6px 9px;
+  font-size:12px;
+  white-space:nowrap;
+}
+.mast{
+  display:grid;
+  grid-template-columns:minmax(0,1.02fr) minmax(420px,.98fr);
+  gap:24px;
+  align-items:start;
+  padding:26px 0 20px;
+}
+.eyebrow{
+  font-size:12px;
+  font-weight:800;
+  color:var(--teal);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:8px;
+}
+h1{
+  margin:0;
+  max-width:820px;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:48px;
+  line-height:1.08;
+  letter-spacing:0;
+  font-weight:700;
+}
+.dek{
+  max-width:790px;
+  margin:14px 0 0;
+  color:#3d4b5f;
+  font-size:16px;
+  line-height:1.75;
+}
+.mast-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:20px;
+  max-width:790px;
+}
+.stat{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:8px;
+  padding:12px;
+  min-height:84px;
+}
+.stat b{display:block;font-size:25px;line-height:1.1;font-weight:850}
+.stat span{display:block;margin-top:6px;font-size:12px;color:var(--muted)}
+.hero-figure{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  overflow:hidden;
+}
+.hero-figure img{
+  display:block;
+  width:100%;
+  aspect-ratio:16/9;
+  object-fit:cover;
+  background:#fff;
+}
+.hero-caption{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  border-top:1px solid var(--line);
+  padding:9px 11px;
+  font-size:12px;
+  color:var(--muted);
+}
+.hero-caption a{color:var(--blue);text-decoration:none}
+.hero-caption a{white-space:nowrap}
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:end;
+  border-top:2px solid var(--ink);
+  padding-top:13px;
+  margin:24px 0 12px;
+}
+.section-title h2{
+  margin:0;
+  font-size:18px;
+  line-height:1.2;
+}
+.section-title p{
+  margin:0;
+  max-width:620px;
+  color:var(--muted);
+  font-size:13px;
+  text-align:right;
+}
+.phase-strip{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(130px,1fr));
+  gap:8px;
+  margin:8px 0 14px;
+}
+.phase-btn{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  color:var(--ink);
+  min-height:72px;
+  padding:9px 10px;
+  text-align:left;
+  cursor:pointer;
+  transition:background .16s ease,border-color .16s ease,transform .16s ease;
+}
+.phase-btn:hover{border-color:#9aa8ba;transform:translateY(-1px)}
+.phase-btn.active{border-color:var(--phase-color);background:var(--phase-soft)}
+.phase-btn .years{display:block;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.phase-btn .name{display:block;font-size:13px;font-weight:850;margin-top:4px}
+.phase-btn .count{display:block;font-size:11px;color:var(--muted);margin-top:4px}
+.main-grid{
+  display:grid;
+  grid-template-columns:minmax(560px,1.25fr) minmax(360px,.75fr);
+  gap:16px;
+  align-items:start;
+}
+.panel{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  overflow:hidden;
+}
+.panel-head{
+  min-height:56px;
+  padding:12px 14px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+}
+.panel-title{
+  font-size:14px;
+  font-weight:850;
+}
+.panel-note{
+  color:var(--muted);
+  font-size:12px;
+  max-width:480px;
+  text-align:right;
+}
+.panel-body{padding:14px}
+.timeline-wrap{
+  position:relative;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  overflow:hidden;
+}
+canvas{display:block;width:100%}
+#timelineCanvas{height:500px}
+#atlasCanvas{height:360px}
+.legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+}
+.legend span{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  color:var(--muted);
+}
+.dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--c);
+  display:inline-block;
+}
+.detail-card{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel);
+  padding:13px;
+}
+.detail-card h3{
+  margin:0;
+  font-size:24px;
+  line-height:1.15;
+  font-family:Georgia,"Times New Roman",serif;
+  letter-spacing:0;
+}
+.detail-card .meta{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+  font-variant-numeric:tabular-nums;
+}
+.detail-card p{
+  margin:10px 0 0;
+  color:#344155;
+  font-size:14px;
+  line-height:1.65;
+}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.chip{
+  border:1px solid #cfd7e2;
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:11px;
+  background:#fff;
+  color:#334155;
+}
+.stack{display:grid;gap:10px}
+.mini-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.mini{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px;
+  background:#fff;
+  min-height:96px;
+}
+.mini .label{
+  font-size:11px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  font-weight:850;
+}
+.mini .value{
+  margin-top:5px;
+  color:#2e3b4e;
+  font-size:13px;
+  line-height:1.55;
+}
+.cell-strip{
+  display:grid;
+  grid-template-columns:repeat(8,minmax(112px,1fr));
+  gap:8px;
+  margin-bottom:14px;
+}
+.cell-btn{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  border-radius:8px;
+  min-height:70px;
+  padding:9px;
+  cursor:pointer;
+  text-align:left;
+  transition:border-color .16s ease,background .16s ease,transform .16s ease;
+}
+.cell-btn:hover{transform:translateY(-1px);border-color:#9aa8ba}
+.cell-btn.active{border-color:var(--cell-color);background:color-mix(in srgb,var(--cell-color) 11%,#fff)}
+.cell-btn b{display:block;font-size:13px}
+.cell-btn span{display:block;font-size:11px;color:var(--muted);margin-top:4px}
+.meaning-grid{
+  display:grid;
+  grid-template-columns:minmax(420px,.88fr) minmax(520px,1.12fr);
+  gap:16px;
+  align-items:start;
+}
+.meaning-panel{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:14px;
+  min-height:360px;
+  background:#fff;
+}
+.meaning-panel h3{
+  margin:0;
+  font-size:22px;
+  font-family:Georgia,"Times New Roman",serif;
+}
+.meaning-panel p{
+  margin:10px 0 0;
+  color:#3b485a;
+  font-size:14px;
+  line-height:1.72;
+}
+.meaning-list{
+  display:grid;
+  gap:8px;
+  margin-top:12px;
+}
+.meaning-item{
+  display:grid;
+  grid-template-columns:118px minmax(0,1fr);
+  gap:10px;
+  border-top:1px solid var(--line-soft);
+  padding-top:9px;
+}
+.meaning-item b{font-size:12px;color:var(--ink-2)}
+.meaning-item span{font-size:13px;color:var(--muted)}
+.ladder{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+}
+.rung{
+  border:1px solid var(--line);
+  border-radius:8px;
+  min-height:184px;
+  padding:12px;
+  background:#fff;
+  position:relative;
+}
+.rung::before{
+  content:"";
+  position:absolute;
+  left:12px;
+  right:12px;
+  top:0;
+  height:4px;
+  background:var(--rung);
+}
+.rung b{display:block;font-size:13px}
+.rung .step{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.rung p{font-size:13px;color:#3f4b5d;line-height:1.62;margin:9px 0 0}
+.table-tools{
+  display:grid;
+  grid-template-columns:minmax(240px,1fr) 170px 190px;
+  gap:8px;
+  margin-bottom:10px;
+}
+.table-tools input,.table-tools select{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  color:var(--ink);
+  padding:9px 10px;
+  min-width:0;
+}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:980px}
+th{
+  background:#f1f5f9;
+  color:#263243;
+  font-weight:850;
+  text-align:left;
+  padding:10px 9px;
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+}
+td{
+  padding:10px 9px;
+  border-bottom:1px solid var(--line-soft);
+  vertical-align:top;
+}
+tr:hover td{background:#fbfcfe}
+td .study{font-weight:800;color:var(--ink)}
+td .study a{text-decoration:none}
+td .study a:hover{color:var(--blue)}
+td .small{font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px}
+.phase-tag{
+  display:inline-block;
+  border-radius:4px;
+  color:#fff;
+  background:var(--tag);
+  padding:2px 6px;
+  font-size:11px;
+  white-space:nowrap;
+}
+.footer{
+  margin-top:34px;
+  padding-top:14px;
+  border-top:1px solid var(--line);
+  color:#8a96a8;
+  font-size:12px;
+  line-height:1.7;
+}
+.footer a{color:#64748b}
+@media (max-width:1100px){
+  .mast,.main-grid,.meaning-grid{grid-template-columns:1fr}
+  .phase-strip{grid-template-columns:repeat(3,1fr)}
+  .cell-strip{grid-template-columns:repeat(4,1fr)}
+  .ladder{grid-template-columns:repeat(2,1fr)}
+  .section-title{align-items:flex-start;flex-direction:column}
+  .section-title p{text-align:left}
+}
+@media (max-width:680px){
+  .page{padding:18px 14px 36px}
+  .topbar{align-items:flex-start;flex-direction:column}
+  h1{font-size:34px}
+  .dek{font-size:14px}
+  .mast-grid{grid-template-columns:repeat(2,1fr)}
+  .phase-strip,.cell-strip,.ladder,.table-tools{grid-template-columns:1fr}
+  .mini-grid{grid-template-columns:1fr}
+  #timelineCanvas{height:430px}
+  #atlasCanvas{height:320px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="topbar">
+    <a class="crumb" href="../index.html">Audodidactic / 학습 시각화</a>
+    <div class="source-pill">llm-wiki 기반 · human brain single-cell sequencing</div>
+  </header>
+
+  <section class="mast">
+    <div>
+      <div class="eyebrow">Interactive review map</div>
+      <h1>인간 뇌 단일세포 시퀀싱 연구 지도</h1>
+      <p class="dek">
+        2011년 BrainSpan의 벌크 발달 지도에서 2026년 피질 multiome regionality까지,
+        연구가 어떤 질문을 해결해 왔는지 연대별로 정리했습니다. 핵심은 단순한 기술 발전이 아니라
+        “어떤 셀타입이, 언제, 왜 중요해졌는가”입니다.
+      </p>
+      <div class="mast-grid" aria-label="page statistics">
+        <div class="stat"><b id="statPapers">28</b><span>선별 논문·리소스</span></div>
+        <div class="stat"><b>2011-2026</b><span>벌크 지도에서 multiome까지</span></div>
+        <div class="stat"><b>8</b><span>학습용 셀타입 축</span></div>
+        <div class="stat"><b>5</b><span>발견의 시대 구분</span></div>
+      </div>
+    </div>
+    <figure class="hero-figure">
+      <img src="assets/human-brain-single-cell-graphical-abstract.png" alt="인간 뇌 단일세포 지도 그래픽 요약">
+      <figcaption class="hero-caption">
+        <span>gpt-image-2 prompt 기반 그래픽 요약</span>
+        <a href="gpt-image-2-prompt.md">prompt 보기</a>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <h2>1. 연대별 발견 지도</h2>
+      <p>시대를 선택하면 타임라인과 오른쪽 해설이 함께 바뀝니다. 원의 크기는 해당 연구의 세포/핵 규모를 느슨하게 반영합니다.</p>
+    </div>
+    <div class="phase-strip" id="phaseStrip"></div>
+    <div class="main-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">논문 타임라인 · 질문이 바뀌는 순간들</div>
+          <div class="panel-note">bulk → scRNA/snRNA → spatial/multiome → disease genetics</div>
+        </div>
+        <div class="panel-body">
+          <div class="timeline-wrap">
+            <canvas id="timelineCanvas" aria-label="human brain single cell sequencing timeline"></canvas>
+          </div>
+          <div class="legend" id="timelineLegend"></div>
+        </div>
+      </div>
+      <aside class="stack">
+        <div class="detail-card" id="phaseDetail"></div>
+        <div class="detail-card" id="paperDetail"></div>
+      </aside>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <h2>2. 셀타입별 의미 지도</h2>
+      <p>셀타입을 바꾸면 해당 계열을 중심으로 논문 카탈로그와 해설이 좁혀집니다.</p>
+    </div>
+    <div class="cell-strip" id="cellStrip"></div>
+    <div class="meaning-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">셀타입 atlas compass</div>
+          <div class="panel-note">발달 기원, 기능, 질병 연결을 한 판에 배치</div>
+        </div>
+        <div class="panel-body">
+          <canvas id="atlasCanvas" aria-label="cell type atlas compass"></canvas>
+        </div>
+      </div>
+      <div class="meaning-panel" id="cellMeaning"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <h2>3. 증거 사다리</h2>
+      <p>이 분야는 같은 질문을 더 높은 해상도로 되묻는 식으로 발전했습니다.</p>
+    </div>
+    <div class="ladder" id="evidenceLadder"></div>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <h2>4. 논문 카탈로그</h2>
+      <p>검색어, 시대, 셀타입 축으로 llm-wiki에서 읽은 핵심 논문을 다시 훑을 수 있습니다.</p>
+    </div>
+    <div class="table-tools">
+      <input id="searchInput" type="search" placeholder="논문, 셀타입, 발견 검색">
+      <select id="phaseFilter" aria-label="phase filter"></select>
+      <select id="cellFilter" aria-label="cell filter"></select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Study</th>
+            <th>시대</th>
+            <th>규모·방법</th>
+            <th>주요 발견</th>
+            <th>셀타입 의미</th>
+          </tr>
+        </thead>
+        <tbody id="catalogBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="footer">
+    자료 출처: `/Users/joonan/Dropbox/References/llm-wiki`의 `wiki/brain-atlas`, `wiki/brain-development`,
+    `wiki/single-cell-dl`, `wiki/overviews` 문서와 기존 `interactives/postmortem-brain-atlas` 데이터를 함께 읽어 구성했습니다.
+    인용 링크는 Google Scholar 검색으로 연결됩니다.
+  </footer>
+</div>
+
+<script>
+const phases = [
+  {
+    id:"all", years:"2011-2026", name:"전체 보기", color:"#4d5c6f", soft:"#f3f5f8",
+    thesis:"전체 연구 흐름은 벌크 발달 지도에서 셀타입 분해, 공간/후성유전체, 질병 유전학, 수명·perturbation 해석으로 이동합니다.",
+    question:"지금까지 무엇을 알게 되었나",
+    cells:"radial glia, excitatory neurons, interneurons, microglia, astrocytes, OPC/oligodendrocytes",
+    meaning:"단일세포 기술은 뇌를 평균 조직이 아니라 발달 시간과 세포 계열이 교차하는 지도처럼 보게 만들었습니다."
+  },
+  {
+    id:"foundation", years:"2011-2015", name:"발달 좌표 만들기", color:"#14746f", soft:"#e8f5f3",
+    thesis:"BrainSpan과 초기 scRNA-seq는 ‘어느 시기, 어느 영역에서 유전자가 켜지는가’를 먼저 정했습니다.",
+    question:"뇌 발달의 시간·공간 좌표는 어디인가",
+    cells:"radial glia, fetal neurons, major brain cell classes",
+    meaning:"mid-fetal cortex와 radial glia/새뉴런 축이 ASD·NDD 위험을 해석하는 기준 좌표가 되었습니다."
+  },
+  {
+    id:"taxonomy", years:"2016-2018", name:"셀타입 분해", color:"#275d9f", soft:"#edf4fb",
+    thesis:"single-cell/nucleus 방식이 인간 뇌의 주요 세포군과 조절 엘리먼트를 직접 분리해 보기 시작했습니다.",
+    question:"조직 평균 안에는 어떤 셀타입이 숨어 있나",
+    cells:"excitatory neurons, inhibitory interneurons, oligodendrocytes, microglia",
+    meaning:"질병 유전자는 조직 전체가 아니라 특정 뉴런·글리아 조절영역에 걸린다는 생각이 자리 잡았습니다."
+  },
+  {
+    id:"disease", years:"2019-2022", name:"질병·공간으로 이동", color:"#a84042", soft:"#faeeee",
+    thesis:"ASD, microglia regulome, organoid, MERFISH 연구가 ‘어떤 셀이 실제로 바뀌는가’를 묻기 시작했습니다.",
+    question:"질병과 공간 맥락에서 어떤 세포가 달라지나",
+    cells:"L2/3 IT neurons, VIP interneurons, microglia, radial glia, glia",
+    meaning:"ASD에서는 L2/3 흥분성 뉴런과 VIP interneuron, microglia가 두드러지고, 공간 기술은 인간 피질의 glia-rich 구성을 드러냈습니다."
+  },
+  {
+    id:"million", years:"2023", name:"백만 단위 atlas", color:"#a76511", soft:"#fff4df",
+    thesis:"BICCN과 동시대 연구는 first trimester, 성인 전뇌, 피질, ATAC, methylation, 3D genome을 백만 단위로 확장했습니다.",
+    question:"전체 인간 뇌의 셀타입 지도는 얼마나 촘촘한가",
+    cells:"3,000 transcriptomic types, 616 fetal clusters, 3,313 adult subclusters, cCRE-linked cell types",
+    meaning:"셀타입은 계층 구조이고, 뇌 영역의 역사는 발달 기원·이동·분화 경로를 반영한다는 큰 그림이 생겼습니다."
+  },
+  {
+    id:"mechanism", years:"2024-2026", name:"수명·메커니즘", color:"#2f7d4f", soft:"#ebf6ee",
+    thesis:"통합 atlas, 3D genome, methylation, aging, disease multiome, Tri-IPC가 atlas를 기전 가설로 바꾸고 있습니다.",
+    question:"셀타입 지도에서 메커니즘과 개입점까지 갈 수 있나",
+    cells:"excitatory neurons, SST/VIP interneurons, Tri-IPCs, astrocytes, microglia, regional IT neurons",
+    meaning:"흥분성 뉴런 취약성은 발달·ASD·노화에서 반복되고, 글리아/OPC/3D chromatin은 질병 유전학의 새로운 설명층이 됩니다."
+  }
+];
+
+const cellTypes = [
+  {
+    id:"all", label:"전체", color:"#4d5c6f", short:"모든 축",
+    thesis:"인간 뇌 단일세포 연구는 셀타입, 발달 시간, 뇌 영역, 조절유전체를 동시에 맞추는 지도 제작입니다.",
+    markers:"multi-axis",
+    discovered:"bulk 시공간 지도에서 백만 단위 multiome atlas까지 해상도가 계속 올라갔습니다.",
+    meaning:"한 연구만으로 결론을 내기보다, transcriptome, chromatin, methylation, spatial, disease genetics가 같은 셀타입을 가리키는지 보는 것이 핵심입니다.",
+    examples:["BrainSpan","Lake 2018","BICCN 2023","Kim BTS 2024"]
+  },
+  {
+    id:"rg", label:"Radial glia", color:"#14746f", short:"발달 원천",
+    thesis:"radial glia는 피질 세포 계보의 출발점이며, 영역성·시간성·질병 취약성의 초기 좌표입니다.",
+    markers:"PAX6, HES1, GFAP, oRG/mTOR",
+    discovered:"Miller와 Nowakowski가 fetal cortical zone과 vRG/oRG/tRG 차이를 보였고, Braun·Bhaduri가 지역별 progenitor 프로그램을 확장했습니다.",
+    meaning:"ASD/NDD 유전자가 실제로 언제 작동하는지 이해하려면 성인 뉴런뿐 아니라 fetal progenitor 상태를 봐야 합니다.",
+    examples:["Miller 2014","Nowakowski 2017","Bhaduri 2021","Braun 2023"]
+  },
+  {
+    id:"ipc", label:"IPC / Tri-IPC", color:"#a76511", short:"전환 상태",
+    thesis:"intermediate progenitor는 neurogenesis와 gliogenesis 사이의 병목이며, Tri-IPC는 새롭게 보인 삼분화 전환 상태입니다.",
+    markers:"EOMES, NHLH1, Tri-IPC, neuroblast",
+    discovered:"Camp는 AP→BP→neuron 프로그램을 organoid와 비교했고, Wang 2025는 GABAergic neuron·OPC·astrocyte로 이어지는 Tri-IPC를 제안했습니다.",
+    meaning:"셀 운명 전환 상태가 질병과 종양 프로그램을 잇는 가설 공간이 됩니다.",
+    examples:["Camp 2015","Braun 2023","Wang 2025"]
+  },
+  {
+    id:"ex", label:"Excitatory", color:"#275d9f", short:"위험 수렴점",
+    thesis:"흥분성 projection neuron은 발달, ASD, 조현병, 노화에서 반복적으로 신호가 모이는 계열입니다.",
+    markers:"SLC17A7, L2/3 IT, L4 IT, L5 ET, L6 CT",
+    discovered:"Willsey/BrainSpan의 mid-fetal window, Velmeshev의 L2/3 ASD 변화, Jorstad/Siletti의 계층적 cortical taxonomy가 같은 축을 잇습니다.",
+    meaning:"‘뇌 질환 유전자’는 평균 뇌가 아니라 특정 시기의 특정 excitatory lineage에서 해석해야 합니다.",
+    examples:["Lake 2018","Velmeshev 2019","Jorstad 2023","Chien 2024"]
+  },
+  {
+    id:"in", label:"Interneurons", color:"#6156a8", short:"회로 조절",
+    thesis:"PVALB, SST, VIP, LAMP5 interneuron은 피질 회로의 균형과 질병/노화 취약성을 보여주는 세밀한 축입니다.",
+    markers:"PVALB, SST, VIP, LAMP5, LHX6, PROX1",
+    discovered:"Darmanis는 초기 interneuron subtype expression을 보였고, Velmeshev는 VIP 변화, Chien/Mathys는 SST/VIP 또는 SST vulnerability를 강조했습니다.",
+    meaning:"흥분성 뉴런 변화만으로는 회로 균형을 설명하기 어렵고, 억제성 하위타입이 증상·노화·인지회복력 해석에 중요합니다.",
+    examples:["Darmanis 2015","Velmeshev 2019","Mathys 2023","Chien 2024"]
+  },
+  {
+    id:"micro", label:"Microglia", color:"#a84042", short:"면역·유전학",
+    thesis:"microglia는 AD 유전위험, ASD 염증 상태, 개인 간 변이에서 강한 신호를 보이는 뇌 면역 세포입니다.",
+    markers:"SPI1/PU.1, TREM2, TYROBP, MEF2C",
+    discovered:"Kosoy는 150 donor microglia regulome/eQTL을 만들었고, Johansen은 microglia의 개인 간 변이를, Mathys/Liu는 AD glial regulation을 보여줬습니다.",
+    meaning:"GWAS variant가 어느 세포 조절영역에 들어가는지 보면 AD 같은 질환에서 microglia가 주변 반응자가 아니라 기전의 중심이 됩니다.",
+    examples:["Kosoy 2022","Johansen 2023","Mathys 2023","Liu 2025"]
+  },
+  {
+    id:"astro", label:"Astrocyte", color:"#2f7d4f", short:"지역·신호",
+    thesis:"astrocyte는 발달 지역성, 성숙, 질병 신호전달을 이어주는 지원세포 이상의 조절 축입니다.",
+    markers:"GFAP, TNC, BCAN, RFX4",
+    discovered:"Braun은 region-specific glioblast→astrocyte 프로그램을, Liu 2025는 AD에서 astrocyte-to-neuron communication 저하와 RFX4를 제시했습니다.",
+    meaning:"성인 뇌 영역 차이와 질병 회로 변화는 뉴런만의 문제가 아니라 astrocyte 계열의 지역 조절 프로그램과 연결됩니다.",
+    examples:["Braun 2023","Siletti 2023","Liu 2025"]
+  },
+  {
+    id:"oligo", label:"OPC / Oligo", color:"#60723b", short:"백질·성숙",
+    thesis:"OPC/oligodendrocyte 계열은 myelination, 성숙, 조현병/ASD white matter 가설과 연결됩니다.",
+    markers:"PDGFRA, OLIG1, MBP, myelin",
+    discovered:"Lake는 remyelination regulatory states를, Braun은 region-specific OPC를, Johansen은 OPC age association을, Wang은 Tri-IPC에서 OPC fate를 보였습니다.",
+    meaning:"피질 발달의 후반부와 질병 회복력은 뉴런 생성 이후의 glial maturation까지 포함해야 설명됩니다.",
+    examples:["Lake 2018","Braun 2023","Johansen 2023","Wang 2025"]
+  },
+  {
+    id:"vascular", label:"Vascular", color:"#8b5e34", short:"장벽·공간",
+    thesis:"endothelial, pericyte, VLMC 같은 vascular 계열은 spatial atlas와 disease context에서 뇌 환경을 정의합니다.",
+    markers:"PECAM1, VWF, pericyte, VLMC",
+    discovered:"초기 atlas부터 major vascular classes가 분리되었고, 공간/whole-brain atlas는 vascular niche와 neuron-glia proximity를 더 선명하게 보여줬습니다.",
+    meaning:"세포가 어디에 놓여 있는지가 기능을 바꾸므로, spatial transcriptomics는 vascular/glial niche 해석에 필수입니다.",
+    examples:["Darmanis 2015","Fang 2022","Siletti 2023"]
+  }
+];
+
+const papers = [
+  {id:"kang2011",year:2011,phase:"foundation",study:"Kang et al. BrainSpan",title:"Spatio-temporal transcriptome of the human brain",scale:"16 regions · bulk exon array",cells:0,method:"Bulk transcriptome",cell:["all","rg","ex"],discovery:"86% of genes expressed; 90% spatio-temporally regulated; prenatal windows dominate.",meaning:"발달 시간과 뇌 영역의 기준 좌표를 만들고 ASD/NDD 위험의 prenatal window를 열었습니다."},
+  {id:"miller2014",year:2014,phase:"foundation",study:"Miller et al.",title:"Transcriptional landscape of the prenatal human brain",scale:"~300 LMD regions/specimen",cells:0,method:"LMD microarray + ISH",cell:["rg","ex"],discovery:"Nine fetal cortical zones and ~2,000 layer-enriched genes; human PAX6 extends into SVZ.",meaning:"fetal cortical layer/zone을 셀타입 이전의 공간 좌표로 정리했습니다."},
+  {id:"camp2015",year:2015,phase:"foundation",study:"Camp et al.",title:"Human cerebral organoids recapitulate gene expression programs of fetal neocortex development",scale:"226 fetal + 508 organoid cells",cells:734,method:"scRNA-seq",cell:["rg","ipc","ex"],discovery:"Organoids reproduce many fetal cortex AP/BP/neuron programs but show composition and stress deviations.",meaning:"인간 fetal cortex와 organoid를 single-cell 수준에서 직접 비교하는 길을 열었습니다."},
+  {id:"darmanis2015",year:2015,phase:"foundation",study:"Darmanis et al.",title:"A survey of human brain transcriptome diversity at the single cell level",scale:"466 cells",cells:466,method:"whole-cell scRNA-seq",cell:["ex","in","micro","astro","oligo","vascular"],discovery:"Classified adult/fetal human cortical cells into neuronal, glial, immune, and vascular classes.",meaning:"인간 뇌에서 whole-transcriptome single-cell atlas가 가능하다는 초기 증거입니다."},
+  {id:"nowakowski2017",year:2017,phase:"taxonomy",study:"Nowakowski et al.",title:"Spatiotemporal gene expression trajectories reveal developmental hierarchies of the human cortex",scale:"PFC/V1/MGE fetal samples",cells:null,method:"scRNA-seq",cell:["rg","ipc","ex","in"],discovery:"vRG/oRG/tRG axes, oRG mTOR enrichment, PFC-V1 maturation offset, areal protomap cascade.",meaning:"radial glia의 위치·시간·영역성이 maturing neuron 차이로 증폭된다는 관점을 세웠습니다."},
+  {id:"lake2018",year:2018,phase:"taxonomy",study:"Lake et al.",title:"Integrative single-cell analysis of transcriptional and epigenetic states in the human adult brain",scale:">60,000 cells/nuclei",cells:60000,method:"snDrop-seq + scTHS-seq",cell:["ex","in","micro","oligo"],discovery:"Integrated RNA and chromatin accessibility; AD variants enriched in microglia chromatin, SCZ in excitatory regions.",meaning:"질병 유전학을 cell-type-specific regulome으로 읽는 프레임을 만들었습니다."},
+  {id:"kanton2019",year:2019,phase:"disease",study:"Kanton et al.",title:"Organoid single-cell genomic atlas uncovers human-specific features of brain development",scale:"129K+ organoid/adult cells",cells:129535,method:"scRNA-seq + ATAC",cell:["rg","ipc","ex"],discovery:"Human cortical neurons mature slower than chimp/macaque in organoids; human-specific regulatory peaks are cell-state restricted.",meaning:"인간 특이적 발달 프로그램을 organoid와 adult PFC까지 연결했습니다."},
+  {id:"velmeshev2019",year:2019,phase:"disease",study:"Velmeshev et al. ASD",title:"Single-cell genomics identifies cell type-specific molecular changes in autism",scale:"104,559 nuclei · 31 donors",cells:104559,method:"snRNA-seq",cell:["ex","in","micro","astro"],discovery:"L2/3 excitatory neurons, VIP interneurons, astrocytes, and microglia show ASD-specific changes.",meaning:"질병 조직에서 어떤 셀타입이 실제로 바뀌는지 보여준 대표 사례입니다."},
+  {id:"bhaduri2021",year:2021,phase:"disease",study:"Bhaduri et al.",title:"Cortical arealization atlas identifies dynamic molecular signatures",scale:"698,820 cells",cells:698820,method:"scRNA-seq + smFISH",cell:["rg","ipc","ex","astro"],discovery:"Cortical area identity is detectable in radial glia and sharpens along excitatory differentiation.",meaning:"피질 영역성은 late neuron만의 문제가 아니라 progenitor부터 시작됩니다."},
+  {id:"fang2022",year:2022,phase:"disease",study:"Fang et al.",title:"Conservation and divergence of cortical cell organization in human and mouse revealed by MERFISH",scale:"4,000-gene MERFISH · 125 populations",cells:null,method:"Spatial MERFISH",cell:["ex","in","astro","micro","oligo","vascular"],discovery:"Human temporal cortex has conserved laminae but higher glia:neuron ratio and stronger neuron-non-neuron proximity.",meaning:"단일세포 atlas에 위치 정보를 붙여 인간 피질의 공간적 셀 조합을 보여줬습니다."},
+  {id:"luo2022",year:2022,phase:"disease",study:"Luo et al.",title:"Single-nucleus multi-omics identifies human cortical cell populations",scale:"~5,000 nuclei · 63 populations",cells:5000,method:"snmCAT-seq",cell:["ex","in","micro","astro","oligo"],discovery:"Joint methylation, ATAC, and RNA from the same nuclei maps regulatory genome diversity.",meaning:"같은 핵에서 여러 omics를 읽어 cell identity와 regulation을 직접 연결했습니다."},
+  {id:"kosoy2022",year:2022,phase:"disease",study:"Kosoy et al.",title:"Genetics of the human microglia regulome refines Alzheimer's disease risk",scale:"150 donors",cells:0,method:"microglia ATAC/RNA QTL",cell:["micro"],discovery:"Microglia eQTL/caQTL maps refine AD risk variants and SPI1/PU.1-centered networks.",meaning:"AD GWAS를 microglia-specific regulatory elements로 해석하는 강한 증거입니다."},
+  {id:"braun2023",year:2023,phase:"million",study:"Braun et al.",title:"Comprehensive cell atlas of the first-trimester developing human brain",scale:"1,665,937 cells · 26 brains",cells:1665937,method:"scRNA-seq + spatial",cell:["rg","ipc","ex","in","astro","oligo"],discovery:"616 clusters across 12 major classes from 5-14 pcw; CRABP+ GABAergic migration and region-specific glioblasts.",meaning:"초기 인간 뇌 전체의 first-trimester developmental blueprint입니다."},
+  {id:"velmeshev2023",year:2023,phase:"million",study:"Velmeshev et al. development",title:"Single-cell analysis of prenatal and postnatal human cortical development",scale:">700,000 profiles · 106 donors",cells:700000,method:"snRNA-seq + snATAC-seq",cell:["rg","ex","in","astro","oligo","vascular"],discovery:"Lineage, sex, and region-specific cortical developmental programs; female-enriched programs overlap ASD risk.",meaning:"성차와 발달 계열을 single-cell 수준에서 질병 위험과 연결했습니다."},
+  {id:"jorstad2023",year:2023,phase:"million",study:"Jorstad et al.",title:"Transcriptomic cytoarchitecture reveals principles of human neocortex organization",scale:">1.1M nuclei · 8 cortical areas",cells:1100000,method:"snRNA-seq + spatial",cell:["ex","in","astro","oligo"],discovery:"24 shared cortical subclasses; excitatory neurons vary by area, V1 has distinct expanded L4 and E:I ratio.",meaning:"인간 neocortex의 공통 blueprint와 영역별 specialization을 동시에 보여줬습니다."},
+  {id:"siletti2023",year:2023,phase:"million",study:"Siletti et al.",title:"Transcriptomic diversity of cell types across the adult human brain",scale:">3M nuclei · ~100 regions",cells:3000000,method:"brain-wide snRNA-seq",cell:["ex","in","micro","astro","oligo","vascular"],discovery:"31 superclusters, 461 clusters, 3,313 subclusters across the adult human brain.",meaning:"성인 인간 뇌 전체를 계층적 transcriptomic taxonomy로 정리한 기준 atlas입니다."},
+  {id:"tian2023",year:2023,phase:"million",study:"Tian et al.",title:"Single-cell DNA methylation and 3D genome architecture in the human brain",scale:"517,000 cells · 46 regions",cells:517000,method:"snmC-seq3 + snm3C-seq",cell:["ex","in","micro","astro","oligo"],discovery:"188 epigenome-defined cell types; methylation, accessibility, 3D genome, expression are cell-type concordant.",meaning:"methylation barcode와 3D genome으로 셀타입을 읽는 길을 열었습니다."},
+  {id:"li2023",year:2023,phase:"million",study:"Li et al.",title:"A comparative atlas of single-cell chromatin accessibility in the human brain",scale:"1.1M cells · 42 regions",cells:1100000,method:"snATAC-seq",cell:["ex","in","micro","astro","oligo"],discovery:"107 cell types and 544,735 cCREs linked to targets and 19 neuropsychiatric traits.",meaning:"비암호화 질병 variant를 cell-type-specific enhancer map 위에 올렸습니다."},
+  {id:"zhu2023",year:2023,phase:"million",study:"Zhu et al.",title:"Multi-omic profiling of the developing human cerebral cortex at the single-cell level",scale:"45,549 nuclei · fetal-adult",cells:45549,method:"paired snRNA/snATAC",cell:["rg","ipc","ex","in","oligo"],discovery:"Chromatin accessibility often precedes transcription; NEUROD1-CUX2 relationship validated.",meaning:"발달에서 chromatin priming이 transcription보다 앞선다는 기전적 단서를 줬습니다."},
+  {id:"mathys2023",year:2023,phase:"million",study:"Mathys et al.",title:"Single-cell atlas reveals correlates of cognitive function, dementia, and resilience",scale:"2.3M nuclei · 427 ROSMAP",cells:2300000,method:"snRNA-seq",cell:["ex","in","micro","astro","oligo"],discovery:"AD signatures across excitatory neurons; SST neuron vulnerability; inhibitory neurons linked to cognitive resilience.",meaning:"노화/AD에서 셀타입 취약성과 인지 회복력을 대규모 cohort로 연결했습니다."},
+  {id:"johansen2023",year:2023,phase:"million",study:"Johansen et al.",title:"Interindividual variation in human cortical cell type abundance and expression",scale:"~400,000 nuclei · 75 donors",cells:400000,method:"snRNA-seq + WGS",cell:["ex","in","micro","oligo"],discovery:"125 MTG cell types are conserved, but deep glutamatergic neurons and microglia vary most between individuals.",meaning:"사람 간 변이를 무시하면 셀타입 질병 신호를 잘못 해석할 수 있음을 보여줬습니다."},
+  {id:"chien2024",year:2024,phase:"mechanism",study:"Chien et al.",title:"Cell-type-specific effects of age and sex on human cortical neurons",scale:"55,447 nuclei · DLPFC",cells:55447,method:"snmCT-seq",cell:["ex","in"],discovery:"Aging effects strongest in excitatory neurons; SST/VIP interneuron abundance declines; subtelomeric genes up with age.",meaning:"발달·ASD에서 보던 excitatory vulnerability가 노화 multiome에서도 반복됩니다."},
+  {id:"kim2024",year:2024,phase:"mechanism",study:"Kim et al. BTS",title:"Integrative single-cell atlas for cellular and temporal specificity of neurological disorder genes",scale:"393,060 cells · 80 donors",cells:393060,method:"integrated sc/snRNA-seq",cell:["rg","ex","in","astro","oligo","micro"],discovery:"Unified 8 datasets across 7 GW-90 years and maps disorder genes to temporal cell states.",meaning:"여러 공개 dataset을 하나의 수명 발달 좌표로 통합해 위험 유전자 시간성을 읽었습니다."},
+  {id:"heffel2024",year:2024,phase:"mechanism",study:"Heffel et al.",title:"Temporally distinct 3D multi-omic dynamics in the developing human brain",scale:">53,000 nuclei · PFC/HIP",cells:53063,method:"snm3C-seq3",cell:["ex","in","micro","astro","oligo"],discovery:"DNA methylation and 3D genome follow distinct timelines; SCZ variants overlap loop-linked regulatory elements.",meaning:"3D chromatin을 통해 noncoding risk variant와 target gene/cell type을 잇습니다."},
+  {id:"wang2025",year:2025,phase:"mechanism",study:"Wang et al.",title:"Molecular and cellular dynamics of the developing human neocortex",scale:"243,535 multiome + 404,030 MERFISH",cells:647565,method:"snMultiome + MERFISH",cell:["rg","ipc","ex","in","astro","oligo"],discovery:"Tri-IPCs generate GABAergic neurons, OPCs, and astrocytes; ASD risk enriched in second-trimester IT neurons.",meaning:"neurogenesis와 gliogenesis의 연결 지점이 질병·종양 가설의 새 노드가 됩니다."},
+  {id:"franklin2025",year:2025,phase:"mechanism",study:"Franklin et al.",title:"Cell-type-specific DNA methylation dynamics in prenatal and postnatal human cortex",scale:"91 fetal donors · 807,806 CpGs",cells:0,method:"EPIC methylation + FANS",cell:["ex","rg"],discovery:"50,913 fetal dDMPs; prenatal methylation remodeling enriched near ASD and schizophrenia genes.",meaning:"초기/중기 태아 피질은 후성유전체 가소성이 가장 큰 질병 위험 창입니다."},
+  {id:"liu2025",year:2025,phase:"mechanism",study:"Liu et al.",title:"Single-nucleus multiomics reveals disrupted regulatory programs in early-onset Alzheimer's disease",scale:"76,173 nuclei · 3 regions",cells:76173,method:"snRNA/snATAC multiome",cell:["micro","astro","ex","oligo"],discovery:"sEOAD disrupts glial regulatory programs, enhancer-gene wiring, and astrocyte-neuron communication.",meaning:"AD를 neuron loss가 아니라 glial regulatory and communication disorder로도 보게 만듭니다."},
+  {id:"palmer2026",year:2026,phase:"mechanism",study:"Palmer et al.",title:"Single-cell multiomic human brain atlas reveals regulatory drivers of cortical regionality",scale:">1.7M high-quality nuclei · 9 regions",cells:1700000,method:"SNARE-seq2 + spatial",cell:["ex","in","astro","oligo"],discovery:"IT and deep-layer excitatory neurons carry strongest cortical regional expression and regulatory signatures.",meaning:"성인 피질 regionality는 단순 cell abundance가 아니라 cell-type-specific regulatory programs로 설명됩니다."}
+];
+
+const ladder = [
+  {step:"01", title:"Bulk spatial-temporal map", color:"#14746f", text:"Kang/BrainSpan과 Miller가 발달 시간·뇌 영역·fetal cortical zone을 정했습니다. 아직 셀타입은 평균에 묻혀 있습니다."},
+  {step:"02", title:"Cell identity", color:"#275d9f", text:"Camp, Darmanis, Nowakowski, Lake가 single-cell/nucleus로 radial glia, neuron, glia, vascular를 분해했습니다."},
+  {step:"03", title:"Disease cells", color:"#a84042", text:"Velmeshev ASD, Kosoy microglia, Mathys AD처럼 질병 조직에서 실제로 바뀌는 셀타입을 찾기 시작했습니다."},
+  {step:"04", title:"Million-cell multiome", color:"#a76511", text:"2023년 BICCN 계열 연구가 brain-wide snRNA, snATAC, methylation, 3D genome, spatial을 백만 단위로 확장했습니다."},
+  {step:"05", title:"Mechanism and perturbation", color:"#2f7d4f", text:"2024-2026 연구는 aging, 3D loops, Tri-IPC, regionality, disease enhancer wiring으로 atlas를 기전 가설로 바꾸고 있습니다."}
+];
+
+const state = {
+  phase:"all",
+  cell:"all",
+  selected:"siletti2023",
+  search:""
+};
+
+const phaseById = Object.fromEntries(phases.map(p => [p.id,p]));
+const cellById = Object.fromEntries(cellTypes.map(c => [c.id,c]));
+const paperById = Object.fromEntries(papers.map(p => [p.id,p]));
+const phaseOrder = ["foundation","taxonomy","disease","million","mechanism"];
+const phaseY = {foundation:.79,taxonomy:.64,disease:.49,million:.31,mechanism:.18};
+
+function scholarUrl(title){
+  return "https://scholar.google.com/scholar?q=" + encodeURIComponent(title);
+}
+
+function phaseColor(id){ return phaseById[id]?.color || "#4d5c6f"; }
+
+function filteredPapers(){
+  const q = state.search.trim().toLowerCase();
+  return papers.filter(p => {
+    const phaseOk = state.phase === "all" || p.phase === state.phase;
+    const cellOk = state.cell === "all" || p.cell.includes(state.cell);
+    const hay = [p.study,p.title,p.scale,p.method,p.discovery,p.meaning,p.year].join(" ").toLowerCase();
+    const searchOk = !q || hay.includes(q);
+    return phaseOk && cellOk && searchOk;
+  });
+}
+
+function renderPhases(){
+  const strip = document.getElementById("phaseStrip");
+  strip.innerHTML = phases.map(p => {
+    const count = p.id === "all" ? papers.length : papers.filter(d => d.phase === p.id).length;
+    return `<button class="phase-btn ${state.phase===p.id?"active":""}" style="--phase-color:${p.color};--phase-soft:${p.soft}" data-phase="${p.id}">
+      <span class="years">${p.years}</span>
+      <span class="name">${p.name}</span>
+      <span class="count">${count} studies</span>
+    </button>`;
+  }).join("");
+  strip.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.phase = btn.dataset.phase;
+      const first = filteredPapers()[0];
+      if(first) state.selected = first.id;
+      renderAll();
+    });
+  });
+}
+
+function renderCells(){
+  const strip = document.getElementById("cellStrip");
+  strip.innerHTML = cellTypes.map(c => {
+    const count = c.id === "all" ? papers.length : papers.filter(p => p.cell.includes(c.id)).length;
+    return `<button class="cell-btn ${state.cell===c.id?"active":""}" style="--cell-color:${c.color}" data-cell="${c.id}">
+      <b>${c.label}</b>
+      <span>${c.short} · ${count}</span>
+    </button>`;
+  }).join("");
+  strip.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.cell = btn.dataset.cell;
+      const first = filteredPapers()[0];
+      if(first) state.selected = first.id;
+      renderAll();
+    });
+  });
+}
+
+function renderPhaseDetail(){
+  const p = phaseById[state.phase] || phaseById.all;
+  const visible = filteredPapers();
+  document.getElementById("phaseDetail").innerHTML = `
+    <h3>${p.name}</h3>
+    <div class="meta">${p.years} · 현재 필터 ${visible.length}편</div>
+    <p>${p.thesis}</p>
+    <div class="mini-grid" style="margin-top:12px">
+      <div class="mini"><div class="label">질문</div><div class="value">${p.question}</div></div>
+      <div class="mini"><div class="label">셀타입</div><div class="value">${p.cells}</div></div>
+    </div>
+    <p>${p.meaning}</p>
+  `;
+}
+
+function renderPaperDetail(){
+  const selected = paperById[state.selected] || filteredPapers()[0] || papers[0];
+  state.selected = selected.id;
+  const phase = phaseById[selected.phase];
+  const cells = selected.cell.map(id => `<span class="chip">${cellById[id]?.label || id}</span>`).join("");
+  document.getElementById("paperDetail").innerHTML = `
+    <h3>${selected.study}</h3>
+    <div class="meta">${selected.year} · ${phase.name} · ${selected.method}</div>
+    <p><b>${selected.title}</b></p>
+    <p>${selected.discovery}</p>
+    <div class="mini-grid" style="margin-top:12px">
+      <div class="mini"><div class="label">규모·방법</div><div class="value">${selected.scale}</div></div>
+      <div class="mini"><div class="label">의미</div><div class="value">${selected.meaning}</div></div>
+    </div>
+    <div class="chips">${cells}<a class="chip" href="${scholarUrl(selected.title)}" target="_blank" rel="noopener">Scholar</a></div>
+  `;
+}
+
+function renderCellMeaning(){
+  const c = cellById[state.cell] || cellById.all;
+  document.getElementById("cellMeaning").innerHTML = `
+    <h3>${c.label}</h3>
+    <p>${c.thesis}</p>
+    <div class="meaning-list">
+      <div class="meaning-item"><b>Markers / states</b><span>${c.markers}</span></div>
+      <div class="meaning-item"><b>무엇을 찾았나</b><span>${c.discovered}</span></div>
+      <div class="meaning-item"><b>왜 중요한가</b><span>${c.meaning}</span></div>
+      <div class="meaning-item"><b>대표 근거</b><span>${c.examples.join(" · ")}</span></div>
+    </div>
+  `;
+}
+
+function renderLadder(){
+  document.getElementById("evidenceLadder").innerHTML = ladder.map(item => `
+    <div class="rung" style="--rung:${item.color}">
+      <span class="step">${item.step}</span>
+      <b>${item.title}</b>
+      <p>${item.text}</p>
+    </div>
+  `).join("");
+}
+
+function renderFilters(){
+  const phaseSelect = document.getElementById("phaseFilter");
+  const cellSelect = document.getElementById("cellFilter");
+  phaseSelect.innerHTML = phases.map(p => `<option value="${p.id}" ${state.phase===p.id?"selected":""}>${p.name}</option>`).join("");
+  cellSelect.innerHTML = cellTypes.map(c => `<option value="${c.id}" ${state.cell===c.id?"selected":""}>${c.label}</option>`).join("");
+}
+
+function renderCatalog(){
+  const rows = filteredPapers();
+  const body = document.getElementById("catalogBody");
+  if(!rows.length){
+    body.innerHTML = `<tr><td colspan="5">현재 필터에 맞는 논문이 없습니다.</td></tr>`;
+    return;
+  }
+  body.innerHTML = rows.map(p => {
+    const phase = phaseById[p.phase];
+    const cellLabels = p.cell.map(id => cellById[id]?.label || id).join(" · ");
+    return `<tr data-paper="${p.id}">
+      <td>
+        <div class="study"><a href="${scholarUrl(p.title)}" target="_blank" rel="noopener">${p.study}</a></div>
+        <div class="small">${p.year} · ${p.title}</div>
+      </td>
+      <td><span class="phase-tag" style="--tag:${phase.color}">${phase.name}</span></td>
+      <td>${p.scale}<div class="small">${p.method}</div></td>
+      <td>${p.discovery}</td>
+      <td>${p.meaning}<div class="small">${cellLabels}</div></td>
+    </tr>`;
+  }).join("");
+  body.querySelectorAll("tr[data-paper]").forEach(row => {
+    row.addEventListener("click", () => {
+      state.selected = row.dataset.paper;
+      renderAll(false);
+    });
+  });
+}
+
+function renderLegend(){
+  const legend = document.getElementById("timelineLegend");
+  legend.innerHTML = phases.filter(p => p.id !== "all").map(p => `<span><i class="dot" style="--c:${p.color}"></i>${p.name}</span>`).join("");
+}
+
+function setupControls(){
+  const search = document.getElementById("searchInput");
+  search.addEventListener("input", e => {
+    state.search = e.target.value;
+    const first = filteredPapers()[0];
+    if(first) state.selected = first.id;
+    renderAll(false);
+  });
+  document.getElementById("phaseFilter").addEventListener("change", e => {
+    state.phase = e.target.value;
+    const first = filteredPapers()[0];
+    if(first) state.selected = first.id;
+    renderAll();
+  });
+  document.getElementById("cellFilter").addEventListener("change", e => {
+    state.cell = e.target.value;
+    const first = filteredPapers()[0];
+    if(first) state.selected = first.id;
+    renderAll();
+  });
+}
+
+function fitCanvas(canvas){
+  const rect = canvas.getBoundingClientRect();
+  const ratio = window.devicePixelRatio || 1;
+  canvas.width = Math.round(rect.width * ratio);
+  canvas.height = Math.round(rect.height * ratio);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+  return {ctx,w:rect.width,h:rect.height};
+}
+
+function cellRadius(cells){
+  if(!cells || cells <= 0) return 7;
+  const v = Math.log10(cells);
+  return Math.max(7, Math.min(28, 5 + v * 3.2));
+}
+
+let timelinePoints = [];
+function drawTimeline(){
+  const canvas = document.getElementById("timelineCanvas");
+  const {ctx,w,h} = fitCanvas(canvas);
+  ctx.clearRect(0,0,w,h);
+  const pad = {l:54,r:24,t:26,b:48};
+  const plotW = w - pad.l - pad.r;
+  const plotH = h - pad.t - pad.b;
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0,0,w,h);
+
+  ctx.strokeStyle = "#dfe5ee";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(pad.l,pad.t);
+  ctx.lineTo(pad.l,pad.t+plotH);
+  ctx.lineTo(pad.l+plotW,pad.t+plotH);
+  ctx.stroke();
+
+  ctx.font = "12px ui-sans-serif, sans-serif";
+  ctx.fillStyle = "#687589";
+  for(let y of [2011,2015,2018,2021,2023,2026]){
+    const x = pad.l + ((y-2011)/(2026-2011))*plotW;
+    ctx.strokeStyle = "#edf1f6";
+    ctx.beginPath();
+    ctx.moveTo(x,pad.t);
+    ctx.lineTo(x,pad.t+plotH);
+    ctx.stroke();
+    ctx.fillText(String(y),x-14,pad.t+plotH+24);
+  }
+  phaseOrder.forEach(id => {
+    const ph = phaseById[id];
+    const y = pad.t + phaseY[id]*plotH;
+    ctx.strokeStyle = ph.color + "55";
+    ctx.beginPath();
+    ctx.moveTo(pad.l,y);
+    ctx.lineTo(pad.l+plotW,y);
+    ctx.stroke();
+    ctx.fillStyle = ph.color;
+    ctx.font = "12px ui-sans-serif, sans-serif";
+    ctx.fillText(ph.name,pad.l+6,y-7);
+  });
+
+  const visible = filteredPapers();
+  timelinePoints = [];
+  visible.forEach((p,idx) => {
+    const x = pad.l + ((p.year-2011)/(2026-2011))*plotW;
+    const baseY = pad.t + phaseY[p.phase]*plotH;
+    const y = baseY + ((idx % 5) - 2) * 15;
+    const r = cellRadius(p.cells);
+    timelinePoints.push({id:p.id,x,y,r});
+    ctx.beginPath();
+    ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle = p.id === state.selected ? "#16202c" : phaseColor(p.phase);
+    ctx.globalAlpha = p.id === state.selected ? .96 : .82;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.lineWidth = p.id === state.selected ? 3 : 1;
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+    if(p.id === state.selected || ["kang2011","lake2018","velmeshev2019","siletti2023","chien2024","wang2025","palmer2026"].includes(p.id)){
+      ctx.fillStyle = "#16202c";
+      ctx.font = p.id === state.selected ? "700 12px ui-sans-serif, sans-serif" : "12px ui-sans-serif, sans-serif";
+      const label = p.study.replace(" et al.","");
+      const lx = Math.min(x + r + 5, w - 130);
+      ctx.fillText(label,lx,y+4);
+    }
+  });
+
+  ctx.fillStyle = "#687589";
+  ctx.font = "12px ui-sans-serif, sans-serif";
+  ctx.fillText("publication year", pad.l + plotW - 108, h - 12);
+  ctx.save();
+  ctx.translate(16, pad.t + plotH/2 + 62);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText("research question phase", 0, 0);
+  ctx.restore();
+}
+
+function drawAtlas(){
+  const canvas = document.getElementById("atlasCanvas");
+  const {ctx,w,h} = fitCanvas(canvas);
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0,0,w,h);
+  const cx = w/2;
+  const cy = h/2 + 4;
+  const radius = Math.min(w,h) * .34;
+  const active = state.cell;
+
+  ctx.strokeStyle = "#dfe5ee";
+  ctx.lineWidth = 1;
+  for(let rr of [radius*.5,radius*.82,radius*1.12]){
+    ctx.beginPath();
+    ctx.arc(cx,cy,rr,0,Math.PI*2);
+    ctx.stroke();
+  }
+  ctx.fillStyle = "#16202c";
+  ctx.font = "700 15px ui-sans-serif, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("Human brain cell atlas",cx,cy-8);
+  ctx.font = "12px ui-sans-serif, sans-serif";
+  ctx.fillStyle = "#687589";
+  ctx.fillText("development · region · disease",cx,cy+13);
+
+  const nodes = cellTypes.filter(c => c.id !== "all");
+  nodes.forEach((c,i) => {
+    const angle = -Math.PI/2 + (i/nodes.length) * Math.PI*2;
+    const x = cx + Math.cos(angle) * radius;
+    const y = cy + Math.sin(angle) * radius;
+    const isActive = active === "all" || active === c.id;
+    ctx.strokeStyle = c.color + (isActive ? "cc" : "55");
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(x,y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(x,y,isActive ? 25 : 19,0,Math.PI*2);
+    ctx.fillStyle = isActive ? c.color : "#cfd7e2";
+    ctx.fill();
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = isActive ? "#16202c" : "#687589";
+    ctx.font = isActive ? "700 12px ui-sans-serif, sans-serif" : "12px ui-sans-serif, sans-serif";
+    ctx.textAlign = x < cx ? "right" : "left";
+    const labelX = x + (x < cx ? -32 : 32);
+    ctx.fillText(c.label,labelX,y+4);
+  });
+  ctx.textAlign = "left";
+}
+
+document.getElementById("timelineCanvas").addEventListener("click", e => {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  let best = null;
+  let bestD = Infinity;
+  timelinePoints.forEach(pt => {
+    const d = Math.hypot(pt.x-x, pt.y-y);
+    if(d < bestD){ bestD = d; best = pt; }
+  });
+  if(best && bestD < Math.max(34,best.r+12)){
+    state.selected = best.id;
+    renderAll(false);
+  }
+});
+
+function renderAll(redrawControls=true){
+  if(redrawControls){
+    renderPhases();
+    renderCells();
+    renderFilters();
+  }
+  document.getElementById("searchInput").value = state.search;
+  renderPhaseDetail();
+  renderPaperDetail();
+  renderCellMeaning();
+  renderLadder();
+  renderCatalog();
+  renderLegend();
+  drawTimeline();
+  drawAtlas();
+}
+
+window.addEventListener("resize", () => {
+  drawTimeline();
+  drawAtlas();
+});
+
+setupControls();
+renderAll();
+</script>
+</body>
+</html>

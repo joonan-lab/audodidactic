@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audodidactic — 랩 온보딩 시각화</title>
+<meta name="description" content="joonan-lab의 새 주제 온보딩용 인터랙티브 시각화 모음. GWAS, single-cell, foundation models, organoid 등 위키 정리 문서를 한 페이지짜리 직관 자료로 풉니다.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#17202a;
+  --ink-soft:#475569;
+  --muted:#64748b;
+  --line:#e2e4ea;
+  --line-soft:#f0f1f4;
+  --bg:#fff;
+  --bg-soft:#fafbfc;
+  --accent:#4f46e5;
+  --accent-soft:#eef2ff;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.6;
+  padding:2.5rem 1.75rem 3rem;
+  max-width:920px;
+  margin:0 auto;
+  -webkit-font-smoothing:antialiased;
+}
+.brand{
+  display:flex;
+  align-items:baseline;
+  gap:0.6rem;
+  margin-bottom:0.4rem;
+}
+h1{
+  font-size:1.95rem;
+  font-weight:700;
+  letter-spacing:-0.015em;
+}
+.brand .tag{
+  font-size:0.7rem;
+  font-weight:600;
+  color:var(--accent);
+  background:var(--accent-soft);
+  padding:0.2rem 0.5rem;
+  border-radius:4px;
+  letter-spacing:0.02em;
+}
+.sub{
+  color:var(--muted);
+  margin-bottom:1rem;
+  font-size:0.9rem;
+}
+.intro{
+  color:var(--ink-soft);
+  margin:1.25rem 0 2.75rem;
+  font-size:0.92rem;
+  line-height:1.75;
+  border-left:3px solid var(--line);
+  padding:0.5rem 0 0.5rem 1.1rem;
+}
+.intro strong{color:var(--ink)}
+.intro p+p{margin-top:0.6rem}
+h2{
+  font-size:1.1rem;
+  font-weight:700;
+  margin:2.5rem 0 0.6rem;
+  padding-bottom:0.45rem;
+  border-bottom:2px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:1rem;
+}
+h2 .count{
+  font-size:0.72rem;
+  font-weight:500;
+  color:var(--muted);
+  letter-spacing:0.04em;
+}
+ul{list-style:none;padding:0}
+li{
+  border-bottom:1px solid var(--line-soft);
+  padding:0.95rem 0;
+}
+li:last-child{border-bottom:none}
+a{
+  text-decoration:none;
+  color:var(--ink);
+  display:block;
+}
+a:hover .title{color:var(--accent)}
+.title{
+  font-size:1rem;
+  font-weight:600;
+  margin-bottom:0.25rem;
+  letter-spacing:-0.005em;
+}
+.meta{
+  font-size:0.75rem;
+  color:var(--muted);
+  font-variant-numeric:tabular-nums;
+}
+.desc{
+  font-size:0.84rem;
+  color:var(--ink-soft);
+  margin-top:0.35rem;
+  line-height:1.55;
+}
+.empty{
+  font-size:0.82rem;
+  color:#94a3b8;
+  font-style:italic;
+  padding:0.5rem 0;
+}
+.footer{
+  margin-top:3.5rem;
+  font-size:0.74rem;
+  color:#94a3b8;
+  border-top:1px solid var(--line);
+  padding-top:1.1rem;
+  line-height:1.7;
+}
+.footer a{
+  color:var(--muted);
+  text-decoration:underline;
+  display:inline;
+}
+.footer a:hover{color:var(--accent)}
+@media (max-width:600px){
+  body{padding:1.75rem 1.1rem 2.5rem}
+  h1{font-size:1.6rem}
+  h2{font-size:1.02rem}
+}
+</style>
+</head>
+<body>
+
+<div class="brand">
+  <h1>Audodidactic</h1>
+  <span class="tag">joonan-lab</span>
+</div>
+<p class="sub">새 주제를 스스로 빠르게 익히기 위한 인터랙티브 시각화 모음</p>
+
+<div class="intro">
+  <p>랩원이 처음 보는 주제 — GWAS, single-cell, foundation models, organoid 등 — 에 진입할 때 텍스트만으로는 잘 잡히지 않는 직관을 한 페이지짜리 인터랙티브로 풀어둔 자료실입니다.</p>
+  <p>출처는 랩 내부 위키의 정리 문서와 원 논문이며, 새 주제가 위키에 추가될 때마다 여기에도 시각화가 점진적으로 늘어납니다. 각 페이지의 인용은 Google Scholar 검색으로 연결됩니다.</p>
+</div>
+
+<h2>방법론 해설 <span class="count">4 items</span></h2>
+<ul>
+  <li><a href="genetic-association-methods/index.html">
+    <div class="title">유전 연관분석 방법 — GWAS, TADA, Burden, SKAT</div>
+    <div class="meta">2026-05-09 · 8 methods · 3 simulators</div>
+    <div class="desc">Common SNP, de novo variant, rare coding burden, SKAT/SKAT-O, GLMM/REGENIE, LDSC/S-LDSC, MAGMA, PRS가 각각 어떤 신호를 포착하는지 설명하는 한글 인터랙티브. 대립유전자 빈도 / 효과 크기 지형도, 방법 선택기, GWAS·희귀변이·TADA 직관 콘솔, 분석 워크플로우, 핵심·예시 출처 링크를 포함합니다.</div>
+  </a></li>
+  <li><a href="genomic-language-model-attention/index.html">
+    <div class="title">gLM Attention Lens — genomic language model은 DNA에서 무엇을 보는가</div>
+    <div class="meta">2026-05-09 · 6 scenarios · 8 model families</div>
+    <div class="desc">DNABERT, DNABERT-2, Nucleotide Transformer, GROVER, Enformer, HyenaDNA, Caduceus, ARSENAL을 중심으로 tokenization, self-attention, long-range regulatory context, reverse-complement prior, nucleotide dependency map을 비교하는 학습용 인터랙티브입니다.</div>
+  </a></li>
+  <li><a href="gwas-fine-mapping/index.html">
+    <div class="title">GWAS Fine-Mapping — PIP, Credible Set, Functional Prior</div>
+    <div class="meta">2026-05-09 · 5 scenarios · 26 paper atlas</div>
+    <div class="desc">GWAS peak를 causal variant 후보로 좁히는 과정을 조작형 locus plot으로 보여줍니다. LD block 폭, GWAS 정보량, 기능 prior, ancestry LD 다양성, secondary signal을 바꾸며 PIP와 95% credible set이 어떻게 움직이는지 확인하고, SuSiE/FINEMAP/PolyFun/colocalization/MPRA/cross-ancestry 문헌 지형까지 이어서 읽을 수 있습니다.</div>
+  </a></li>
+  <li><a href="human-brain-single-cell/index.html">
+    <div class="title">인간 뇌 단일세포 시퀀싱 연구 지도</div>
+    <div class="meta">2026-05-09 · 28 studies · 8 cell-type axes</div>
+    <div class="desc">BrainSpan부터 BICCN, MERFISH, multiome, aging, Tri-IPC, cortical regionality까지 인간 뇌 single-cell/single-nucleus sequencing 연구를 연대별 발견과 셀타입 의미로 정리한 한글 학습 지도입니다. gpt-image-2 그래픽 요약, 논문 타임라인, 셀타입 compass, evidence ladder, 검색 가능한 카탈로그를 포함합니다.</div>
+  </a></li>
+</ul>
+
+<h2>예정 트랙 <span class="count">coming soon</span></h2>
+<ul>
+  <li><div class="empty">ASD 유전학·모델 · single-cell foundation models · organoid protocols 등이 순차적으로 추가됩니다.</div></li>
+</ul>
+
+<div class="footer">
+  joonan-lab · <a href="https://github.com/joonan-lab/audodidactic" target="_blank" rel="noopener">github.com/joonan-lab/audodidactic</a><br>
+  랩 내부 위키(llm-wiki)의 정리 문서를 토대로 제작 · 인용은 Google Scholar로 연결
+</div>
+
+</body>
+</html>

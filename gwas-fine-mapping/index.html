@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GWAS Fine-Mapping — 인터랙티브 논문 지도</title>
+<meta name="description" content="GWAS fine-mapping의 PIP, credible set, LD, functional prior, colocalization, cross-ancestry 해석을 한 화면에서 조작하고 논문 지형으로 연결하는 인터랙티브 해설.">
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#f6f8fb;
+  --paper:#fff;
+  --ink:#141821;
+  --ink-soft:#334155;
+  --muted:#667085;
+  --line:#d9dee7;
+  --line-soft:#eef1f5;
+  --soft:#f7f9fc;
+  --soft2:#eef3f8;
+  --blue:#255c99;
+  --blue-soft:#e9f2fb;
+  --red:#b43c4a;
+  --gold:#a66b13;
+  --green:#19735d;
+  --violet:#6250a4;
+  --cyan:#147a83;
+  --slate:#475569;
+  --shadow:0 14px 34px rgba(15,23,42,.08);
+  --shadow-soft:0 8px 22px rgba(15,23,42,.055);
+}
+body{
+  margin:0;
+  background:var(--bg);
+  background-image:
+    linear-gradient(rgba(37,92,153,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,92,153,.045) 1px, transparent 1px);
+  background-size:42px 42px;
+  color:var(--ink);
+  font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  line-height:1.48;
+  -webkit-font-smoothing:antialiased;
+}
+button,input{font:inherit}
+button{color:inherit}
+a{color:inherit}
+.page{max-width:1500px;margin:0 auto;padding:28px 24px 48px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:16px;
+}
+.crumb{
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  color:var(--muted);
+  font-size:12px;
+  text-decoration:none;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(217,222,231,.8);
+  border-radius:999px;
+  padding:7px 10px;
+}
+.crumb:hover{color:var(--blue)}
+.build-note{
+  border:1px solid rgba(217,222,231,.9);
+  background:rgba(255,255,255,.8);
+  border-radius:999px;
+  padding:7px 10px;
+  color:#425066;
+  font-size:12px;
+  white-space:nowrap;
+}
+.mast{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(430px,.72fr);
+  gap:24px;
+  align-items:stretch;
+  padding:20px 0 18px;
+  border-bottom:0;
+}
+.hero-copy{
+  min-width:0;
+  display:grid;
+  align-content:center;
+  min-height:390px;
+}
+.eyebrow{
+  font-size:12px;
+  letter-spacing:0;
+  text-transform:uppercase;
+  color:#526071;
+  font-weight:850;
+  margin-bottom:8px;
+}
+h1{
+  margin:0;
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  font-size:clamp(46px,5.8vw,78px);
+  line-height:.98;
+  letter-spacing:0;
+  font-weight:760;
+  word-break:keep-all;
+  max-width:980px;
+}
+h1 span{display:block}
+h1 .nowrap{white-space:nowrap}
+.dek{
+  max-width:850px;
+  margin:18px 0 0;
+  color:#3f4b5d;
+  font-size:16px;
+  line-height:1.66;
+  text-wrap:pretty;
+}
+.mast-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  max-width:850px;
+  margin-top:22px;
+}
+.stat{
+  border:1px solid rgba(217,222,231,.92);
+  background:rgba(255,255,255,.86);
+  border-radius:8px;
+  padding:12px;
+  min-height:98px;
+  box-shadow:var(--shadow-soft);
+}
+.stat b{display:block;font-size:26px;line-height:1.08}
+.stat span{display:block;font-size:12px;color:var(--muted);margin-top:7px}
+.hero-visual{
+  position:relative;
+  min-height:390px;
+  border:1px solid rgba(203,213,225,.92);
+  border-radius:8px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.95),rgba(248,251,255,.95));
+  box-shadow:0 24px 60px rgba(37,92,153,.12);
+  overflow:hidden;
+}
+.hero-visual::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    repeating-linear-gradient(90deg,rgba(20,24,33,.04) 0 1px,transparent 1px 44px),
+    repeating-linear-gradient(0deg,rgba(20,24,33,.035) 0 1px,transparent 1px 44px);
+  pointer-events:none;
+}
+.hero-visual canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+.visual-caption{
+  position:absolute;
+  left:14px;
+  right:14px;
+  bottom:14px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  z-index:2;
+}
+.visual-caption span{
+  border:1px solid rgba(203,213,225,.88);
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(10px);
+  border-radius:8px;
+  padding:8px 9px;
+  color:#405066;
+  font-size:11px;
+}
+.scenario-strip{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(135px,1fr));
+  gap:10px;
+  margin:4px 0 18px;
+}
+.scenario-btn,.stage-btn{
+  border:1px solid rgba(217,222,231,.96);
+  background:rgba(255,255,255,.9);
+  border-radius:8px;
+  cursor:pointer;
+  text-align:left;
+  transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease;
+}
+.scenario-btn{
+  padding:11px 12px;
+  min-height:74px;
+  box-shadow:0 6px 18px rgba(15,23,42,.035);
+}
+.scenario-btn:hover,.stage-btn:hover{transform:translateY(-1px);border-color:#9aa8bb;box-shadow:var(--shadow-soft)}
+.scenario-btn.active{border-color:var(--blue);background:linear-gradient(180deg,#f5faff,var(--blue-soft))}
+.scenario-btn .k{display:block;font-size:13px;font-weight:850}
+.scenario-btn .s{display:block;font-size:11px;color:var(--muted);margin-top:5px}
+.workbench{
+  display:grid;
+  grid-template-columns:minmax(310px,.78fr) minmax(520px,1.34fr) minmax(330px,.9fr);
+  gap:16px;
+  align-items:start;
+}
+.panel{
+  border:1px solid rgba(217,222,231,.96);
+  border-radius:8px;
+  background:rgba(255,255,255,.94);
+  overflow:hidden;
+  box-shadow:0 10px 28px rgba(15,23,42,.045);
+}
+.panel-head{
+  padding:14px 14px 11px;
+  border-bottom:1px solid rgba(217,222,231,.88);
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+}
+.panel-title{font-size:14px;font-weight:850;letter-spacing:0;min-width:130px}
+.panel-note{font-size:12px;color:var(--muted);max-width:390px;text-align:right}
+.panel-body{padding:14px}
+.control-stack{display:grid;gap:12px}
+.control{
+  border:1px solid rgba(217,222,231,.92);
+  background:#f8fafc;
+  border-radius:8px;
+  padding:12px;
+}
+.control-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}
+.control label{font-size:12px;font-weight:850;color:#293548}
+.control output{font-size:12px;color:#4a596b;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.scale{
+  display:flex;
+  justify-content:space-between;
+  color:#7b8797;
+  font-size:10px;
+  margin-top:4px;
+}
+.toggle-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:center;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:8px;
+  padding:11px 12px;
+}
+.toggle-row b{font-size:12px;display:block}
+.toggle-row span{font-size:11px;color:var(--muted);display:block;margin-top:3px}
+.switch{
+  width:46px;
+  height:26px;
+  border-radius:999px;
+  border:1px solid #b9c3d3;
+  background:#dce3ed;
+  padding:2px;
+  cursor:pointer;
+}
+.switch i{
+  display:block;
+  width:20px;
+  height:20px;
+  border-radius:999px;
+  background:#fff;
+  box-shadow:0 2px 5px rgba(0,0,0,.18);
+  transition:transform .18s ease;
+}
+.switch.on{background:var(--green);border-color:var(--green)}
+.switch.on i{transform:translateX(20px)}
+.equation{
+  color:#293548;
+  font-size:12px;
+  line-height:1.6;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+}
+.dim{color:#7b8797}
+.note-list{display:grid;gap:8px;margin-top:10px}
+.note{
+  display:grid;
+  grid-template-columns:88px minmax(0,1fr);
+  gap:8px;
+  border:1px solid #dfe5ee;
+  background:#fff;
+  border-radius:7px;
+  padding:8px;
+}
+.note b{font-size:11px;color:#233044}
+.note span{font-size:11px;color:#59677a}
+.canvas-card{
+  position:relative;
+  border:1px solid rgba(203,213,225,.95);
+  border-radius:8px;
+  overflow:hidden;
+  background:
+    linear-gradient(#fff,#fbfcfe),
+    repeating-linear-gradient(90deg,rgba(37,92,153,.04) 0 1px,transparent 1px 36px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
+}
+canvas{display:block;width:100%;height:496px}
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:10px;
+}
+.metric{
+  border:1px solid rgba(217,222,231,.95);
+  border-radius:8px;
+  background:linear-gradient(180deg,#fff,#fbfcff);
+  padding:10px;
+  min-height:78px;
+}
+.metric b{display:block;font-size:17px;line-height:1.1;font-variant-numeric:tabular-nums}
+.metric span{display:block;font-size:11px;color:var(--muted);margin-top:5px}
+.legend{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+  margin-top:10px;
+}
+.legend-item{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border:1px solid rgba(217,222,231,.95);
+  border-radius:7px;
+  padding:7px 8px;
+  font-size:11px;
+  color:#4a596b;
+  min-width:0;
+}
+.dot{width:10px;height:10px;border-radius:999px;display:inline-block;flex:0 0 auto}
+.variant-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px;
+}
+.variant-detail,.callout{
+  border:1px solid rgba(217,222,231,.96);
+  border-radius:8px;
+  background:#f8fafc;
+  padding:12px;
+}
+.variant-detail h2,.callout h2{
+  margin:0;
+  font-size:16px;
+  line-height:1.2;
+}
+.variant-detail p,.callout p{
+  margin:8px 0 0;
+  color:#3c485a;
+  font-size:12px;
+}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tag{
+  font-size:10px;
+  border:1px solid #c9d4e3;
+  background:#fff;
+  border-radius:999px;
+  padding:4px 7px;
+  color:#39465a;
+}
+.bars{display:grid;gap:7px}
+.bar-row{
+  display:grid;
+  grid-template-columns:78px minmax(0,1fr) 42px;
+  gap:8px;
+  align-items:center;
+  border:1px solid rgba(217,222,231,.95);
+  background:#fff;
+  border-radius:7px;
+  padding:8px;
+  cursor:pointer;
+  width:100%;
+  text-align:left;
+}
+.bar-row.active{border-color:#17202a;background:#f4f7fb;box-shadow:inset 3px 0 0 #17202a}
+.rsid{font-size:11px;font-weight:850;white-space:nowrap}
+.bar-track{
+  position:relative;
+  height:9px;
+  background:#edf1f6;
+  border-radius:999px;
+  overflow:hidden;
+}
+.bar-fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px}
+.bar-value{font-size:11px;color:#526071;text-align:right;font-variant-numeric:tabular-nums}
+.pipe{display:grid;gap:8px;margin-top:12px}
+.step{
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr);
+  gap:9px;
+  border:1px solid rgba(217,222,231,.95);
+  border-radius:8px;
+  padding:9px;
+  background:#fff;
+}
+.step-num{
+  width:26px;
+  height:26px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:var(--soft2);
+  color:#526071;
+  font-weight:850;
+  font-size:12px;
+}
+.step b{font-size:12px;display:block}
+.step span{font-size:11px;color:var(--muted);display:block;margin-top:3px}
+.step.active{border-color:#9bbbe0;background:linear-gradient(180deg,#f8fbff,#edf6ff)}
+.wide{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
+.reading-layout{
+  display:grid;
+  grid-template-columns:minmax(320px,.9fr) minmax(520px,1.4fr);
+  gap:16px;
+  align-items:start;
+}
+.stage-controls{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.stage-btn{
+  padding:9px 10px;
+  min-height:52px;
+}
+.stage-btn.active{border-color:var(--stage-color,#255c99);background:color-mix(in srgb,var(--stage-color,#255c99) 10%,#fff)}
+.stage-btn b{display:block;font-size:12px}
+.stage-btn span{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+.search-row{margin-top:10px}
+.search-row input{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px 11px;
+  color:var(--ink);
+  background:#fff;
+}
+.map-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin-top:12px;
+}
+.map-card{
+  border:1px solid rgba(217,222,231,.95);
+  border-radius:8px;
+  background:linear-gradient(180deg,#fff,#fbfcff);
+  padding:11px;
+  min-height:106px;
+}
+.map-card b{display:block;font-size:13px}
+.map-card span{display:block;font-size:11px;color:var(--muted);margin-top:5px}
+.map-card i{
+  display:block;
+  width:36px;
+  height:4px;
+  border-radius:999px;
+  margin-bottom:8px;
+  background:var(--card-color);
+}
+.paper-list{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.paper{
+  position:relative;
+  border:1px solid rgba(217,222,231,.95);
+  border-radius:8px;
+  background:linear-gradient(180deg,#fff,#fbfcff);
+  padding:12px;
+  min-height:148px;
+  display:grid;
+  align-content:start;
+  gap:8px;
+  overflow:hidden;
+  transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.paper::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:3px;
+  background:var(--paper-color);
+  opacity:.72;
+}
+.paper:hover{border-color:#a9b7c9;box-shadow:0 12px 26px rgba(15,23,42,.06);transform:translateY(-1px)}
+.paper-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.paper-stage{
+  border:1px solid color-mix(in srgb,var(--paper-color) 55%,#fff);
+  background:color-mix(in srgb,var(--paper-color) 9%,#fff);
+  color:#263244;
+  border-radius:999px;
+  padding:4px 7px;
+  font-size:10px;
+  white-space:nowrap;
+}
+.paper-year{font-size:11px;color:#697789;font-variant-numeric:tabular-nums}
+.paper h3{margin:0;font-size:14px;line-height:1.25;text-wrap:pretty}
+.paper p{margin:0;color:#475569;font-size:12px}
+.paper a{
+  justify-self:start;
+  font-size:11px;
+  color:#255c99;
+  text-decoration:none;
+  border-bottom:1px solid #b8cce3;
+}
+.paper a:hover{color:#163e6c}
+.matrix{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  background:#fff;
+  border:1px solid rgba(217,222,231,.95);
+  border-radius:8px;
+  overflow:hidden;
+}
+.matrix th,.matrix td{
+  border-bottom:1px solid var(--line);
+  text-align:left;
+  vertical-align:top;
+  padding:10px;
+}
+.matrix th{
+  color:#526071;
+  text-transform:uppercase;
+  letter-spacing:0;
+  font-size:11px;
+}
+.matrix tr:last-child td{border-bottom:0}
+.matrix b{font-size:12px}
+.footer-note{
+  margin-top:12px;
+  color:#667085;
+  font-size:12px;
+  line-height:1.6;
+}
+@media (max-width:1180px){
+  .workbench,.reading-layout,.mast{grid-template-columns:1fr}
+  .hero-copy{min-height:auto}
+  .hero-visual{min-height:380px}
+  .panel-note{text-align:left}
+}
+@media (max-width:860px){
+  .page{padding:20px 14px 32px}
+  h1{font-size:42px}
+  .topbar{align-items:flex-start;flex-direction:column}
+  .build-note{white-space:normal}
+  .hero-visual{min-height:340px}
+  .visual-caption{grid-template-columns:1fr}
+  .scenario-strip,.mast-stats,.metrics,.legend,.variant-grid,.stage-controls,.map-grid,.paper-list{grid-template-columns:1fr}
+  .panel-head{display:block}
+  .panel-title{min-width:0}
+  .panel-note{max-width:330px;margin-top:6px}
+  canvas{height:420px}
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="topbar">
+    <a class="crumb" href="../index.html">Audodidactic / 방법론 해설</a>
+    <div class="build-note">local llm-wiki scan: 56 fine-mapping / PIP / credible-set 관련 페이지</div>
+  </div>
+
+  <header class="mast">
+    <div class="hero-copy">
+      <div class="eyebrow">GWAS POST-ASSOCIATION WORKBENCH</div>
+      <h1><span>GWAS</span><span class="nowrap">Fine-Mapping</span></h1>
+      <p class="dek">GWAS peak를 “가장 작은 P값의 SNP”에서 멈추지 않고, LD 안에 묶인 후보 variant들의 posterior inclusion probability, 95% credible set, functional prior, colocalization, cross-ancestry 근거로 압축해 실험 우선순위를 정하는 과정입니다.</p>
+      <div class="mast-stats">
+        <div class="stat"><b>Lead ≠ causal</b><span>index SNP는 보고용 표지일 뿐, 실제 기능 variant와 다를 수 있습니다.</span></div>
+        <div class="stat"><b>PIP</b><span>각 후보가 causal일 posterior probability를 분배합니다.</span></div>
+        <div class="stat"><b>95% CS</b><span>PIP를 큰 순서로 더해 95%가 되는 최소 후보 집합입니다.</span></div>
+      </div>
+    </div>
+    <div class="hero-visual" aria-label="Fine-mapping graphical abstract">
+      <canvas id="heroCanvas" aria-label="GWAS fine-mapping visual abstract"></canvas>
+      <div class="visual-caption">
+        <span>association peak</span>
+        <span>LD topology</span>
+        <span>posterior priority</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="scenario-strip" aria-label="fine-mapping scenario">
+    <button class="scenario-btn active" data-scenario="balanced">
+      <span class="k">균형 잡힌 locus</span>
+      <span class="s">LD, 정보량, 기능 prior가 중간인 기본 상황</span>
+    </button>
+    <button class="scenario-btn" data-scenario="ldtrap">
+      <span class="k">LD trap</span>
+      <span class="s">proxy SNP들이 비슷하게 유의해 posterior가 퍼짐</span>
+    </button>
+    <button class="scenario-btn" data-scenario="functional">
+      <span class="k">기능 prior 강함</span>
+      <span class="s">enhancer, eQTL, conservation이 후보를 재가중</span>
+    </button>
+    <button class="scenario-btn" data-scenario="multiancestry">
+      <span class="k">다중 ancestry</span>
+      <span class="s">LD 차이로 proxy가 탈락하고 credible set이 작아짐</span>
+    </button>
+    <button class="scenario-btn" data-scenario="messy">
+      <span class="k">복잡한 locus</span>
+      <span class="s">secondary signal과 틀린 prior가 해석을 흔듦</span>
+    </button>
+  </section>
+
+  <section class="workbench">
+    <aside class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Fine-mapping 콘솔</div>
+        <div class="panel-note">교육용 toy Bayesian model입니다. 실제 분석은 summary stats, allele harmonization, ancestry-matched LD가 핵심입니다.</div>
+      </div>
+      <div class="panel-body control-stack">
+        <div class="control">
+          <div class="control-top"><label for="ldRange">LD block 폭</label><output id="ldOut">중간</output></div>
+          <input id="ldRange" type="range" min="35" max="145" value="82">
+          <div class="scale"><span>짧음</span><span>긴 LD</span></div>
+        </div>
+        <div class="control">
+          <div class="control-top"><label for="powerRange">GWAS 정보량</label><output id="powerOut">보통</output></div>
+          <input id="powerRange" type="range" min="62" max="138" value="100">
+          <div class="scale"><span>낮음</span><span>높음</span></div>
+        </div>
+        <div class="control">
+          <div class="control-top"><label for="priorRange">기능 주석 prior</label><output id="priorOut">중간</output></div>
+          <input id="priorRange" type="range" min="0" max="100" value="42">
+          <div class="scale"><span>uniform</span><span>annotation-weighted</span></div>
+        </div>
+        <div class="control">
+          <div class="control-top"><label for="ancestryRange">ancestry LD 다양성</label><output id="ancestryOut">낮음</output></div>
+          <input id="ancestryRange" type="range" min="0" max="100" value="18">
+          <div class="scale"><span>단일 ancestry</span><span>다중 ancestry</span></div>
+        </div>
+        <div class="toggle-row">
+          <div><b>secondary causal signal</b><span>한 locus에 독립 signal이 더 있으면 single-signal 해석이 흔들립니다.</span></div>
+          <button class="switch" id="secondToggle" aria-pressed="false"><i></i></button>
+        </div>
+        <div class="control">
+          <div class="equation">
+            <span class="dim">toy posterior</span><br>
+            score_j = 0.34 x z_j² + annotation_prior_j<br>
+            PIP_j = exp(score_j) / sum_k exp(score_k)<br>
+            CS95 = smallest variants where cumulative PIP >= 0.95
+          </div>
+          <div class="note-list">
+            <div class="note"><b>LD 길이</b><span>LD가 길수록 causal variant 주변 proxy들이 비슷한 z-score를 가져 credible set이 커집니다.</span></div>
+            <div class="note"><b>기능 prior</b><span>질병 관련 세포형의 enhancer/eQTL/보존성이 맞으면 PIP가 더 빨리 집중됩니다.</span></div>
+            <div class="note"><b>다중 ancestry</b><span>LD 구조 차이가 tag SNP를 분리해 같은 causal signal의 후보를 줄일 수 있습니다.</span></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Locus view: association, LD, PIP</div>
+          <div class="panel-note">점 높이 = -log10(P), 점 크기 = PIP, 색 = causal 후보와의 LD r²</div>
+        </div>
+        <div class="panel-body">
+          <div class="canvas-card">
+            <canvas id="locusCanvas" aria-label="GWAS fine-mapping locus plot"></canvas>
+          </div>
+          <div class="metrics">
+            <div class="metric"><b id="leadMetric">rs?</b><span>lead SNP by association</span></div>
+            <div class="metric"><b id="pipMetric">rs?</b><span>highest PIP candidate</span></div>
+            <div class="metric"><b id="csMetric">0 variants</b><span>95% credible set size</span></div>
+            <div class="metric"><b id="purityMetric">0.00</b><span>credible set mean r²</span></div>
+          </div>
+          <div class="legend">
+            <div class="legend-item"><span class="dot" style="background:#b43c4a"></span><span>high LD / high PIP</span></div>
+            <div class="legend-item"><span class="dot" style="background:#a66b13"></span><span>moderate LD</span></div>
+            <div class="legend-item"><span class="dot" style="background:#255c99"></span><span>low LD proxy</span></div>
+            <div class="legend-item"><span class="dot" style="background:#19735d"></span><span>functional annotation</span></div>
+            <div class="legend-item"><span class="dot" style="background:#6250a4"></span><span>secondary signal</span></div>
+          </div>
+          <div class="variant-grid">
+            <div class="variant-detail">
+              <h2 id="variantTitle">variant</h2>
+              <p id="variantText">후보를 선택하면 posterior, LD, annotation 근거가 표시됩니다.</p>
+              <div class="tags" id="variantTags"></div>
+            </div>
+            <div class="callout">
+              <h2 id="interpretTitle">해석</h2>
+              <p id="interpretText">Fine-mapping은 정답 확정이 아니라 실험 우선순위를 줄이는 확률적 압축입니다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Posterior와 workflow</div>
+        <div class="panel-note">credible set은 작을수록 좋지만, 모델 가정과 LD reference에 민감합니다.</div>
+      </div>
+      <div class="panel-body">
+        <div class="bars" id="pipBars"></div>
+        <div class="pipe">
+          <div class="step active"><div class="step-num">1</div><div><b>GWAS peak</b><span>lead SNP는 locus의 표지이고, causal variant 후보는 LD 안에 남습니다.</span></div></div>
+          <div class="step"><div class="step-num">2</div><div><b>LD matrix</b><span>z-score 벡터와 ancestry-matched LD reference를 맞춥니다.</span></div></div>
+          <div class="step"><div class="step-num">3</div><div><b>multi-signal model</b><span>한 locus에 둘 이상의 independent signal이 있는지 봅니다.</span></div></div>
+          <div class="step"><div class="step-num">4</div><div><b>PIP와 credible set</b><span>각 variant에 causal probability를 배분하고 95% 후보 집합을 만듭니다.</span></div></div>
+          <div class="step"><div class="step-num">5</div><div><b>functional layer</b><span>cell-type enhancer, eQTL, pQTL, chromatin, conservation, MPRA를 붙입니다.</span></div></div>
+          <div class="step"><div class="step-num">6</div><div><b>validation</b><span>reporter assay, CRISPR perturbation, allele-specific assay로 mechanism을 검증합니다.</span></div></div>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="wide">
+    <div class="reading-layout">
+      <aside class="panel">
+        <div class="panel-head">
+          <div class="panel-title">문헌 지형</div>
+          <div class="panel-note">llm-wiki에서 추린 핵심 축입니다.</div>
+        </div>
+        <div class="panel-body">
+          <div class="stage-controls" id="stageControls"></div>
+          <div class="search-row"><input id="paperSearch" type="search" placeholder="논문, 방법, 키워드 검색"></div>
+          <div class="map-grid">
+            <div class="map-card" style="--card-color:#255c99"><i></i><b>Statistical core</b><span>ABF, FINEMAP, SuSiE, CAVIAR는 z-score와 LD matrix로 posterior를 만듭니다.</span></div>
+            <div class="map-card" style="--card-color:#19735d"><i></i><b>Functional prior</b><span>PolyFun, EMS, Eigen, genomic DL 점수는 variant별 prior를 바꿉니다.</span></div>
+            <div class="map-card" style="--card-color:#a66b13"><i></i><b>Cross-ancestry</b><span>LD 차이를 활용하면 proxy tag들이 분리되어 credible set이 줄어듭니다.</span></div>
+            <div class="map-card" style="--card-color:#b43c4a"><i></i><b>Mechanism gap</b><span>colocalization과 eQTL은 강력하지만, missing regulation과 context specificity를 남깁니다.</span></div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Paper atlas</div>
+          <div class="panel-note"><span id="paperCount">0</span> papers shown</div>
+        </div>
+        <div class="panel-body">
+          <div class="paper-list" id="paperList"></div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="wide">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">방법 선택 매트릭스</div>
+        <div class="panel-note">fine-mapping 결과를 읽을 때 반복해서 확인할 질문입니다.</div>
+      </div>
+      <div class="panel-body">
+        <table class="matrix">
+          <thead>
+            <tr><th>상황</th><th>먼저 볼 것</th><th>위험 신호</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>summary statistics만 있음</b></td><td>SuSiE-RSS, FINEMAP, ABF와 ancestry-matched LD reference</td><td>LD reference mismatch, allele flip, imputation 품질 차이</td></tr>
+            <tr><td><b>credible set이 너무 큼</b></td><td>cross-ancestry meta, larger N, functional prior, secondary signal check</td><td>긴 LD block, 낮은 정보량, locus boundary가 너무 좁거나 넓음</td></tr>
+            <tr><td><b>eQTL colocalization이 있음</b></td><td>PP(H4), tissue/cell-state relevance, SuSiE-coloc multi-signal 구조</td><td>H3와 H4 혼동, GTEx bulk tissue context 부족, PP4 낮음을 부정 증거로 과해석</td></tr>
+            <tr><td><b>functional prior가 강함</b></td><td>annotation source, disease-relevant cell type, prior sensitivity</td><td>틀린 세포형 annotation이 posterior를 과신하게 만듦</td></tr>
+            <tr><td><b>mechanism까지 주장</b></td><td>MPRA, allele editing, CRISPR perturbation, animal/cellular phenotype</td><td>통계적 fine-mapping만으로 causal mechanism을 확정하는 주장</td></tr>
+          </tbody>
+        </table>
+        <div class="footer-note">이 페이지의 locus와 수치는 교육용 합성 예시입니다. 근거는 local llm-wiki의 fine-mapping overview, concept pages, GWAS 문헌 요약에서 정리했습니다.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const variants = [
+  {id:"rs4121",pos:5,ann:0.08,labels:["intergenic"],note:"연관은 있지만 기능 주석이 거의 없는 먼 proxy입니다."},
+  {id:"rs7742",pos:14,ann:0.16,labels:["LD tag"],note:"LD 때문에 같이 올라온 tag SNP입니다."},
+  {id:"rs1187",pos:24,ann:0.26,labels:["promoter flank"],note:"promoter 주변이지만 posterior를 강하게 끌 정도의 근거는 약합니다."},
+  {id:"rs5060",pos:33,ann:0.20,labels:["LD tag"],note:"lead SNP와 가까운 proxy입니다."},
+  {id:"rs6052",pos:43,ann:0.36,labels:["ATAC"],note:"open chromatin 주석이 있어 prior가 약간 높습니다."},
+  {id:"rs7001",pos:51,ann:0.94,labels:["enhancer","eQTL","conserved"],note:"질병 관련 세포형 enhancer와 eQTL 근거가 겹치는 후보입니다."},
+  {id:"rs9210",pos:59,ann:0.42,labels:["TF motif"],note:"TF motif 변화 가능성이 있으나 association만으로는 분리되지 않습니다."},
+  {id:"rs1448",pos:67,ann:0.32,labels:["LD tag"],note:"causal 후보와 LD가 높아 association이 같이 보입니다."},
+  {id:"rs3309",pos:76,ann:0.18,labels:["intronic"],note:"secondary signal이 없으면 posterior가 낮은 후보입니다."},
+  {id:"rs4884",pos:84,ann:0.74,labels:["secondary","splice"],note:"secondary signal을 켜면 독립 signal의 후보로 살아납니다."},
+  {id:"rs2195",pos:91,ann:0.30,labels:["LD tag"],note:"후방 haplotype의 tag SNP입니다."},
+  {id:"rs8166",pos:97,ann:0.12,labels:["gene desert"],note:"기능 prior가 낮아 high LD 상황에서도 PIP가 제한됩니다."}
+];
+
+const state = {
+  ldRange:82,
+  power:100,
+  prior:42,
+  ancestry:18,
+  second:false,
+  selected:"rs7001"
+};
+
+const stageMeta = {
+  all:{label:"전체",note:"core set",color:"#475569"},
+  foundation:{label:"기초",note:"GWAS, LD",color:"#255c99"},
+  statistical:{label:"통계 방법",note:"PIP, CS",color:"#6250a4"},
+  functional:{label:"기능 prior",note:"annotation",color:"#19735d"},
+  ancestry:{label:"다중 ancestry",note:"LD 차이",color:"#a66b13"},
+  coloc:{label:"coloc/gene",note:"gene link",color:"#147a83"},
+  validation:{label:"검증",note:"assay",color:"#b43c4a"}
+};
+
+const papers = [
+  {stage:"foundation",year:"2005",title:"Hirschhorn & Daly — Genome-wide association studies for common diseases and complex traits",take:"tag SNP와 LD 기반 GWAS 설계의 초기 논리를 정리해 fine-mapping 이전 단계를 잡아줍니다.",query:"Hirschhorn Daly 2005 genome-wide association studies common diseases complex traits"},
+  {stage:"foundation",year:"2021",title:"Uffelmann et al. — Genome-wide association studies",take:"GWAS design, QC, imputation, downstream fine-mapping과 PRS까지 한 번에 묶은 Methods Primer입니다.",query:"Uffelmann 2021 genome-wide association studies Methods Primer"},
+  {stage:"foundation",year:"2026",title:"Statistical Fine-Mapping of GWAS Signals",take:"llm-wiki overview: ABF, FINEMAP, SuSiE, PolyFun, CAVIAR, cross-ancestry fine-mapping을 연결합니다.",query:"statistical fine-mapping GWAS signals SuSiE FINEMAP PolyFun CAVIAR"},
+  {stage:"foundation",year:"2026",title:"Linkage Disequilibrium concept page",take:"r², LD block, tag SNP, population LD differences가 왜 causal variant 식별을 어렵게 하는지 설명합니다.",query:"linkage disequilibrium r2 GWAS fine mapping"},
+  {stage:"statistical",year:"2017",title:"Pasaniuc & Price — Summary Association Statistics",take:"z-score가 LD matrix를 공분산으로 갖는다는 관점이 summary-stat fine-mapping의 수학적 기반입니다.",query:"Pasaniuc Price 2017 summary association statistics fine mapping"},
+  {stage:"statistical",year:"2016",title:"FINEMAP — Bayesian fine-mapping with stochastic search",take:"여러 causal configuration을 탐색해 variant별 PIP와 credible set을 산출하는 대표 방법입니다.",query:"Benner FINEMAP 2016 Bayesian fine-mapping stochastic search"},
+  {stage:"statistical",year:"2020",title:"SuSiE — Sum of Single Effects",take:"single-effect를 합쳐 여러 독립 signal별 credible set을 만드는 현재 핵심 방법론입니다.",query:"Wang 2020 SuSiE sum of single effects fine mapping"},
+  {stage:"statistical",year:"2014",title:"CAVIAR / eCAVIAR lineage",take:"causal variant posterior와 PIP 기반 colocalization으로 이어지는 Bayesian fine-mapping 계열입니다.",query:"CAVIAR eCAVIAR causal variants fine mapping colocalization"},
+  {stage:"functional",year:"2016",title:"Ionita-Laza et al. — Eigen score",take:"보존성, chromatin, TF binding 등을 통합한 functional score를 fine-mapping prior로 쓸 수 있음을 보여줍니다.",query:"Ionita-Laza 2016 Eigen score functional genomic annotations fine mapping"},
+  {stage:"functional",year:"2020",title:"PolyFun — Functionally informed fine-mapping",take:"S-LDSC 기반 per-SNP heritability prior를 SuSiE fine-mapping에 연결하는 흐름의 대표입니다.",query:"PolyFun 2020 functionally informed fine-mapping"},
+  {stage:"functional",year:"2021",title:"Wang et al. — EMS for cis-eQTL fine-mapping",take:"GTEx fine-mapped eQTL과 6,121개 feature로 EMS를 학습해 eQTL PIP와 colocalization을 강화합니다.",query:"Wang 2021 expression modifier score cis-eQTL fine-mapping"},
+  {stage:"functional",year:"2022",title:"Li et al. — MACIE multidimensional scoring",take:"coding/noncoding functional variant scoring을 확장해 prior 후보군을 더 정교하게 만드는 방향입니다.",query:"Li 2022 MACIE multi-dimensional integrative scoring functional variants"},
+  {stage:"functional",year:"2023",title:"Benegas et al. — DNA language models as variant effect predictors",take:"sequence model 기반 variant effect score가 fine-mapping prior 후보로 들어오는 흐름을 보여줍니다.",query:"Benegas 2023 DNA language models variant effects"},
+  {stage:"functional",year:"2026",title:"SCADS — single-cell chromatin accessibility disease score",take:"scATAC topic enrichment를 cell-level disease relevance로 바꾸고 fine-mapping prior로 연결합니다.",query:"SCADS single-cell ATAC disease score fine mapping"},
+  {stage:"ancestry",year:"2024",title:"Meng et al. — Multi-ancestry GWAS of major depression",take:"ancestral diversity로 median credible-set size가 65.6에서 35로 줄고 32 loci가 <=10 SNP로 좁혀졌습니다.",query:"Meng 2024 multi-ancestry GWAS major depression fine mapping credible set"},
+  {stage:"ancestry",year:"2026",title:"Sakaue et al. — Multi-ancestral RA GWAS in MVP",take:"152 non-MHC RA loci 중 60개가 <10-variant 95% CS, 10개는 single-variant CS로 좁혀졌습니다.",query:"Sakaue 2026 multi-ancestral GWAS rheumatoid arthritis fine mapping credible sets"},
+  {stage:"ancestry",year:"2022",title:"QT interval multi-ancestry GWAS",take:"multi-ancestry meta-analysis가 locus discovery와 fine-mapping 해상도를 함께 높이는 사례입니다.",query:"2022 multi-ancestry GWAS QT interval fine mapping"},
+  {stage:"ancestry",year:"2026",title:"Gasperi et al. — Multi-ancestry migraine GWAS",take:"veteran cohort 기반 multi-ancestry GWAS가 phenotype overlap과 locus interpretation을 함께 다룹니다.",query:"Gasperi 2026 multi-ancestry migraine GWAS fine mapping"},
+  {stage:"coloc",year:"2014",title:"coloc — Bayesian colocalization framework",take:"H0-H4 hypothesis로 GWAS와 eQTL signal이 같은 causal variant를 공유하는지 평가합니다.",query:"Giambartolomei 2014 coloc Bayesian colocalization H4"},
+  {stage:"coloc",year:"2021",title:"SuSiE-coloc / coloc 5.0",take:"각 trait에서 SuSiE credible set을 만든 뒤 signal-pair별 colocalization을 해 다중 signal을 다룹니다.",query:"Wallace 2021 coloc SuSiE multiple causal variants"},
+  {stage:"coloc",year:"2022",title:"Connally et al. — Missing Link",take:"Mendelian evidence가 있는 220 gene-trait pair 중 eQTL colocalization은 8%뿐이라는 경고를 줍니다.",query:"Connally 2022 missing link genetic association regulatory function eQTL colocalization"},
+  {stage:"coloc",year:"2026",title:"Hou et al. — Functionally informed cis/trans PWAS",take:"cis와 trans pQTL을 함께 이용해 disease-critical genes를 우선순위화하는 후속 gene-link layer입니다.",query:"Hou 2026 functionally informed cis trans proteome-wide association study"},
+  {stage:"validation",year:"2010",title:"Musunuru et al. — SORT1 1p13 locus",take:"fine-mapping, eQTL, reporter assay, mouse perturbation을 연결한 GWAS-to-mechanism의 교과서적 사례입니다.",query:"Musunuru 2010 SORT1 1p13 noncoding variant phenotype"},
+  {stage:"validation",year:"2022",title:"McAfee et al. — Focus your locus with MPRA",take:"lead SNP가 causal이 아닐 수 있음을 전제로 MPRA가 noncoding candidate를 기능 검증하는 방법을 정리합니다.",query:"McAfee 2022 Focus your locus massively parallel reporter assay"},
+  {stage:"validation",year:"2025",title:"Lee et al. — MPRA across psychiatric disorders",take:"여러 정신질환 공유 variant의 regulatory effect를 reporter assay로 직접 평가하는 validation layer입니다.",query:"Lee 2025 massively parallel reporter assay shared genetic variants psychiatric disorders"},
+  {stage:"validation",year:"2026",title:"Sim et al. — In silico mutagenesis with genomic foundation models",take:"foundation model과 ISM으로 enhancer variant effect를 예측해 functional follow-up 후보를 좁힙니다.",query:"Sim 2026 in silico mutagenesis genomic foundation models functional variants"}
+];
+
+const canvas = document.getElementById("locusCanvas");
+const ctx = canvas.getContext("2d");
+const heroCanvas = document.getElementById("heroCanvas");
+const heroCtx = heroCanvas.getContext("2d");
+const controls = {
+  ld:document.getElementById("ldRange"),
+  power:document.getElementById("powerRange"),
+  prior:document.getElementById("priorRange"),
+  ancestry:document.getElementById("ancestryRange"),
+  second:document.getElementById("secondToggle")
+};
+let latest = [];
+let currentStage = "all";
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function fmtPct(v){return `${Math.round(v*100)}%`}
+function r2Between(a,b,ldRange,ancestryMix){
+  const d = Math.abs(a.pos-b.pos);
+  const base = Math.exp(-d/ldRange);
+  const localCluster = (a.pos < 70 && b.pos < 70) || (a.pos >= 70 && b.pos >= 70) ? 0.08 : -0.04;
+  const eur = clamp(base + localCluster,0,1);
+  const afr = clamp(Math.exp(-d/(ldRange*.46)) + localCluster*.35,0,1);
+  const mix = ancestryMix/100;
+  return clamp((1-mix)*eur + mix*afr,0,1);
+}
+function colorForLD(r2,pip,isSecond){
+  if(isSecond) return "#6250a4";
+  if(pip > .28) return "#b43c4a";
+  if(r2 > .72) return "#c4575f";
+  if(r2 > .45) return "#a66b13";
+  if(r2 > .20) return "#5b8fc7";
+  return "#255c99";
+}
+function resizeHeroCanvas(){
+  const rect = heroCanvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const width = Math.max(420,Math.floor(rect.width*dpr));
+  const height = Math.max(320,Math.floor(rect.height*dpr));
+  if(heroCanvas.width !== width || heroCanvas.height !== height){
+    heroCanvas.width = width;
+    heroCanvas.height = height;
+  }
+}
+function roundRect(ctx,x,y,w,h,r){
+  const rr = Math.min(r,w/2,h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+rr,y);
+  ctx.lineTo(x+w-rr,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+rr);
+  ctx.lineTo(x+w,y+h-rr);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-rr,y+h);
+  ctx.lineTo(x+rr,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-rr);
+  ctx.lineTo(x,y+rr);
+  ctx.quadraticCurveTo(x,y,x+rr,y);
+}
+function drawHero(time=0){
+  resizeHeroCanvas();
+  const c = heroCanvas;
+  const hctx = heroCtx;
+  const w = c.width;
+  const h = c.height;
+  const dpr = window.devicePixelRatio || 1;
+  const pulse = reduceMotion ? .55 : .45 + .25*Math.sin(time/900);
+  hctx.clearRect(0,0,w,h);
+  hctx.fillStyle = "#ffffff";
+  hctx.fillRect(0,0,w,h);
+
+  const pad = 24*dpr;
+  const railY = h*.55;
+  const left = pad*1.1;
+  const right = w-pad*1.1;
+  const railW = right-left;
+  const markerData = [
+    {x:.06,z:.34,p:.03,c:"#255c99"},
+    {x:.14,z:.38,p:.04,c:"#5b8fc7"},
+    {x:.22,z:.52,p:.06,c:"#a66b13"},
+    {x:.31,z:.68,p:.12,c:"#c4575f"},
+    {x:.40,z:.76,p:.20,c:"#b43c4a",lead:true},
+    {x:.50,z:.92,p:.62,c:"#19735d",top:true},
+    {x:.58,z:.78,p:.16,c:"#c4575f"},
+    {x:.69,z:.53,p:.05,c:"#a66b13"},
+    {x:.80,z:.42,p:.04,c:"#5b8fc7"},
+    {x:.91,z:.37,p:.03,c:"#255c99"}
+  ];
+
+  hctx.strokeStyle = "rgba(37,92,153,.16)";
+  hctx.lineWidth = 1*dpr;
+  for(let i=0;i<7;i++){
+    const x = left + railW*i/6;
+    hctx.beginPath();
+    hctx.moveTo(x,pad);
+    hctx.lineTo(x,h-pad*2.7);
+    hctx.stroke();
+  }
+
+  const bandX = left + railW*.34;
+  const bandW = railW*.30;
+  roundRect(hctx,bandX,railY-96*dpr,bandW,170*dpr,8*dpr);
+  hctx.fillStyle = "rgba(37,92,153,.09)";
+  hctx.fill();
+  hctx.strokeStyle = "rgba(37,92,153,.14)";
+  hctx.stroke();
+
+  const arcs = [[.22,.50,"#a66b13"],[.31,.58,"#b43c4a"],[.40,.69,"#b43c4a"],[.50,.80,"#19735d"],[.14,.40,"#5b8fc7"],[.58,.91,"#6250a4"]];
+  arcs.forEach(([a,b,color],i)=>{
+    const x1 = left + railW*a;
+    const x2 = left + railW*b;
+    const mid = (x1+x2)/2;
+    const arcH = (52+i*15)*dpr;
+    hctx.beginPath();
+    hctx.moveTo(x1,railY);
+    hctx.quadraticCurveTo(mid,railY-arcH,x2,railY);
+    hctx.strokeStyle = color + "66";
+    hctx.lineWidth = (1.5 + i%2)*dpr;
+    hctx.stroke();
+  });
+
+  hctx.strokeStyle = "#17202a";
+  hctx.lineWidth = 2*dpr;
+  hctx.beginPath();
+  hctx.moveTo(left,railY);
+  hctx.lineTo(right,railY);
+  hctx.stroke();
+  hctx.fillStyle = "#17202a";
+  hctx.font = `700 ${11*dpr}px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif`;
+  hctx.fillText("genomic locus",left,railY+24*dpr);
+
+  markerData.forEach((m,i)=>{
+    const x = left + railW*m.x;
+    const y = railY - m.z*100*dpr;
+    const radius = (5 + Math.sqrt(m.p)*34 + (m.top ? pulse*4 : 0))*dpr;
+    hctx.beginPath();
+    hctx.moveTo(x,railY);
+    hctx.lineTo(x,y);
+    hctx.strokeStyle = "rgba(20,24,33,.18)";
+    hctx.lineWidth = 1*dpr;
+    hctx.stroke();
+    hctx.beginPath();
+    hctx.arc(x,y,radius,0,Math.PI*2);
+    hctx.fillStyle = m.c;
+    hctx.fill();
+    hctx.lineWidth = 3*dpr;
+    hctx.strokeStyle = "#fff";
+    hctx.stroke();
+    if(m.lead || m.top){
+      hctx.fillStyle = m.top ? "#19735d" : "#b43c4a";
+      hctx.font = `800 ${10*dpr}px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif`;
+      hctx.textAlign = m.top ? "left" : "right";
+      hctx.fillText(m.top ? "top PIP" : "lead SNP",x + (m.top ? radius+8*dpr : -radius-8*dpr),y-8*dpr);
+      hctx.textAlign = "left";
+    }
+  });
+
+  const panelY = pad;
+  const panelH = 72*dpr;
+  const panelW = (w-pad*2-18*dpr)/2;
+  const panels = [
+    {x:pad,y:panelY,t:"GWAS peak",s:"summary z-scores",c:"#255c99"},
+    {x:pad+panelW+18*dpr,y:panelY,t:"LD matrix",s:"ancestry-matched R",c:"#a66b13"},
+    {x:pad,y:h-panelH-60*dpr,t:"Posterior",s:"PIP + 95% CS",c:"#6250a4"},
+    {x:pad+panelW+18*dpr,y:h-panelH-60*dpr,t:"Validation",s:"eQTL / MPRA / CRISPR",c:"#19735d"}
+  ];
+  panels.forEach(p=>{
+    roundRect(hctx,p.x,p.y,panelW,panelH,8*dpr);
+    hctx.fillStyle = "rgba(255,255,255,.76)";
+    hctx.fill();
+    hctx.strokeStyle = "rgba(203,213,225,.9)";
+    hctx.lineWidth = 1*dpr;
+    hctx.stroke();
+    hctx.fillStyle = p.c;
+    roundRect(hctx,p.x+10*dpr,p.y+12*dpr,30*dpr,4*dpr,8*dpr);
+    hctx.fill();
+    hctx.fillStyle = "#17202a";
+    hctx.font = `800 ${12*dpr}px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif`;
+    hctx.fillText(p.t,p.x+10*dpr,p.y+34*dpr);
+    hctx.fillStyle = "#667085";
+    hctx.font = `${10*dpr}px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif`;
+    hctx.fillText(p.s,p.x+10*dpr,p.y+52*dpr);
+  });
+}
+function compute(){
+  const causal = variants[5];
+  const secondary = variants[9];
+  const power = state.power/100;
+  const priorStrength = state.prior/100;
+  const raw = variants.map((v,i)=>{
+    const r1 = r2Between(v,causal,state.ldRange,state.ancestry);
+    const r2 = r2Between(v,secondary,state.ldRange*.75,state.ancestry);
+    const noise = [0.12,-0.08,0.05,-0.05,0.08,0,0.03,-0.04,0.02,0,-0.06,0.04][i];
+    let z = power*(7.15*Math.sqrt(r1) + noise);
+    if(state.second) z += power*(3.85*Math.sqrt(r2) + (i===9?.45:0));
+    const nonCausalPenalty = state.ancestry/100 * Math.abs(v.pos-causal.pos)/150;
+    if(i !== 5 && !(state.second && i === 9)) z *= (1 - nonCausalPenalty);
+    const association = Math.max(0.15,z);
+    const eqtlBonus = v.labels.includes("eQTL") ? .28 : 0;
+    const secondaryPrior = v.labels.includes("secondary") && state.second ? .18 : 0;
+    const misleadingPrior = state.prior > 82 && state.ancestry < 15 && i === 4 ? .32 : 0;
+    const annotationPrior = priorStrength*(1.65*v.ann + eqtlBonus + secondaryPrior + misleadingPrior);
+    const secondBonus = state.second && i === 9 ? .22 : 0;
+    const score = .34*association*association + annotationPrior + secondBonus;
+    return {...v,z:association,r2:r1,secondR2:r2,score};
+  });
+  const maxScore = Math.max(...raw.map(d=>d.score));
+  const denom = raw.reduce((s,d)=>s+Math.exp(d.score-maxScore),0);
+  const withPip = raw.map(d=>({...d,pip:Math.exp(d.score-maxScore)/denom}));
+  const sorted = [...withPip].sort((a,b)=>b.pip-a.pip);
+  let cum = 0;
+  const cs = new Set();
+  for(const d of sorted){
+    if(cum < .95){
+      cs.add(d.id);
+      cum += d.pip;
+    }
+  }
+  return withPip.map(d=>({...d,inCS:cs.has(d.id)}));
+}
+function resizeCanvas(){
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const width = Math.max(520,Math.floor(rect.width*dpr));
+  const height = Math.max(420,Math.floor(rect.height*dpr));
+  if(canvas.width !== width || canvas.height !== height){
+    canvas.width = width;
+    canvas.height = height;
+  }
+}
+function draw(){
+  resizeCanvas();
+  latest = compute();
+  const w = canvas.width;
+  const h = canvas.height;
+  const dpr = window.devicePixelRatio || 1;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0,0,w,h);
+  const m = {l:78*dpr,r:34*dpr,t:34*dpr,b:76*dpr};
+  const pw = w - m.l - m.r;
+  const ph = h - m.t - m.b;
+  const maxY = Math.max(10,Math.ceil(Math.max(...latest.map(d=>d.z))+1));
+  const x = d => m.l + (d.pos/100)*pw;
+  const y = d => m.t + ph - (d.z/maxY)*ph;
+  ctx.strokeStyle = "#dfe5ee";
+  ctx.lineWidth = 1*dpr;
+  ctx.fillStyle = "#667085";
+  ctx.font = `${11*dpr}px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif`;
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  for(let i=0;i<=5;i++){
+    const yy = m.t + ph - i/5*ph;
+    ctx.beginPath();
+    ctx.moveTo(m.l,yy);
+    ctx.lineTo(w-m.r,yy);
+    ctx.stroke();
+    ctx.fillText(String(Math.round(maxY*i/5)),m.l-12*dpr,yy);
+  }
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  for(let i=0;i<=5;i++){
+    const xx = m.l + i/5*pw;
+    ctx.beginPath();
+    ctx.moveTo(xx,m.t);
+    ctx.lineTo(xx,m.t+ph);
+    ctx.stroke();
+    ctx.fillText(`${i*20} kb`,xx,m.t+ph+18*dpr);
+  }
+  ctx.save();
+  ctx.translate(24*dpr,m.t+ph/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.font = `700 ${12*dpr}px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif`;
+  ctx.fillStyle = "#151922";
+  ctx.textAlign = "center";
+  ctx.fillText("-log10(P)",0,0);
+  ctx.restore();
+  ctx.font = `700 ${12*dpr}px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif`;
+  ctx.fillStyle = "#151922";
+  ctx.textAlign = "center";
+  ctx.fillText("locus position",m.l+pw/2,h-28*dpr);
+
+  ctx.strokeStyle = "#b9c7d9";
+  ctx.lineWidth = 2*dpr;
+  ctx.beginPath();
+  latest.forEach((d,i)=>{
+    if(i===0) ctx.moveTo(x(d),y(d));
+    else ctx.lineTo(x(d),y(d));
+  });
+  ctx.stroke();
+
+  latest.forEach(d=>{
+    if(d.inCS){
+      ctx.fillStyle = "rgba(37,92,153,.08)";
+      ctx.fillRect(x(d)-18*dpr,m.t,36*dpr,ph);
+    }
+  });
+  latest.forEach(d=>{
+    const isSelected = d.id === state.selected;
+    const isSecond = state.second && d.id === "rs4884";
+    const radius = (8 + Math.sqrt(d.pip)*38)*dpr;
+    ctx.beginPath();
+    ctx.fillStyle = colorForLD(d.r2,d.pip,isSecond);
+    ctx.arc(x(d),y(d),radius,0,Math.PI*2);
+    ctx.fill();
+    ctx.lineWidth = (isSelected ? 5 : 3)*dpr;
+    ctx.strokeStyle = isSelected ? "#151922" : "#fff";
+    ctx.stroke();
+    if(d.ann > .65){
+      ctx.beginPath();
+      ctx.strokeStyle = "#19735d";
+      ctx.lineWidth = 3*dpr;
+      ctx.arc(x(d),y(d),radius+6*dpr,0,Math.PI*2);
+      ctx.stroke();
+    }
+    if(d.inCS){
+      ctx.fillStyle = "#1f4f84";
+      ctx.font = `800 ${9*dpr}px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif`;
+      ctx.textAlign = "center";
+      ctx.fillText("CS",x(d),Math.max(18*dpr,y(d)-radius-26*dpr));
+    }
+  });
+  const lead = latest.reduce((a,b)=>a.z>b.z?a:b);
+  const top = latest.reduce((a,b)=>a.pip>b.pip?a:b);
+  ctx.setLineDash([6*dpr,5*dpr]);
+  ctx.strokeStyle = "#b43c4a";
+  ctx.lineWidth = 2*dpr;
+  ctx.beginPath();
+  ctx.moveTo(x(lead),m.t);
+  ctx.lineTo(x(lead),m.t+ph);
+  ctx.stroke();
+  ctx.strokeStyle = "#19735d";
+  ctx.beginPath();
+  ctx.moveTo(x(top),m.t);
+  ctx.lineTo(x(top),m.t+ph);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = "#b43c4a";
+  ctx.font = `800 ${10*dpr}px ui-sans-serif,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif`;
+  ctx.textAlign = "left";
+  ctx.fillText(`lead: ${lead.id}`,Math.min(x(lead)+8*dpr,w-160*dpr),m.t+10*dpr);
+  ctx.fillStyle = "#19735d";
+  ctx.fillText(`top PIP: ${top.id}`,Math.min(x(top)+8*dpr,w-160*dpr),m.t+34*dpr);
+}
+function updateMetrics(){
+  const lead = latest.reduce((a,b)=>a.z>b.z?a:b);
+  const top = latest.reduce((a,b)=>a.pip>b.pip?a:b);
+  const cs = latest.filter(d=>d.inCS);
+  let pairs = 0;
+  let rsum = 0;
+  for(let i=0;i<cs.length;i++){
+    for(let j=i+1;j<cs.length;j++){
+      rsum += r2Between(cs[i],cs[j],state.ldRange,state.ancestry);
+      pairs++;
+    }
+  }
+  document.getElementById("leadMetric").textContent = lead.id;
+  document.getElementById("pipMetric").textContent = `${top.id} (${fmtPct(top.pip)})`;
+  document.getElementById("csMetric").textContent = `${cs.length} variants`;
+  document.getElementById("purityMetric").textContent = pairs ? (rsum/pairs).toFixed(2) : "1.00";
+  const interpretation = document.getElementById("interpretText");
+  const title = document.getElementById("interpretTitle");
+  if(lead.id !== top.id){
+    title.textContent = "lead SNP와 top PIP가 다릅니다";
+    interpretation.textContent = `${lead.id}가 가장 유의하지만, 기능 prior와 LD 구조까지 반영하면 ${top.id}가 우선 후보가 됩니다.`;
+  }else if(cs.length <= 3){
+    title.textContent = "credible set이 좁아졌습니다";
+    interpretation.textContent = `${top.id} 중심으로 posterior가 집중되어 있습니다. 그래도 통계적 우선순위일 뿐, 기능 검증이 필요합니다.`;
+  }else{
+    title.textContent = "아직 후보가 넓습니다";
+    interpretation.textContent = `95% credible set이 ${cs.length}개입니다. LD가 길거나 정보량이 낮으면 association만으로 후보를 하나로 고르기 어렵습니다.`;
+  }
+}
+function renderBars(){
+  const host = document.getElementById("pipBars");
+  const sorted = [...latest].sort((a,b)=>b.pip-a.pip);
+  host.innerHTML = "";
+  sorted.forEach(d=>{
+    const row = document.createElement("button");
+    row.className = `bar-row${d.id===state.selected ? " active" : ""}`;
+    row.type = "button";
+    row.dataset.id = d.id;
+    row.innerHTML = `<span class="rsid">${d.id}${d.inCS ? " CS" : ""}</span><span class="bar-track"><span class="bar-fill" style="width:${Math.max(2,d.pip*100)}%;background:${colorForLD(d.r2,d.pip,state.second && d.id==="rs4884")}"></span></span><span class="bar-value">${fmtPct(d.pip)}</span>`;
+    row.addEventListener("click",()=>{state.selected=d.id;renderAll()});
+    host.appendChild(row);
+  });
+}
+function renderVariantDetail(){
+  const d = latest.find(v=>v.id===state.selected) || latest[0];
+  document.getElementById("variantTitle").textContent = `${d.id} · PIP ${fmtPct(d.pip)}`;
+  const ldText = `causal 후보와 r² ${d.r2.toFixed(2)}, z-score ${d.z.toFixed(2)}, functional prior ${(d.ann*100).toFixed(0)}점. `;
+  const csText = d.inCS ? "현재 95% credible set에 포함됩니다." : "현재 95% credible set 밖입니다.";
+  document.getElementById("variantText").textContent = ldText + csText + " " + d.note;
+  const tags = document.getElementById("variantTags");
+  tags.innerHTML = "";
+  d.labels.concat([d.inCS ? "credible set" : "outside CS"]).forEach(label=>{
+    const span = document.createElement("span");
+    span.className = "tag";
+    span.textContent = label;
+    tags.appendChild(span);
+  });
+}
+function updateOutputs(){
+  document.getElementById("ldOut").textContent = state.ldRange < 60 ? "짧음" : state.ldRange > 112 ? "김" : "중간";
+  document.getElementById("powerOut").textContent = state.power < 85 ? "낮음" : state.power > 118 ? "높음" : "보통";
+  document.getElementById("priorOut").textContent = state.prior < 25 ? "거의 없음" : state.prior > 72 ? "강함" : "중간";
+  document.getElementById("ancestryOut").textContent = state.ancestry < 30 ? "낮음" : state.ancestry > 70 ? "높음" : "중간";
+  controls.second.classList.toggle("on",state.second);
+  controls.second.setAttribute("aria-pressed",String(state.second));
+}
+function renderAll(){
+  updateOutputs();
+  drawHero(performance.now());
+  draw();
+  updateMetrics();
+  renderBars();
+  renderVariantDetail();
+}
+function applyScenario(name){
+  const presets = {
+    balanced:{ldRange:82,power:100,prior:42,ancestry:18,second:false,selected:"rs7001"},
+    ldtrap:{ldRange:136,power:92,prior:10,ancestry:4,second:false,selected:"rs6052"},
+    functional:{ldRange:88,power:100,prior:90,ancestry:18,second:false,selected:"rs7001"},
+    multiancestry:{ldRange:104,power:108,prior:48,ancestry:92,second:true,selected:"rs7001"},
+    messy:{ldRange:126,power:88,prior:94,ancestry:8,second:true,selected:"rs4884"}
+  }[name];
+  Object.assign(state,presets);
+  controls.ld.value = state.ldRange;
+  controls.power.value = state.power;
+  controls.prior.value = state.prior;
+  controls.ancestry.value = state.ancestry;
+  document.querySelectorAll(".scenario-btn").forEach(btn=>btn.classList.toggle("active",btn.dataset.scenario===name));
+  renderAll();
+}
+function renderStageControls(){
+  const host = document.getElementById("stageControls");
+  host.innerHTML = Object.entries(stageMeta).map(([id,meta])=>`
+    <button class="stage-btn${id===currentStage ? " active" : ""}" data-stage="${id}" style="--stage-color:${meta.color}">
+      <b>${meta.label}</b><span>${meta.note}</span>
+    </button>
+  `).join("");
+  host.querySelectorAll(".stage-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      currentStage = btn.dataset.stage;
+      renderStageControls();
+      renderPapers();
+    });
+  });
+}
+function paperMatches(p,term){
+  if(!term) return true;
+  const haystack = `${p.stage} ${p.year} ${p.title} ${p.take}`.toLowerCase();
+  return haystack.includes(term.toLowerCase());
+}
+function renderPapers(){
+  const term = document.getElementById("paperSearch").value.trim();
+  const filtered = papers.filter(p=>(currentStage === "all" || p.stage === currentStage) && paperMatches(p,term));
+  document.getElementById("paperCount").textContent = filtered.length;
+  const host = document.getElementById("paperList");
+  host.innerHTML = filtered.map(p=>{
+    const meta = stageMeta[p.stage];
+    const q = encodeURIComponent(p.query);
+    return `<article class="paper" style="--paper-color:${meta.color}">
+      <div class="paper-top"><span class="paper-stage">${meta.label}</span><span class="paper-year">${p.year}</span></div>
+      <h3>${p.title}</h3>
+      <p>${p.take}</p>
+      <a href="https://scholar.google.com/scholar?q=${q}" target="_blank" rel="noopener">Google Scholar</a>
+    </article>`;
+  }).join("");
+}
+
+controls.ld.addEventListener("input",e=>{state.ldRange=Number(e.target.value);renderAll()});
+controls.power.addEventListener("input",e=>{state.power=Number(e.target.value);renderAll()});
+controls.prior.addEventListener("input",e=>{state.prior=Number(e.target.value);renderAll()});
+controls.ancestry.addEventListener("input",e=>{state.ancestry=Number(e.target.value);renderAll()});
+controls.second.addEventListener("click",()=>{state.second=!state.second;renderAll()});
+document.querySelectorAll(".scenario-btn").forEach(btn=>btn.addEventListener("click",()=>applyScenario(btn.dataset.scenario)));
+document.getElementById("paperSearch").addEventListener("input",renderPapers);
+canvas.addEventListener("click",event=>{
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const px = (event.clientX-rect.left)*dpr;
+  const py = (event.clientY-rect.top)*dpr;
+  const m = {l:78*dpr,r:34*dpr,t:34*dpr,b:76*dpr};
+  const pw = canvas.width - m.l - m.r;
+  const ph = canvas.height - m.t - m.b;
+  const maxY = Math.max(10,Math.ceil(Math.max(...latest.map(d=>d.z))+1));
+  let best = null;
+  let bd = Infinity;
+  latest.forEach(d=>{
+    const x = m.l + (d.pos/100)*pw;
+    const y = m.t + ph - (d.z/maxY)*ph;
+    const dist = Math.hypot(px-x,py-y);
+    if(dist < bd){bd = dist; best = d}
+  });
+  if(best && bd < 34*dpr){
+    state.selected = best.id;
+    renderAll();
+  }
+});
+window.addEventListener("resize",renderAll);
+renderStageControls();
+renderPapers();
+renderAll();
+function heroLoop(time){
+  drawHero(time);
+  if(!reduceMotion) requestAnimationFrame(heroLoop);
+}
+if(!reduceMotion) requestAnimationFrame(heroLoop);
+</script>
+</body>
+</html>

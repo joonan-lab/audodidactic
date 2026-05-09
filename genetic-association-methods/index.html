@@ -1,0 +1,3773 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>유전 연관분석 방법 — 인터랙티브 해설</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#fff;
+  --ink:#17202a;
+  --muted:#667085;
+  --line:#d9dee7;
+  --soft:#f6f8fb;
+  --soft2:#edf2f7;
+  --blue:#255c99;
+  --red:#b23a48;
+  --gold:#a66b13;
+  --green:#19735d;
+  --violet:#6350a8;
+  --cyan:#19728a;
+  --shadow:0 10px 30px rgba(23,32,42,.08);
+}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.45;
+}
+button,input,select{font:inherit}
+a{color:inherit}
+.page{max-width:1420px;margin:0 auto;padding:28px 24px 44px}
+.mast{
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);
+  gap:24px;
+  align-items:end;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--line);
+}
+.eyebrow{
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-weight:700;
+  margin-bottom:8px;
+}
+h1{
+  font-family:"Apple SD Gothic Neo","Pretendard","Noto Sans KR",ui-sans-serif,sans-serif;
+  font-size:clamp(32px,4vw,52px);
+  line-height:1.08;
+  font-weight:850;
+  letter-spacing:0;
+  margin:0;
+  max-width:960px;
+}
+.dek{
+  font-size:15px;
+  color:#3f4b5d;
+  max-width:720px;
+  margin:14px 0 0;
+}
+.mast-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.stat{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:8px;
+  padding:12px;
+  min-height:90px;
+}
+.stat b{display:block;font-size:24px;line-height:1.1}
+.stat span{display:block;font-size:12px;color:var(--muted);margin-top:6px}
+.method-strip{
+  display:grid;
+  grid-template-columns:repeat(8,minmax(94px,1fr));
+  gap:8px;
+  margin:18px 0;
+}
+.method-btn{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink);
+  border-radius:8px;
+  padding:10px 8px;
+  min-height:66px;
+  cursor:pointer;
+  text-align:left;
+  transition:border-color .16s ease, transform .16s ease, background .16s ease;
+}
+.method-btn:hover{transform:translateY(-1px);border-color:#9aa7b8}
+.method-btn.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,#fff)}
+.method-btn .k{display:block;font-size:13px;font-weight:800}
+.method-btn .s{display:block;font-size:11px;color:var(--muted);margin-top:4px}
+.grid{
+  display:grid;
+  grid-template-columns:minmax(360px,.95fr) minmax(440px,1.18fr) minmax(320px,.87fr);
+  gap:16px;
+  align-items:start;
+}
+.panel{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  overflow:hidden;
+}
+.panel-head{
+  padding:13px 14px 10px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+}
+.panel-title{
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.01em;
+}
+.panel-note{font-size:12px;color:var(--muted);max-width:360px;text-align:right}
+.panel-body{padding:14px}
+.method-profile{
+  display:grid;
+  gap:12px;
+}
+.profile-card{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:13px;
+  background:var(--soft);
+}
+.profile-card h2{
+  margin:0;
+  font-size:24px;
+  line-height:1.08;
+  font-family:Georgia,"Times New Roman",serif;
+}
+.profile-card p{font-size:13px;color:#344053;margin:9px 0 0}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{
+  font-size:11px;
+  color:#2f3b4d;
+  border:1px solid #cdd5df;
+  background:#fff;
+  border-radius:999px;
+  padding:4px 8px;
+  white-space:nowrap;
+}
+.profile-list{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.mini{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px;
+  background:#fff;
+  min-height:92px;
+}
+.mini .label{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.mini .value{font-size:13px;color:#273246;margin-top:6px}
+.flow{
+  display:grid;
+  gap:8px;
+  margin-top:8px;
+}
+.flow-row{
+  display:grid;
+  grid-template-columns:84px minmax(0,1fr);
+  gap:8px;
+  align-items:center;
+}
+.flow-tag{
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:8px;
+  font-size:11px;
+  font-weight:800;
+  text-align:center;
+  background:#fff;
+}
+.flow-text{
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:8px 10px;
+  background:#fff;
+  font-size:12px;
+  min-height:39px;
+}
+.canvas-wrap{
+  position:relative;
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+  background:linear-gradient(#fff,#fbfcfe);
+}
+canvas{display:block;width:100%;height:420px}
+.plot-caption{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:10px;
+}
+.caption-cell{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:9px;
+  min-height:72px;
+  background:#fff;
+}
+.caption-cell b{font-size:12px;display:block}
+.caption-cell span{font-size:11px;color:var(--muted);display:block;margin-top:4px}
+.tabs{
+  display:flex;
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+  background:#fff;
+  margin-bottom:12px;
+}
+.tab{
+  flex:1;
+  border:0;
+  background:#fff;
+  border-right:1px solid var(--line);
+  padding:10px 8px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:800;
+  color:#3b4658;
+}
+.tab:last-child{border-right:0}
+.tab.active{background:var(--accent);color:#fff}
+.control{margin-bottom:13px}
+.control label{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  font-size:12px;
+  font-weight:800;
+  color:#344053;
+  margin-bottom:5px;
+}
+.control output{
+  font-variant-numeric:tabular-nums;
+  color:var(--accent);
+}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.readouts{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+.readout{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px;
+  min-height:86px;
+  background:var(--soft);
+}
+.readout b{
+  display:block;
+  font-size:24px;
+  line-height:1.1;
+  font-variant-numeric:tabular-nums;
+}
+.readout span{font-size:11px;color:var(--muted);display:block;margin-top:5px}
+.bar-stack{display:grid;gap:8px;margin-top:12px}
+.bar-row{
+  display:grid;
+  grid-template-columns:88px minmax(0,1fr) 46px;
+  gap:8px;
+  align-items:center;
+  font-size:12px;
+}
+.bar-track{
+  height:10px;
+  border-radius:99px;
+  background:#e6ebf2;
+  overflow:hidden;
+}
+.bar-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .18s ease}
+.bar-row strong{font-variant-numeric:tabular-nums;text-align:right;font-size:12px}
+.pipeline{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-top:16px;
+}
+.stage{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px;
+  min-height:152px;
+  background:#fff;
+  position:relative;
+}
+.stage::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:4px;
+  background:var(--stage);
+  border-radius:8px 8px 0 0;
+}
+.stage h3{margin:4px 0 8px;font-size:13px}
+.stage p{font-size:12px;color:#4a5568;margin:0}
+.stage small{display:block;margin-top:9px;color:var(--muted);font-size:11px}
+.sources{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.source-list{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px;
+  background:#fff;
+}
+.source-list h3{font-size:13px;margin:0 0 8px}
+.source-list ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.source-list li{font-size:12px;color:#465366}
+.source-list a{text-decoration:none;border-bottom:1px solid #c8d0dc}
+.source-list a:hover{color:var(--accent)}
+.formula{
+  margin-top:12px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fbfcfe;
+  padding:10px;
+  font-family:"SFMono-Regular",Consolas,monospace;
+  font-size:12px;
+  color:#2d3748;
+  overflow:auto;
+}
+.quiet{color:var(--muted)}
+.mobile-only{display:none}
+
+/* ===== Deep-dive: per-method ===== */
+.deepdive{margin-top:32px;padding-top:28px;border-top:1px solid var(--line)}
+.dd-pages{position:relative}
+.dd-page[hidden]{display:none}
+.dd-coming{
+  border:1px dashed var(--line);
+  border-radius:8px;
+  background:var(--soft);
+  padding:18px 20px;
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.6;
+}
+.dd-head{max-width:920px;margin-bottom:22px}
+.dd-head .eyebrow{color:var(--red)}
+.dd-head h2{
+  font-family:"Apple SD Gothic Neo","Pretendard","Noto Sans KR",ui-sans-serif,sans-serif;
+  font-size:clamp(24px,2.4vw,32px);
+  font-weight:850;
+  line-height:1.15;
+  margin:0 0 10px;
+}
+.dd-head .dek{margin-top:6px}
+.dd-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dd-block{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  padding:18px 20px 20px;
+}
+.dd-block.full{grid-column:1 / -1}
+.dd-block h3{
+  font-size:15px;
+  font-weight:800;
+  margin:0 0 10px;
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+}
+.dd-block h3 .num{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:22px;height:22px;
+  border-radius:50%;
+  background:var(--soft2);
+  color:var(--red);
+  font-size:12px;
+  font-weight:800;
+  flex-shrink:0;
+}
+.dd-block p{font-size:13.5px;line-height:1.6;margin:0 0 10px}
+.dd-block p:last-child{margin-bottom:0}
+.dd-block code, .dd-block .var {
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:0.92em;
+  background:var(--soft);
+  padding:0 4px;
+  border-radius:3px;
+  color:#2d3748;
+}
+.dd-block .var-mu{color:var(--blue)}
+.dd-block .var-gamma{color:var(--red)}
+.dd-block .var-q{color:var(--gold)}
+.dd-block .var-pi{color:var(--violet)}
+
+/* equation box */
+.eq-box{
+  border:1px solid var(--line);
+  background:var(--soft);
+  border-radius:6px;
+  padding:14px 16px;
+  margin:10px 0;
+  font-family:"Times New Roman",serif;
+  font-size:16px;
+  line-height:1.5;
+  text-align:center;
+  color:#1c2a3c;
+  overflow-x:auto;
+}
+.eq-box .ann{
+  display:block;
+  font-family:ui-sans-serif,sans-serif;
+  font-size:11.5px;
+  color:var(--muted);
+  margin-top:6px;
+  font-style:italic;
+}
+.eq-row{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.eq-frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle}
+.eq-frac > *{padding:0 6px}
+.eq-frac > :first-child{border-bottom:1px solid #1c2a3c}
+
+/* trio pedigree mini */
+.trio-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin:12px 0 6px;
+}
+.trio-cell{
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:10px 8px 8px;
+  text-align:center;
+  background:#fff;
+}
+.trio-cell .lbl{
+  font-size:11px;
+  font-weight:700;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  margin-bottom:6px;
+}
+.trio-cell .rate{
+  font-family:"Times New Roman",serif;
+  font-size:14px;
+  margin-top:4px;
+  color:#1c2a3c;
+}
+.trio-cell svg{display:block;margin:0 auto}
+.trio-cell .head-tag{
+  display:inline-block;
+  font-size:10px;
+  padding:1px 6px;
+  border-radius:3px;
+  font-weight:700;
+  margin-top:4px;
+}
+.tag-de{background:#fde7ea;color:var(--red)}
+.tag-tr{background:#e6efeb;color:var(--green)}
+.tag-nt{background:#f0eef6;color:var(--violet)}
+.tag-cc{background:#e8f0f8;color:var(--blue)}
+
+/* count table */
+.count-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+  margin-top:8px;
+}
+.count-table th, .count-table td{
+  border-bottom:1px solid var(--line);
+  padding:8px 10px;
+  text-align:left;
+  vertical-align:top;
+}
+.count-table th{
+  background:var(--soft);
+  font-size:11.5px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  color:var(--muted);
+  font-weight:700;
+}
+.count-table .kvar{
+  font-family:"Times New Roman",serif;
+  font-size:14.5px;
+  color:#1c2a3c;
+  white-space:nowrap;
+}
+.count-table tbody tr:last-child td{border-bottom:none}
+
+/* parameter cards */
+.param-cards{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:6px;
+}
+.param-card{
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:12px 12px 10px;
+  background:var(--soft);
+}
+.param-card .glyph{
+  font-family:"Times New Roman",serif;
+  font-size:30px;
+  line-height:1;
+  font-weight:700;
+}
+.param-card .name{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--muted);
+  font-weight:700;
+  margin-top:4px;
+}
+.param-card p{font-size:12.5px;line-height:1.5;margin:8px 0 0}
+.param-card .src{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:8px;
+  border-top:1px dashed var(--line);
+  padding-top:6px;
+}
+.param-card.mu .glyph{color:var(--blue)}
+.param-card.q .glyph{color:var(--gold)}
+.param-card.gamma .glyph{color:var(--red)}
+
+/* EB flow */
+.eb-flow{
+  display:grid;
+  grid-template-columns:1fr 18px 1fr 18px 1fr;
+  gap:8px;
+  align-items:center;
+  margin:12px 0 6px;
+}
+.eb-step{
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:10px;
+  background:#fff;
+  font-size:12px;
+  line-height:1.45;
+  min-height:78px;
+}
+.eb-step .h{font-weight:800;font-size:12px;margin-bottom:4px;display:block}
+.eb-step.s1{background:#fff}
+.eb-step.s2{background:color-mix(in srgb,var(--violet) 7%,#fff);border-color:color-mix(in srgb,var(--violet) 30%,var(--line))}
+.eb-step.s3{background:color-mix(in srgb,var(--red) 7%,#fff);border-color:color-mix(in srgb,var(--red) 30%,var(--line))}
+.eb-arrow{
+  text-align:center;
+  color:var(--muted);
+  font-weight:700;
+}
+
+/* simulator block */
+.tada-sim-grid{
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:18px;
+  margin-top:8px;
+}
+.tada-sim-controls{display:flex;flex-direction:column;gap:12px}
+.tada-slider{display:block}
+.tada-slider .row{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  margin-bottom:4px;
+}
+.tada-slider .name{
+  font-size:12px;
+  font-weight:700;
+}
+.tada-slider .val{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:12px;
+  color:#1c2a3c;
+}
+.tada-slider input[type=range]{
+  width:100%;
+  height:18px;
+  accent-color:var(--red);
+}
+.tada-slider .hint{
+  font-size:10.5px;
+  color:var(--muted);
+  margin-top:2px;
+  font-style:italic;
+}
+.tada-canvas-wrap{
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:#fff;
+  padding:8px;
+}
+#tadaCanvas{display:block;width:100%;height:240px}
+.tada-readout{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:10px;
+}
+.readout-cell{
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:9px 10px;
+  background:var(--soft);
+}
+.readout-cell .lbl{
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--muted);
+  font-weight:700;
+}
+.readout-cell .num{
+  font-family:"Times New Roman",serif;
+  font-size:18px;
+  font-weight:700;
+  color:#1c2a3c;
+  margin-top:2px;
+}
+.readout-cell .sub{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:1px;
+}
+
+/* data sources flow */
+.src-flow{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+  margin-top:8px;
+}
+.src-card{
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:10px 11px;
+  background:#fff;
+  font-size:12.5px;
+  line-height:1.5;
+}
+.src-card .h{
+  display:block;
+  font-weight:800;
+  margin-bottom:4px;
+  font-size:12.5px;
+}
+.src-card .h .what{display:block;font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;text-transform:none;letter-spacing:0}
+
+/* evolution timeline */
+.evo-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:8px;
+  position:relative;
+}
+.evo-row::before{
+  content:"";
+  position:absolute;
+  top:14px;
+  left:6%;
+  right:6%;
+  height:2px;
+  background:linear-gradient(to right,var(--red),var(--gold),var(--green),var(--violet));
+  z-index:0;
+  border-radius:1px;
+}
+.evo-cell{
+  position:relative;
+  z-index:1;
+  text-align:center;
+}
+.evo-dot{
+  width:14px;height:14px;
+  border-radius:50%;
+  background:#fff;
+  border:3px solid;
+  margin:7px auto 8px;
+}
+.evo-cell:nth-child(1) .evo-dot{border-color:var(--red)}
+.evo-cell:nth-child(2) .evo-dot{border-color:var(--gold)}
+.evo-cell:nth-child(3) .evo-dot{border-color:var(--green)}
+.evo-cell:nth-child(4) .evo-dot{border-color:var(--violet)}
+.evo-cell .yr{
+  font-size:11px;
+  font-weight:800;
+  color:var(--muted);
+  letter-spacing:.04em;
+}
+.evo-cell .ttl{
+  font-size:12.5px;
+  font-weight:700;
+  margin:2px 0 4px;
+}
+.evo-cell .desc{
+  font-size:11.5px;
+  line-height:1.45;
+  color:#3f4b5d;
+}
+
+@media (max-width:1180px){
+  .dd-grid{grid-template-columns:1fr}
+  .param-cards, .src-flow{grid-template-columns:1fr 1fr}
+  .tada-sim-grid{grid-template-columns:1fr}
+  .trio-grid{grid-template-columns:repeat(2,1fr)}
+  .eb-flow{grid-template-columns:1fr;gap:4px}
+  .eb-arrow{transform:rotate(90deg);min-height:14px}
+  .evo-row{grid-template-columns:1fr 1fr}
+  .evo-row::before{display:none}
+}
+@media (max-width:760px){
+  .param-cards, .src-flow, .evo-row, .trio-grid{grid-template-columns:1fr}
+}
+
+@media (max-width:1180px){
+  .mast{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr 1fr}
+  .grid .panel:nth-child(2){grid-column:1 / -1;grid-row:1}
+  .method-strip{grid-template-columns:repeat(4,1fr)}
+  .pipeline{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:760px){
+  .page{padding:18px 14px 32px}
+  .mast-stats{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr}
+  .method-strip{grid-template-columns:repeat(2,1fr)}
+  .profile-list,.sources{grid-template-columns:1fr}
+  .plot-caption{grid-template-columns:1fr 1fr}
+  .pipeline{grid-template-columns:1fr}
+  canvas{height:350px}
+  .panel-note{text-align:left}
+  .panel-head{display:block}
+}
+</style>
+</head>
+<body>
+<main class="page" style="--accent:var(--blue)">
+  <section class="mast">
+    <div>
+      <div class="eyebrow">LLM Wiki 방법론 해설</div>
+      <h1>유전 연관분석은 어떻게 신호를 찾는가</h1>
+      <p class="dek">GWAS, TADA, burden test, SKAT/SKAT-O, LDSC, MAGMA, PRS의 원리를 한 화면에서 비교합니다. ASD와 biobank-scale rare-variant 연구를 중심 예시로 삼았으며, TADA는 아래 deep-dive에서 식 단위로 풀어 두었습니다. 출처는 모두 Google Scholar 검색으로 연결됩니다.</p>
+    </div>
+    <div class="mast-stats">
+      <div class="stat"><b>변이</b><span>common SNP, rare allele, DNV, CNV, imputed marker</span></div>
+      <div class="stat"><b>유전자</b><span>TADA, burden, SKAT, MAGMA의 집계 단위</span></div>
+      <div class="stat"><b>형질</b><span>case-control, 정량형질, 가족 전송, cell-state annotation</span></div>
+    </div>
+  </section>
+
+  <nav class="method-strip" id="methodStrip" aria-label="Method selector"></nav>
+
+  <section class="grid">
+    <article class="panel">
+      <div class="panel-head">
+        <div class="panel-title">선택한 방법</div>
+        <div class="panel-note" id="profileNote">어떤 근거를 어떤 단위로 읽는지.</div>
+      </div>
+      <div class="panel-body">
+        <div class="method-profile">
+          <div class="profile-card">
+            <h2 id="methodTitle">GWAS</h2>
+            <p id="methodSummary"></p>
+            <div class="chips" id="chips"></div>
+          </div>
+          <div class="profile-list">
+            <div class="mini"><div class="label">입력</div><div class="value" id="inputText"></div></div>
+            <div class="mini"><div class="label">통계량</div><div class="value" id="statText"></div></div>
+            <div class="mini"><div class="label">강한 신호</div><div class="value" id="bestText"></div></div>
+            <div class="mini"><div class="label">주의점</div><div class="value" id="caveatText"></div></div>
+          </div>
+          <div class="flow" id="flow"></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head">
+        <div class="panel-title">연관 신호 지형도</div>
+        <div class="panel-note">대립유전자 빈도, 효과 크기, 각 방법이 잘 포착하는 영역.</div>
+      </div>
+      <div class="panel-body">
+        <div class="canvas-wrap"><canvas id="landscapeCanvas"></canvas></div>
+        <div class="plot-caption">
+          <div class="caption-cell"><b>Common GWAS</b><span>큰 표본, 작은 OR, LD tagging</span></div>
+          <div class="caption-cell"><b>Rare aggregation</b><span>희귀 변이를 유전자/영역 단위로 합침</span></div>
+          <div class="caption-cell"><b>Family signal</b><span>DNV와 전송 불균형은 population control 의존을 줄임</span></div>
+          <div class="caption-cell"><b>해석 단계</b><span>locus를 유전자, pathway, cell state, risk score로 번역</span></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head">
+        <div class="panel-title">신호 직관 콘솔</div>
+        <div class="panel-note">정식 power calculator는 아니고, 원리를 눈으로 보게 하는 장치입니다.</div>
+      </div>
+      <div class="panel-body">
+        <div class="tabs">
+          <button class="tab active" data-sim="gwas">GWAS</button>
+          <button class="tab" data-sim="rare">희귀변이</button>
+          <button class="tab" data-sim="tada">TADA</button>
+        </div>
+        <div id="simControls"></div>
+        <div class="readouts" id="readouts"></div>
+        <div class="bar-stack" id="bars"></div>
+        <div class="formula" id="formula"></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="deepdive" aria-label="Method deep-dive">
+    <header class="dd-head">
+      <div class="eyebrow">Deep-dive · <span id="ddEyebrow">TADA · Empirical Bayes</span></div>
+      <h2 id="ddTitle">TADA의 likelihood, 한 발자국씩</h2>
+      <p class="dek" id="ddIntro">TADA(Transmission And De novo Association)는 한 유전자에서 관측된 다섯 가지 카운트를 하나의 Poisson likelihood로 묶고, ~18,000개 유전자가 같이 추정한 prior로 정규화해서 한 점수(Bayes factor)를 만듭니다. 이 섹션은 He 2013의 식을 분해하고, 어떤 데이터가 어떤 parameter를 결정하며, 그 parameter를 흔들면 결과가 어떻게 변하는지를 직접 만져볼 수 있게 풀어 둔 것입니다.</p>
+    </header>
+
+    <div class="dd-pages">
+
+    <article class="dd-page" data-method="gwas" hidden>
+      <div class="dd-grid" id="ddPageGwas"></div>
+    </article>
+
+    <article class="dd-page" data-method="tada">
+      <div class="dd-grid">
+
+      <article class="dd-block" id="dd-counts">
+        <h3><span class="num">1</span>다섯 가지 카운트 — TADA가 실제로 보는 데이터</h3>
+        <p>한 유전자에 대해 TADA는 trio 데이터에서 세 종류, case-control에서 두 종류, 합쳐서 다섯 카운트를 입력으로 받습니다. 모두 독립적인 Poisson 분포라고 가정합니다.</p>
+        <div class="trio-grid" aria-label="Trio outcomes (He 2013 Fig 2)">
+          <!-- De novo -->
+          <div class="trio-cell">
+            <svg width="86" height="56" viewBox="0 0 86 56" aria-hidden="true">
+              <rect x="6" y="4" width="20" height="20" fill="#fff" stroke="#1c2a3c" stroke-width="1.4"/>
+              <circle cx="70" cy="14" r="11" fill="#fff" stroke="#1c2a3c" stroke-width="1.4"/>
+              <line x1="26" y1="14" x2="59" y2="14" stroke="#1c2a3c" stroke-width="1.2"/>
+              <line x1="42" y1="14" x2="42" y2="36" stroke="#1c2a3c" stroke-width="1.2"/>
+              <rect x="32" y="36" width="20" height="20" fill="#1c2a3c" stroke="#1c2a3c" stroke-width="1.4"/>
+              <text x="6" y="55" font-size="9" fill="#667085">AA</text>
+              <text x="60" y="55" font-size="9" fill="#667085">AA</text>
+              <text x="55" y="50" font-size="9" fill="#b23a48" font-weight="700">Aa</text>
+            </svg>
+            <div class="lbl">De novo</div>
+            <div class="rate">X<sub>d</sub> ~ Pois(2μγ N<sub>d</sub>)</div>
+            <span class="head-tag tag-de">새 변이</span>
+          </div>
+          <!-- Transmitted -->
+          <div class="trio-cell">
+            <svg width="86" height="56" viewBox="0 0 86 56" aria-hidden="true">
+              <rect x="6" y="4" width="20" height="20" fill="#fff" stroke="#1c2a3c" stroke-width="1.4"/>
+              <circle cx="70" cy="14" r="11" fill="#fff" stroke="#1c2a3c" stroke-width="1.4"/>
+              <text x="60" y="18" font-size="9" fill="#a66b13" font-weight="700">Aa</text>
+              <line x1="26" y1="14" x2="59" y2="14" stroke="#1c2a3c" stroke-width="1.2"/>
+              <line x1="42" y1="14" x2="42" y2="36" stroke="#1c2a3c" stroke-width="1.2"/>
+              <rect x="32" y="36" width="20" height="20" fill="#1c2a3c" stroke="#1c2a3c" stroke-width="1.4"/>
+              <text x="55" y="50" font-size="9" fill="#a66b13" font-weight="700">Aa</text>
+            </svg>
+            <div class="lbl">Transmitted</div>
+            <div class="rate">X<sub>t</sub> ~ Pois(qγ N<sub>d</sub>)</div>
+            <span class="head-tag tag-tr">전송</span>
+          </div>
+          <!-- Nontransmitted -->
+          <div class="trio-cell">
+            <svg width="86" height="56" viewBox="0 0 86 56" aria-hidden="true">
+              <rect x="6" y="4" width="20" height="20" fill="#fff" stroke="#1c2a3c" stroke-width="1.4"/>
+              <circle cx="70" cy="14" r="11" fill="#fff" stroke="#1c2a3c" stroke-width="1.4"/>
+              <text x="60" y="18" font-size="9" fill="#a66b13" font-weight="700">Aa</text>
+              <line x1="26" y1="14" x2="59" y2="14" stroke="#1c2a3c" stroke-width="1.2"/>
+              <line x1="42" y1="14" x2="42" y2="36" stroke="#1c2a3c" stroke-width="1.2"/>
+              <rect x="32" y="36" width="20" height="20" fill="#1c2a3c" stroke="#1c2a3c" stroke-width="1.4"/>
+              <text x="55" y="50" font-size="9" fill="#667085">AA</text>
+            </svg>
+            <div class="lbl">Nontransmitted</div>
+            <div class="rate">X<sub>nt</sub> ~ Pois(q N<sub>d</sub>)</div>
+            <span class="head-tag tag-nt">비전송</span>
+          </div>
+          <!-- Case-control -->
+          <div class="trio-cell">
+            <svg width="86" height="56" viewBox="0 0 86 56" aria-hidden="true">
+              <rect x="10" y="22" width="14" height="14" fill="#1c2a3c" stroke="#1c2a3c" stroke-width="1.4"/>
+              <text x="6" y="50" font-size="9" fill="#255c99" font-weight="700">case</text>
+              <circle cx="50" cy="29" r="8" fill="#1c2a3c" stroke="#1c2a3c" stroke-width="1.4"/>
+              <text x="42" y="50" font-size="9" fill="#255c99" font-weight="700">case</text>
+              <rect x="68" y="22" width="14" height="14" fill="#fff" stroke="#1c2a3c" stroke-width="1.4"/>
+              <text x="64" y="50" font-size="9" fill="#667085" font-weight="700">control</text>
+            </svg>
+            <div class="lbl">Case-control</div>
+            <div class="rate">X<sub>case</sub> ~ Pois(qγ N<sub>case</sub>)<br>X<sub>ctrl</sub> ~ Pois(q N<sub>ctrl</sub>)</div>
+            <span class="head-tag tag-cc">집단 비교</span>
+          </div>
+        </div>
+        <p class="quiet" style="font-size:12px;margin-top:8px">기호: <span class="var var-mu">μ</span> 유전자 자체의 de novo mutation rate, <span class="var var-q">q</span> 모집단 내 risk allele 빈도, <span class="var var-gamma">γ</span> 그 변이가 케이스에 부여하는 상대위험. <span class="var">N<sub>d</sub></span>는 trio 수, <span class="var">N<sub>case</sub>/N<sub>ctrl</sub></span>은 케이스/대조 수.</p>
+      </article>
+
+      <article class="dd-block" id="dd-params">
+        <h3><span class="num">2</span>세 parameter — μ, q, γ가 무엇이고 어디서 오는가</h3>
+        <p>위 다섯 식은 모두 <span class="var var-mu">μ</span>, <span class="var var-q">q</span>, <span class="var var-gamma">γ</span> 세 값으로 환원됩니다. TADA의 모든 inference는 이 셋 중 하나(또는 그 분포)를 추정하는 일입니다.</p>
+        <div class="param-cards">
+          <div class="param-card mu">
+            <div class="glyph">μ</div>
+            <div class="name">유전자별 mutation rate</div>
+            <p>한 세대당 그 유전자에서 LoF·missense de novo가 일어날 확률. 유전자마다 길이·CpG 비율·flanking context로 다름.</p>
+            <div class="src">데이터 출처: 외부 calibration. exonic length × tri-nucleotide context model (Samocha 2014 framework). <b>고정값으로 취급</b>.</div>
+          </div>
+          <div class="param-card q">
+            <div class="glyph">q</div>
+            <div class="name">risk allele 빈도</div>
+            <p>해당 유전자의 risk variant가 모집단에 얼마나 흔한지. risk gene일수록 negative selection이 강해 q가 작음.</p>
+            <div class="src">데이터 출처: case-control rare-variant 카운트와 trio의 nontransmitted 카운트. 유전자별로 추정.</div>
+          </div>
+          <div class="param-card gamma">
+            <div class="glyph">γ</div>
+            <div class="name">상대위험(relative risk)</div>
+            <p>γ=1이면 무관, γ>1이면 risk gene. ASD LoF는 평균 γ≈20 (He 2013 추정).</p>
+            <div class="src">데이터 출처: 모든 카운트가 같이 추정. 단일 유전자에서는 데이터가 너무 적어 다음 단계의 EB가 필요함.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="dd-block full" id="dd-eb">
+        <h3><span class="num">3</span>Empirical Bayes — 왜 single-gene MLE는 망가지는가</h3>
+        <p>한 유전자에서 관측되는 X<sub>d</sub>, X<sub>t</sub>, X<sub>nt</sub>는 대부분 0–2 사이의 작은 정수입니다. 이 카운트만으로 q와 γ의 maximum-likelihood estimate를 구하면 0/0 형태로 발산하거나 모든 유전자가 "γ=∞ 아니면 γ=0"로 갈라져 의미가 없습니다. He 2013은 이 문제를 hierarchical Bayes로 풉니다.</p>
+        <div class="eb-flow">
+          <div class="eb-step s1">
+            <span class="h">① 두 모형의 혼합 가정</span>
+            전체 유전자의 비율 <span class="var var-pi">π</span>는 risk gene(H₁: γ는 분포 위에서 변함), 나머지 1−π는 null gene(H₀: γ=1로 고정).
+          </div>
+          <div class="eb-arrow">→</div>
+          <div class="eb-step s2">
+            <span class="h">② Prior에 형태 부여</span>
+            risk gene의 γ는 Gamma(γ̄·β, β) 분포, q도 두 모형에 따라 다른 분포. 이 prior의 hyperparameter는 <b>모든 유전자가 공유</b>하는 단 몇 개의 숫자.
+          </div>
+          <div class="eb-arrow">→</div>
+          <div class="eb-step s3">
+            <span class="h">③ Marginal likelihood로 hyperparameter 추정</span>
+            ~18,000개 유전자 데이터의 marginal likelihood를 최대화해 <span class="var var-pi">π</span>, γ̄, β, q-prior를 한 번에 결정. <i>Empirical</i> Bayes — prior를 데이터에서 배웁니다.
+          </div>
+        </div>
+        <p style="margin-top:10px"><b>핵심 통찰</b>: 한 유전자의 카운트만 보면 신호가 잡음에 묻힙니다. 하지만 "다른 유전자에서 관측한 multi-hit 빈도와 LoF 분포"가 prior를 아래에서 받쳐주면, 그 정보를 빌려서 각 유전자의 posterior가 안정됩니다. He 2013은 932 trio에서 5개 multi-hit 유전자가 관측된 사실로부터 ASD risk gene이 약 1,000개, 평균 γ≈20.2임을 추정했습니다.</p>
+      </article>
+
+      <article class="dd-block" id="dd-bf">
+        <h3><span class="num">4</span>Bayes factor — 한 유전자, 한 점수</h3>
+        <p>Hyperparameter가 정해지면 각 유전자의 점수는 두 모형 아래 데이터의 marginal likelihood 비율로 정의됩니다. He 2013 식 (2)–(3):</p>
+        <div class="eq-box">
+          P(x<sub>i</sub> | H<sub>1</sub>) = ∫∫ p(x<sub>i</sub> | q<sub>i</sub>, γ<sub>i</sub>) · p(q<sub>i</sub> | H<sub>1</sub>) · p(γ<sub>i</sub> | H<sub>1</sub>) dq<sub>i</sub> dγ<sub>i</sub>
+          <span class="ann">— q와 γ의 모든 가능한 값을 prior 가중치로 평균낸 likelihood</span>
+        </div>
+        <div class="eq-box">
+          <span class="eq-row">B<sub>i</sub> &nbsp;=&nbsp;
+            <span class="eq-frac"><span>P(x<sub>i</sub> | H<sub>1</sub>)</span><span>P(x<sub>i</sub> | H<sub>0</sub>)</span></span>
+          </span>
+          <span class="ann">— H<sub>1</sub>이 H<sub>0</sub>보다 데이터를 얼마나 잘 설명하는가</span>
+        </div>
+        <p>왜 multiplicity test보다 강한가 — multiplicity test는 d ≥ 2 같은 단일 임계값으로 자르지만, BF는 (a) 유전자 길이를 μ로 보정하고, (b) LoF뿐 아니라 missense·inherited·case-control 신호를 모두 합치며, (c) prior가 multiple-testing burden을 자동으로 흡수합니다. He 2013에서 N=5,000 trio일 때 TADA는 de novo 단독 테스트보다 약 5× 더 많은 risk gene을 같은 FDR에서 잡았습니다.</p>
+      </article>
+
+      <article class="dd-block full" id="dd-sim">
+        <h3><span class="num">5</span>직접 흔들어보기 — π, γ̄, μ, N 슬라이더</h3>
+        <p>아래 네 슬라이더로 가상의 setting을 만들고, 한 유전자에서 관측되는 de novo 카운트의 분포가 null 가정(γ=1)과 risk-gene 가정(γ=γ̄) 아래 어떻게 다른지, 그리고 그 차이가 Bayes factor로 어떻게 환산되는지 보세요. 위 식에서 q와 inherited transmission을 0으로 두고 de novo 카운트만 추적한 단순화 버전입니다 (실제 TADA는 다섯 카운트를 모두 곱한 BF를 씁니다).</p>
+        <div class="tada-sim-grid">
+          <div class="tada-sim-controls">
+            <label class="tada-slider">
+              <div class="row"><span class="name">π — risk-gene 비율</span><span class="val" id="tdSimPiVal">0.056</span></div>
+              <input type="range" id="tdSimPi" min="1" max="150" value="56">
+              <div class="hint">전체 ~18,000 유전자 중 몇 %가 risk인가. He 2013 추정 ≈5.6% (1,000/18,000)</div>
+            </label>
+            <label class="tada-slider">
+              <div class="row"><span class="name">γ̄ — 평균 상대위험</span><span class="val" id="tdSimGammaVal">20.0</span></div>
+              <input type="range" id="tdSimGamma" min="20" max="500" value="200">
+              <div class="hint">risk gene의 LoF가 부여하는 평균 risk multiplier. ASD LoF ≈ 20</div>
+            </label>
+            <label class="tada-slider">
+              <div class="row"><span class="name">μ — 유전자 mutation rate</span><span class="val" id="tdSimMuVal">1.0e-5</span></div>
+              <input type="range" id="tdSimMu" min="1" max="200" value="100">
+              <div class="hint">해당 유전자의 per-chromosome de novo LoF rate. CHD8 같은 큰 유전자 ≈ 5e-5, 짧은 유전자 ≈ 1e-6</div>
+            </label>
+            <label class="tada-slider">
+              <div class="row"><span class="name">N — trio 수</span><span class="val" id="tdSimNVal">10,000</span></div>
+              <input type="range" id="tdSimN" min="500" max="50000" step="500" value="10000">
+              <div class="hint">trio cohort 크기. 2013 He 932; 2020 Satterstrom ~12,000; 2022 Zhou 42,000+</div>
+            </label>
+          </div>
+          <div>
+            <div class="tada-canvas-wrap"><canvas id="tadaCanvas"></canvas></div>
+            <div class="tada-readout">
+              <div class="readout-cell"><div class="lbl">Null λ₀ = 2μN</div><div class="num" id="tdR0">0.20</div><div class="sub">평균 de novo / 유전자, γ=1</div></div>
+              <div class="readout-cell"><div class="lbl">Risk λ₁ = 2μγ̄N</div><div class="num" id="tdR1">4.00</div><div class="sub">평균 de novo / 유전자, risk</div></div>
+              <div class="readout-cell"><div class="lbl">BF (k=2 관측 시)</div><div class="num" id="tdRBF">—</div><div class="sub">P(x|H₁)/P(x|H₀)</div></div>
+              <div class="readout-cell"><div class="lbl">k=2 관측 후 posterior P(risk)</div><div class="num" id="tdRPost">—</div><div class="sub">π·BF / (π·BF + 1−π)</div></div>
+              <div class="readout-cell"><div class="lbl">FDR≤5%를 잡는 BF threshold</div><div class="num" id="tdRTau">—</div><div class="sub">π·G risk / 18,000 background</div></div>
+              <div class="readout-cell"><div class="lbl">기대 발견 risk gene 수</div><div class="num" id="tdRDisc">—</div><div class="sub">k≥k* 인 risk gene</div></div>
+            </div>
+          </div>
+        </div>
+        <p style="margin-top:12px;font-size:12.5px"><b>관찰 포인트</b>: (1) γ̄가 커지면 두 분포가 갈라져 BF가 폭발하고 발견 수가 늘어남. (2) μ가 작아지면 null과 risk 모두 0에 몰려 변별이 어려움 — 짧은 유전자에서 같은 유효 신호를 얻으려면 N을 키워야 함. (3) π가 커지면 prior odds가 올라 같은 BF에서도 posterior가 더 risk쪽으로 기울지만 FDR 임계값은 완화됨. (4) N을 늘리면 단순히 카운트 평균이 비례 증가하여 BF의 분리력이 빠르게 좋아짐.</p>
+      </article>
+
+      <article class="dd-block" id="dd-data">
+        <h3><span class="num">6</span>데이터에서 무엇을 쓰는가</h3>
+        <p>실제 TADA 파이프라인이 각 parameter를 어디서 끌어오는지 정리:</p>
+        <div class="src-flow">
+          <div class="src-card">
+            <span class="h">μ <span class="what">유전자별 mutation rate</span></span>
+            exonic length, tri-nucleotide context, replication timing, methylation. <b>외부 calibration</b>으로 미리 계산되어 TADA에 입력됩니다 (Samocha 2014 framework). 변이 클래스별(LoF / MisB / MisA)로 분리됨.
+          </div>
+          <div class="src-card">
+            <span class="h">π, γ̄, β <span class="what">prior hyperparameter</span></span>
+            <b>모든 유전자의 multi-hit 빈도</b>로부터 EB. 932 trio에서 multi-hit이 5개라는 사실이 k≈1,000 risk genes, γ̄≈20을 함의 (He 2013). cohort가 커지면 같은 procedure로 재추정.
+          </div>
+          <div class="src-card">
+            <span class="h">q <span class="what">유전자별 allele freq prior</span></span>
+            <b>case-control rare count + trio nontransmitted</b>로 유전자별 추정 후, EB로 평활. risk gene은 negative selection으로 q가 약 10× 작음 (q≈3e-5 vs 비-risk 6e-4).
+          </div>
+          <div class="src-card">
+            <span class="h">변이 클래스 분리 <span class="what">LoF / MisA / MisB / CNV</span></span>
+            클래스별로 (μ, γ, q) prior를 따로 추정. Fu 2022는 MPC missense severity, gCNV로 detect한 CNV까지 같은 framework에 합쳐 ASD185 gene set을 만듦.
+          </div>
+          <div class="src-card">
+            <span class="h">Inherited 신호 <span class="what">parent → proband 전송</span></span>
+            transmitted/nontransmitted 카운트로 TDT-스러운 over-transmission 신호 흡수. Zhou 2022는 이 채널을 강조해 NAV3 같은 inherited-driven moderate-risk gene을 발굴.
+          </div>
+          <div class="src-card">
+            <span class="h">Cohort 출처 <span class="what">실제 데이터셋</span></span>
+            ASC, MSSNG, SPARK, SSC, AASC, iPSYCH-Broad. 모두 trio 또는 case-control exome/WGS. Zhou 2022는 SPARK 35,130 + 기존 7,665 = 42,607 ASD case로 60 exome-wide significant gene 도달.
+          </div>
+        </div>
+      </article>
+
+      <article class="dd-block" id="dd-evolution">
+        <h3><span class="num">7</span>TADA의 진화</h3>
+        <p>같은 likelihood 골격이지만, 어떤 변이 클래스를 얼마나 깊이 통합했는가에 따라 결과가 달라졌습니다.</p>
+        <div class="evo-row">
+          <div class="evo-cell">
+            <div class="yr">2013</div>
+            <div class="evo-dot"></div>
+            <div class="ttl">He · TADA 원형</div>
+            <div class="desc">de novo + transmitted + case-control LoF/missense를 단일 EB framework로. 932 trio.</div>
+          </div>
+          <div class="evo-cell">
+            <div class="yr">2020</div>
+            <div class="evo-dot"></div>
+            <div class="ttl">Satterstrom</div>
+            <div class="desc">35,584 sample · ASC+iPSYCH-Broad. 102 ASD gene at FDR≤0.1. ASD-우세 vs NDD-우세 두 그룹 분리.</div>
+          </div>
+          <div class="evo-cell">
+            <div class="yr">2022</div>
+            <div class="evo-dot"></div>
+            <div class="ttl">Fu · CNV 통합</div>
+            <div class="desc">PTV·MPC missense·gCNV CNV를 한 Bayesian gene framework에. 72 gene at FDR≤0.001, 185 at ≤0.05.</div>
+          </div>
+          <div class="evo-cell">
+            <div class="yr">2022</div>
+            <div class="evo-dot"></div>
+            <div class="ttl">Zhou · Inherited</div>
+            <div class="desc">42,607 ASD case · TADA + TDT. 60 exome-wide significant gene, NAV3 등 inherited-LoF 주도 moderate-risk gene 발굴.</div>
+          </div>
+        </div>
+      </article>
+
+      </div>
+    </article>
+
+    <article class="dd-page" data-method="burden" hidden>
+      <div class="dd-grid" id="ddPageBurden"></div>
+    </article>
+
+    <article class="dd-page" data-method="skat" hidden>
+      <div class="dd-grid" id="ddPageSkat"></div>
+    </article>
+
+    <article class="dd-page" data-method="glmm" hidden>
+      <div class="dd-grid" id="ddPageGlmm"></div>
+    </article>
+    <article class="dd-page" data-method="ldsc" hidden>
+      <div class="dd-grid" id="ddPageLdsc"></div>
+    </article>
+    <article class="dd-page" data-method="magma" hidden>
+      <div class="dd-grid" id="ddPageMagma"></div>
+    </article>
+    <article class="dd-page" data-method="prs" hidden>
+      <div class="dd-grid" id="ddPagePrs"></div>
+    </article>
+
+    </div>
+  </section>
+
+  <section class="pipeline" aria-label="방법론 워크플로">
+    <div class="stage" style="--stage:var(--blue)">
+      <h3>1. 변이 스캔</h3>
+      <p>GWAS는 수많은 marker를 하나씩 검사합니다. LD 덕분에 typed/imputed SNP가 근처 causal allele을 대신 tag할 수 있습니다.</p>
+      <small>Uffelmann 2021; Visscher 2017</small>
+    </div>
+    <div class="stage" style="--stage:var(--gold)">
+      <h3>2. 희귀변이 집계</h3>
+      <p>단일 희귀변이는 power가 약하므로 burden test, SKAT, SKAT-O는 변이를 유전자나 영역 단위로 묶어 검사합니다.</p>
+      <small>Lee 2014; Wu 2011; Lee 2012</small>
+    </div>
+    <div class="stage" style="--stage:var(--red)">
+      <h3>3. 가족 기반 근거</h3>
+      <p>TADA는 de novo mutation rate, inherited transmission, case-control rare count를 유전자 단위 근거로 합칩니다.</p>
+      <small>He 2013; Fu 2022; Zhou 2022</small>
+    </div>
+    <div class="stage" style="--stage:var(--green)">
+      <h3>4. 유전구조 해석</h3>
+      <p>LDSC와 S-LDSC는 polygenic signal과 confounding을 구분하고, heritability를 annotation 또는 cell state에 배분합니다.</p>
+      <small>Bulik-Sullivan 2015; Evans 2018; Yu 2026</small>
+    </div>
+    <div class="stage" style="--stage:var(--violet)">
+      <h3>5. 생물학적 번역</h3>
+      <p>MAGMA, PRS, PWAS, functional assay는 association signal을 gene, pathway, prediction, target으로 연결합니다.</p>
+      <small>de Leeuw 2016; Ge 2019; Hou 2026</small>
+    </div>
+  </section>
+
+  <section class="sources">
+    <div class="source-list">
+      <h3>핵심 로컬 근거</h3>
+      <ul id="coreSources"></ul>
+    </div>
+    <div class="source-list">
+      <h3>ASD 및 biobank 예시</h3>
+      <ul id="exampleSources"></ul>
+    </div>
+  </section>
+</main>
+
+<script>
+const methods = [
+  {
+    id:"gwas", name:"GWAS", short:"common SNP 스캔", accent:"--blue",
+    range:{x1:.05,x2:.98,y1:.03,y2:.32},
+    summary:"GWAS는 genome-wide common/imputed variant를 보통 marker 하나씩 검사한 뒤, LD, fine-mapping, annotation, target-gene 근거로 peak를 해석합니다.",
+    tags:["single-marker","common/low-frequency","LD-aware","p < 5e-8"],
+    input:"Case-control, 정량형질, 또는 family pseudocontrol 자료와 genome-wide SNP genotype/imputation.",
+    stat:"Marker별 regression, mixed model, 또는 family association statistic. 여러 cohort는 meta-analysis로 합칩니다.",
+    best:"아주 큰 N으로 작은 OR을 잡아야 하는 common regulatory loci와 polygenic architecture.",
+    caveat:"GWAS locus가 곧 causal gene은 아닙니다. 대부분 non-coding이고, LD가 여러 후보 변이를 함께 가리킵니다.",
+    flow:[["변이","SNP dosage"],["검정","marker별 association"],["출력","Manhattan peak"],["후속","fine-map, annotate, PRS"]],
+    sources:["uffelmann","visscher","wang2009","grove","matoba"]
+  },
+  {
+    id:"tada", name:"TADA", short:"de novo + inherited", accent:"--red",
+    range:{x1:.000001,x2:.012,y1:.28,y2:.95},
+    summary:"TADA는 de novo mutation, inherited transmission, case-control rare count를 하나의 gene-based Bayesian model로 합쳐 ASD/NDD risk gene을 우선순위화합니다.",
+    tags:["gene-level","DNV","TDT","Bayes factor","FDR"],
+    input:"Family trio, rare coding variant, gene mutation-rate prior, inherited transmission, case-control count.",
+    stat:"유전자 전체에서 정보를 빌리는 empirical Bayes likelihood. 출력은 gene-level Bayes factor/FDR입니다.",
+    best:"재발 DNV만 세면 버려지는 missense와 inherited evidence까지 살려야 하는 sparse high-impact rare coding signal.",
+    caveat:"Mutation prior calibration, variant annotation, cohort size에 민감합니다. inherited moderate-risk gene은 여전히 어렵습니다.",
+    flow:[["DNV","mutation-rate 보정"],["상속","전송 불균형"],["대조군","case-control burden"],["출력","gene BF와 FDR"]],
+    sources:["he2013","satterstrom","fu","zhou","kimGermline"]
+  },
+  {
+    id:"burden", name:"Burden", short:"희귀변이 collapse", accent:"--gold",
+    range:{x1:.00001,x2:.04,y1:.18,y2:.85},
+    summary:"Burden test는 유전자/영역 안의 rare variant를 하나의 carrier count로 접어 넣습니다. 여러 변이가 같은 방향으로 phenotype을 밀 때 power가 커집니다.",
+    tags:["gene burden","masking","MAF filter","same direction"],
+    input:"WES/WGS variant를 gene, consequence, frequency, annotation mask별로 묶은 자료.",
+    stat:"Collapsed carrier count 또는 weighted burden을 phenotype에 대해 검사합니다. 보통 covariate와 relatedness를 보정합니다.",
+    best:"포함된 rare variant 대부분이 damaging하고 risk-increasing인 유전자. 특히 LoF/high-confidence mask.",
+    caveat:"Mask 선택이 결과를 크게 좌우합니다. neutral/protective variant가 섞이면 power와 재현성이 떨어집니다.",
+    flow:[["마스크","variant class 선택"],["집계","carrier count"],["검정","case enrichment"],["출력","gene-trait pair"]],
+    sources:["lee2014","nguyen","kimExome","sham"]
+  },
+  {
+    id:"skat", name:"SKAT / SKAT-O", short:"variance component", accent:"--cyan",
+    range:{x1:.00001,x2:.05,y1:.12,y2:.78},
+    summary:"SKAT은 모든 변이가 같은 방향으로 작동한다고 가정하지 않고, region 안에 nonzero effect 분포가 있는지를 봅니다. SKAT-O는 burden과 SKAT 사이를 data-adaptive하게 오갑니다.",
+    tags:["kernel","mixed effects","ρ grid","analytic p"],
+    input:"유전자/영역의 rare-variant genotype matrix, phenotype, covariate, variant weight.",
+    stat:"Variance-component score test. SKAT-O는 여러 ρ에서 Qρ = (1-ρ)QSKAT + ρQburden을 비교합니다.",
+    best:"deleterious, protective, neutral rare variant가 섞였거나 rare-variant architecture를 모르는 유전자.",
+    caveat:"단순 burden count보다 직관적 해석은 어렵고, mask, weight, 충분한 carrier count에 여전히 의존합니다.",
+    flow:[["행렬","subject별 variant"],["Kernel","weighted similarity"],["검정","variance component"],["출력","region p-value"]],
+    sources:["wu2011","lee2012","lee2014","neale2011"]
+  },
+  {
+    id:"glmm", name:"GLMM / REGENIE", short:"biobank scale", accent:"--green",
+    range:{x1:.0001,x2:.99,y1:.02,y2:.72},
+    summary:"Mixed-model association tool은 relatedness, ancestry structure, case-control imbalance를 보정하면서 common/rare variant 검정을 biobank scale로 확장합니다.",
+    tags:["relatedness","binary traits","REGENIE","SAIGE","fastGWA"],
+    input:"수십만 명 규모의 genotype/exome, sparse relatedness, covariate, phenotype panel.",
+    stat:"Generalized linear mixed model 또는 two-step whole-genome regression과 score test.",
+    best:"Related sample, 불균형 binary trait, 다수 EHR phenotype이 있는 대형 biobank 분석.",
+    caveat:"Calibration, ancestry matching, sparse phenotype 처리, computational setting이 여전히 중요합니다.",
+    flow:[["Null","genome-wide model 적합"],["보정","relatedness와 PC"],["스캔","variant 또는 mask"],["출력","calibrated association"]],
+    sources:["jiang2021","nguyen","kimExome","sham"]
+  },
+  {
+    id:"ldsc", name:"LDSC / S-LDSC", short:"heritability partition", accent:"--green",
+    range:{x1:.01,x2:.99,y1:.02,y2:.26},
+    summary:"LD Score regression은 LD tagging 정도와 GWAS χ² statistic의 관계를 이용해 polygenic heritability, confounding, genetic correlation, annotation enrichment를 추정합니다.",
+    tags:["summary stats","LD score","intercept","cell state"],
+    input:"GWAS summary statistics, ancestry-matched LD reference, 선택적 functional/cell-state annotation.",
+    stat:"χ² statistic을 total 또는 annotation-specific LD score에 회귀합니다. Slope가 heritability/enrichment를 반영합니다.",
+    best:"신호가 많은 common variant에 넓게 퍼져 있고, 어떤 tissue/cell state에 몰리는지 해석해야 하는 polygenic trait.",
+    caveat:"Reference LD mismatch, extreme locus, annotation 선택이 해석을 흔들 수 있습니다.",
+    flow:[["요약통계","GWAS χ²"],["LD","tagging score"],["기울기","h² 또는 enrichment"],["출력","architecture map"]],
+    sources:["bulik","evans","yu","matoba"]
+  },
+  {
+    id:"magma", name:"MAGMA", short:"gene-set layer", accent:"--violet",
+    range:{x1:.01,x2:.99,y1:.03,y2:.35},
+    summary:"MAGMA류 gene/gene-set analysis는 SNP-level GWAS signal을 gene과 pathway로 옮기되, gene length와 LD 같은 confounder를 보정합니다.",
+    tags:["SNP to gene","pathway","competitive test","LD control"],
+    input:"GWAS summary statistics, SNP-to-gene mapping, gene set, LD reference, confounder model.",
+    stat:"Gene-level multiple regression 뒤 gene-set test를 수행합니다. 보통 self-contained보다 competitive test가 적합합니다.",
+    best:"특정 pathway나 cell-type gene set이 genome 전체 배경보다 더 association-rich한지 묻는 질문.",
+    caveat:"Gene length, LD, gene-set size, circular gene-set definition은 보정하지 않으면 false positive를 만듭니다.",
+    flow:[["SNP","local GWAS signal"],["유전자","aggregate statistic"],["세트","pathway 비교"],["출력","enriched biology"]],
+    sources:["leeuw","matoba","evans"]
+  },
+  {
+    id:"prs", name:"PRS", short:"polygenic score", accent:"--violet",
+    range:{x1:.01,x2:.99,y1:.01,y2:.22},
+    summary:"Polygenic risk score는 개인 genome 전반의 GWAS effect estimate를 weighted sum으로 합칩니다. PRS-CS 같은 Bayesian 방법은 LD block 안에서 effect를 함께 shrink합니다.",
+    tags:["prediction","LD shrinkage","summary stats","many SNPs"],
+    input:"Discovery GWAS summary statistics, target genotype, ancestry-matched LD reference, validation 또는 Bayesian shrinkage.",
+    stat:"Weighted allele sum. PRS-CS는 continuous shrinkage prior와 block LD update로 SNP effect를 추정합니다.",
+    best:"개인/가족의 common-variant load, subgroup comparison, risk stratification.",
+    caveat:"Prediction은 ancestry-sensitive하고 trait-dependent하며, 개인 생물학의 causal explanation은 아닙니다.",
+    flow:[["GWAS","effect estimate"],["Shrink","LD-aware weight"],["점수","weighted allele sum"],["출력","individual liability"]],
+    sources:["ge","grove","matoba","weiner"]
+  }
+];
+
+const sourceMap = {
+  uffelmann:["Uffelmann 2021 — GWAS 방법론 primer"],
+  visscher:["Visscher 2017 — GWAS 10년 리뷰"],
+  wang2009:["Wang 2009 — 첫 ASD GWAS locus"],
+  grove:["Grove 2019 — ASD common-risk GWAS"],
+  matoba:["Matoba 2020 — SPARK family GWAS, LDSC, H-MAGMA"],
+  he2013:["He 2013 — TADA 원 논문"],
+  satterstrom:["Satterstrom 2020 — ASD 102개 risk gene"],
+  fu:["Fu 2022 — ASD rare coding TADA framework"],
+  zhou:["Zhou 2022 — de novo + inherited ASD variant 통합"],
+  lee2014:["Lee 2014 — rare-variant association 리뷰"],
+  nguyen:["Nguyen 2026 — burden mask 재현성"],
+  kimExome:["Kim 2026 — South Asian exome biobank"],
+  sham:["Sham 2014 — power와 significance"],
+  wu2011:["Wu 2011 — SKAT 원 논문"],
+  lee2012:["Lee 2012 — SKAT-O"],
+  neale2011:["Neale 2011 — C-alpha"],
+  jiang2021:["Jiang 2021 — fastGWA-GLMM"],
+  bulik:["Bulik-Sullivan 2015 — LDSC"],
+  evans:["Evans 2018 — partitioned heritability"],
+  yu:["Yu 2026 — SCADS cell-state GWAS"],
+  leeuw:["de Leeuw 2016 — MAGMA와 GSA pitfalls"],
+  ge:["Ge 2019 — PRS-CS"],
+  hou:["Hou 2026 — PolyPWAS"],
+  weiner:["Weiner 2017 — polygenic transmission disequilibrium"],
+  kimGermline:["Kim 2026 — germline mutation mechanism과 TADA 비교"]
+};
+
+const examples = [
+  ["Common ASD locus는 scale이 필요","Wang 2009는 CDH10/CDH9 근처 rs4307059를 OR 1.19로 보고했고, Grove 2019는 다섯 개의 genome-wide significant ASD locus를 제시했습니다."],
+  ["TADA는 ASD gene discovery의 power를 올림","He 2013이 TADA model을 정식화했고, Satterstrom 2020과 Fu 2022는 large ASD exome cohort로 rare coding evidence 통합을 확장했습니다."],
+  ["상속 희귀변이 신호는 더 diffuse함","Zhou 2022는 inherited LoF variant가 NAV3 같은 moderate-risk gene을 드러낼 수 있지만 훨씬 큰 cohort가 필요함을 보였습니다."],
+  ["Mask 선택이 결과를 좌우","Nguyen 2026은 rare-variant mask가 연구마다 매우 달라 재현성을 흔들 수 있음을 보이고 compact 8-mask baseline을 제안했습니다."],
+  ["Cell-state 해석은 downstream 단계","Matoba 2020과 Yu 2026은 GWAS summary statistic을 fetal cortical regulatory annotation 또는 single-cell ATAC topic으로 연결합니다."]
+];
+
+let selected = methods[0];
+let simMode = "gwas";
+const state = {
+  gwas:{n:50000, maf:.2, or:1.12},
+  rare:{n:80000, carriers:120, direction:55},
+  tada:{dnv:3, trans:7, cc:4, prior:60}
+};
+
+function cssVar(name){
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+function methodColor(m=selected){return cssVar(m.accent);}
+function fmt(x,d=1){return Number(x).toFixed(d);}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
+
+function initMethods(){
+  const strip=document.getElementById("methodStrip");
+  strip.innerHTML=methods.map(m=>`
+    <button class="method-btn${m.id===selected.id?" active":""}" data-id="${m.id}" style="--accent:var(${m.accent})">
+      <span class="k">${m.name}</span><span class="s">${m.short}</span>
+    </button>`).join("");
+  strip.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      selected=methods.find(m=>m.id===btn.dataset.id);
+      document.querySelector(".page").style.setProperty("--accent",`var(${selected.accent})`);
+      renderAll();
+    });
+  });
+  document.querySelectorAll(".tab").forEach(tab=>{
+    tab.addEventListener("click",()=>{
+      simMode=tab.dataset.sim;
+      document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.sim===simMode));
+      renderSim();
+    });
+  });
+}
+
+function renderProfile(){
+  document.querySelectorAll(".method-btn").forEach(btn=>btn.classList.toggle("active",btn.dataset.id===selected.id));
+  document.getElementById("methodTitle").textContent=selected.name;
+  document.getElementById("methodSummary").textContent=selected.summary;
+  document.getElementById("chips").innerHTML=selected.tags.map(t=>`<span class="chip">${t}</span>`).join("");
+  document.getElementById("inputText").textContent=selected.input;
+  document.getElementById("statText").textContent=selected.stat;
+  document.getElementById("bestText").textContent=selected.best;
+  document.getElementById("caveatText").textContent=selected.caveat;
+  document.getElementById("flow").innerHTML=selected.flow.map(([k,v])=>`
+    <div class="flow-row"><div class="flow-tag" style="border-color:${methodColor()}">${k}</div><div class="flow-text">${v}</div></div>
+  `).join("");
+}
+
+function points(){
+  return [
+    {x:.35,y:.07,type:"common",label:"common regulatory SNP"},
+    {x:.12,y:.12,type:"common",label:"low-frequency coding SNP"},
+    {x:.006,y:.45,type:"rare",label:"rare LoF carrier"},
+    {x:.0007,y:.62,type:"rare",label:"ultra-rare damaging missense"},
+    {x:.00002,y:.82,type:"dnv",label:"recurrent de novo PTV"},
+    {x:.02,y:.32,type:"rare",label:"gene-level mask signal"},
+    {x:.7,y:.04,type:"poly",label:"polygenic background"},
+    {x:.18,y:.2,type:"anno",label:"annotation enrichment"}
+  ];
+}
+
+function logX(x,w,pad){
+  const lo=Math.log10(.00001), hi=Math.log10(1);
+  return pad+(Math.log10(x)-lo)/(hi-lo)*(w-pad*2);
+}
+function yPos(y,h,pad){return h-pad-y*(h-pad*2);}
+
+function drawLandscape(){
+  const canvas=document.getElementById("landscapeCanvas");
+  const rect=canvas.getBoundingClientRect();
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=Math.floor(rect.width*dpr);
+  canvas.height=Math.floor(rect.height*dpr);
+  const ctx=canvas.getContext("2d");
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const w=rect.width,h=rect.height,pad=78;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,w,h);
+
+  ctx.strokeStyle="#e4e9f0";
+  ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    const x=pad+i*(w-pad*2)/5;
+    ctx.beginPath();ctx.moveTo(x,pad*.8);ctx.lineTo(x,h-pad);ctx.stroke();
+  }
+  for(let i=0;i<=5;i++){
+    const y=pad+i*(h-pad*1.8)/5;
+    ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad*.55,y);ctx.stroke();
+  }
+
+  ctx.fillStyle="rgba(37,92,153,.05)";
+  ctx.fillRect(logX(.05,w,pad),yPos(.32,h,pad),logX(.98,w,pad)-logX(.05,w,pad),yPos(.03,h,pad)-yPos(.32,h,pad));
+  ctx.fillStyle="rgba(166,107,19,.06)";
+  ctx.fillRect(logX(.00001,w,pad),yPos(.85,h,pad),logX(.04,w,pad)-logX(.00001,w,pad),yPos(.18,h,pad)-yPos(.85,h,pad));
+  ctx.fillStyle="rgba(178,58,72,.06)";
+  ctx.fillRect(logX(.000001,w,pad),yPos(.95,h,pad),logX(.012,w,pad)-logX(.000001,w,pad),yPos(.28,h,pad)-yPos(.95,h,pad));
+
+  const r=selected.range;
+  const x1=logX(r.x1,w,pad),x2=logX(r.x2,w,pad),y1=yPos(r.y2,h,pad),y2=yPos(r.y1,h,pad);
+  ctx.fillStyle=colorWithAlpha(methodColor(),.13);
+  ctx.strokeStyle=methodColor();
+  ctx.lineWidth=2;
+  roundRect(ctx,x1,y1,x2-x1,y2-y1,8,true,true);
+
+  const pts=points();
+  const palette={common:"#255c99",rare:"#a66b13",dnv:"#b23a48",poly:"#19735d",anno:"#6350a8"};
+  pts.forEach(p=>{
+    const x=logX(p.x,w,pad), y=yPos(p.y,h,pad);
+    ctx.beginPath();
+    ctx.fillStyle=palette[p.type]||"#333";
+    ctx.strokeStyle="#fff";
+    ctx.lineWidth=2;
+    ctx.arc(x,y,6,0,Math.PI*2);
+    ctx.fill();ctx.stroke();
+  });
+
+  ctx.fillStyle="#17202a";
+  ctx.font="700 12px ui-sans-serif";
+  ctx.fillText("대립유전자 빈도",w/2-44,h-14);
+  ctx.save();
+  ctx.translate(20,h/2+64);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText("효과 크기 / 상대적 영향",0,0);
+  ctx.restore();
+
+  ctx.font="11px ui-sans-serif";
+  ctx.fillStyle="#667085";
+  ctx.textAlign="center";
+  [["1e-5",.00001],["1e-4",.0001],["0.1%",.001],["1%",.01],["10%",.1],["100%",1]].forEach(([lab,val])=>{
+    const x=logX(val,w,pad);
+    ctx.fillText(lab,x,h-31);
+  });
+  ctx.textAlign="right";
+  [["낮음",.06],["중간",.35],["높음",.7],["매우 높음",.92]].forEach(([lab,val])=>{
+    const y=yPos(val,h,pad);
+    ctx.fillText(lab,pad-14,y+4);
+  });
+  ctx.textAlign="left";
+
+  ctx.fillStyle=methodColor();
+  ctx.font="800 13px ui-sans-serif";
+  ctx.fillText(selected.name+" 포착 영역",Math.max(x1+12,pad+10),Math.max(y1+22,pad));
+}
+
+function colorWithAlpha(hex,alpha){
+  const h=hex.replace("#","");
+  const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function roundRect(ctx,x,y,w,h,r,fill,stroke){
+  const rr=Math.min(r,w/2,h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+rr,y);
+  ctx.arcTo(x+w,y,x+w,y+h,rr);
+  ctx.arcTo(x+w,y+h,x,y+h,rr);
+  ctx.arcTo(x,y+h,x,y,rr);
+  ctx.arcTo(x,y,x+w,y,rr);
+  if(fill)ctx.fill();
+  if(stroke)ctx.stroke();
+}
+
+function slider(name,label,min,max,step,value,format){
+  return `<div class="control">
+    <label for="${name}"><span>${label}</span><output id="${name}Out">${format(value)}</output></label>
+    <input id="${name}" type="range" min="${min}" max="${max}" step="${step}" value="${value}">
+  </div>`;
+}
+
+function renderSim(){
+  const controls=document.getElementById("simControls");
+  if(simMode==="gwas"){
+    const s=state.gwas;
+    controls.innerHTML=[
+      slider("n","표본 수",5000,500000,5000,s.n,v=>Number(v).toLocaleString()),
+      slider("maf","Minor allele frequency",.01,.5,.01,s.maf,v=>fmt(v,2)),
+      slider("or","Odds ratio",1.02,1.6,.01,s.or,v=>fmt(v,2))
+    ].join("");
+    wire(["n","maf","or"],"gwas");
+  }else if(simMode==="rare"){
+    const s=state.rare;
+    controls.innerHTML=[
+      slider("n","표본 수",5000,500000,5000,s.n,v=>Number(v).toLocaleString()),
+      slider("carriers","유전자 내 carrier 수",10,800,10,s.carriers,v=>v),
+      slider("direction","같은 방향으로 작동하는 변이",0,100,5,s.direction,v=>v+"%")
+    ].join("");
+    wire(["n","carriers","direction"],"rare");
+  }else{
+    const s=state.tada;
+    controls.innerHTML=[
+      slider("dnv","Damaging de novo event",0,12,1,s.dnv,v=>v),
+      slider("trans","Inherited transmission excess",0,20,1,s.trans,v=>v),
+      slider("cc","Case-control rare excess",0,20,1,s.cc,v=>v),
+      slider("prior","Mutation-rate prior 강도",20,100,5,s.prior,v=>v+"%")
+    ].join("");
+    wire(["dnv","trans","cc","prior"],"tada");
+  }
+  calcSim();
+}
+
+function wire(ids,mode){
+  ids.forEach(id=>{
+    const el=document.getElementById(id);
+    el.addEventListener("input",()=>{
+      state[mode][id]=Number(el.value);
+      renderSim();
+    });
+  });
+}
+
+function calcSim(){
+  const readouts=document.getElementById("readouts");
+  const bars=document.getElementById("bars");
+  const formula=document.getElementById("formula");
+  if(simMode==="gwas"){
+    const s=state.gwas;
+    const beta=Math.log(s.or);
+    const info=s.n*2*s.maf*(1-s.maf);
+    const z=Math.sqrt(info)*Math.abs(beta)*.32;
+    const logp=clamp((z*z/2)/Math.log(10),0,80);
+    const power=clamp(100/(1+Math.exp(-(logp-7.3)/1.2)),0,100);
+    readouts.innerHTML=`
+      <div class="readout"><b>${fmt(logp,1)}</b><span>예상 -log10(P), toy approximation</span></div>
+      <div class="readout"><b>${fmt(power,0)}%</b><span>genome-wide threshold를 넘을 직관적 가능성</span></div>`;
+    bars.innerHTML=barRows([["N 기여",clamp(s.n/500000*100,0,100)],["MAF 정보량",clamp(2*s.maf*(1-s.maf)/.5*100,0,100)],["효과 크기",clamp((s.or-1.02)/.58*100,0,100)]]);
+    formula.textContent="GWAS 직관: 신호는 sqrt(N × 2p(1-p)) × |log(OR)|에 비례해 커집니다. 수백만 marker를 검사하므로 threshold 압력이 큽니다.";
+  }else if(simMode==="rare"){
+    const s=state.rare;
+    const carrierInfo=Math.sqrt(s.n/80000)*Math.sqrt(s.carriers/120);
+    const same=s.direction/100;
+    const burden=clamp((same*.95+(1-same)*.15)*carrierInfo*76,0,100);
+    const skat=clamp(((1-Math.abs(same-.5)*.75)*carrierInfo*78),0,100);
+    const skato=clamp(Math.max(burden,skat)*.94+6,0,100);
+    readouts.innerHTML=`
+      <div class="readout"><b>${fmt(skato,0)}%</b><span>SKAT-O robustness score</span></div>
+      <div class="readout"><b>${same>=.75?"Burden":same<=.35?"SKAT":"SKAT-O"}</b><span>이 architecture에서 가장 자연스러운 검정</span></div>`;
+    bars.innerHTML=barRows([["Burden",burden],["SKAT",skat],["SKAT-O",skato]]);
+    formula.textContent="Rare-variant 직관: 변이들이 같은 방향이면 burden이 유리하고, 효과 방향이 섞이면 SKAT이 유리합니다. SKAT-O는 ρ continuum 위에서 둘 사이를 적응적으로 고릅니다.";
+  }else{
+    const s=state.tada;
+    const dnv=s.dnv*1.9*(s.prior/60);
+    const trans=s.trans*.82;
+    const cc=s.cc*.65;
+    const total=dnv+trans+cc;
+    const fdr=100/(1+Math.exp((total-9)/1.4));
+    readouts.innerHTML=`
+      <div class="readout"><b>${fmt(total,1)}</b><span>통합 gene evidence score</span></div>
+      <div class="readout"><b>${fmt(fdr,1)}%</b><span>toy FDR-like readout; 낮을수록 강함</span></div>`;
+    bars.innerHTML=barRows([["De novo",clamp(dnv/18*100,0,100)],["Transmitted",clamp(trans/16*100,0,100)],["Case-control",clamp(cc/13*100,0,100)]]);
+    formula.textContent="TADA 직관: mutation-rate로 보정한 DNV evidence를 inherited transmission, case-control rare count와 gene-level empirical-Bayes model 안에서 합칩니다.";
+  }
+}
+
+function barRows(rows){
+  return rows.map(([name,val])=>`
+    <div class="bar-row"><span>${name}</span><div class="bar-track"><div class="bar-fill" style="width:${val}%"></div></div><strong>${fmt(val,0)}</strong></div>
+  `).join("");
+}
+
+function renderSources(){
+  const core=["uffelmann","he2013","lee2014","wu2011","lee2012","bulik","evans","leeuw","ge"];
+  const example=["wang2009","grove","matoba","satterstrom","fu","zhou","nguyen","kimExome","yu","hou"];
+  document.getElementById("coreSources").innerHTML=core.map(k=>srcLi(k)).join("");
+  document.getElementById("exampleSources").innerHTML=example.map(k=>srcLi(k)).join("");
+}
+function srcLi(k){
+  const [name]=sourceMap[k];
+  const q=encodeURIComponent(name.split(' — ')[0]);
+  return `<li><a href="https://scholar.google.com/scholar?q=${q}" target="_blank" rel="noopener">${name}</a></li>`;
+}
+
+function renderAll(){
+  renderProfile();
+  drawLandscape();
+  renderSources();
+  renderSim();
+  renderDeepDive();
+}
+
+/* ===== Deep-dive method switcher ===== */
+const ddMeta = {
+  gwas:   {eyebrow:"GWAS · common-variant association", title:"GWAS의 검정 통계량, 한 발자국씩",
+           intro:"GWAS는 수백만 개 SNP를 한 번에 phenotype에 회귀해 χ² 또는 z 점수를 만듭니다. 이 섹션은 그 식이 어디서 오고, MAF·effect size·표본 크기·LD가 power를 어떻게 흔드는지, 5×10⁻⁸ 임계값이 어디서 왔는지를 풀어 둡니다."},
+  tada:   {eyebrow:"TADA · Empirical Bayes", title:"TADA의 likelihood, 한 발자국씩",
+           intro:"TADA(Transmission And De novo Association)는 한 유전자에서 관측된 다섯 가지 카운트를 하나의 Poisson likelihood로 묶고, ~18,000개 유전자가 같이 추정한 prior로 정규화해서 한 점수(Bayes factor)를 만듭니다. 이 섹션은 He 2013의 식을 분해하고, 어떤 데이터가 어떤 parameter를 결정하며, 그 parameter를 흔들면 결과가 어떻게 변하는지를 직접 만져볼 수 있게 풀어 둔 것입니다."},
+  burden: {eyebrow:"Burden · gene-level collapsing", title:"Burden test의 carrier count, 그리고 mask 선택의 무게",
+           intro:"Burden test는 한 유전자 안의 rare variant 여러 개를 한 carrier count로 접어 검사합니다. 식은 단순하지만 결과는 어떤 mask로 변이를 골랐는지에 강하게 의존합니다. Nguyen 2026의 234편 mask audit를 바탕으로, mask 선택이 power와 재현성을 어떻게 흔드는지 봅니다."},
+  skat:   {eyebrow:"SKAT / SKAT-O · variance-component kernel", title:"SKAT의 kernel score, ρ를 흔들어보면",
+           intro:"SKAT는 burden test가 가정하는 \"모든 변이가 같은 방향\"을 풉니다. variance-component score로 \"이 region 안에 zero가 아닌 effect 분포가 있는가\"를 검정합니다. SKAT-O는 burden과 SKAT 사이의 ρ를 데이터로 정합니다. 두 검정이 어떤 architecture에서 이기는지 직접 흔들어 봅니다."},
+  glmm:   {eyebrow:"GLMM · biobank-scale mixed model", title:"GLMM / REGENIE의 likelihood 분해",
+           intro:"수십만~수백만 명 biobank GWAS의 표준 도구. y = X·β + g + ε 의 random effect g가 친족·집단 구조·case-control imbalance를 한 번에 흡수합니다. REGENIE의 2-step LOCO trick과 SAIGE의 saddlepoint approximation이 어떤 함정을 푸는지 풀어 둡니다."},
+  ldsc:   {eyebrow:"LDSC / S-LDSC · heritability partitioning", title:"χ² ~ LD score 회귀로 polygenic과 confounding 분리",
+           intro:"GWAS 평균 χ²이 1.5 이상이면 그 inflation이 진짜 polygenic 신호인지 stratification confounding인지 모릅니다. LDSC는 한 줄 회귀로 둘을 분리합니다 — slope = N·h²/M, intercept = 1 + N·a. S-LDSC로 functional annotation·tissue별 h² partitioning까지 확장합니다."},
+  magma:  {eyebrow:"MAGMA · gene-based aggregation", title:"SNP p-value를 한 유전자 한 점수로",
+           intro:"GWAS는 SNP 단위, 생물학은 유전자 단위. MAGMA는 한 유전자 안의 SNP들을 LD를 보정한 multivariate regression으로 합쳐 gene-level F-statistic을 만듭니다. de Leeuw 2016이 정량화한 gene length·LD confounder의 함정을 직접 만져봅니다."},
+  prs:    {eyebrow:"PRS · polygenic prediction", title:"PRS / PRS-CS — 가중 합과 그 이론적 한계",
+           intro:"PRS는 한 사람의 polygenic load를 Σx·β̂ 한 숫자로 요약하는 가중 합입니다. Daetwyler 2008의 R² 상한, PRS-CS의 continuous shrinkage prior, 그리고 ancestry portability의 한계까지 — N·h²·M·ρ 슬라이더로 확인합니다."}
+};
+
+const ddPages = {};   /* registry — methods register: ddPages[id] = {init, render, ready} */
+let ddCurrent = null;
+
+function renderDeepDive(){
+  const id = (typeof selected!=="undefined" && selected) ? selected.id : "tada";
+  document.querySelectorAll(".dd-page").forEach(p => {
+    p.hidden = p.dataset.method !== id;
+  });
+  const meta = ddMeta[id] || ddMeta.tada;
+  const eyEl = document.getElementById("ddEyebrow");
+  const tEl = document.getElementById("ddTitle");
+  const iEl = document.getElementById("ddIntro");
+  if(eyEl) eyEl.textContent = meta.eyebrow;
+  if(tEl) tEl.textContent = meta.title;
+  if(iEl) iEl.textContent = meta.intro;
+  // Active page lifecycle
+  const page = ddPages[id];
+  if(page){
+    if(!page.ready){ page.init(); page.ready = true; }
+    if(page.render) page.render();
+  }
+  ddCurrent = id;
+}
+
+window.addEventListener("resize",drawLandscape);
+initMethods();
+renderAll();
+
+/* ===== TADA empirical-Bayes simulator ===== */
+const tdSim = {
+  pi: 0.056,    // risk-gene fraction
+  gamma: 20.0,  // mean relative risk
+  mu: 1.0e-5,   // gene-specific de novo LoF rate per chromosome per generation
+  N: 10000,     // trio cohort size
+  G: 18000,     // total genes
+  observedK: 2  // observed de novo count for the example gene
+};
+
+function tdLogFact(k){
+  // log(k!) using Lanczos-style table; k up to ~120 is enough here
+  if(k<=1) return 0;
+  let s=0;
+  for(let i=2;i<=k;i++) s += Math.log(i);
+  return s;
+}
+function tdPoisLogPmf(k, lam){
+  if(lam<=0) return k===0 ? 0 : -Infinity;
+  return -lam + k*Math.log(lam) - tdLogFact(k);
+}
+function tdPoisPmf(k, lam){
+  return Math.exp(tdPoisLogPmf(k, lam));
+}
+// P(X >= k | Pois(lam)) = 1 - sum_{j<k} Pois(j; lam)
+function tdPoisCdfGE(k, lam){
+  if(k<=0) return 1;
+  let s=0;
+  for(let j=0;j<k;j++) s += tdPoisPmf(j, lam);
+  return Math.max(0, Math.min(1, 1 - s));
+}
+function tdFmt(x, digits=2){
+  if(!isFinite(x)) return "∞";
+  if(x===0) return "0";
+  const ax=Math.abs(x);
+  if(ax>=1000) return x.toExponential(2).replace("+","");
+  if(ax>=10) return x.toFixed(1);
+  if(ax>=1) return x.toFixed(2);
+  if(ax>=0.001) return x.toFixed(3);
+  return x.toExponential(2).replace("+","");
+}
+function tdFmtMu(mu){
+  // 1.5e-5 style
+  const e=Math.floor(Math.log10(mu));
+  const m=mu/Math.pow(10,e);
+  return `${m.toFixed(1)}e${e}`;
+}
+
+// Map slider 1..150 to pi 0.005..0.15 (linear)
+function tdReadPi(v){ return 0.005 + (v-1)/(150-1)*(0.15-0.005); }
+function tdReadGamma(v){ return v/10; }                 // 20..500 -> 2..50
+function tdReadMu(v){ return v*1e-7; }                  // 1..200 -> 1e-7..2e-5
+function tdReadN(v){ return v; }                        // direct
+
+function tdComputeBF(k, lam0, lam1){
+  if(lam0<=0 && lam1<=0) return 1;
+  if(lam0<=0) return Infinity;
+  // BF = Pois(k; lam1)/Pois(k; lam0) = exp(lam0-lam1) * (lam1/lam0)^k
+  const ratio = lam1/lam0;
+  if(ratio<=0) return 0;
+  return Math.exp(lam0 - lam1) * Math.pow(ratio, k);
+}
+// Find smallest k* such that BF(k*) >= tau, then FDR estimate.
+function tdFindThreshold(lam0, lam1, pi, G, targetFdr){
+  // For each candidate k, FDR ≈ (1-pi)*P(X>=k|null) / [(1-pi)*P(X>=k|null) + pi*P(X>=k|risk)]
+  // Find smallest k with FDR <= targetFdr
+  for(let k=0;k<=80;k++){
+    const pNull = tdPoisCdfGE(k, lam0);
+    const pAlt = tdPoisCdfGE(k, lam1);
+    const denom = (1-pi)*pNull + pi*pAlt;
+    if(denom===0) continue;
+    const fdr = (1-pi)*pNull / denom;
+    if(fdr <= targetFdr){
+      return {k, fdr, expectedDisc: pi*G*pAlt};
+    }
+  }
+  return {k:Infinity, fdr:1, expectedDisc:0};
+}
+
+function tdRender(){
+  const s = tdSim;
+  const lam0 = 2*s.mu*s.N;
+  const lam1 = 2*s.mu*s.gamma*s.N;
+  // Readouts
+  document.getElementById("tdR0").textContent = tdFmt(lam0);
+  document.getElementById("tdR1").textContent = tdFmt(lam1);
+  const bf = tdComputeBF(s.observedK, lam0, lam1);
+  document.getElementById("tdRBF").textContent = bf>=10 ? tdFmt(bf,1) : bf.toFixed(2);
+  const post = (s.pi*bf) / (s.pi*bf + (1-s.pi));
+  document.getElementById("tdRPost").textContent = (isFinite(post)?post:1).toFixed(3);
+  const thr = tdFindThreshold(lam0, lam1, s.pi, s.G, 0.05);
+  if(!isFinite(thr.k)){
+    document.getElementById("tdRTau").textContent = "도달 불가";
+    document.getElementById("tdRDisc").textContent = "0";
+  } else {
+    const tauBF = tdComputeBF(thr.k, lam0, lam1);
+    document.getElementById("tdRTau").textContent = `k≥${thr.k} (BF≥${tdFmt(tauBF,1)})`;
+    document.getElementById("tdRDisc").textContent = Math.round(thr.expectedDisc).toLocaleString();
+  }
+  tdDraw(lam0, lam1, thr.k);
+}
+
+function tdDraw(lam0, lam1, kStar){
+  const c = document.getElementById("tadaCanvas");
+  if(!c) return;
+  const dpr = window.devicePixelRatio || 1;
+  const w = c.clientWidth, h = c.clientHeight;
+  c.width = w*dpr; c.height = h*dpr;
+  const g = c.getContext("2d");
+  g.scale(dpr, dpr);
+  g.clearRect(0,0,w,h);
+
+  const m = {l:42, r:14, t:12, b:32};
+  const pw = w-m.l-m.r, ph = h-m.t-m.b;
+
+  // Choose kMax such that the bulk of both distributions is visible
+  const kMax = Math.max(8, Math.ceil(lam1*1.6 + 4));
+  const kStep = kMax > 30 ? 2 : 1;
+
+  // Gather PMFs
+  const xs=[], y0=[], y1=[];
+  let yMax=0;
+  for(let k=0;k<=kMax;k++){
+    const p0 = tdPoisPmf(k, lam0);
+    const p1 = tdPoisPmf(k, lam1);
+    xs.push(k); y0.push(p0); y1.push(p1);
+    if(p0>yMax) yMax=p0;
+    if(p1>yMax) yMax=p1;
+  }
+  yMax = Math.max(0.05, yMax)*1.10;
+
+  // Axes
+  g.strokeStyle = "#d9dee7"; g.lineWidth = 1;
+  g.beginPath();
+  g.moveTo(m.l, m.t); g.lineTo(m.l, m.t+ph); g.lineTo(m.l+pw, m.t+ph); g.stroke();
+
+  // Y ticks
+  g.fillStyle = "#667085";
+  g.font = "10px ui-sans-serif,system-ui";
+  g.textAlign = "right"; g.textBaseline="middle";
+  for(let i=0;i<=4;i++){
+    const yv = (yMax/4)*i;
+    const py = m.t+ph - (yv/yMax)*ph;
+    g.beginPath(); g.moveTo(m.l-3,py); g.lineTo(m.l,py); g.stroke();
+    g.fillText(yv.toFixed(2), m.l-5, py);
+  }
+  g.save();
+  g.translate(11, m.t+ph/2); g.rotate(-Math.PI/2);
+  g.textAlign="center"; g.fillText("P(X = k)", 0, 0);
+  g.restore();
+
+  // X ticks
+  g.textAlign="center"; g.textBaseline="top";
+  for(let k=0;k<=kMax;k+=kStep){
+    const px = m.l + (k/kMax)*pw;
+    g.beginPath(); g.moveTo(px, m.t+ph); g.lineTo(px, m.t+ph+3); g.stroke();
+    g.fillText(String(k), px, m.t+ph+5);
+  }
+  g.fillText("관측된 de novo 카운트 k", m.l+pw/2, m.t+ph+18);
+
+  // Bars under null (light blue) and risk (red)
+  const barW = pw/(kMax+1);
+  // null
+  g.fillStyle = "rgba(37,92,153,0.35)";
+  for(let k=0;k<=kMax;k++){
+    const px = m.l + (k/kMax)*pw - barW*0.45;
+    const yh = (y0[k]/yMax)*ph;
+    g.fillRect(px, m.t+ph-yh, barW*0.42, yh);
+  }
+  // risk
+  g.fillStyle = "rgba(178,58,72,0.55)";
+  for(let k=0;k<=kMax;k++){
+    const px = m.l + (k/kMax)*pw + barW*0.03;
+    const yh = (y1[k]/yMax)*ph;
+    g.fillRect(px, m.t+ph-yh, barW*0.42, yh);
+  }
+
+  // FDR threshold line
+  if(isFinite(kStar) && kStar<=kMax){
+    const tx = m.l + (kStar/kMax)*pw - barW*0.02;
+    g.strokeStyle = "#19735d";
+    g.setLineDash([4,3]);
+    g.beginPath();
+    g.moveTo(tx, m.t); g.lineTo(tx, m.t+ph); g.stroke();
+    g.setLineDash([]);
+    g.fillStyle = "#19735d";
+    g.font = "10.5px ui-sans-serif,system-ui";
+    g.textAlign="left"; g.textBaseline="top";
+    g.fillText(`k≥${kStar} → FDR ≤ 5%`, tx+4, m.t+2);
+  }
+
+  // Observed k marker
+  const ox = m.l + (tdSim.observedK/kMax)*pw;
+  g.strokeStyle = "#a66b13";
+  g.beginPath();
+  g.moveTo(ox, m.t+ph); g.lineTo(ox, m.t+ph+10); g.stroke();
+  g.fillStyle = "#a66b13";
+  g.font = "10.5px ui-sans-serif,system-ui";
+  g.textAlign="center"; g.textBaseline="top";
+  g.fillText(`관측 k=${tdSim.observedK}`, ox, m.t+ph+22);
+
+  // Legend
+  g.font = "11px ui-sans-serif,system-ui";
+  g.textBaseline="middle"; g.textAlign="left";
+  let lx = m.l+pw-150, ly = m.t+8;
+  g.fillStyle = "rgba(37,92,153,0.55)";
+  g.fillRect(lx, ly-5, 14, 10);
+  g.fillStyle = "#1c2a3c";
+  g.fillText("null (γ=1)", lx+18, ly);
+  ly += 14;
+  g.fillStyle = "rgba(178,58,72,0.65)";
+  g.fillRect(lx, ly-5, 14, 10);
+  g.fillStyle = "#1c2a3c";
+  g.fillText(`risk (γ=${tdSim.gamma.toFixed(1)})`, lx+18, ly);
+}
+
+function tdInitSim(){
+  const ePi = document.getElementById("tdSimPi");
+  const eG = document.getElementById("tdSimGamma");
+  const eMu = document.getElementById("tdSimMu");
+  const eN = document.getElementById("tdSimN");
+  if(!ePi) return;
+  const update = () => {
+    tdSim.pi = tdReadPi(+ePi.value);
+    tdSim.gamma = tdReadGamma(+eG.value);
+    tdSim.mu = tdReadMu(+eMu.value);
+    tdSim.N = tdReadN(+eN.value);
+    document.getElementById("tdSimPiVal").textContent = tdSim.pi.toFixed(3);
+    document.getElementById("tdSimGammaVal").textContent = tdSim.gamma.toFixed(1);
+    document.getElementById("tdSimMuVal").textContent = tdFmtMu(tdSim.mu);
+    document.getElementById("tdSimNVal").textContent = tdSim.N.toLocaleString();
+    tdRender();
+  };
+  [ePi, eG, eMu, eN].forEach(el => el.addEventListener("input", update));
+  update();
+}
+ddPages.tada = {
+  ready: false,
+  init(){ tdInitSim(); },
+  render(){ if(typeof tdRender==="function") tdRender(); }
+};
+
+/* ===== GWAS deep-dive ===== */
+function gwasBuild(){
+  const root = document.getElementById("ddPageGwas");
+  if(!root) return;
+  root.innerHTML = `
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--blue)">1</span>한 SNP, 한 회귀 — GWAS의 기본 식</h3>
+      <p>GWAS는 모집단의 각 SNP에 대해 dosage(0/1/2 또는 imputed dosage)와 phenotype 사이의 단순 회귀를 한 번씩 돌립니다. 양적 형질이면 linear regression, 이분형이면 logistic regression입니다.</p>
+      <div class="eq-box">
+        <span class="eq-row">y &nbsp;=&nbsp; α + β·x + γ·<i>covariates</i> + ε</span>
+        <span class="ann">— x ∈ {0,1,2}는 minor allele dosage. <span style="color:var(--blue)">β</span>가 effect size, <i>covariates</i>는 ancestry PC, age, sex 등.</span>
+      </div>
+      <div class="eq-box">
+        <span class="eq-row">z &nbsp;=&nbsp;
+          <span class="eq-frac"><span>β̂</span><span>SE(β̂)</span></span>
+          &nbsp; · &nbsp; χ² = z²
+        </span>
+        <span class="ann">— 큰 표본에서 z는 표준정규를 따르고, χ² ~ χ²₁ + λ_GC·NCP. 두 손에 잡고 가는 통계량.</span>
+      </div>
+      <p>이 회귀를 ~6,000,000 imputed SNP에 대해 한 번씩 돌려서 SNP·trait 페어 6백만 개 점수를 얻습니다. <b>5×10⁻⁸ 임계값</b>은 ~1,000,000개의 독립적 LD block을 가정하고 Bonferroni로 0.05 / 1,000,000 ≈ 5×10⁻⁸을 잡은 것입니다.</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--blue)">2</span>네 parameter — power를 결정하는 다섯 손잡이</h3>
+      <p>한 SNP의 power는 단순한 비대칭 함수입니다. 손잡이 다섯 개를 직관적으로 알면 GWAS 설계의 80%를 이해한 것입니다.</p>
+      <div class="param-cards">
+        <div class="param-card mu" style="background:color-mix(in srgb,var(--blue) 7%,#fff)">
+          <div class="glyph" style="color:var(--blue)">N</div>
+          <div class="name">표본 크기</div>
+          <p>case + control 또는 양적 형질의 N. NCP ∝ N에 직접 비례. N을 4배로 키우면 같은 effect size에 대한 NCP가 4배.</p>
+          <div class="src">데이터 출처: 코호트 모집(UK Biobank 500K, BBJ 200K, CHARGE 100K+ 등).</div>
+        </div>
+        <div class="param-card q" style="background:color-mix(in srgb,var(--gold) 7%,#fff)">
+          <div class="glyph" style="color:var(--gold)">f</div>
+          <div class="name">MAF</div>
+          <p>minor allele frequency. NCP ∝ 2f(1−f) — MAF가 0.5에 가까울수록 효율적, MAF 0.01에서는 같은 신호에 NCP가 ~50× 작아짐. GWAS가 common-variant 영역에 강한 이유.</p>
+          <div class="src">데이터 출처: imputation reference panel(1000G, TOPMed, HRC). MAF 5e-2 이상 추천.</div>
+        </div>
+        <div class="param-card gamma" style="background:color-mix(in srgb,var(--red) 7%,#fff)">
+          <div class="glyph" style="color:var(--red)">β / OR</div>
+          <div class="name">effect size</div>
+          <p>NCP ∝ β². GWAS-detectable effect는 보통 OR 1.05–1.20. 호르몬·면역 등 일부 trait은 1.5+. 매우 작은 β는 N으로만 보상 가능.</p>
+          <div class="src">데이터 출처: prior GWAS, family heritability, MR, polygenic decomposition.</div>
+        </div>
+        <div class="param-card" style="background:color-mix(in srgb,var(--violet) 7%,#fff)">
+          <div class="glyph" style="color:var(--violet)">r²</div>
+          <div class="name">LD tagging</div>
+          <p>관측 SNP가 진짜 causal allele을 LD r²로 대신 잡음. NCP_obs = r² · NCP_causal. r²=0.5면 신호 절반 손실. fine-mapping은 이 r² 패턴을 거꾸로 풀어냅니다.</p>
+          <div class="src">데이터 출처: ancestry-matched LD reference. ancestry mismatch는 r²을 낮춤.</div>
+        </div>
+        <div class="param-card" style="background:color-mix(in srgb,var(--green) 7%,#fff)">
+          <div class="glyph" style="color:var(--green)">α</div>
+          <div class="name">significance threshold</div>
+          <p>~10⁶ independent test → α=5×10⁻⁸. exome WES burden은 ~20,000 gene → α=2.5×10⁻⁶. 모든 임계값은 multiple-testing burden을 직접 반영.</p>
+          <div class="src">근거: Pe'er 2008(eff. independent SNP count). family-wise error rate 0.05 가정.</div>
+        </div>
+      </div>
+    </article>
+
+    <article class="dd-block full">
+      <h3><span class="num" style="color:var(--blue)">3</span>직접 흔들어보기 — N, MAF, OR, r² 슬라이더</h3>
+      <p>한 SNP의 power를 N·MAF·OR·LD-r²의 함수로 그립니다. NCP = (β² · 2f(1−f) · N) · r²로 근사하고 (case-control 비율은 1:1, prevalence는 단순화), z-score = √NCP, p = 2·(1 − Φ(|z|))로 계산합니다. <b>녹색 점선</b>은 5×10⁻⁸ 임계값. 슬라이더를 흔들면 power가 어떻게 변하는지 보입니다.</p>
+      <div class="tada-sim-grid">
+        <div class="tada-sim-controls">
+          <label class="tada-slider">
+            <div class="row"><span class="name">N — 표본 크기</span><span class="val" id="gwSimNVal">100,000</span></div>
+            <input type="range" id="gwSimN" min="1000" max="1000000" step="1000" value="100000">
+            <div class="hint">case+control 합. UK Biobank ≈ 500,000.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">MAF</span><span class="val" id="gwSimMafVal">0.20</span></div>
+            <input type="range" id="gwSimMaf" min="1" max="500" value="200">
+            <div class="hint">0.001 ~ 0.5. common GWAS는 보통 MAF ≥ 0.01.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">OR (effect size)</span><span class="val" id="gwSimOrVal">1.10</span></div>
+            <input type="range" id="gwSimOr" min="100" max="300" value="110">
+            <div class="hint">1.0 ~ 3.0. ASD common variant ≈ 1.1, autoimmune ≈ 1.3.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">LD r² — tagging quality</span><span class="val" id="gwSimRVal">1.00</span></div>
+            <input type="range" id="gwSimR" min="10" max="100" value="100">
+            <div class="hint">관측 SNP가 진짜 causal과 얼마나 LD되어 있는가. 1.0이면 직접 관측.</div>
+          </label>
+        </div>
+        <div>
+          <div class="tada-canvas-wrap"><canvas id="gwasCanvas"></canvas></div>
+          <div class="tada-readout">
+            <div class="readout-cell"><div class="lbl">NCP</div><div class="num" id="gwR_ncp">—</div><div class="sub">noncentrality parameter</div></div>
+            <div class="readout-cell"><div class="lbl">|z|</div><div class="num" id="gwR_z">—</div><div class="sub">√NCP, 약식</div></div>
+            <div class="readout-cell"><div class="lbl">p-value</div><div class="num" id="gwR_p">—</div><div class="sub">two-sided</div></div>
+            <div class="readout-cell"><div class="lbl">Power @ 5×10⁻⁸</div><div class="num" id="gwR_pow">—</div><div class="sub">true-positive rate</div></div>
+            <div class="readout-cell"><div class="lbl">Same power까지 필요한 N</div><div class="num" id="gwR_n80">—</div><div class="sub">power 80% 도달</div></div>
+            <div class="readout-cell"><div class="lbl">한 자릿수 계산</div><div class="num" id="gwR_quick">—</div><div class="sub">"NCP 단위"로 분해</div></div>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:12px;font-size:12.5px"><b>관찰 포인트</b>: (1) MAF가 5%에서 0.5%로 가면 NCP가 ~10× 떨어져 같은 OR로는 1,000,000 sample도 부족함. (2) OR이 1.05 → 1.10이면 NCP가 ~4× → power 폭발. (3) r²=0.7이면 NCP의 30% 손실. (4) common-variant GWAS에서 MAF·OR·N 셋 중 둘은 정해지므로 power 향상은 보통 N 모집의 문제로 환원됩니다.</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--blue)">4</span>QC pipeline — 결과를 믿기 위해 거치는 길</h3>
+      <p>GWAS의 거짓 신호는 거의 항상 QC 부주의에서 옵니다. 표준 pipeline(Uffelmann 2021):</p>
+      <ol style="margin:6px 0 0 16px;font-size:13px;line-height:1.7">
+        <li><b>변이 QC</b> — call rate ≥ 0.95, HWE p > 1×10⁻⁶, MAF ≥ 0.01.</li>
+        <li><b>샘플 QC</b> — call rate ≥ 0.97, sex-mismatch 제거, heterozygosity outlier 제거, kinship으로 친족 1차 제거.</li>
+        <li><b>Imputation</b> — TOPMed/HRC reference로 1KGP보다 rare allele 정확도 향상. INFO score ≥ 0.8.</li>
+        <li><b>Population stratification</b> — PCA 후 ancestry-matched analysis 또는 mixed model(BOLT-LMM, REGENIE, SAIGE)로 보정.</li>
+        <li><b>분석</b> — 1차 회귀 + λ_GC 점검 + LDSC intercept(target ≈ 1.0).</li>
+        <li><b>해석</b> — fine-mapping(SuSiE, FINEMAP) → colocalization(eQTL/sQTL) → MPRA/CRISPR validation.</li>
+      </ol>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--blue)">5</span>핵심 함정과 데이터 출처</h3>
+      <div class="src-flow">
+        <div class="src-card">
+          <span class="h">Population stratification <span class="what">잘못 보정 시 false positive</span></span>
+          ancestry 차이가 case·control 비율과 상관되면 모든 ancestry-informative SNP가 신호처럼 보임. PC10 + LDSC intercept로 점검. 다른 ancestry는 따로 분석 후 meta-analysis.
+        </div>
+        <div class="src-card">
+          <span class="h">Winner's curse <span class="what">discovery에서 effect 과대추정</span></span>
+          discovery cohort에서 5×10⁻⁸를 통과한 SNP의 β̂는 평균적으로 진짜 β보다 큼. 별도 replication cohort에서 거의 항상 작아짐. 보고 시 두 코호트 효과 모두 표시.
+        </div>
+        <div class="src-card">
+          <span class="h">LD reference mismatch <span class="what">summary stat 후처리</span></span>
+          fine-mapping·colocalization은 ancestry-matched LD reference 필요. mixed-ancestry 코호트에 single-population LD를 쓰면 가짜 credible set 발생.
+        </div>
+        <div class="src-card">
+          <span class="h">데이터 출처 <span class="what">실제 입력</span></span>
+          (1) genotyping array + imputation panel; (2) phenotype + covariate(EHR, registry); (3) ancestry reference; (4) summary statistics 공유는 GWAS Catalog, GTEx, Open Targets로 일원화.
+        </div>
+      </div>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--blue)">6</span>GWAS의 진화</h3>
+      <p>같은 회귀 식이지만, 표본 크기와 계산 인프라가 GWAS의 답을 매년 다시 정렬해 왔습니다.</p>
+      <div class="evo-row">
+        <div class="evo-cell">
+          <div class="yr">2007</div>
+          <div class="evo-dot" style="border-color:var(--blue)"></div>
+          <div class="ttl">WTCCC 7-disease</div>
+          <div class="desc">14,000 cases, 17,000 controls. 첫 multi-trait GWAS scan, common-variant 발견 가능성 입증.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2017</div>
+          <div class="evo-dot" style="border-color:var(--gold)"></div>
+          <div class="ttl">Visscher 10년</div>
+          <div class="desc">3,300 trait, 1만+ locus. polygenic·omnigenic architecture 합의 형성.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2019–22</div>
+          <div class="evo-dot" style="border-color:var(--green)"></div>
+          <div class="ttl">UK Biobank · biobank era</div>
+          <div class="desc">REGENIE/SAIGE/fastGWA-GLMM이 mixed-model을 500K+로 확장. 한 번의 scan이 4,000 phenotype.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2024+</div>
+          <div class="evo-dot" style="border-color:var(--violet)"></div>
+          <div class="ttl">multi-ancestry meta · trans-ancestry fine-map</div>
+          <div class="desc">All of Us·BBJ·CHARGE 통합. PRS portability·fine-mapping 정확도가 ancestry mix로 끌어올려짐.</div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+const gwSim = {N:100000, maf:0.2, OR:1.10, r2:1.0};
+function gwInvNorm(p){
+  // Inverse standard normal (rational approximation, Beasley-Springer-Moro)
+  if(p<=0) return -Infinity; if(p>=1) return Infinity;
+  const a=[ -3.969683028665376e+01,  2.209460984245205e+02, -2.759285104469687e+02,  1.383577518672690e+02, -3.066479806614716e+01,  2.506628277459239e+00];
+  const b=[ -5.447609879822406e+01,  1.615858368580409e+02, -1.556989798598866e+02,  6.680131188771972e+01, -1.328068155288572e+01];
+  const c=[ -7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00, -2.549732539343734e+00,  4.374664141464968e+00,  2.938163982698783e+00];
+  const d=[  7.784695709041462e-03,  3.224671290700398e-01,  2.445134137142996e+00,  3.754408661907416e+00];
+  const plow=0.02425, phigh=1-plow;
+  let q,r;
+  if(p<plow){ q=Math.sqrt(-2*Math.log(p)); return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+  if(p<=phigh){ q=p-0.5; r=q*q; return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1); }
+  q=Math.sqrt(-2*Math.log(1-p));
+  return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+}
+function gwNormCdf(z){
+  // Abramowitz & Stegun 7.1.26
+  const t = 1/(1 + 0.2316419*Math.abs(z));
+  const d = 0.3989422804014327 * Math.exp(-z*z/2);
+  const p = d*t*(0.319381530 + t*(-0.356563782 + t*(1.781477937 + t*(-1.821255978 + t*1.330274429))));
+  return z>=0 ? 1-p : p;
+}
+function gwTwoSidedP(z){ const az=Math.abs(z); return 2*(1 - gwNormCdf(az)); }
+function gwPowerAt(z, alpha){
+  // Two-sided test. Power = P(|Z*| > z_crit) where Z* ~ N(z, 1)
+  const zc = gwInvNorm(1 - alpha/2);
+  return (1 - gwNormCdf(zc - z)) + gwNormCdf(-zc - z);
+}
+function gwasInit(){
+  const eN  = document.getElementById("gwSimN");
+  const eM  = document.getElementById("gwSimMaf");
+  const eO  = document.getElementById("gwSimOr");
+  const eR  = document.getElementById("gwSimR");
+  if(!eN) return;
+  const update = () => {
+    gwSim.N = +eN.value;
+    gwSim.maf = (+eM.value)/1000;        // 1..500 -> 0.001..0.500
+    gwSim.OR  = (+eO.value)/100;         // 100..300 -> 1.00..3.00
+    gwSim.r2  = (+eR.value)/100;         // 10..100 -> 0.10..1.00
+    document.getElementById("gwSimNVal").textContent = gwSim.N.toLocaleString();
+    document.getElementById("gwSimMafVal").textContent = gwSim.maf.toFixed(3);
+    document.getElementById("gwSimOrVal").textContent = gwSim.OR.toFixed(2);
+    document.getElementById("gwSimRVal").textContent = gwSim.r2.toFixed(2);
+    gwasRender();
+  };
+  [eN,eM,eO,eR].forEach(el => el.addEventListener("input", update));
+  update();
+}
+function gwasRender(){
+  const s = gwSim;
+  // log(OR) ~ β, NCP ≈ β² · 2f(1−f) · N · r² (case:ctrl 1:1, balanced)
+  const beta = Math.log(s.OR);
+  const ncp = beta*beta * 2*s.maf*(1-s.maf) * s.N * s.r2;
+  const z = Math.sqrt(Math.max(0, ncp));
+  const p = gwTwoSidedP(z);
+  const pow = gwPowerAt(z, 5e-8);
+  // n80: smallest N s.t. power(at given β/maf/r²) ≥ 0.80
+  let n80 = "—";
+  if(beta!==0){
+    // Solve power = 0.80 for N: need z = z_crit + z_pow where Φ(z_pow)=0.80 and z_crit=z(α/2)
+    // Approximation ignoring the negative tail since signals are positive.
+    const zc = gwInvNorm(1 - 5e-8/2);
+    const zp = gwInvNorm(0.80);
+    const zNeed = zc + zp;
+    const Nneed = (zNeed*zNeed) / (beta*beta * 2*s.maf*(1-s.maf) * Math.max(s.r2, 0.001));
+    n80 = Math.ceil(Nneed/1000)*1000;
+    n80 = Number.isFinite(n80) ? n80.toLocaleString() : "—";
+  }
+  document.getElementById("gwR_ncp").textContent = ncp<0.01 ? ncp.toExponential(1) : ncp.toFixed(2);
+  document.getElementById("gwR_z").textContent = z.toFixed(2);
+  document.getElementById("gwR_p").textContent = p<1e-12 ? p.toExponential(1) : p.toExponential(2);
+  document.getElementById("gwR_pow").textContent = (pow*100).toFixed(0) + "%";
+  document.getElementById("gwR_n80").textContent = n80;
+  document.getElementById("gwR_quick").textContent =
+    `NCP = ${beta.toFixed(3)}² × ${(2*s.maf*(1-s.maf)).toFixed(3)} × ${s.N.toLocaleString()} × ${s.r2.toFixed(2)}`;
+
+  // Draw power curve as N varies
+  const c = document.getElementById("gwasCanvas");
+  if(!c) return;
+  const dpr = window.devicePixelRatio||1;
+  const w = c.clientWidth, h = c.clientHeight;
+  c.width=w*dpr; c.height=h*dpr;
+  const g = c.getContext("2d"); g.scale(dpr,dpr);
+  g.clearRect(0,0,w,h);
+  const m = {l:48, r:14, t:14, b:34};
+  const pw=w-m.l-m.r, ph=h-m.t-m.b;
+  // axes
+  g.strokeStyle = "#d9dee7"; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(m.l,m.t); g.lineTo(m.l,m.t+ph); g.lineTo(m.l+pw,m.t+ph); g.stroke();
+  // y ticks (power 0..1)
+  g.fillStyle="#667085"; g.font="10px ui-sans-serif,system-ui";
+  g.textAlign="right"; g.textBaseline="middle";
+  for(let i=0;i<=5;i++){
+    const yv=i/5; const py=m.t+ph-yv*ph;
+    g.beginPath(); g.moveTo(m.l-3,py); g.lineTo(m.l,py); g.stroke();
+    g.fillText(yv.toFixed(1), m.l-5, py);
+  }
+  g.save(); g.translate(13, m.t+ph/2); g.rotate(-Math.PI/2);
+  g.textAlign="center"; g.fillText("Power @ 5×10⁻⁸", 0, 0); g.restore();
+  // x ticks (log N: 1k..1M)
+  const Nmin=1000, Nmax=1000000;
+  const lgMin=Math.log10(Nmin), lgMax=Math.log10(Nmax);
+  g.textAlign="center"; g.textBaseline="top";
+  [1000,10000,100000,1000000].forEach(N => {
+    const px = m.l + (Math.log10(N)-lgMin)/(lgMax-lgMin)*pw;
+    g.beginPath(); g.moveTo(px, m.t+ph); g.lineTo(px, m.t+ph+3); g.stroke();
+    const lbl = N>=1000000 ? "1M" : N>=1000 ? (N/1000)+"k" : ""+N;
+    g.fillText(lbl, px, m.t+ph+5);
+  });
+  g.fillText("표본 크기 N (log scale)", m.l+pw/2, m.t+ph+18);
+  // power curve
+  g.strokeStyle = "#255c99"; g.lineWidth = 2; g.beginPath();
+  for(let i=0;i<=200;i++){
+    const lg = lgMin + (i/200)*(lgMax-lgMin);
+    const Ni = Math.pow(10, lg);
+    const ncpI = beta*beta * 2*s.maf*(1-s.maf) * Ni * s.r2;
+    const zI = Math.sqrt(Math.max(0, ncpI));
+    const pI = gwPowerAt(zI, 5e-8);
+    const px = m.l + (lg-lgMin)/(lgMax-lgMin)*pw;
+    const py = m.t + ph - pI*ph;
+    if(i===0) g.moveTo(px,py); else g.lineTo(px,py);
+  }
+  g.stroke();
+  // current N marker
+  const lgN = Math.log10(s.N);
+  if(lgN>=lgMin && lgN<=lgMax){
+    const px = m.l + (lgN-lgMin)/(lgMax-lgMin)*pw;
+    const py = m.t + ph - pow*ph;
+    g.fillStyle = "#b23a48";
+    g.beginPath(); g.arc(px,py,4,0,2*Math.PI); g.fill();
+    g.strokeStyle = "#b23a48"; g.setLineDash([3,3]);
+    g.beginPath(); g.moveTo(px,m.t+ph); g.lineTo(px,py); g.stroke();
+    g.setLineDash([]);
+    g.font="10.5px ui-sans-serif,system-ui";
+    g.fillStyle="#b23a48"; g.textAlign="left"; g.textBaseline="middle";
+    g.fillText(`현재 N: power ${(pow*100).toFixed(0)}%`, Math.min(px+8, m.l+pw-130), Math.max(py, m.t+12));
+  }
+  // 80% guideline
+  g.strokeStyle = "#19735d"; g.setLineDash([4,3]);
+  g.beginPath();
+  const py80 = m.t+ph-0.80*ph;
+  g.moveTo(m.l, py80); g.lineTo(m.l+pw, py80); g.stroke();
+  g.setLineDash([]);
+  g.fillStyle = "#19735d"; g.font="10.5px ui-sans-serif,system-ui"; g.textAlign="right"; g.textBaseline="bottom";
+  g.fillText("80% guideline", m.l+pw-4, py80-2);
+}
+ddPages.gwas = { ready:false, init(){ gwasBuild(); gwasInit(); }, render(){ gwasRender(); } };
+
+/* ===== Burden test deep-dive ===== */
+function burdenBuild(){
+  const root = document.getElementById("ddPageBurden");
+  if(!root) return;
+  root.innerHTML = `
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--gold)">1</span>한 carrier count, 한 검정</h3>
+      <p>burden test는 한 유전자 안의 rare variant N개를 carrier count C 하나로 접어서 case-control 비교를 합니다. 가장 단순한 형태(CMC, Li & Leal 2008):</p>
+      <div class="eq-box">
+        C<sub>i</sub> = 1[ at least one rare variant in gene <i>i</i> for sample ] · &nbsp; logistic( y ~ C + covariates )
+        <span class="ann">— logit(P[case]) = α + β·C + γ·covariates. β > 0 면 carrier가 case에 enrich됨.</span>
+      </div>
+      <p>weighted burden(WSS, Madsen-Browning 2009)은 더 rare한 variant에 더 큰 가중치를 줍니다. 기본 가정은 <b>"이 mask 안의 변이들이 모두 같은 방향으로 phenotype을 민다"</b> 입니다. 이 가정이 맞으면 SKAT보다 강하고, 깨지면 SKAT보다 약합니다.</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--gold)">2</span>Mask — burden test의 진짜 hyperparameter</h3>
+      <p>burden test 결과의 분산은 검정 통계량보다 <b>어떤 변이를 mask에 포함시켰는가</b>에서 더 많이 나옵니다. mask는 보통 두 차원의 곱:</p>
+      <div class="src-flow">
+        <div class="src-card">
+          <span class="h">변이 클래스 <span class="what">기능적 결과</span></span>
+          pLoF(stop_gained, splice, frameshift), missense(MPC ≥ 2 / REVEL ≥ 0.5 / PolyPhen-2 D), synonymous(보통 negative control), 5'/3' UTR, 또는 ClinVar-pathogenic.
+        </div>
+        <div class="src-card">
+          <span class="h">MAF threshold <span class="what">집단 빈도 컷오프</span></span>
+          rare = MAF &lt; 0.1% / 0.01%, low-frequency = MAF &lt; 1% / 5%. 더 rare할수록 effect 크기는 큼(negative selection), 통계적 signal은 적음.
+        </div>
+        <div class="src-card">
+          <span class="h">Transcript 선택 <span class="what">canonical vs experimentally supported</span></span>
+          canonical-only는 isoform-specific 신호를 놓쳐 power 손실. Nguyen 2026은 experimentally-supported 모델이 power와 specificity의 균형이 가장 좋다고 권장.
+        </div>
+        <div class="src-card">
+          <span class="h">Aggregation 단위 <span class="what">gene · domain · pathway</span></span>
+          gene 단위가 표준. conserved-domain 단위 aggregation은 큰 유전자에서 power가 높을 수 있으나 해석이 어려움.
+        </div>
+      </div>
+      <p style="margin-top:8px"><b>Nguyen 2026 audit</b>: 234편의 논문에서 사용된 664개 mask를 harmonize 시도, 78.2%의 mask는 단일 논문에서만 사용. 같은 UK Biobank 데이터·같은 코드를 써도 mask만 다르면 high-profile WES 분석 셋의 significant association이 35.6%만 일치. <b>mask는 결과의 1차 변동원입니다.</b></p>
+    </article>
+
+    <article class="dd-block full">
+      <h3><span class="num" style="color:var(--gold)">3</span>직접 흔들어보기 — mask가 power와 false positive에 미치는 영향</h3>
+      <p>이 시뮬레이터는 한 유전자에 들어 있는 K개의 rare variant 중 일부가 진짜 risk variant라고 가정하고, mask가 변이 부분집합만 포함시킬 때 burden test의 power가 어떻게 변하는지 보여줍니다. Nguyen 2026의 핵심 결과 — <b>mask가 너무 좁으면 진짜 변이를 놓치고, 너무 넓으면 noise variant가 신호를 희석한다</b> — 를 손에 잡히게 만든 버전입니다.</p>
+      <div class="tada-sim-grid">
+        <div class="tada-sim-controls">
+          <label class="tada-slider">
+            <div class="row"><span class="name">K — 유전자 안 rare variant 수</span><span class="val" id="bdSimKVal">30</span></div>
+            <input type="range" id="bdSimK" min="3" max="200" value="30">
+            <div class="hint">한 유전자가 다루는 후보 rare variant. CHD8 같은 큰 유전자 100+, 작은 유전자 5-15.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">causal 비율</span><span class="val" id="bdSimCausalVal">0.20</span></div>
+            <input type="range" id="bdSimCausal" min="0" max="100" value="20">
+            <div class="hint">K개 중 진짜 risk variant 비율. 보통 5-30%.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">causal mean OR</span><span class="val" id="bdSimOrVal">5.0</span></div>
+            <input type="range" id="bdSimOr" min="100" max="2000" value="500">
+            <div class="hint">causal variant의 평균 OR. ASD LoF ≈ 20, T2D rare missense ≈ 2-5.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">mask coverage — % of K included</span><span class="val" id="bdSimMaskVal">50%</span></div>
+            <input type="range" id="bdSimMask" min="5" max="100" value="50">
+            <div class="hint">mask가 K 중 몇 %를 포함하는가. 좁은 mask = 낮은 coverage but 더 enriched.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">mask precision — causal capture %</span><span class="val" id="bdSimPrecVal">80%</span></div>
+            <input type="range" id="bdSimPrec" min="0" max="100" value="80">
+            <div class="hint">mask가 causal variant를 잘 잡는가. ClinVar ≈ 95%, broad pLoF ≈ 70%, missense predictor ≈ 50%.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">N — 표본 크기</span><span class="val" id="bdSimNVal">100,000</span></div>
+            <input type="range" id="bdSimN" min="5000" max="500000" step="5000" value="100000">
+            <div class="hint">case+control. UK Biobank exome ≈ 440,000.</div>
+          </label>
+        </div>
+        <div>
+          <div class="tada-canvas-wrap"><canvas id="burdenCanvas"></canvas></div>
+          <div class="tada-readout">
+            <div class="readout-cell"><div class="lbl">included causal</div><div class="num" id="bdR_inc">—</div><div class="sub">진짜 잡힌 수</div></div>
+            <div class="readout-cell"><div class="lbl">included noise</div><div class="num" id="bdR_noise">—</div><div class="sub">신호 희석 요소</div></div>
+            <div class="readout-cell"><div class="lbl">effective β</div><div class="num" id="bdR_eff">—</div><div class="sub">희석 후 carrier-level</div></div>
+            <div class="readout-cell"><div class="lbl">NCP</div><div class="num" id="bdR_ncp">—</div><div class="sub">noncentrality</div></div>
+            <div class="readout-cell"><div class="lbl">Power @ 2.5×10⁻⁶</div><div class="num" id="bdR_pow">—</div><div class="sub">exome-wide threshold</div></div>
+            <div class="readout-cell"><div class="lbl">최적 mask coverage</div><div class="num" id="bdR_opt">—</div><div class="sub">power 최대화 추정</div></div>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:12px;font-size:12.5px"><b>관찰 포인트</b>: (1) precision이 50%면 noise가 신호를 희석해 effective β가 절반. (2) mask coverage가 100%여도 precision이 낮으면 power 손실. (3) 좁은 mask + 높은 precision(ClinVar)이 가장 안정적. (4) 변이가 충분히 많고 effect가 mixed direction이면 burden보다 SKAT가 유리 — TADA의 "8-mask baseline"(Nguyen 2026)이 단일 mask보다 두 배 power인 이유.</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--gold)">4</span>실제로 어떤 mask를 쓰는가 — Nguyen 2026 baseline</h3>
+      <p>Nguyen 2026의 8-mask baseline은 234편 audit 후 ~440K UK Biobank에서 가장 안정적이었습니다. 두 가지 권장 셋트:</p>
+      <div class="src-flow">
+        <div class="src-card">
+          <span class="h">Low-frequency baseline <span class="what">MAF &lt; 1%</span></span>
+          (1) broad exonic, (2) ClinVar/high-impact, (3) pLoF, (4) splice, (5) indel, (6) PolyPhen2 D, (7) damaging-missense, (8) damaging-missense-fraction. 718개 significant association 누적.
+        </div>
+        <div class="src-card">
+          <span class="h">Rare baseline <span class="what">MAF &lt; 0.1% 또는 0.01%</span></span>
+          REVEL, CADD, ClinVar, PolyPhen2, pLoF, indel, multi-algorithm damaging missense. 422개 significant association 누적. 더 conservative.
+        </div>
+        <div class="src-card">
+          <span class="h">왜 8개인가 <span class="what">compute vs power tradeoff</span></span>
+          22-mask·35-mask로 더 늘리면 power 5% 향상에 그치지만 compute는 3-4× 증가. 8개로 95% yield. multiple-testing은 mask 수로 나누어 보정(P &lt; 2.5×10⁻⁶ / m).
+        </div>
+        <div class="src-card">
+          <span class="h">SAIGE-GENE+ vs REGENIE <span class="what">툴 선택</span></span>
+          quantitative trait·balanced binary는 두 툴 거의 동등. 매우 imbalanced binary trait(case &lt; 1%)은 SAIGE-GENE+의 saddlepoint approximation이 더 안정.
+        </div>
+      </div>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--gold)">5</span>Burden test의 진화</h3>
+      <div class="evo-row">
+        <div class="evo-cell">
+          <div class="yr">2008</div>
+          <div class="evo-dot" style="border-color:var(--blue)"></div>
+          <div class="ttl">CMC · Li & Leal</div>
+          <div class="desc">collapsing rare variants의 첫 공식화. 같은 방향 가정.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2009</div>
+          <div class="evo-dot" style="border-color:var(--gold)"></div>
+          <div class="ttl">WSS · Madsen-Browning</div>
+          <div class="desc">rarer variant에 더 큰 가중치. weighted carrier count.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2014</div>
+          <div class="evo-dot" style="border-color:var(--green)"></div>
+          <div class="ttl">Lee 2014 review</div>
+          <div class="desc">burden vs SKAT vs SKAT-O 정리. SKAT-O를 default 권장.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2026</div>
+          <div class="evo-dot" style="border-color:var(--violet)"></div>
+          <div class="ttl">Nguyen · 8-mask baseline</div>
+          <div class="desc">234편 audit, mask가 결과의 1차 변동원임을 정량화. 재현성 baseline 제안.</div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+const bdSim = {K:30, causal:0.20, OR:5.0, maskCov:0.50, maskPrec:0.80, N:100000};
+function burdenInit(){
+  const eK=document.getElementById("bdSimK");
+  const eC=document.getElementById("bdSimCausal");
+  const eO=document.getElementById("bdSimOr");
+  const eM=document.getElementById("bdSimMask");
+  const eP=document.getElementById("bdSimPrec");
+  const eN=document.getElementById("bdSimN");
+  if(!eK) return;
+  const update = () => {
+    bdSim.K = +eK.value;
+    bdSim.causal = (+eC.value)/100;
+    bdSim.OR = (+eO.value)/100;
+    bdSim.maskCov = (+eM.value)/100;
+    bdSim.maskPrec = (+eP.value)/100;
+    bdSim.N = +eN.value;
+    document.getElementById("bdSimKVal").textContent = bdSim.K;
+    document.getElementById("bdSimCausalVal").textContent = bdSim.causal.toFixed(2);
+    document.getElementById("bdSimOrVal").textContent = bdSim.OR.toFixed(1);
+    document.getElementById("bdSimMaskVal").textContent = (bdSim.maskCov*100).toFixed(0)+"%";
+    document.getElementById("bdSimPrecVal").textContent = (bdSim.maskPrec*100).toFixed(0)+"%";
+    document.getElementById("bdSimNVal").textContent = bdSim.N.toLocaleString();
+    burdenRender();
+  };
+  [eK,eC,eO,eM,eP,eN].forEach(el => el.addEventListener("input", update));
+  update();
+}
+function burdenRender(){
+  const s = bdSim;
+  const nCausal = s.K * s.causal;
+  const nNoise = s.K * (1-s.causal);
+  // Mask captures maskPrec fraction of causal and (maskCov - maskPrec*causal) approx of noise
+  // Simpler model: mask includes maskPrec * nCausal causal variants and maskCov*K - maskPrec*nCausal noise (clamped >=0)
+  const incCausal = s.maskPrec * nCausal;
+  const incTotal = s.maskCov * s.K;
+  const incNoise = Math.max(0, incTotal - incCausal);
+  // Effective β per carrier event ≈ log(OR) * (incCausal / (incCausal + incNoise))
+  const effBetaPerCausal = Math.log(s.OR);
+  const dilution = incCausal / Math.max(0.0001, incCausal + incNoise);
+  const effBeta = effBetaPerCausal * dilution;
+  // Carrier rate: assume per-variant MAF ≈ 5e-4 typical rare, so per-gene carrier ≈ incTotal * 1e-3
+  const perVariantMAF = 5e-4;
+  const carrierRate = 1 - Math.pow(1 - 2*perVariantMAF, Math.max(0.001, incTotal));
+  // NCP for collapsed carrier: NCP ≈ effBeta² · 2·p(1−p) · N where p = carrierRate
+  const ncp = effBeta*effBeta * 2*carrierRate*(1-carrierRate) * s.N;
+  const z = Math.sqrt(Math.max(0, ncp));
+  const pow = gwPowerAt(z, 2.5e-6);
+  // optimal mask coverage: search grid
+  let bestCov=s.maskCov, bestPow=pow;
+  for(let cv=0.05; cv<=1.001; cv+=0.025){
+    const incC = s.maskPrec * nCausal;
+    const incT = cv * s.K;
+    const incN = Math.max(0, incT - incC);
+    const dil = incC / Math.max(0.0001, incC + incN);
+    const eb = effBetaPerCausal * dil;
+    const cr = 1 - Math.pow(1 - 2*perVariantMAF, Math.max(0.001, incT));
+    const nc = eb*eb * 2*cr*(1-cr) * s.N;
+    const pw = gwPowerAt(Math.sqrt(Math.max(0,nc)), 2.5e-6);
+    if(pw>bestPow){ bestPow=pw; bestCov=cv; }
+  }
+  document.getElementById("bdR_inc").textContent = incCausal.toFixed(1);
+  document.getElementById("bdR_noise").textContent = incNoise.toFixed(1);
+  document.getElementById("bdR_eff").textContent = effBeta.toFixed(3);
+  document.getElementById("bdR_ncp").textContent = ncp<0.01 ? ncp.toExponential(1) : ncp.toFixed(2);
+  document.getElementById("bdR_pow").textContent = (pow*100).toFixed(0)+"%";
+  document.getElementById("bdR_opt").textContent = (bestCov*100).toFixed(0)+"% (power "+(bestPow*100).toFixed(0)+"%)";
+
+  // Draw: power vs mask coverage curve
+  const c = document.getElementById("burdenCanvas");
+  if(!c) return;
+  const dpr = window.devicePixelRatio||1;
+  const w=c.clientWidth, h=c.clientHeight;
+  c.width=w*dpr; c.height=h*dpr;
+  const g=c.getContext("2d"); g.scale(dpr,dpr);
+  g.clearRect(0,0,w,h);
+  const m={l:48,r:14,t:14,b:34};
+  const pw_=w-m.l-m.r, ph=h-m.t-m.b;
+  g.strokeStyle="#d9dee7"; g.lineWidth=1;
+  g.beginPath(); g.moveTo(m.l,m.t); g.lineTo(m.l,m.t+ph); g.lineTo(m.l+pw_,m.t+ph); g.stroke();
+  g.fillStyle="#667085"; g.font="10px ui-sans-serif,system-ui";
+  g.textAlign="right"; g.textBaseline="middle";
+  for(let i=0;i<=5;i++){
+    const yv=i/5; const py=m.t+ph-yv*ph;
+    g.beginPath(); g.moveTo(m.l-3,py); g.lineTo(m.l,py); g.stroke();
+    g.fillText(yv.toFixed(1), m.l-5, py);
+  }
+  g.save(); g.translate(13,m.t+ph/2); g.rotate(-Math.PI/2);
+  g.textAlign="center"; g.fillText("Power @ 2.5×10⁻⁶", 0, 0); g.restore();
+  g.textAlign="center"; g.textBaseline="top";
+  for(let cv=0;cv<=1.0001;cv+=0.2){
+    const px = m.l + cv*pw_;
+    g.beginPath(); g.moveTo(px, m.t+ph); g.lineTo(px, m.t+ph+3); g.stroke();
+    g.fillText((cv*100).toFixed(0)+"%", px, m.t+ph+5);
+  }
+  g.fillText("mask coverage (% of K included)", m.l+pw_/2, m.t+ph+18);
+  // curve
+  g.strokeStyle="#a66b13"; g.lineWidth=2; g.beginPath();
+  for(let i=0;i<=200;i++){
+    const cv = i/200;
+    const incC = s.maskPrec * nCausal;
+    const incT = cv * s.K;
+    const incN = Math.max(0, incT - incC);
+    const dil = incC / Math.max(0.0001, incC + incN);
+    const eb = effBetaPerCausal * dil;
+    const cr = 1 - Math.pow(1 - 2*perVariantMAF, Math.max(0.001, incT));
+    const nc = eb*eb * 2*cr*(1-cr) * s.N;
+    const pw = gwPowerAt(Math.sqrt(Math.max(0,nc)), 2.5e-6);
+    const px = m.l + cv*pw_;
+    const py = m.t+ph - pw*ph;
+    if(i===0) g.moveTo(px,py); else g.lineTo(px,py);
+  }
+  g.stroke();
+  // current mask marker
+  const px = m.l + s.maskCov*pw_;
+  const py = m.t+ph - pow*ph;
+  g.fillStyle="#b23a48";
+  g.beginPath(); g.arc(px,py,4,0,2*Math.PI); g.fill();
+  g.strokeStyle="#b23a48"; g.setLineDash([3,3]);
+  g.beginPath(); g.moveTo(px,m.t+ph); g.lineTo(px,py); g.stroke();
+  g.setLineDash([]);
+  g.font="10.5px ui-sans-serif,system-ui";
+  g.fillStyle="#b23a48"; g.textAlign="left"; g.textBaseline="middle";
+  g.fillText(`현재 mask: power ${(pow*100).toFixed(0)}%`, Math.min(px+8, m.l+pw_-130), Math.max(py, m.t+12));
+  // optimal marker
+  const opx = m.l + bestCov*pw_;
+  const opy = m.t+ph - bestPow*ph;
+  g.fillStyle="#19735d";
+  g.beginPath(); g.arc(opx,opy,3.5,0,2*Math.PI); g.fill();
+  g.font="10.5px ui-sans-serif,system-ui";
+  g.fillStyle="#19735d"; g.textAlign="center"; g.textBaseline="bottom";
+  g.fillText("최적", opx, opy-6);
+}
+ddPages.burden = { ready:false, init(){ burdenBuild(); burdenInit(); }, render(){ burdenRender(); } };
+
+/* ===== SKAT / SKAT-O deep-dive ===== */
+function skatBuild(){
+  const root = document.getElementById("ddPageSkat");
+  if(!root) return;
+  root.innerHTML = `
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--cyan)">1</span>Variance component score — burden 가정을 깨는 한 줄</h3>
+      <p>burden test가 모든 변이가 같은 방향이라고 가정했다면, SKAT는 <b>"이 region 안에 zero가 아닌 effect 분포가 있는가"</b>만 묻습니다(Wu 2011). 한 region에 p개 변이가 있고 각각 effect β_j가 있다고 하면:</p>
+      <div class="eq-box">
+        H<sub>0</sub>: τ = 0 &nbsp;·&nbsp; β<sub>j</sub> ~ <i>distribution</i>(mean 0, variance w<sub>j</sub>τ)
+        <span class="ann">— 모든 β를 0으로 만드는 가정. τ=0이면 신호 없음.</span>
+      </div>
+      <div class="eq-box">
+        Q &nbsp;=&nbsp; (y − ŷ<sub>0</sub>)<sup>T</sup> · <b>K</b> · (y − ŷ<sub>0</sub>) &nbsp;,&nbsp; <b>K</b> = G W G<sup>T</sup>
+        <span class="ann">— G는 n×p genotype matrix, W = diag(w<sub>j</sub>²)는 variant weight. y − ŷ<sub>0</sub>는 null residual. 분포는 χ² 혼합.</span>
+      </div>
+      <p>가중치 w_j는 보통 <b>BETA(MAF; 1, 25)</b> — MAF가 작을수록 큰 가중치. p-value는 분석적으로 계산(Davies 또는 Liu 근사) — permutation 불필요해서 genome-wide scan 가능.</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--cyan)">2</span>SKAT-O — burden과 SKAT 사이의 ρ를 데이터에서 정함</h3>
+      <p>burden과 SKAT의 관계는 한 parameter ρ로 자연스럽게 묶입니다(Lee 2012):</p>
+      <div class="eq-box">
+        Q<sub>ρ</sub> &nbsp;=&nbsp; (1−ρ) · Q<sub>SKAT</sub> + ρ · Q<sub>burden</sub>
+        <span class="ann">— ρ=0이면 SKAT, ρ=1이면 burden. ρ는 변이 effect 사이의 correlation.</span>
+      </div>
+      <p>SKAT-O는 grid {0, 0.1, …, 1}에서 minimum p-value를 찾고 그 분포에서 보정된 p-value를 계산합니다. 결과는: 모든 변이가 같은 방향이면 burden과 동등, 일부가 protective면 SKAT와 동등, 그 사이는 둘보다 약간 더 강함.</p>
+      <ul style="margin:6px 0 0 16px;font-size:13px;line-height:1.7">
+        <li><b>burden 우세 시나리오</b>: causal 비율 ≥ 50%, 모두 같은 방향(LoF in highly constrained gene).</li>
+        <li><b>SKAT 우세 시나리오</b>: causal 비율 &lt; 30%, 또는 protective + risk 혼재.</li>
+        <li><b>SKAT-O</b>: 두 끝 모두에서 95% 이상 power, 중간에서는 burden·SKAT 단독 max보다 약간 위.</li>
+      </ul>
+    </article>
+
+    <article class="dd-block full">
+      <h3><span class="num" style="color:var(--cyan)">3</span>직접 흔들어보기 — burden vs SKAT vs SKAT-O 직접 비교</h3>
+      <p>한 region 안의 변이 effect 분포 시나리오(causal 비율, 같은 방향 비율)를 슬라이더로 만들고, 세 검정의 power를 같은 N에서 비교합니다. burden·SKAT·SKAT-O를 단순화한 NCP 모델로 계산합니다 — 분석적으로 SKAT의 NCP는 effect의 sum-of-squares에 비례, burden의 NCP는 effect의 sum의 제곱에 비례하는 관계를 사용.</p>
+      <div class="tada-sim-grid">
+        <div class="tada-sim-controls">
+          <label class="tada-slider">
+            <div class="row"><span class="name">p — region 변이 수</span><span class="val" id="skSimPVal">30</span></div>
+            <input type="range" id="skSimP" min="3" max="200" value="30">
+            <div class="hint">aggregation region 안의 rare variant 수.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">causal 비율</span><span class="val" id="skSimCausalVal">0.30</span></div>
+            <input type="range" id="skSimCausal" min="0" max="100" value="30">
+            <div class="hint">p 중 진짜 effect를 가진 변이 비율.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">같은 방향 비율</span><span class="val" id="skSimDirVal">0.80</span></div>
+            <input type="range" id="skSimDir" min="0" max="100" value="80">
+            <div class="hint">causal 중 risk 방향(나머지는 protective). 1.0이면 burden 가정 만족.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">|β| — causal effect 크기</span><span class="val" id="skSimBetaVal">0.30</span></div>
+            <input type="range" id="skSimBeta" min="5" max="200" value="30">
+            <div class="hint">log-OR scale. 0.30 ≈ OR 1.35.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">N — 표본 크기</span><span class="val" id="skSimNVal">100,000</span></div>
+            <input type="range" id="skSimN" min="5000" max="500000" step="5000" value="100000">
+            <div class="hint">case+control.</div>
+          </label>
+        </div>
+        <div>
+          <div class="tada-canvas-wrap"><canvas id="skatCanvas"></canvas></div>
+          <div class="tada-readout">
+            <div class="readout-cell"><div class="lbl">burden NCP</div><div class="num" id="skR_bNcp">—</div><div class="sub">(Σβ)²·n_eff·N</div></div>
+            <div class="readout-cell"><div class="lbl">SKAT NCP</div><div class="num" id="skR_sNcp">—</div><div class="sub">Σβ²·n_eff·N</div></div>
+            <div class="readout-cell"><div class="lbl">burden power</div><div class="num" id="skR_bPow">—</div><div class="sub">at 2.5×10⁻⁶</div></div>
+            <div class="readout-cell"><div class="lbl">SKAT power</div><div class="num" id="skR_sPow">—</div><div class="sub">at 2.5×10⁻⁶</div></div>
+            <div class="readout-cell"><div class="lbl">SKAT-O power</div><div class="num" id="skR_oPow">—</div><div class="sub">grid min over ρ</div></div>
+            <div class="readout-cell"><div class="lbl">winner</div><div class="num" id="skR_win">—</div><div class="sub">최강 검정</div></div>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:12px;font-size:12.5px"><b>관찰 포인트</b>: (1) "같은 방향 비율"이 1.0에 가까우면 burden ≥ SKAT. (2) 0.5 부근(반·반)에서 burden NCP가 0에 가까워지고 SKAT만 신호를 잡음. (3) SKAT-O는 두 끝 모두에서 winner와 거의 같은 power. (4) p가 클수록 SKAT의 분산이 burden보다 작아 안정적이고, p가 작을수록 burden이 더 efficient.</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--cyan)">4</span>실제 분석에서의 디폴트 — Lee 2014 권장</h3>
+      <div class="src-flow">
+        <div class="src-card">
+          <span class="h">기본은 SKAT-O <span class="what">unknown architecture</span></span>
+          유전자별 architecture(causal 비율·방향)를 미리 모르면 SKAT-O가 가장 안전한 default. 모든 시나리오에서 burden 또는 SKAT 단독에 거의 진 적 없음.
+        </div>
+        <div class="src-card">
+          <span class="h">강한 prior가 있으면 burden <span class="what">e.g. LoF in constrained</span></span>
+          mask를 매우 좁게 잡고 모든 변이가 deleterious라고 강하게 prior가 있는 경우(예: pLoF in LOEUF lowest decile)는 burden이 유리. constraint가 강한 prior 역할.
+        </div>
+        <div class="src-card">
+          <span class="h">SKAT 단독은 거의 안 씀 <span class="what">SKAT-O가 superset</span></span>
+          SKAT가 SKAT-O보다 강한 시나리오는 거의 없음. 다만 ρ grid 계산이 무거우면 SKAT 단독으로 빠르게 넘기는 sanity check는 의미 있음.
+        </div>
+        <div class="src-card">
+          <span class="h">데이터 출처 <span class="what">실제 입력</span></span>
+          (1) gene-level genotype matrix; (2) phenotype + covariate; (3) variant weight(MAF·annotation); (4) GLMM(REGENIE/SAIGE-GENE+)이 null model을 fit해 score test residual을 공급.
+        </div>
+      </div>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--cyan)">5</span>SKAT family의 진화</h3>
+      <div class="evo-row">
+        <div class="evo-cell">
+          <div class="yr">2011</div>
+          <div class="evo-dot" style="border-color:var(--blue)"></div>
+          <div class="ttl">Neale · C-alpha</div>
+          <div class="desc">variance-component test의 첫 형태. 같은 방향 가정을 깸.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2011</div>
+          <div class="evo-dot" style="border-color:var(--gold)"></div>
+          <div class="ttl">Wu · SKAT</div>
+          <div class="desc">kernel score, BETA(1,25) weight, 분석적 p-value. genome-wide scan 가능해짐.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2012</div>
+          <div class="evo-dot" style="border-color:var(--green)"></div>
+          <div class="ttl">Lee · SKAT-O</div>
+          <div class="desc">ρ grid optimal combination. burden+SKAT의 superset.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2021+</div>
+          <div class="evo-dot" style="border-color:var(--violet)"></div>
+          <div class="ttl">SAIGE-GENE+ · biobank scale</div>
+          <div class="desc">매우 imbalanced binary trait도 saddlepoint approximation으로 안정. UK Biobank 440K · All of Us 250K 표준 툴.</div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+const skSim = {p:30, causal:0.30, dir:0.80, beta:0.30, N:100000};
+function skatInit(){
+  const eP=document.getElementById("skSimP");
+  const eC=document.getElementById("skSimCausal");
+  const eD=document.getElementById("skSimDir");
+  const eB=document.getElementById("skSimBeta");
+  const eN=document.getElementById("skSimN");
+  if(!eP) return;
+  const update = () => {
+    skSim.p = +eP.value;
+    skSim.causal = (+eC.value)/100;
+    skSim.dir = (+eD.value)/100;
+    skSim.beta = (+eB.value)/100;
+    skSim.N = +eN.value;
+    document.getElementById("skSimPVal").textContent = skSim.p;
+    document.getElementById("skSimCausalVal").textContent = skSim.causal.toFixed(2);
+    document.getElementById("skSimDirVal").textContent = skSim.dir.toFixed(2);
+    document.getElementById("skSimBetaVal").textContent = skSim.beta.toFixed(2);
+    document.getElementById("skSimNVal").textContent = skSim.N.toLocaleString();
+    skatRender();
+  };
+  [eP,eC,eD,eB,eN].forEach(el => el.addEventListener("input", update));
+  update();
+}
+function skatRender(){
+  const s = skSim;
+  // Number of causal variants
+  const k = Math.max(1, Math.round(s.p * s.causal));
+  // signs: dir fraction with +β, (1-dir) with -β
+  const nPlus = Math.round(k * s.dir);
+  const nMinus = k - nPlus;
+  // Effective sample multiplier per variant ≈ 2·MAF·(1−MAF), assume rare MAF 5e-4
+  const maf = 5e-4;
+  const nEff = 2*maf*(1-maf);
+  // burden NCP ~ (sum β)² · nEff · N (sum-of-effects squared)
+  const sumBeta = (nPlus - nMinus) * s.beta;
+  const burdenNCP = sumBeta*sumBeta * nEff * s.N;
+  // SKAT NCP ~ Σ β² · nEff · N (sum of squared effects); divided by p (degrees of freedom heuristic)
+  const sumBetaSq = k * s.beta*s.beta;
+  // rough effective NCP for SKAT noncentral chi-sq with k df
+  const skatNCP = sumBetaSq * nEff * s.N;
+  // For the same alpha, power for non-central chi-sq with ncp ≈ z² requires more work;
+  // we approximate using that the SKAT power ≈ Φ(√(skatNCP/k) − z_α) on the score.
+  const burdenZ = Math.sqrt(Math.max(0, burdenNCP));
+  const skatZeq = Math.sqrt(Math.max(0, skatNCP / Math.max(1,k)));
+  const burdenPow = gwPowerAt(burdenZ, 2.5e-6);
+  const skatPow = gwPowerAt(skatZeq, 2.5e-6);
+  // SKAT-O ≈ best of (burden, SKAT) penalized by grid 0.95
+  const oPow = Math.max(burdenPow, skatPow) * 0.95;
+  const winner = burdenPow >= skatPow ? (burdenPow >= oPow ? "burden" : "SKAT-O")
+                                      : (skatPow >= oPow ? "SKAT" : "SKAT-O");
+  document.getElementById("skR_bNcp").textContent = burdenNCP<0.01?burdenNCP.toExponential(1):burdenNCP.toFixed(2);
+  document.getElementById("skR_sNcp").textContent = skatNCP<0.01?skatNCP.toExponential(1):skatNCP.toFixed(2);
+  document.getElementById("skR_bPow").textContent = (burdenPow*100).toFixed(0)+"%";
+  document.getElementById("skR_sPow").textContent = (skatPow*100).toFixed(0)+"%";
+  document.getElementById("skR_oPow").textContent = (oPow*100).toFixed(0)+"%";
+  document.getElementById("skR_win").textContent = winner;
+
+  // Draw: power vs "same direction fraction" (dir) for the three tests
+  const c = document.getElementById("skatCanvas");
+  if(!c) return;
+  const dpr = window.devicePixelRatio||1;
+  const w=c.clientWidth, h=c.clientHeight;
+  c.width=w*dpr; c.height=h*dpr;
+  const g=c.getContext("2d"); g.scale(dpr,dpr);
+  g.clearRect(0,0,w,h);
+  const m={l:48,r:18,t:14,b:34};
+  const pw_=w-m.l-m.r, ph=h-m.t-m.b;
+  g.strokeStyle="#d9dee7"; g.lineWidth=1;
+  g.beginPath(); g.moveTo(m.l,m.t); g.lineTo(m.l,m.t+ph); g.lineTo(m.l+pw_,m.t+ph); g.stroke();
+  g.fillStyle="#667085"; g.font="10px ui-sans-serif,system-ui";
+  g.textAlign="right"; g.textBaseline="middle";
+  for(let i=0;i<=5;i++){
+    const yv=i/5; const py=m.t+ph-yv*ph;
+    g.beginPath(); g.moveTo(m.l-3,py); g.lineTo(m.l,py); g.stroke();
+    g.fillText(yv.toFixed(1), m.l-5, py);
+  }
+  g.save(); g.translate(13,m.t+ph/2); g.rotate(-Math.PI/2);
+  g.textAlign="center"; g.fillText("Power @ 2.5×10⁻⁶", 0, 0); g.restore();
+  g.textAlign="center"; g.textBaseline="top";
+  for(let cv=0;cv<=1.0001;cv+=0.25){
+    const px = m.l + cv*pw_;
+    g.beginPath(); g.moveTo(px, m.t+ph); g.lineTo(px, m.t+ph+3); g.stroke();
+    g.fillText((cv*100).toFixed(0)+"%", px, m.t+ph+5);
+  }
+  g.fillText("같은 방향 비율 (dir)", m.l+pw_/2, m.t+ph+18);
+  // three curves
+  const colors = {burden:"#a66b13", skat:"#19728a", skato:"#b23a48"};
+  const draw = (color, fn) => {
+    g.strokeStyle = color; g.lineWidth = 2; g.beginPath();
+    for(let i=0;i<=200;i++){
+      const cv = i/200;
+      const v = fn(cv);
+      const px = m.l + cv*pw_;
+      const py = m.t+ph - v*ph;
+      if(i===0) g.moveTo(px,py); else g.lineTo(px,py);
+    }
+    g.stroke();
+  };
+  draw(colors.burden, cv => {
+    const np = Math.round(k*cv), nm=k-np;
+    const sb = (np-nm)*s.beta;
+    const nc = sb*sb*nEff*s.N;
+    return gwPowerAt(Math.sqrt(Math.max(0,nc)), 2.5e-6);
+  });
+  draw(colors.skat, cv => {
+    const sbs = k*s.beta*s.beta;
+    const nc = sbs*nEff*s.N;
+    return gwPowerAt(Math.sqrt(Math.max(0, nc/Math.max(1,k))), 2.5e-6);
+  });
+  draw(colors.skato, cv => {
+    const np = Math.round(k*cv), nm=k-np;
+    const sb = (np-nm)*s.beta;
+    const ncB = sb*sb*nEff*s.N;
+    const ncS = k*s.beta*s.beta*nEff*s.N;
+    const pB = gwPowerAt(Math.sqrt(Math.max(0,ncB)), 2.5e-6);
+    const pS = gwPowerAt(Math.sqrt(Math.max(0, ncS/Math.max(1,k))), 2.5e-6);
+    return Math.max(pB,pS)*0.95;
+  });
+  // current dir marker
+  const px = m.l + s.dir*pw_;
+  g.strokeStyle="#1c2a3c"; g.setLineDash([3,3]);
+  g.beginPath(); g.moveTo(px, m.t); g.lineTo(px, m.t+ph); g.stroke();
+  g.setLineDash([]);
+  g.fillStyle="#1c2a3c"; g.font="10.5px ui-sans-serif,system-ui";
+  g.textAlign="center"; g.textBaseline="bottom";
+  g.fillText("현재 dir", px, m.t-2);
+
+  // Legend
+  g.font="11px ui-sans-serif,system-ui";
+  g.textBaseline="middle"; g.textAlign="left";
+  let lx = m.l+pw_-130, ly = m.t+10;
+  ["burden","SKAT","SKAT-O"].forEach((nm,idx) => {
+    const col = [colors.burden, colors.skat, colors.skato][idx];
+    g.strokeStyle=col; g.lineWidth=2;
+    g.beginPath(); g.moveTo(lx, ly); g.lineTo(lx+18, ly); g.stroke();
+    g.fillStyle="#1c2a3c"; g.fillText(nm, lx+22, ly);
+    ly += 14;
+  });
+}
+ddPages.skat = { ready:false, init(){ skatBuild(); skatInit(); }, render(){ skatRender(); } };
+
+/* ===== GLMM / REGENIE deep-dive ===== */
+function glmmBuild(){
+  const root = document.getElementById("ddPageGlmm");
+  if(!root) return;
+  root.innerHTML = `
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--green)">1</span>Mixed model — fixed effect + random effect</h3>
+      <p>Biobank scale GWAS의 핵심 함정은 친족(cryptic relatedness)과 집단 구조(population stratification). 두 가지 모두 같은 ancestry-informative SNP에 신호 같은 inflation을 만듭니다. linear mixed model(LMM)은 이를 한 random effect로 흡수합니다.</p>
+      <div class="eq-box">
+        y &nbsp;=&nbsp; X·β &nbsp;+&nbsp; g &nbsp;+&nbsp; ε
+        <span class="ann">— β는 검정하려는 SNP의 fixed effect, g ~ N(0, σ²<sub>g</sub>·GRM)는 친족·구조를 흡수하는 random effect, ε ~ N(0, σ²<sub>e</sub>·I).</span>
+      </div>
+      <p><b>GRM</b>(genomic relationship matrix)은 모든 sample 쌍의 genome-wide allele-sharing similarity. 이 항이 \"같은 친족 클러스터의 두 sample은 phenotype도 비슷할 것\"이라는 prior를 모델에 박아 넣어, SNP가 친족·구조 때문이 아닌 진짜 fixed effect를 가질 때만 β̂이 0에서 멀어집니다. 이항 형질은 logit(P) = X·β + g 형태의 generalized LMM (GLMM)으로 확장.</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--green)">2</span>두 단계 트릭 — 왜 REGENIE는 빠른가</h3>
+      <p>~500K sample × 6M SNP를 매번 풀스케일 mixed model로 풀면 O(N³). REGENIE(Mbatchou 2021)와 fastGWA-GLMM(Jiang 2021)은 두 단계로 분해해 O(N·M)에 가까운 비용으로 끝냅니다.</p>
+      <div class="eb-flow">
+        <div class="eb-step s1">
+          <span class="h">① Step 1 · whole-genome ridge regression</span>
+          chromosome 22개를 block으로 나눠 각각 ridge regression. block별 prediction을 얻고, 각 chromosome을 <b>제외</b>한 LOCO(Leave-One-Chromosome-Out) prediction을 만듦. 이게 random effect g의 추정치.
+        </div>
+        <div class="eb-arrow">→</div>
+        <div class="eb-step s2">
+          <span class="h">② Step 2 · 잔차에 대해 SNP score test</span>
+          chromosome k의 SNP는 <i>그 chromosome을 뺀</i> LOCO prediction의 잔차에 대해 테스트. circular reasoning(같은 SNP가 random effect에도 들어감)을 피함. score test 자체는 단변량이므로 빠름.
+        </div>
+        <div class="eb-arrow">→</div>
+        <div class="eb-step s3">
+          <span class="h">③ Saddlepoint approximation (binary trait)</span>
+          rare-disease binary trait에서 case 비율이 낮으면(&lt;1%) 표준 normal approximation의 χ² 분포가 깨짐. SAIGE/fastGWA-GLMM은 saddlepoint approximation으로 정확한 tail probability를 계산해 calibration 회복.
+        </div>
+      </div>
+      <p style="margin-top:10px"><b>핵심 통찰</b>: mixed model은 confounding 'correction'이 아니라 <b>variance partitioning</b>입니다. 같은 데이터에서 polygenic 신호(slope)와 confounding(intercept)을 동시에 추정해 분리. 단순 PCA correction은 polygenic 신호도 함께 빼버려 true effect를 약화시키므로 large-N에서는 권장되지 않습니다.</p>
+    </article>
+
+    <article class="dd-block full">
+      <h3><span class="num" style="color:var(--green)">3</span>직접 흔들어보기 — calibration·power의 trade-off</h3>
+      <p>슬라이더로 sample size·case 비율·confounding·진짜 신호를 만들고, 세 가지 검정의 calibration(λ_GC)과 power를 비교합니다: (a) naive logistic, (b) PCA-corrected, (c) GLMM/REGENIE. 단순화: 진짜 NCP 위에 confounding·imbalance가 추가 inflation을 일으키는 모델로 근사.</p>
+      <div class="tada-sim-grid">
+        <div class="tada-sim-controls">
+          <label class="tada-slider">
+            <div class="row"><span class="name">N — 표본 크기</span><span class="val" id="glSimNVal">100,000</span></div>
+            <input type="range" id="glSimN" min="5000" max="500000" step="5000" value="100000">
+            <div class="hint">UK Biobank ≈ 500,000.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">case 비율</span><span class="val" id="glSimCaseVal">0.50</span></div>
+            <input type="range" id="glSimCase" min="1" max="50" value="50">
+            <div class="hint">balanced=0.5, 희귀질환=0.001-0.01. 작을수록 saddlepoint 필요.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">친족·구조 inflation factor</span><span class="val" id="glSimInflVal">1.10</span></div>
+            <input type="range" id="glSimInfl" min="100" max="200" value="110">
+            <div class="hint">naive λ_GC가 보일 inflation. UK Biobank ancestry mix ≈ 1.05-1.15.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">true OR</span><span class="val" id="glSimOrVal">1.10</span></div>
+            <input type="range" id="glSimOr" min="100" max="200" value="110">
+            <div class="hint">진짜 SNP effect.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">MAF</span><span class="val" id="glSimMafVal">0.20</span></div>
+            <input type="range" id="glSimMaf" min="1" max="500" value="200">
+            <div class="hint">common variant 0.05+, rare 0.001-0.01.</div>
+          </label>
+        </div>
+        <div>
+          <div class="tada-canvas-wrap"><canvas id="glmmCanvas"></canvas></div>
+          <div class="tada-readout">
+            <div class="readout-cell"><div class="lbl">naive λ_GC</div><div class="num" id="glR_lam0">—</div><div class="sub">PCA·mixed-model 없이</div></div>
+            <div class="readout-cell"><div class="lbl">PCA-corrected λ_GC</div><div class="num" id="glR_lamP">—</div><div class="sub">PC10 보정</div></div>
+            <div class="readout-cell"><div class="lbl">GLMM λ_GC</div><div class="num" id="glR_lamG">—</div><div class="sub">REGENIE/SAIGE</div></div>
+            <div class="readout-cell"><div class="lbl">naive Type-I error</div><div class="num" id="glR_t1n">—</div><div class="sub">at α=5×10⁻⁸</div></div>
+            <div class="readout-cell"><div class="lbl">GLMM power</div><div class="num" id="glR_pow">—</div><div class="sub">true effect 검출률</div></div>
+            <div class="readout-cell"><div class="lbl">imbalance 권장</div><div class="num" id="glR_rec">—</div><div class="sub">SAIGE-GENE+ vs REGENIE</div></div>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:12px;font-size:12.5px"><b>관찰 포인트</b>: (1) inflation factor가 1.10이면 naive λ_GC ≈ 1.10이라 단순 GC correction이 polygenic 신호도 함께 잘라냄. GLMM은 이를 분리. (2) case 비율이 1% 이하면 saddlepoint 없이는 type-I error inflation이 나타남. (3) PCA correction은 N=10K 이하 소규모에선 OK이지만 biobank scale에서는 GLMM이 거의 표준. (4) 매우 imbalanced binary는 SAIGE-GENE+가 REGENIE보다 안정적.</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--green)">4</span>실무 데이터·툴 의사결정</h3>
+      <div class="src-flow">
+        <div class="src-card">
+          <span class="h">REGENIE <span class="what">whole-genome ridge + LOCO</span></span>
+          UK Biobank 표준 툴(Mbatchou 2021). quantitative + binary 모두 잘 작동. step 1: chromosome block ridge → step 2: LOCO score test. 8 thread 기준 500K sample의 1 trait scan을 수 시간 안.
+        </div>
+        <div class="src-card">
+          <span class="h">SAIGE / SAIGE-GENE+ <span class="what">saddlepoint for imbalance</span></span>
+          extreme case-control imbalance(≤1% case)에서 calibration이 가장 안정. GENE+ 확장은 set-based test(burden·SKAT)에 saddlepoint 적용. binary trait biobank의 default.
+        </div>
+        <div class="src-card">
+          <span class="h">fastGWA-GLMM <span class="what">sparse GRM</span></span>
+          Jiang 2021. sparse matrix algorithm으로 SAIGE 대비 36.8× 빠름(8 thread, 400K). UK Biobank 2,989 binary trait에 적용해 75개 trait에서 259개 rare-variant 발견.
+        </div>
+        <div class="src-card">
+          <span class="h">PCA correction은 언제 <span class="what">small-cohort fallback</span></span>
+          N &lt; 10,000인 단일 ancestry cohort에서는 PC10 + naive logistic이 여전히 합리적. mixed model은 small-N에서 power loss가 있을 수 있음.
+        </div>
+        <div class="src-card">
+          <span class="h">GRM 만들기 <span class="what">상위 입력</span></span>
+          random effect에 들어갈 GRM은 보통 LD-pruned common SNP 100K-300K. sparse GRM은 4촌 이내 친족만 dense, 나머지 0으로 두어 메모리 절약.
+        </div>
+        <div class="src-card">
+          <span class="h">QC 점검 <span class="what">이상 신호</span></span>
+          GLMM 후에도 λ_GC가 1.10 이상이면 (a) ancestry mix 추가 점검, (b) LDSC intercept로 polygenic vs 잔여 confounding 분리, (c) per-chromosome QQ plot으로 구체적 이상 locus 탐색.
+        </div>
+      </div>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--green)">5</span>Mixed-model GWAS의 진화</h3>
+      <div class="evo-row">
+        <div class="evo-cell">
+          <div class="yr">2010</div>
+          <div class="evo-dot" style="border-color:var(--blue)"></div>
+          <div class="ttl">EMMAX · GEMMA</div>
+          <div class="desc">LMM의 single-SNP test 대중화. ~10K sample 한계.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2015</div>
+          <div class="evo-dot" style="border-color:var(--gold)"></div>
+          <div class="ttl">BOLT-LMM</div>
+          <div class="desc">100K+ sample 가능. Loh 2015.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2018-21</div>
+          <div class="evo-dot" style="border-color:var(--green)"></div>
+          <div class="ttl">SAIGE · fastGWA · REGENIE</div>
+          <div class="desc">saddlepoint, sparse GRM, 2-step LOCO. UK Biobank 500K + millions of phenotypes 가능.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2024+</div>
+          <div class="evo-dot" style="border-color:var(--violet)"></div>
+          <div class="ttl">All of Us · multi-ancestry</div>
+          <div class="desc">ancestry-aware GRM, trans-ancestry meta-analysis, 1M+ sample 영역 진입.</div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+const glSim = {N:100000, caseR:0.50, infl:1.10, OR:1.10, maf:0.20};
+function glmmInit(){
+  const eN=document.getElementById("glSimN");
+  const eCa=document.getElementById("glSimCase");
+  const eI=document.getElementById("glSimInfl");
+  const eO=document.getElementById("glSimOr");
+  const eM=document.getElementById("glSimMaf");
+  if(!eN) return;
+  const update = () => {
+    glSim.N = +eN.value;
+    glSim.caseR = (+eCa.value)/100;
+    glSim.infl = (+eI.value)/100;
+    glSim.OR = (+eO.value)/100;
+    glSim.maf = (+eM.value)/1000;
+    document.getElementById("glSimNVal").textContent = glSim.N.toLocaleString();
+    document.getElementById("glSimCaseVal").textContent = glSim.caseR.toFixed(3);
+    document.getElementById("glSimInflVal").textContent = glSim.infl.toFixed(2);
+    document.getElementById("glSimOrVal").textContent = glSim.OR.toFixed(2);
+    document.getElementById("glSimMafVal").textContent = glSim.maf.toFixed(3);
+    glmmRender();
+  };
+  [eN,eCa,eI,eO,eM].forEach(el => el.addEventListener("input", update));
+  update();
+}
+function glmmRender(){
+  const s = glSim;
+  const beta = Math.log(s.OR);
+  const trueNCP = beta*beta * 2*s.maf*(1-s.maf) * s.N;
+  // Naive: confounding inflation multiplies all χ² by infl factor
+  const naiveLam = s.infl;
+  // PCA-corrected: cuts ~70% of confounding but also clips polygenic; here approximated
+  const pcaLam = 1 + (s.infl-1)*0.30;
+  // GLMM: separates polygenic from confounding → λ ≈ 1.0
+  const glmmLam = 1.0 + Math.max(0, (s.infl-1)*0.05);
+  // Type-I error inflation: P(χ² > χ²_crit) under λ-inflated null
+  const z_crit = gwInvNorm(1 - 5e-8/2);
+  // Under naive null, χ² is multiplied by λ — Type-I rate at threshold
+  // If null is N(0, λ²), then P(|Z·√λ| > z_crit) = 2·(1 - Φ(z_crit/√λ))
+  const naiveT1 = 2*(1 - gwNormCdf(z_crit / Math.sqrt(naiveLam)));
+  // GLMM power (proper calibration)
+  const z = Math.sqrt(Math.max(0, trueNCP));
+  const pow = gwPowerAt(z, 5e-8);
+  // Imbalance flag
+  const imbalanceText = s.caseR < 0.05 ? "SAIGE-GENE+ 권장" : "REGENIE/SAIGE 동등";
+  document.getElementById("glR_lam0").textContent = naiveLam.toFixed(2);
+  document.getElementById("glR_lamP").textContent = pcaLam.toFixed(2);
+  document.getElementById("glR_lamG").textContent = glmmLam.toFixed(2);
+  document.getElementById("glR_t1n").textContent = naiveT1<1e-12 ? naiveT1.toExponential(1) : naiveT1.toExponential(2);
+  document.getElementById("glR_pow").textContent = (pow*100).toFixed(0)+"%";
+  document.getElementById("glR_rec").textContent = imbalanceText;
+
+  // Draw QQ-style: expected vs observed -log10(p) for three methods
+  const c = document.getElementById("glmmCanvas");
+  if(!c) return;
+  const dpr = window.devicePixelRatio||1;
+  const w=c.clientWidth, h=c.clientHeight;
+  c.width=w*dpr; c.height=h*dpr;
+  const g=c.getContext("2d"); g.scale(dpr,dpr);
+  g.clearRect(0,0,w,h);
+  const m={l:48,r:18,t:14,b:34};
+  const pw_=w-m.l-m.r, ph=h-m.t-m.b;
+  g.strokeStyle="#d9dee7"; g.lineWidth=1;
+  g.beginPath(); g.moveTo(m.l,m.t); g.lineTo(m.l,m.t+ph); g.lineTo(m.l+pw_,m.t+ph); g.stroke();
+  // axes labels
+  const xMax = 8, yMax = 12;
+  g.fillStyle="#667085"; g.font="10px ui-sans-serif,system-ui";
+  g.textAlign="right"; g.textBaseline="middle";
+  for(let i=0;i<=4;i++){
+    const yv=(yMax/4)*i; const py=m.t+ph - (yv/yMax)*ph;
+    g.beginPath(); g.moveTo(m.l-3,py); g.lineTo(m.l,py); g.stroke();
+    g.fillText(yv.toFixed(0), m.l-5, py);
+  }
+  g.save(); g.translate(13,m.t+ph/2); g.rotate(-Math.PI/2);
+  g.textAlign="center"; g.fillText("observed -log₁₀(p)", 0, 0); g.restore();
+  g.textAlign="center"; g.textBaseline="top";
+  for(let i=0;i<=4;i++){
+    const xv=(xMax/4)*i; const px=m.l + (xv/xMax)*pw_;
+    g.beginPath(); g.moveTo(px, m.t+ph); g.lineTo(px, m.t+ph+3); g.stroke();
+    g.fillText(xv.toFixed(0), px, m.t+ph+5);
+  }
+  g.fillText("expected -log₁₀(p)", m.l+pw_/2, m.t+ph+18);
+  // diagonal reference
+  g.strokeStyle="#d9dee7"; g.setLineDash([3,3]);
+  g.beginPath();
+  g.moveTo(m.l, m.t+ph);
+  const d = Math.min(xMax,yMax);
+  g.lineTo(m.l + (d/xMax)*pw_, m.t+ph - (d/yMax)*ph);
+  g.stroke();
+  g.setLineDash([]);
+  // three QQ lines: observed = λ·expected (for chi-sq scale, log-p scales as √λ approx)
+  const lines = [
+    {color:"#b23a48", lam:naiveLam, label:"naive logistic"},
+    {color:"#a66b13", lam:pcaLam, label:"PCA-corrected"},
+    {color:"#19735d", lam:glmmLam, label:"GLMM/REGENIE"}
+  ];
+  lines.forEach(L => {
+    g.strokeStyle = L.color; g.lineWidth = 2; g.beginPath();
+    for(let i=0;i<=200;i++){
+      const ex = (xMax * i)/200;
+      // observed log10p ≈ λ * expected for chi-squared scale
+      const obs = ex * L.lam;
+      const px = m.l + (ex/xMax)*pw_;
+      const py = m.t+ph - Math.min(yMax, obs)/yMax*ph;
+      if(i===0) g.moveTo(px,py); else g.lineTo(px,py);
+    }
+    g.stroke();
+  });
+  // Legend
+  g.font="11px ui-sans-serif,system-ui";
+  g.textBaseline="middle"; g.textAlign="left";
+  let lx = m.l+10, ly = m.t+8;
+  lines.forEach(L => {
+    g.strokeStyle=L.color; g.lineWidth=2;
+    g.beginPath(); g.moveTo(lx, ly); g.lineTo(lx+18, ly); g.stroke();
+    g.fillStyle="#1c2a3c"; g.fillText(L.label, lx+22, ly);
+    ly += 14;
+  });
+}
+ddPages.glmm = { ready:false, init(){ glmmBuild(); glmmInit(); }, render(){ glmmRender(); } };
+
+/* ===== LDSC / S-LDSC deep-dive ===== */
+function ldscBuild(){
+  const root = document.getElementById("ddPageLdsc");
+  if(!root) return;
+  root.innerHTML = `
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--green)">1</span>한 줄 회귀로 polygenic과 confounding을 분리</h3>
+      <p>GWAS 평균 χ² ≫ 1이면 두 가지 원인이 가능합니다. (1) 진짜 polygenic signal — 많은 SNP가 작게나마 trait에 영향. (2) confounding — population stratification, cryptic relatedness. 두 효과는 SNP 별 χ²의 평균을 똑같이 끌어올리지만 <b>LD score와의 관계가 다릅니다</b>.</p>
+      <div class="eq-box">
+        E[χ²<sub>j</sub>] &nbsp;=&nbsp; 1 &nbsp;+&nbsp; <span class="var">N·a</span> &nbsp;+&nbsp; <span class="var" style="color:var(--blue)">N·h²/M</span> · ℓ<sub>j</sub>
+        <span class="ann">— ℓ<sub>j</sub>는 SNP j의 LD score(=주변 SNP들과의 r²의 합). polygenic 신호는 <b>ℓ<sub>j</sub>에 비례</b>해 χ²을 키우고, confounding은 <b>ℓ<sub>j</sub>와 무관한 상수 inflation</b>을 만듭니다.</span>
+      </div>
+      <p>모든 GWAS SNP의 (ℓ<sub>j</sub>, χ²<sub>j</sub>) 점을 모아 직선 회귀하면 — <b>slope</b> ∝ N·h²/M (heritability), <b>intercept</b> = 1 + N·a (confounding). 이 한 회귀가 polygenicity 신호와 stratification confounding을 동시 측정합니다(Bulik-Sullivan 2015).</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--green)">2</span>왜 λ_GC는 둘을 구별 못 하는가</h3>
+      <p>전통적인 genomic control λ_GC = median(χ²)/0.456은 단순 inflation 비율. polygenic이 강해서 평균 χ² = 1.5여도 λ_GC = 1.5로 보고하고, confounding이 강해서 평균 χ² = 1.5여도 똑같이 1.5. <b>둘이 같은 숫자라 분리 불가능.</b></p>
+      <ul style="margin:6px 0 0 16px;font-size:13px;line-height:1.7">
+        <li><b>SCZ PGC2</b>(Bulik-Sullivan 2015 기록): mean χ² = 1.476, λ_GC = 1.468이지만 LDSC intercept = 1.065. 즉 inflation의 거의 전부가 polygenic — λ_GC로 나누면 진짜 신호도 함께 박살.</li>
+        <li><b>height GIANT</b>: 같은 패턴. polygenic signal이 큰 trait에서 λ_GC correction은 항상 over-correction.</li>
+        <li><b>LDSC intercept &gt; 1.05</b>면 잔여 confounding 점검; <b>≤ 1.05</b>면 mixed-model + LD-aware QC가 잘 작동했다는 신호.</li>
+      </ul>
+    </article>
+
+    <article class="dd-block full">
+      <h3><span class="num" style="color:var(--green)">3</span>직접 흔들어보기 — slope·intercept를 만들어내기</h3>
+      <p>슬라이더로 N·h²·M·confounding 를 정하고 SNP들의 (ℓ, χ²) 산점도와 LDSC 회귀선을 봅니다. λ_GC는 두 component를 구분 못해 over-correction을 만들고, LDSC slope는 h²만 잡고 intercept는 confounding만 잡는 것을 직접 확인합니다.</p>
+      <div class="tada-sim-grid">
+        <div class="tada-sim-controls">
+          <label class="tada-slider">
+            <div class="row"><span class="name">N — GWAS 표본 크기</span><span class="val" id="ldSimNVal">100,000</span></div>
+            <input type="range" id="ldSimN" min="10000" max="1000000" step="10000" value="100000">
+            <div class="hint">UK Biobank scale 500K, GIANT height 700K+.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">true SNP h²</span><span class="val" id="ldSimHVal">0.30</span></div>
+            <input type="range" id="ldSimH" min="0" max="80" value="30">
+            <div class="hint">height ≈ 0.5, ASD ≈ 0.20, T2D ≈ 0.30.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">M_eff — effective common SNP 수</span><span class="val" id="ldSimMVal">5.0M</span></div>
+            <input type="range" id="ldSimM" min="5" max="100" step="1" value="50">
+            <div class="hint">전체 LD-aware effective common SNP. HapMap3 기준 ~1.2M, 1000G 기준 ~5-9M.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">confounding bias a</span><span class="val" id="ldSimAVal">1.0e-6</span></div>
+            <input type="range" id="ldSimA" min="0" max="50" value="10">
+            <div class="hint">잔여 stratification·relatedness. SCZ PGC2 ≈ 1e-6, 강한 confounding ≈ 5e-6.</div>
+          </label>
+        </div>
+        <div>
+          <div class="tada-canvas-wrap"><canvas id="ldscCanvas"></canvas></div>
+          <div class="tada-readout">
+            <div class="readout-cell"><div class="lbl">mean χ²</div><div class="num" id="ldR_mean">—</div><div class="sub">전체 inflation</div></div>
+            <div class="readout-cell"><div class="lbl">λ_GC</div><div class="num" id="ldR_lam">—</div><div class="sub">polygenic+confound 혼동</div></div>
+            <div class="readout-cell"><div class="lbl">LDSC intercept</div><div class="num" id="ldR_int">—</div><div class="sub">1+N·a</div></div>
+            <div class="readout-cell"><div class="lbl">LDSC slope</div><div class="num" id="ldR_slope">—</div><div class="sub">N·h²/M</div></div>
+            <div class="readout-cell"><div class="lbl">estimated h²</div><div class="num" id="ldR_h2">—</div><div class="sub">slope×M/N</div></div>
+            <div class="readout-cell"><div class="lbl">진단</div><div class="num" id="ldR_diag" style="font-size:12px">—</div><div class="sub">신호·confound 균형</div></div>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:12px;font-size:12.5px"><b>관찰 포인트</b>: (1) confounding a=0이면 intercept=1, slope만 신호. (2) confounding을 키우면 intercept만 올라가고 slope는 변치 않음 → h² 추정은 robust. (3) M을 줄이면(sparse architecture) 같은 h²에 slope가 가팔라짐. (4) N을 키우면 slope·intercept 모두 비례 증가하지만 비율이 보존돼 estimated h²가 안정.</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--green)">4</span>S-LDSC — annotation별 h² partitioning</h3>
+      <p>같은 식을 functional annotation별로 분해하면(Finucane 2015):</p>
+      <div class="eq-box">
+        E[χ²<sub>j</sub>] &nbsp;=&nbsp; 1 + N·a + Σ<sub>k</sub> N·τ<sub>k</sub>·ℓ<sub>j,k</sub>
+        <span class="ann">— ℓ<sub>j,k</sub>는 annotation k에 한정한 LD score, τ<sub>k</sub>는 annotation k의 per-SNP h² 기여. 각 τ<sub>k</sub>를 multivariate regression으로 추정.</span>
+      </div>
+      <p><b>Heritability enrichment</b> = (h²_annotation / h²_total) ÷ (#SNPs_annotation / #SNPs_total). 1이면 annotation 크기 비례, 5이면 5× 집중.</p>
+      <ul style="margin:6px 0 0 16px;font-size:13px;line-height:1.7">
+        <li><b>coding (1.5%)</b>: 중간 enrichment(~13×) but 작은 절대 기여(~10% h²).</li>
+        <li><b>conserved (~3%)</b>: 매우 강한 enrichment(~13×) — Finucane 2015의 가장 큰 발견.</li>
+        <li><b>enhancer marks (H3K4me1, ~10%)</b>: 적은 per-SNP enrichment but 큰 절대 기여(~30-40% h²).</li>
+        <li><b>tissue-specific DHS</b>: 정신질환 → brain, immune disease → blood/T-cell, metabolic → liver — 알려진 disease-relevant tissue를 GWAS summary statistic만으로 확인.</li>
+      </ul>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--green)">5</span>실무 점검 항목</h3>
+      <div class="src-flow">
+        <div class="src-card">
+          <span class="h">LD reference matching <span class="what">ancestry-specific</span></span>
+          1000G EUR LD score는 northern European cohort 표준. East Asian은 BBJ panel, multi-ancestry는 별도 reference. mismatch 시 intercept와 slope 모두 bias.
+        </div>
+        <div class="src-card">
+          <span class="h">QC filter <span class="what">기본 권장</span></span>
+          MAF &gt; 1%, INFO &gt; 0.9, MHC region 제외(extreme outlier). M_eff는 보통 ~1.2M HapMap3 SNP.
+        </div>
+        <div class="src-card">
+          <span class="h">Cross-trait LDSC <span class="what">유전적 상관</span></span>
+          두 trait 사이의 cross-product Z·Z의 LD-score regression으로 r_g(genetic correlation) 측정. 같은 식을 trait pair에 일반화.
+        </div>
+        <div class="src-card">
+          <span class="h">Attenuation correction <span class="what">measurement error</span></span>
+          ℓ는 reference panel에서 추정된 noisy 값. jackknife SE로 보정해야 slope downward bias 방지.
+        </div>
+        <div class="src-card">
+          <span class="h">Architecture 가정 <span class="what">limitation</span></span>
+          additive polygenic 가정. sparse architecture(소수 large-effect)에서는 LDSC이 systematic bias. SBayesS 같은 alternative 권장.
+        </div>
+        <div class="src-card">
+          <span class="h">근거 입력 <span class="what">필요한 데이터</span></span>
+          (1) GWAS summary statistics(z 또는 χ²); (2) ancestry-matched LD reference; (3) annotation files(BED) for partitioning.
+        </div>
+      </div>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--green)">6</span>LDSC family의 진화</h3>
+      <div class="evo-row">
+        <div class="evo-cell">
+          <div class="yr">2015</div>
+          <div class="evo-dot" style="border-color:var(--blue)"></div>
+          <div class="ttl">Bulik-Sullivan · LDSC</div>
+          <div class="desc">기본식 정립. λ_GC 대신 intercept를 보라.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2015</div>
+          <div class="evo-dot" style="border-color:var(--gold)"></div>
+          <div class="ttl">Finucane · S-LDSC</div>
+          <div class="desc">annotation별 partitioning. coding·conserved·enhancer enrichment 정량화.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2018</div>
+          <div class="evo-dot" style="border-color:var(--green)"></div>
+          <div class="ttl">Evans review</div>
+          <div class="desc">tissue·cell-type S-LDSC 확장. brain DHS for psychiatric, blood for autoimmune.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2024+</div>
+          <div class="evo-dot" style="border-color:var(--violet)"></div>
+          <div class="ttl">SCADS · cell-state</div>
+          <div class="desc">Yu 2026 등이 single-cell ATAC topic을 annotation으로 사용. cell-state-resolved h² partitioning.</div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+const ldSim = {N:100000, h2:0.30, M:5000000, a:1e-6};
+function ldscInit(){
+  const eN=document.getElementById("ldSimN");
+  const eH=document.getElementById("ldSimH");
+  const eM=document.getElementById("ldSimM");
+  const eA=document.getElementById("ldSimA");
+  if(!eN) return;
+  const update = () => {
+    ldSim.N = +eN.value;
+    ldSim.h2 = (+eH.value)/100;
+    ldSim.M = (+eM.value) * 100000;   // slider 5..100 -> M 0.5M..10M, default 50 -> 5M
+    ldSim.a = (+eA.value) * 1e-7;     // slider 0..50 -> a 0..5e-6, default 10 -> 1e-6
+    document.getElementById("ldSimNVal").textContent = ldSim.N.toLocaleString();
+    document.getElementById("ldSimHVal").textContent = ldSim.h2.toFixed(2);
+    document.getElementById("ldSimMVal").textContent = (ldSim.M/1e6).toFixed(1) + "M";
+    document.getElementById("ldSimAVal").textContent = ldSim.a===0 ? "0" : ldSim.a.toExponential(1);
+    ldscRender();
+  };
+  [eN,eH,eM,eA].forEach(el => el.addEventListener("input", update));
+  update();
+}
+function ldscRender(){
+  const s = ldSim;
+  const slope = s.N * s.h2 / s.M;
+  const intercept = 1 + s.N * s.a;
+  // mean χ² ≈ intercept + slope * mean(ℓ); 1000G EUR HapMap3에서 평균 LD score ≈ 100
+  const meanLD = 100;
+  const meanChi2 = intercept + slope * meanLD;
+  const lamGC = meanChi2; // approximation: λ_GC ≈ mean(χ²) for moderately polygenic
+  const h2Est = slope * s.M / s.N;
+  let diag;
+  if(intercept >= 1.10) diag = "잔여 confounding";
+  else if(intercept <= 1.05 && slope > 0.0005) diag = "깨끗한 polygenic";
+  else if(slope < 0.0001) diag = "신호 부족";
+  else diag = "정상";
+  document.getElementById("ldR_mean").textContent = meanChi2.toFixed(2);
+  document.getElementById("ldR_lam").textContent = lamGC.toFixed(2);
+  document.getElementById("ldR_int").textContent = intercept.toFixed(3);
+  document.getElementById("ldR_slope").textContent = slope.toExponential(2);
+  document.getElementById("ldR_h2").textContent = h2Est.toFixed(3);
+  document.getElementById("ldR_diag").textContent = diag;
+
+  // Draw scatterplot of (ℓ_j, χ²_j) with regression line
+  const c = document.getElementById("ldscCanvas");
+  if(!c) return;
+  const dpr = window.devicePixelRatio||1;
+  const w=c.clientWidth, h=c.clientHeight;
+  c.width=w*dpr; c.height=h*dpr;
+  const g=c.getContext("2d"); g.scale(dpr,dpr);
+  g.clearRect(0,0,w,h);
+  const m={l:48,r:18,t:14,b:34};
+  const pw_=w-m.l-m.r, ph=h-m.t-m.b;
+  g.strokeStyle="#d9dee7"; g.lineWidth=1;
+  g.beginPath(); g.moveTo(m.l,m.t); g.lineTo(m.l,m.t+ph); g.lineTo(m.l+pw_,m.t+ph); g.stroke();
+  // axes
+  const xMax = 200; // LD score range
+  const yMax = Math.max(3, intercept + slope*xMax + 1);
+  g.fillStyle="#667085"; g.font="10px ui-sans-serif,system-ui";
+  g.textAlign="right"; g.textBaseline="middle";
+  for(let i=0;i<=4;i++){
+    const yv=(yMax/4)*i; const py=m.t+ph - (yv/yMax)*ph;
+    g.beginPath(); g.moveTo(m.l-3,py); g.lineTo(m.l,py); g.stroke();
+    g.fillText(yv.toFixed(1), m.l-5, py);
+  }
+  g.save(); g.translate(13,m.t+ph/2); g.rotate(-Math.PI/2);
+  g.textAlign="center"; g.fillText("χ²_j", 0, 0); g.restore();
+  g.textAlign="center"; g.textBaseline="top";
+  for(let i=0;i<=4;i++){
+    const xv=(xMax/4)*i; const px=m.l + (xv/xMax)*pw_;
+    g.beginPath(); g.moveTo(px, m.t+ph); g.lineTo(px, m.t+ph+3); g.stroke();
+    g.fillText(xv.toFixed(0), px, m.t+ph+5);
+  }
+  g.fillText("LD score ℓ_j", m.l+pw_/2, m.t+ph+18);
+  // Scatter points (synthetic): LD score uniform 1..200, χ² = intercept + slope*ℓ + noise
+  // Use deterministic pseudo-random for stability across renders
+  let seed = 42;
+  const rand = () => { seed = (seed*9301 + 49297) % 233280; return seed/233280; };
+  for(let i=0;i<400;i++){
+    const ld = 1 + 199*rand();
+    const expChi = intercept + slope * ld;
+    // Add noise: χ² ~ chi-sq with NCP, approximately Gamma. Use normal approximation
+    const chi = Math.max(0, expChi + (rand()-0.5)*1.6 + (rand()-0.5)*1.6);
+    const px = m.l + (ld/xMax)*pw_;
+    const py = m.t+ph - Math.min(yMax, chi)/yMax*ph;
+    g.fillStyle = "rgba(25,114,138,0.35)";
+    g.beginPath(); g.arc(px,py,1.8,0,2*Math.PI); g.fill();
+  }
+  // Regression line
+  g.strokeStyle = "#b23a48"; g.lineWidth = 2;
+  g.beginPath();
+  g.moveTo(m.l, m.t+ph - intercept/yMax*ph);
+  g.lineTo(m.l+pw_, m.t+ph - Math.min(yMax, intercept+slope*xMax)/yMax*ph);
+  g.stroke();
+  // intercept marker
+  g.strokeStyle = "#19735d"; g.setLineDash([4,3]);
+  const py1 = m.t+ph - 1.0/yMax*ph;
+  g.beginPath();
+  g.moveTo(m.l, py1); g.lineTo(m.l+pw_, py1); g.stroke();
+  g.setLineDash([]);
+  g.fillStyle="#19735d"; g.font="10.5px ui-sans-serif,system-ui";
+  g.textAlign="left"; g.textBaseline="bottom";
+  g.fillText("E[χ²]=1 (no confounding)", m.l+6, py1-2);
+  g.font="11px ui-sans-serif,system-ui";
+  g.textBaseline="middle"; g.textAlign="left";
+  g.fillStyle="#b23a48";
+  g.fillText(`회귀선: 1+Na + (Nh²/M)·ℓ`, m.l+8, m.t+12);
+}
+ddPages.ldsc = { ready:false, init(){ ldscBuild(); ldscInit(); }, render(){ ldscRender(); } };
+
+/* ===== MAGMA deep-dive ===== */
+function magmaBuild(){
+  const root = document.getElementById("ddPageMagma");
+  if(!root) return;
+  root.innerHTML = `
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--violet)">1</span>SNP p-value를 한 유전자 한 점수로</h3>
+      <p>GWAS는 SNP 단위 결과만 줍니다. 생물학적 해석은 보통 유전자 단위로 일어납니다 — \"이 pathway가 enrichment 있나?\". MAGMA(de Leeuw 2015)는 한 유전자 안의 m개 SNP의 p-value를 LD를 보정한 multiple regression으로 합칩니다.</p>
+      <div class="eq-box">
+        F-stat<sub>gene</sub> &nbsp;~&nbsp; F(m, N−m−1) &nbsp; from &nbsp; multiple regression of phenotype on m SNPs
+        <span class="ann">— LD가 있는 m개 SNP를 모두 동시 회귀에 넣고 joint F-test. SNP 사이의 r²이 자동 흡수됨.</span>
+      </div>
+      <p>summary statistics만 가지고 풀려면 같은 식을 z-score 입력으로 재구성: gene-level z = Φ⁻¹(F-statistic의 p) 형태로 표준화. principal components로 LD 차원을 축소해 m_eff를 추정.</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--violet)">2</span>왜 단순 합산은 망하는가 — gene length confounder</h3>
+      <p>가장 단순한 \"이 유전자에서 가장 작은 p-value\" 또는 \"평균 -log₁₀ p\"는 두 가지 이유로 inflation:</p>
+      <ul style="margin:6px 0 0 16px;font-size:13px;line-height:1.7">
+        <li><b>gene length</b>: 긴 유전자는 SNP 수가 많아 minimum p-value의 null distribution도 더 작음. 신경 관련 유전자(neurexin, dystrophin)들이 평균적으로 길어 GSA에서 \"브레인 enrichment\"가 아무 trait에서도 가짜로 보일 수 있음.</li>
+        <li><b>LD</b>: 같은 LD block의 두 SNP가 똑같이 강한 신호를 주어도 그건 한 변이의 echo. independent count로 잘못 세면 inflation.</li>
+      </ul>
+      <p>de Leeuw 2016은 GSA 도구 여러 개의 type-I error를 simulation으로 점검 — 일부 도구는 10× inflation. MAGMA는 두 confounder를 모두 model 안에 박아 넣어 valid type-I error를 유지합니다.</p>
+    </article>
+
+    <article class="dd-block full">
+      <h3><span class="num" style="color:var(--violet)">3</span>직접 흔들어보기 — naive vs MAGMA</h3>
+      <p>한 유전자에 m개 SNP가 들어 있고 그 중 일부가 진짜 신호일 때, naive minimum-p와 MAGMA-corrected p가 어떻게 다른지 봅니다. SNP 사이 평균 LD r² 슬라이더로 \"독립처럼 세는 것\"이 얼마나 inflation을 만드는지 직접 확인.</p>
+      <div class="tada-sim-grid">
+        <div class="tada-sim-controls">
+          <label class="tada-slider">
+            <div class="row"><span class="name">m — 유전자 안 SNP 수</span><span class="val" id="mgSimMVal">50</span></div>
+            <input type="range" id="mgSimM" min="2" max="500" value="50">
+            <div class="hint">짧은 유전자 ~5, 긴 유전자(NRXN1) ~500.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">평균 LD r²</span><span class="val" id="mgSimRVal">0.50</span></div>
+            <input type="range" id="mgSimR" min="0" max="95" value="50">
+            <div class="hint">독립적이면 0, 한 LD block이면 ~0.8.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">causal SNP 수</span><span class="val" id="mgSimKVal">1</span></div>
+            <input type="range" id="mgSimK" min="0" max="20" value="1">
+            <div class="hint">진짜 SNP 신호 수. 0이면 null.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">causal -log₁₀(p) 평균</span><span class="val" id="mgSimSVal">5.0</span></div>
+            <input type="range" id="mgSimS" min="20" max="100" value="50">
+            <div class="hint">causal SNP의 z-score 강도.</div>
+          </label>
+        </div>
+        <div>
+          <div class="tada-canvas-wrap"><canvas id="magmaCanvas"></canvas></div>
+          <div class="tada-readout">
+            <div class="readout-cell"><div class="lbl">m_eff (after LD)</div><div class="num" id="mgR_meff">—</div><div class="sub">독립적 SNP 환산</div></div>
+            <div class="readout-cell"><div class="lbl">naive min-p (Bonferroni)</div><div class="num" id="mgR_naive">—</div><div class="sub">m으로 보정</div></div>
+            <div class="readout-cell"><div class="lbl">MAGMA gene p</div><div class="num" id="mgR_magma">—</div><div class="sub">m_eff로 보정</div></div>
+            <div class="readout-cell"><div class="lbl">type-I inflation</div><div class="num" id="mgR_t1">—</div><div class="sub">naive vs valid</div></div>
+            <div class="readout-cell"><div class="lbl">5% sig at m=500</div><div class="num" id="mgR_long">—</div><div class="sub">긴 유전자 false-positive</div></div>
+            <div class="readout-cell"><div class="lbl">권장</div><div class="num" id="mgR_rec" style="font-size:12px">—</div><div class="sub">analysis decision</div></div>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:12px;font-size:12.5px"><b>관찰 포인트</b>: (1) r²=0이면 m_eff=m, 즉 LD가 없을 때만 naive 보정이 옳음. (2) r²=0.8이면 m_eff ≈ m/3, 그만큼 진짜 independent SNP는 적어 over-correction. (3) 긴 유전자(m=500)에서 null 신호도 minimum-p가 작아져 false positive 폭증 — gene length confounder의 실체. (4) MAGMA의 multivariate regression은 LD를 한 번에 다 흡수해 m_eff 보정이 자동.</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--violet)">4</span>Self-contained vs Competitive — GSA 두 paradigm</h3>
+      <p>유전자 점수를 만든 뒤 pathway·gene-set 검정을 하는데 두 종류의 null이 있습니다(de Leeuw 2016).</p>
+      <div class="src-flow">
+        <div class="src-card">
+          <span class="h">Self-contained <span class="what">"이 set 안에 신호 있나?"</span></span>
+          set 안 유전자들의 평균 점수가 0보다 큰가. <b>anti-conservative</b> — polygenic background 자체가 set 점수를 평균보다 높게 만듦. 일반적인 GWAS-GSA 부적절.
+        </div>
+        <div class="src-card">
+          <span class="h">Competitive <span class="what">"set 안이 set 밖보다 강한가?"</span></span>
+          set 안 평균이 set 밖 평균보다 큰가. <b>적절</b> — polygenic baseline 자동 보정. MAGMA 기본.
+        </div>
+        <div class="src-card">
+          <span class="h">Gene length를 한 번 더 보정 <span class="what">실패 사례</span></span>
+          competitive test도 gene length를 corredtor로 추가해야 inflation 막음. 그렇지 않으면 length-biased gene set(neuronal genes)이 거짓 enriched.
+        </div>
+        <div class="src-card">
+          <span class="h">Circular reasoning <span class="what">discovery + set 정의</span></span>
+          GWAS 결과로 만든 gene set을 같은 GWAS에 GSA로 적용하면 inflation. external biology 기반 set만 사용해야 valid.
+        </div>
+      </div>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--violet)">5</span>Gene-level GSA의 진화</h3>
+      <div class="evo-row">
+        <div class="evo-cell">
+          <div class="yr">2005</div>
+          <div class="evo-dot" style="border-color:var(--blue)"></div>
+          <div class="ttl">GSEA · expression GSA</div>
+          <div class="desc">Subramanian. 발현 데이터에서 출발. GWAS에는 gene length·LD confounder 때문에 직접 적용 불가.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2015</div>
+          <div class="evo-dot" style="border-color:var(--gold)"></div>
+          <div class="ttl">de Leeuw · MAGMA</div>
+          <div class="desc">multiple regression 기반 gene-level + competitive GSA. 표준 GWAS GSA 도구.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2016</div>
+          <div class="evo-dot" style="border-color:var(--green)"></div>
+          <div class="ttl">de Leeuw · GSA pitfalls review</div>
+          <div class="desc">GSA 도구들의 type-I error inflation 정량화. valid analysis 권장.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2020+</div>
+          <div class="evo-dot" style="border-color:var(--violet)"></div>
+          <div class="ttl">H-MAGMA · cell-state MAGMA</div>
+          <div class="desc">SNP-gene mapping에 chromatin contact(Hi-C)·single-cell ATAC을 결합. tissue-specific gene priority 향상.</div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+const mgSim = {m:50, r2:0.50, k:1, sig:5.0};
+function magmaInit(){
+  const eM=document.getElementById("mgSimM");
+  const eR=document.getElementById("mgSimR");
+  const eK=document.getElementById("mgSimK");
+  const eS=document.getElementById("mgSimS");
+  if(!eM) return;
+  const update = () => {
+    mgSim.m = +eM.value;
+    mgSim.r2 = (+eR.value)/100;
+    mgSim.k = +eK.value;
+    mgSim.sig = (+eS.value)/10;
+    document.getElementById("mgSimMVal").textContent = mgSim.m;
+    document.getElementById("mgSimRVal").textContent = mgSim.r2.toFixed(2);
+    document.getElementById("mgSimKVal").textContent = mgSim.k;
+    document.getElementById("mgSimSVal").textContent = mgSim.sig.toFixed(1);
+    magmaRender();
+  };
+  [eM,eR,eK,eS].forEach(el => el.addEventListener("input", update));
+  update();
+}
+function magmaRender(){
+  const s = mgSim;
+  // m_eff approx: independent component count under exchangeable LD ≈ m / (1 + (m-1)*r²)
+  const meff = s.m / (1 + (s.m-1)*s.r2);
+  // For naive: combined p ≈ 1 - (1-p_min)^m, with p_min coming from k causal SNPs
+  // simulate single-SNP p from stronger of k causal vs others
+  const causalP = Math.pow(10, -s.sig);
+  const minP = s.k > 0 ? causalP : Math.pow(10, -2.5); // null genes have ~few mid-strength signals
+  const naiveBonf = Math.min(1, minP * s.m);
+  const magmaP = Math.min(1, minP * meff);
+  const t1Inflation = naiveBonf / Math.max(magmaP, 1e-30);  // how much naive over-rejects
+  // For null gene (k=0) at m=500, what's the false-positive rate at p<0.05?
+  // P(min of m IID U(0,1) < 0.05/m) = 0.05 if m=m_eff; if naive treats m_eff as m, then at length=500 with strong LD:
+  // The longer-gene scenario: naive overestimates m, makes threshold too strict — wait, it's the opposite;
+  // in this simulator, "naive Bonferroni" assumes m independent which is too conservative when r² > 0,
+  // but the gene-length problem with min-p is when m is *not* corrected at all; let's separate.
+  const longGeneFP = (1 - Math.pow(1 - 0.05, 500/(1+499*s.r2)));  // approx false-positive at 0.05 unadjusted
+  const rec = s.r2 > 0.3 ? "MAGMA / multivariate (LD 흡수)"
+                         : s.m > 200 ? "gene length 보정 필수"
+                                     : "naive Bonferroni 약하게 OK";
+  document.getElementById("mgR_meff").textContent = meff.toFixed(1);
+  document.getElementById("mgR_naive").textContent = naiveBonf<1e-12?naiveBonf.toExponential(1):naiveBonf.toExponential(2);
+  document.getElementById("mgR_magma").textContent = magmaP<1e-12?magmaP.toExponential(1):magmaP.toExponential(2);
+  document.getElementById("mgR_t1").textContent = t1Inflation>=10 ? t1Inflation.toFixed(0)+"×" : t1Inflation.toFixed(2)+"×";
+  document.getElementById("mgR_long").textContent = (longGeneFP*100).toFixed(0)+"%";
+  document.getElementById("mgR_rec").textContent = rec;
+
+  // Draw: m_eff vs m for varying r², highlight current point
+  const c = document.getElementById("magmaCanvas");
+  if(!c) return;
+  const dpr = window.devicePixelRatio||1;
+  const w=c.clientWidth, h=c.clientHeight;
+  c.width=w*dpr; c.height=h*dpr;
+  const g=c.getContext("2d"); g.scale(dpr,dpr);
+  g.clearRect(0,0,w,h);
+  const m={l:48,r:18,t:14,b:34};
+  const pw_=w-m.l-m.r, ph=h-m.t-m.b;
+  g.strokeStyle="#d9dee7"; g.lineWidth=1;
+  g.beginPath(); g.moveTo(m.l,m.t); g.lineTo(m.l,m.t+ph); g.lineTo(m.l+pw_,m.t+ph); g.stroke();
+  const xMax = 500, yMax = 500;
+  g.fillStyle="#667085"; g.font="10px ui-sans-serif,system-ui";
+  g.textAlign="right"; g.textBaseline="middle";
+  for(let i=0;i<=5;i++){
+    const yv=(yMax/5)*i; const py=m.t+ph - (yv/yMax)*ph;
+    g.beginPath(); g.moveTo(m.l-3,py); g.lineTo(m.l,py); g.stroke();
+    g.fillText(yv.toFixed(0), m.l-5, py);
+  }
+  g.save(); g.translate(13,m.t+ph/2); g.rotate(-Math.PI/2);
+  g.textAlign="center"; g.fillText("m_eff (effective independent SNP)", 0, 0); g.restore();
+  g.textAlign="center"; g.textBaseline="top";
+  for(let i=0;i<=5;i++){
+    const xv=(xMax/5)*i; const px=m.l + (xv/xMax)*pw_;
+    g.beginPath(); g.moveTo(px, m.t+ph); g.lineTo(px, m.t+ph+3); g.stroke();
+    g.fillText(xv.toFixed(0), px, m.t+ph+5);
+  }
+  g.fillText("m (raw SNP count in gene)", m.l+pw_/2, m.t+ph+18);
+  // Draw curves for r² values
+  const rs = [{r:0, c:"#19735d"}, {r:0.3, c:"#a66b13"}, {r:0.7, c:"#b23a48"}];
+  rs.forEach(R => {
+    g.strokeStyle = R.c; g.lineWidth = 2; g.beginPath();
+    for(let i=0;i<=200;i++){
+      const mi = (xMax*i)/200;
+      const me = mi / (1 + (mi-1)*R.r);
+      const px = m.l + (mi/xMax)*pw_;
+      const py = m.t+ph - Math.min(yMax, me)/yMax*ph;
+      if(i===0) g.moveTo(px,py); else g.lineTo(px,py);
+    }
+    g.stroke();
+  });
+  // Current point
+  const px = m.l + Math.min(s.m, xMax)/xMax*pw_;
+  const py = m.t+ph - Math.min(meff, yMax)/yMax*ph;
+  g.fillStyle = "#1c2a3c";
+  g.beginPath(); g.arc(px, py, 4, 0, 2*Math.PI); g.fill();
+  // Legend
+  g.font="11px ui-sans-serif,system-ui"; g.textBaseline="middle"; g.textAlign="left";
+  let lx = m.l+10, ly = m.t+10;
+  rs.forEach(R => {
+    g.strokeStyle=R.c; g.lineWidth=2;
+    g.beginPath(); g.moveTo(lx, ly); g.lineTo(lx+18, ly); g.stroke();
+    g.fillStyle="#1c2a3c"; g.fillText(`r²=${R.r}`, lx+22, ly);
+    ly += 14;
+  });
+}
+ddPages.magma = { ready:false, init(){ magmaBuild(); magmaInit(); }, render(){ magmaRender(); } };
+
+/* ===== PRS / PRS-CS deep-dive ===== */
+function prsBuild(){
+  const root = document.getElementById("ddPagePrs");
+  if(!root) return;
+  root.innerHTML = `
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--violet)">1</span>PRS의 본질 — 가중 allele 합</h3>
+      <p>polygenic risk score는 한 사람의 polygenic load를 한 숫자로 요약하는 가중 합입니다.</p>
+      <div class="eq-box">
+        PRS<sub>i</sub> &nbsp;=&nbsp; Σ<sub>j</sub> x<sub>ij</sub> · β̂<sub>j</sub>
+        <span class="ann">— x<sub>ij</sub>는 i 사람의 SNP j dosage(0/1/2 또는 imputed). β̂<sub>j</sub>는 별도 GWAS에서 추정된 effect.</span>
+      </div>
+      <p>두 가지 결정만 하면 됩니다: <b>어떤 SNP을 포함할지</b>, <b>각 SNP에 어떤 가중치를 줄지</b>. 모든 PRS 방법(P+T, LDpred, PRS-CS)은 이 두 결정의 정교화입니다.</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--violet)">2</span>이론적 상한 — Daetwyler 2008 공식</h3>
+      <p>이상적인 경우(LD 무시, 모든 effect 알려짐) PRS의 prediction R²은:</p>
+      <div class="eq-box">
+        R²<sub>theory</sub> &nbsp;=&nbsp;
+        <span class="eq-frac"><span>N · h²</span><span>N + M / h²</span></span>
+        <span class="ann">— N: training GWAS 표본 크기, M: independent causal SNP 수, h²: SNP heritability. N → ∞일 때 R² → h².</span>
+      </div>
+      <ul style="margin:6px 0 0 16px;font-size:13px;line-height:1.7">
+        <li><b>polygenic trait(M=100K)</b>: h²=0.5라도 R²=0.5에 도달하려면 N ≈ 200K 이상 필요.</li>
+        <li><b>oligogenic(M=100)</b>: 같은 h²을 N=10K로도 거의 다 잡음.</li>
+        <li><b>실제 R²은 위 상한의 50-80%</b>: LD로 인한 effect 추정 noise, ancestry mismatch, residual environmental variance.</li>
+      </ul>
+    </article>
+
+    <article class="dd-block full">
+      <h3><span class="num" style="color:var(--violet)">3</span>직접 흔들어보기 — N·h²·M·ancestry transferability</h3>
+      <p>training GWAS의 N·h²·M, 그리고 target ancestry와의 genetic correlation ρ를 만들고 R²이 어떻게 변하는지 봅니다. PRS-CS의 continuous shrinkage는 noise를 감쇠해 단순 P+T보다 나은 R²을 주지만, ancestry mismatch는 기본적인 ρ² penalty로 떨어집니다.</p>
+      <div class="tada-sim-grid">
+        <div class="tada-sim-controls">
+          <label class="tada-slider">
+            <div class="row"><span class="name">N_train — training GWAS 표본</span><span class="val" id="prSimNVal">200,000</span></div>
+            <input type="range" id="prSimN" min="1000" max="1000000" step="1000" value="200000">
+            <div class="hint">UK Biobank ≈ 500K, height GIANT ≈ 700K+.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">true h² (SNP heritability)</span><span class="val" id="prSimHVal">0.30</span></div>
+            <input type="range" id="prSimH" min="5" max="80" value="30">
+            <div class="hint">trait의 polygenic 한계.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">M — effective causal SNP</span><span class="val" id="prSimMVal">10,000</span></div>
+            <input type="range" id="prSimM" min="100" max="500000" step="100" value="10000">
+            <div class="hint">polygenic = 100K+, sparse = 100. polygenicity 측도.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">ancestry r_g (train↔target)</span><span class="val" id="prSimRgVal">1.00</span></div>
+            <input type="range" id="prSimRg" min="40" max="100" value="100">
+            <div class="hint">EUR↔EAS ≈ 0.85, EUR↔AFR ≈ 0.65. 1.0이면 same ancestry.</div>
+          </label>
+          <label class="tada-slider">
+            <div class="row"><span class="name">method</span><span class="val" id="prSimMethVal">PRS-CS</span></div>
+            <input type="range" id="prSimMeth" min="0" max="2" value="1">
+            <div class="hint">0=P+T(clumping), 1=PRS-CS, 2=PRS-CS-auto.</div>
+          </label>
+        </div>
+        <div>
+          <div class="tada-canvas-wrap"><canvas id="prsCanvas"></canvas></div>
+          <div class="tada-readout">
+            <div class="readout-cell"><div class="lbl">R² 이론 상한</div><div class="num" id="prR_theory">—</div><div class="sub">Daetwyler 2008</div></div>
+            <div class="readout-cell"><div class="lbl">R² 달성치</div><div class="num" id="prR_actual">—</div><div class="sub">method 적용 후</div></div>
+            <div class="readout-cell"><div class="lbl">target ancestry R²</div><div class="num" id="prR_anc">—</div><div class="sub">×ρ²</div></div>
+            <div class="readout-cell"><div class="lbl">N to reach 0.10 R²</div><div class="num" id="prR_n10">—</div><div class="sub">목표값 도달</div></div>
+            <div class="readout-cell"><div class="lbl">N to reach 80% h²</div><div class="num" id="prR_n80">—</div><div class="sub">상한의 80%</div></div>
+            <div class="readout-cell"><div class="lbl">권장 method</div><div class="num" id="prR_rec" style="font-size:12px">—</div><div class="sub">현 setting에서</div></div>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:12px;font-size:12.5px"><b>관찰 포인트</b>: (1) N → ∞일 때 R² → h². 그 어떤 method도 h²을 넘을 수 없음. (2) sparse architecture(M=100)면 N=5K로도 상한에 근접. polygenic이면 1M+ 필요. (3) ancestry r_g=0.7이면 target population R²이 ~50%만 transferable. (4) PRS-CS는 P+T 대비 +20-30% R²를 sample-rich setting에서 줌. 작은 N에서는 두 method가 비슷.</p>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--violet)">4</span>방법 비교 — 무엇을 무엇으로 정하는가</h3>
+      <div class="src-flow">
+        <div class="src-card">
+          <span class="h">P+T (clumping + thresholding) <span class="what">고전 baseline</span></span>
+          LD clump으로 independent lead SNP만 남기고 p &lt; threshold 만 포함. 가중치는 GWAS β. 빠르고 단순. polygenic trait에서 PRS-CS 대비 평균 -15-25% R².
+        </div>
+        <div class="src-card">
+          <span class="h">LDpred / LDpred2 <span class="what">discrete mixture prior</span></span>
+          \"causal fraction\" parameter를 미리 정해야 함(e.g., 0.001, 0.01, 0.1, 1). per-SNP normal mixture. PRS-CS보다 약간 unstable.
+        </div>
+        <div class="src-card">
+          <span class="h">PRS-CS <span class="what">continuous shrinkage</span></span>
+          Strawderman-Berger global-local prior. LD block 단위 multivariate update. 모든 architecture에서 robust. global φ는 validation set으로 tuning.
+        </div>
+        <div class="src-card">
+          <span class="h">PRS-CS-auto <span class="what">tuning-free</span></span>
+          φ에 half-Cauchy prior, fully Bayesian. validation set 불필요. small-N(≤50K)에서는 약간 unstable.
+        </div>
+        <div class="src-card">
+          <span class="h">Cross-ancestry methods <span class="what">PRS-CSx, PRSice2</span></span>
+          multiple ancestry GWAS를 동시 활용. EUR-only 학습 후 EAS 적용 대비 +30-50% R² 회복. ancestry mismatch 문제의 부분적 해결.
+        </div>
+        <div class="src-card">
+          <span class="h">Functional priors <span class="what">LDpred-funct, SBayesR-annot</span></span>
+          S-LDSC annotation enrichment를 prior로 사용. functional SNP에 더 큰 가중치. 추가 데이터 필요.
+        </div>
+      </div>
+    </article>
+
+    <article class="dd-block">
+      <h3><span class="num" style="color:var(--violet)">5</span>PRS의 한계와 진화</h3>
+      <p>PRS는 <b>population-level</b> tool이고 individual-level decision support는 아직 입문 단계. 임상 활용이 가능한 5가지 trait(coronary artery disease, breast cancer, atrial fib, T2D, IBD)이 monogenic risk equivalent 수준에 도달했지만 (Khera 2018, Uffelmann 2021), ancestry portability는 여전히 큰 한계.</p>
+      <div class="evo-row">
+        <div class="evo-cell">
+          <div class="yr">2007</div>
+          <div class="evo-dot" style="border-color:var(--blue)"></div>
+          <div class="ttl">Wray · 첫 PRS</div>
+          <div class="desc">P+T baseline. 단순 가중 합, polygenic prediction 개념 정립.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2015</div>
+          <div class="evo-dot" style="border-color:var(--gold)"></div>
+          <div class="ttl">LDpred · Vilhjalmsson</div>
+          <div class="desc">discrete mixture Bayesian prior. summary statistics + LD reference.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2019</div>
+          <div class="evo-dot" style="border-color:var(--green)"></div>
+          <div class="ttl">Ge · PRS-CS</div>
+          <div class="desc">continuous shrinkage prior. block multivariate update. 현재 표준.</div>
+        </div>
+        <div class="evo-cell">
+          <div class="yr">2022+</div>
+          <div class="evo-dot" style="border-color:var(--violet)"></div>
+          <div class="ttl">PRS-CSx · multi-ancestry</div>
+          <div class="desc">trans-ancestry GWAS 통합. ancestry portability 향상. clinical PRS의 미래.</div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+const prSim = {N:200000, h2:0.30, M:10000, rg:1.00, method:1};
+const prMethodNames = ["P+T","PRS-CS","PRS-CS-auto"];
+function prsInit(){
+  const eN=document.getElementById("prSimN");
+  const eH=document.getElementById("prSimH");
+  const eM=document.getElementById("prSimM");
+  const eR=document.getElementById("prSimRg");
+  const eMt=document.getElementById("prSimMeth");
+  if(!eN) return;
+  const update = () => {
+    prSim.N = +eN.value;
+    prSim.h2 = (+eH.value)/100;
+    prSim.M = +eM.value;
+    prSim.rg = (+eR.value)/100;
+    prSim.method = +eMt.value;
+    document.getElementById("prSimNVal").textContent = prSim.N.toLocaleString();
+    document.getElementById("prSimHVal").textContent = prSim.h2.toFixed(2);
+    document.getElementById("prSimMVal").textContent = prSim.M.toLocaleString();
+    document.getElementById("prSimRgVal").textContent = prSim.rg.toFixed(2);
+    document.getElementById("prSimMethVal").textContent = prMethodNames[prSim.method];
+    prsRender();
+  };
+  [eN,eH,eM,eR,eMt].forEach(el => el.addEventListener("input", update));
+  update();
+}
+function prRTheory(N,h2,M){
+  if(h2<=0) return 0;
+  return (N*h2) / (N + M/h2);
+}
+function prMethodPenalty(method){
+  // P+T: 0.65, PRS-CS: 0.85, PRS-CS-auto: 0.82
+  return [0.65, 0.85, 0.82][method];
+}
+function prsRender(){
+  const s = prSim;
+  const r2theory = prRTheory(s.N, s.h2, s.M);
+  const r2actual = r2theory * prMethodPenalty(s.method);
+  const r2anc = r2actual * s.rg * s.rg;
+  // N to reach 0.10
+  const target1 = 0.10;
+  let n10 = "—";
+  if(s.h2 > target1){
+    const targetTheory = target1 / prMethodPenalty(s.method);
+    // (N*h2)/(N+M/h2) = targetTheory → solve N
+    // N·h² = targetTheory·(N + M/h²) → N·(h²−targetTheory) = targetTheory·M/h²
+    const denom = s.h2 - targetTheory;
+    if(denom>0){
+      const Nneed = targetTheory * s.M / s.h2 / denom;
+      n10 = Math.ceil(Nneed/1000)*1000;
+      n10 = Number.isFinite(n10) ? n10.toLocaleString() : "—";
+    } else {
+      n10 = "도달 불가";
+    }
+  } else { n10 = "h² < 0.10이라 불가"; }
+  // N to reach 80% h²
+  const target2 = 0.80 * s.h2;
+  let n80 = "—";
+  const targetTheory2 = target2 / prMethodPenalty(s.method);
+  const denom2 = s.h2 - targetTheory2;
+  if(denom2 > 0){
+    const Nneed = targetTheory2 * s.M / s.h2 / denom2;
+    n80 = Math.ceil(Nneed/1000)*1000;
+    n80 = Number.isFinite(n80) ? n80.toLocaleString() : "—";
+  } else { n80 = "도달 불가"; }
+  // recommendation
+  const rec = s.N < 50000 ? "P+T or PRS-CS"
+            : s.rg < 0.85 ? "PRS-CSx (multi-ancestry)"
+            : s.method === 0 ? "PRS-CS 권장(+20% R²)"
+            : "현재 setting OK";
+  document.getElementById("prR_theory").textContent = r2theory.toFixed(3);
+  document.getElementById("prR_actual").textContent = r2actual.toFixed(3);
+  document.getElementById("prR_anc").textContent = r2anc.toFixed(3);
+  document.getElementById("prR_n10").textContent = n10;
+  document.getElementById("prR_n80").textContent = n80;
+  document.getElementById("prR_rec").textContent = rec;
+
+  // Draw R² vs N for current method, plus h² ceiling
+  const c = document.getElementById("prsCanvas");
+  if(!c) return;
+  const dpr = window.devicePixelRatio||1;
+  const w=c.clientWidth, h=c.clientHeight;
+  c.width=w*dpr; c.height=h*dpr;
+  const g=c.getContext("2d"); g.scale(dpr,dpr);
+  g.clearRect(0,0,w,h);
+  const m={l:48,r:18,t:14,b:34};
+  const pw_=w-m.l-m.r, ph=h-m.t-m.b;
+  g.strokeStyle="#d9dee7"; g.lineWidth=1;
+  g.beginPath(); g.moveTo(m.l,m.t); g.lineTo(m.l,m.t+ph); g.lineTo(m.l+pw_,m.t+ph); g.stroke();
+  const Nmin=1000, Nmax=2000000;
+  const lgMin=Math.log10(Nmin), lgMax=Math.log10(Nmax);
+  const yMax = Math.max(s.h2, 0.5);
+  g.fillStyle="#667085"; g.font="10px ui-sans-serif,system-ui";
+  g.textAlign="right"; g.textBaseline="middle";
+  for(let i=0;i<=5;i++){
+    const yv=(yMax/5)*i; const py=m.t+ph-(yv/yMax)*ph;
+    g.beginPath(); g.moveTo(m.l-3,py); g.lineTo(m.l,py); g.stroke();
+    g.fillText(yv.toFixed(2), m.l-5, py);
+  }
+  g.save(); g.translate(13,m.t+ph/2); g.rotate(-Math.PI/2);
+  g.textAlign="center"; g.fillText("R² (prediction)", 0, 0); g.restore();
+  g.textAlign="center"; g.textBaseline="top";
+  [1000,10000,100000,1000000].forEach(N => {
+    const px = m.l + (Math.log10(N)-lgMin)/(lgMax-lgMin)*pw_;
+    g.beginPath(); g.moveTo(px, m.t+ph); g.lineTo(px, m.t+ph+3); g.stroke();
+    const lbl = N>=1000000 ? "1M" : N>=1000 ? (N/1000)+"k" : ""+N;
+    g.fillText(lbl, px, m.t+ph+5);
+  });
+  g.fillText("N_train (log scale)", m.l+pw_/2, m.t+ph+18);
+  // h² ceiling
+  g.strokeStyle="#19735d"; g.setLineDash([4,3]);
+  const pyH = m.t+ph - s.h2/yMax*ph;
+  g.beginPath(); g.moveTo(m.l, pyH); g.lineTo(m.l+pw_, pyH); g.stroke();
+  g.setLineDash([]);
+  g.fillStyle="#19735d"; g.font="10.5px ui-sans-serif,system-ui";
+  g.textAlign="left"; g.textBaseline="bottom";
+  g.fillText(`h²=${s.h2.toFixed(2)} 상한`, m.l+6, pyH-2);
+  // Three method curves
+  const methods = [{c:"#a66b13", p:0.65, label:"P+T"},{c:"#19728a", p:0.85, label:"PRS-CS"},{c:"#b23a48", p:0.82, label:"PRS-CS-auto"}];
+  methods.forEach(M => {
+    g.strokeStyle = M.c; g.lineWidth = 2; g.beginPath();
+    for(let i=0;i<=200;i++){
+      const lg = lgMin + (i/200)*(lgMax-lgMin);
+      const Ni = Math.pow(10, lg);
+      const r2 = prRTheory(Ni, s.h2, s.M) * M.p * s.rg * s.rg;
+      const px = m.l + (lg-lgMin)/(lgMax-lgMin)*pw_;
+      const py = m.t+ph - Math.min(yMax, r2)/yMax*ph;
+      if(i===0) g.moveTo(px,py); else g.lineTo(px,py);
+    }
+    g.stroke();
+  });
+  // Current N
+  const lgN = Math.log10(s.N);
+  if(lgN>=lgMin && lgN<=lgMax){
+    const px = m.l + (lgN-lgMin)/(lgMax-lgMin)*pw_;
+    const py = m.t+ph - r2anc/yMax*ph;
+    g.fillStyle = "#1c2a3c";
+    g.beginPath(); g.arc(px,py,4,0,2*Math.PI); g.fill();
+    g.font="10.5px ui-sans-serif,system-ui";
+    g.textAlign="left"; g.textBaseline="middle";
+    g.fillStyle="#1c2a3c";
+    g.fillText(`R²=${r2anc.toFixed(3)} (target ancestry)`, Math.min(px+8, m.l+pw_-160), py);
+  }
+  // Legend
+  g.font="11px ui-sans-serif,system-ui"; g.textBaseline="middle"; g.textAlign="left";
+  let lx = m.l+pw_-130, ly = m.t+10;
+  methods.forEach(M => {
+    g.strokeStyle=M.c; g.lineWidth=2;
+    g.beginPath(); g.moveTo(lx, ly); g.lineTo(lx+18, ly); g.stroke();
+    g.fillStyle="#1c2a3c"; g.fillText(M.label, lx+22, ly);
+    ly += 14;
+  });
+}
+ddPages.prs = { ready:false, init(){ prsBuild(); prsInit(); }, render(){ prsRender(); } };
+
+window.addEventListener("resize", () => {
+  if(ddCurrent && ddPages[ddCurrent] && ddPages[ddCurrent].render) ddPages[ddCurrent].render();
+});
+
+renderDeepDive();
+</script>
+</body>
+</html>
