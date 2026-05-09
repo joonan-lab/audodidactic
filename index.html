@@ -123,17 +123,9 @@ body::after {
 
 /* ============== HERO ============== */
 .hero {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 36px;
+  display: block;
   margin-bottom: 72px;
-}
-@media (min-width: 980px) {
-  .hero {
-    grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.85fr);
-    align-items: end;
-    gap: 56px;
-  }
+  max-width: 920px;
 }
 
 .brand {
@@ -176,10 +168,10 @@ body::after {
   font-size: clamp(36px, 5.6vw, 64px);
   font-weight: 850;
   letter-spacing: -0.022em;
-  line-height: 1.04;
+  line-height: 1.08;
   margin: 0 0 22px;
-  max-width: 720px;
 }
+.hero h1 br { display: block; content: ""; }
 .hero h1 .accent {
   background: linear-gradient(120deg,
     var(--t-stat) 0%,
@@ -219,51 +211,6 @@ body::after {
   font-variant-numeric: tabular-nums;
 }
 .chip b { color: var(--ink); font-weight: 700; font-family: var(--f-mono); }
-
-.hero-stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  background: var(--surface-glass);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border: 1px solid oklch(1 0 0 / 0.7);
-  border-radius: var(--r-card);
-  padding: 26px;
-  box-shadow: var(--shadow-card);
-  position: relative;
-  overflow: hidden;
-}
-.hero-stats::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(60% 80% at 100% 0%, oklch(0.78 0.13 220 / 0.1), transparent 60%);
-  pointer-events: none;
-}
-.h-stat { display: flex; flex-direction: column; gap: 6px; position: relative; }
-.h-stat-num {
-  font-family: var(--f-mono);
-  font-size: clamp(22px, 2.4vw, 28px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-.h-stat-num small {
-  font-size: 0.5em;
-  font-weight: 500;
-  color: var(--muted);
-  margin-left: 4px;
-}
-.h-stat-lab {
-  font-size: 12px;
-  color: var(--muted);
-  letter-spacing: 0.01em;
-  line-height: 1.45;
-}
 
 /* ============== TRACKS ============== */
 .tracks {
@@ -595,39 +542,19 @@ body::after {
 
 <!-- ================ HERO ================ -->
 <header class="hero">
-  <div class="hero-text">
-    <div class="brand">
-      <span class="brand-mark" aria-hidden="true"></span>
-      <span><strong>audodidactic</strong> · joonan-lab onboarding</span>
-    </div>
-    <h1>새 주제를 한 페이지로 <span class="accent">스스로 익힌다</span></h1>
-    <p class="lede">
-      랩원이 GWAS·단세포·foundation model 같은 주제에 처음 들어갈 때 텍스트만으로 잘 잡히지 않는 직관을, 한 페이지짜리 인터랙티브로 풀어둔 자료실. 모든 페이지는 lab 위키의 정리 노트와 원 논문에서 출발하고, 인용은 Google Scholar로 연결됩니다.
-    </p>
-    <div class="hero-meta">
-      <span class="chip"><b>5</b> 인터랙티브</span>
-      <span class="chip"><b>3</b> 연구 트랙</span>
-      <span class="chip"><b>한글</b> 학습 자료</span>
-    </div>
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span><strong>audodidactic</strong> · joonan-lab onboarding</span>
   </div>
-  <aside class="hero-stats" aria-label="자료실 현황">
-    <div class="h-stat">
-      <div class="h-stat-num">10,473<small>줄</small></div>
-      <div class="h-stat-lab">총 인터랙티브 코드</div>
-    </div>
-    <div class="h-stat">
-      <div class="h-stat-num">100+</div>
-      <div class="h-stat-lab">인용 논문·리소스</div>
-    </div>
-    <div class="h-stat">
-      <div class="h-stat-num">2026.05</div>
-      <div class="h-stat-lab">최종 업데이트</div>
-    </div>
-    <div class="h-stat">
-      <div class="h-stat-num">self-host</div>
-      <div class="h-stat-lab">GitHub Pages 정적 배포</div>
-    </div>
-  </aside>
+  <h1>새 주제를 한 페이지로<br><span class="accent">스스로 익힌다</span></h1>
+  <p class="lede">
+    랩원이 GWAS·단세포·foundation model 같은 주제에 처음 들어갈 때 텍스트만으로 잘 잡히지 않는 직관을, 한 페이지짜리 인터랙티브로 풀어둔 자료실. 모든 페이지는 lab 위키의 정리 노트와 원 논문에서 출발하고, 인용은 Google Scholar로 연결됩니다.
+  </p>
+  <div class="hero-meta">
+    <span class="chip"><b>5</b> 인터랙티브</span>
+    <span class="chip"><b>3</b> 연구 트랙</span>
+    <span class="chip"><b>한글</b> 학습 자료</span>
+  </div>
 </header>
 
 <!-- ================ TRACKS ================ -->
