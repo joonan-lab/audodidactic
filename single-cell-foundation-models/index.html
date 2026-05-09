@@ -215,7 +215,7 @@ h2 em{font-style:normal;font-weight:850;color:var(--c-value)}
 .tl-stat{font-size:12px;color:var(--muted)}
 .tl-stat b{color:var(--ink);font-weight:800;font-size:14px}
 .tl-track{
-  position:relative;height:200px;border-top:1px dashed var(--line-soft);
+  position:relative;height:260px;border-top:1px dashed var(--line-soft);
   border-bottom:1px dashed var(--line-soft);margin:8px 0 4px;
 }
 .tl-axis{
@@ -227,19 +227,21 @@ h2 em{font-style:normal;font-weight:850;color:var(--c-value)}
 .tl-axis span{padding:0 6px}
 .tl-node{
   position:absolute;transform:translate(-50%,0);
+  text-align:center;
   cursor:pointer;transition:opacity .25s ease, transform .15s ease;
 }
 .tl-node:hover{transform:translate(-50%,-2px)}
 .tl-node.dim{opacity:.18}
 .tl-node-dot{
   width:14px;height:14px;border-radius:50%;background:var(--node-color,var(--c-rank));
-  border:2px solid #fff;box-shadow:0 0 0 1px var(--node-color,var(--c-rank));
+  border:1.5px solid #fff;box-shadow:0 0 0 .8px var(--node-color,var(--c-rank));
   margin:0 auto;
 }
 .tl-node-label{
   font-size:11px;font-weight:700;color:var(--ink);
   margin-top:4px;text-align:center;line-height:1.2;
-  white-space:nowrap;background:rgba(255,255,255,.85);padding:1px 4px;border-radius:3px;
+  white-space:nowrap;background:rgba(255,255,255,.9);
+  padding:1px 4px;border-radius:3px;
 }
 .tl-node-meta{
   font-size:9.5px;color:var(--muted);text-align:center;font-family:ui-monospace,monospace;
@@ -646,7 +648,7 @@ table.tok-tbl .chip{
     </p>
   </div>
   <div class="mast-stats">
-    <div class="stat"><b>8<em> strategies</em></b><span>토큰화 전략 풍경</span></div>
+    <div class="stat"><b>8<em> strategies</em></b><span>토큰화 전략</span></div>
     <div class="stat"><b>16<em> 모델</em></b><span>비교 테이블 핵심 라인업</span></div>
     <div class="stat"><b>350<em>M cells</em></b><span>최대 학습 corpus (scPRINT-2)</span></div>
     <div class="stat"><b>27<em>B params</em></b><span>최대 모델 (C2S-Scale)</span></div>
@@ -716,10 +718,10 @@ table.tok-tbl .chip{
 <section id="endemic">
   <div class="s-head">
     <span class="s-num">01</span>
-    <h2>scRNA-seq의 <em>세 가지 풍토병</em> — 왜 일반 transformer로는 안 되는가</h2>
+    <h2>scRNA-seq의 <em>세 가지 난제</em> — 왜 일반 Transformer를 그대로 쓸 수 없는가</h2>
   </div>
   <p class="s-lede">
-    일반 transformer를 단세포에 그대로 들이대면 셋 다 무너진다. 모든 scRNA-seq 파운데이션 모델은 이 셋 중 하나 이상을 어떻게 다룰지에 대한 <strong>설계적 선택</strong>이다.
+    일반 Transformer를 단세포에 그대로 들이대면 셋 다 무너진다. 모든 scRNA-seq 파운데이션 모델은 이 셋 중 하나 이상을 어떻게 다룰지에 대한 <strong>설계적 선택</strong>이다.
   </p>
   <div class="endemic-grid">
     <article class="endemic-card">
@@ -790,7 +792,7 @@ table.tok-tbl .chip{
 <section id="strategies">
   <div class="s-head">
     <span class="s-num">03</span>
-    <h2>8가지 전략 풍경 — <em>같은 문제, 8가지 답</em></h2>
+    <h2>8가지 토큰화 전략 — <em>같은 문제, 8가지 답</em></h2>
   </div>
   <p class="s-lede">
     "유전자를 어떻게 토큰화할까"에 대한 8가지 답이 8개의 모델 가족을 만들었다. 버튼을 누르면 해당 전략 카드만 강조되고 나머지는 옅어진다.
@@ -1609,47 +1611,43 @@ function buildTimeline(){
     legend.appendChild(el);
   });
 
-  // group multiple models in same year vertically
-  const yrCounts = {};
-  MODELS.forEach(m => { yrCounts[m.year] = (yrCounts[m.year]||0); });
-
-  const yrIndex = {};
-  MODELS.forEach(m => {
-    yrIndex[m.year] = (yrIndex[m.year]||0) + 1;
-  });
-
-  // Place nodes
-  const yrPos = {};
-  MODELS.forEach(m => {
-    if(!yrPos[m.year]) yrPos[m.year] = 0;
-  });
-
-  // Sort by year then by paramsN for deterministic stacking
+  // Sort by year then by paramsN for deterministic placement.
   const sorted = [...MODELS].sort((a,b)=> a.year-b.year || a.paramsN-b.paramsN);
-  const yrSlot = {};
-
+  const byYear = new Map();
   sorted.forEach(m => {
-    yrSlot[m.year] = (yrSlot[m.year]||0);
-    const slot = yrSlot[m.year];
-    yrSlot[m.year]++;
+    if(!byYear.has(m.year)) byYear.set(m.year, []);
+    byYear.get(m.year).push(m);
+  });
 
-    const xPct = ((m.year - yrMin) / (yrMax - yrMin)) * 92 + 4; // 4-96%
-    const yPct = 8 + slot * 28;
+  byYear.forEach((group, year) => {
+    const columns = group.length >= 4 ? 2 : 1;
+    const rows = Math.ceil(group.length / columns);
+    const baseX = ((year - yrMin) / (yrMax - yrMin)) * 85 + 7.5;
+    const colGap = 6.2;
+    const topPad = rows === 1 ? 34 : (rows === 2 ? 36 : 24);
+    const rowGap = rows === 1 ? 0 : (rows === 2 ? 86 : 68);
 
-    const node = document.createElement("div");
-    node.className = "tl-node";
-    node.dataset.id = m.id;
-    node.dataset.year = m.year;
-    node.style.left = xPct + "%";
-    node.style.top = yPct + "px";
-    node.style.setProperty("--node-color", STRAT[m.strategy].color);
-    node.innerHTML = `
-      <div class="tl-node-dot"></div>
-      <div class="tl-node-label">${m.name}</div>
-      <div class="tl-node-meta">${m.params}</div>
-    `;
-    node.addEventListener("click", () => showTLDetail(m));
-    track.insertBefore(node, axis);
+    group.forEach((m, index) => {
+      const col = columns === 1 ? 0 : index % columns;
+      const row = columns === 1 ? index : Math.floor(index / columns);
+      const xPct = baseX + (columns === 1 ? 0 : (col - 0.5) * colGap);
+      const yPx = topPad + row * rowGap;
+
+      const node = document.createElement("div");
+      node.className = "tl-node";
+      node.dataset.id = m.id;
+      node.dataset.year = m.year;
+      node.style.left = xPct + "%";
+      node.style.top = yPx + "px";
+      node.style.setProperty("--node-color", STRAT[m.strategy].color);
+      node.innerHTML = `
+        <div class="tl-node-dot"></div>
+        <div class="tl-node-label">${m.name}</div>
+        <div class="tl-node-meta">${m.params}</div>
+      `;
+      node.addEventListener("click", () => showTLDetail(m));
+      track.insertBefore(node, axis);
+    });
   });
 
   function update(yr){
