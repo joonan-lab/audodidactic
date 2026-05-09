@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>단세포 Foundation Model — 55편의 풍경 (Single-cell Foundation Models)</title>
-<meta name="description" content="scBERT(2022)부터 scPRINT-2·Tahoe-x1·Geneformer V2·MaxToki(2025-26)까지, 단세포 RNA-seq foundation model 55편을 한 페이지로 풀어둔 한글 인터랙티브 자료. 8가지 토큰화 전략, HEIMDALL 토크나이저 분해, 16개 모델 비교 테이블, Reality Check 4편 비판, Virtual Cell 비전을 포함.">
+<title>가상세포 파운데이션 모델 (Virtual Cell · Single-cell Foundation Models)</title>
+<meta name="description" content="scBERT(2022)부터 scPRINT-2·Tahoe-x1·Geneformer V2·MaxToki(2025-26)까지, scRNA-seq 기반 가상세포 파운데이션 모델 (scFM)을 한 페이지로 풀어둔 한글 인터랙티브 자료. 8가지 토큰화 전략, HEIMDALL 토크나이저 분해, 16개 모델 비교 테이블, Reality Check 4편 비판, Virtual Cell 비전을 포함.">
 <style>
 *{box-sizing:border-box}
 :root{
@@ -630,23 +630,23 @@ table.tok-tbl .chip{
 <nav class="topnav">
   <span class="crumb"><a href="../index.html">Audodidactic</a></span>
   <span class="sep">/</span>
-  <span class="now">단세포 Foundation Model — 55편의 풍경</span>
+  <span class="now">가상세포 파운데이션 모델</span>
 </nav>
 
 <!-- ============== MASTHEAD ============== -->
 <header class="mast">
   <div>
-    <div class="eyebrow">Single-cell Foundation Models · 한글 인터랙티브 해설</div>
+    <div class="eyebrow">Virtual Cell · Single-cell Foundation Models · 한글 인터랙티브 해설</div>
     <h1>scBERT부터 <em>Tahoe-x1·scPRINT-2</em>까지, 4년의 가속을 한 페이지에</h1>
     <p class="dek">
       2022년 scBERT가 BERT를 단세포에 처음 끼워 넣은 뒤, <strong>4년 만에 학습 corpus는 수백만 → 3억 5천만 cells</strong>로,
-      파라미터는 <strong>10M → 27B</strong>로 커졌다. 본 페이지는 lab 위키의 single-cell-foundation 정리본 <strong>55편</strong>을
+      파라미터는 <strong>10M → 27B</strong>로 커졌다. 본 페이지는 lab 위키의 single-cell-foundation 정리본을
       8가지 토큰화 전략 / 16개 핵심 모델 / 4편의 비판적 벤치마크 / Virtual Cell 비전으로 풀어 둔 onboarding 자료다.
       처음 보는 사람을 위해 scRNA-seq · transformer · 토큰화 · foundation model의 <strong>기초 4가지</strong>도 위에 따로 정리했다.
     </p>
   </div>
   <div class="mast-stats">
-    <div class="stat"><b>55<em> 편</em></b><span>wiki/single-cell-foundation 정리본</span></div>
+    <div class="stat"><b>8<em> strategies</em></b><span>토큰화 전략 풍경</span></div>
     <div class="stat"><b>16<em> 모델</em></b><span>비교 테이블 핵심 라인업</span></div>
     <div class="stat"><b>350<em>M cells</em></b><span>최대 학습 corpus (scPRINT-2)</span></div>
     <div class="stat"><b>27<em>B params</em></b><span>최대 모델 (C2S-Scale)</span></div>
@@ -719,7 +719,7 @@ table.tok-tbl .chip{
     <h2>scRNA-seq의 <em>세 가지 풍토병</em> — 왜 일반 transformer로는 안 되는가</h2>
   </div>
   <p class="s-lede">
-    일반 transformer를 단세포에 그대로 들이대면 셋 다 무너진다. 모든 단세포 foundation model은 이 셋 중 하나 이상을 어떻게 다룰지에 대한 <strong>설계적 선택</strong>이다.
+    일반 transformer를 단세포에 그대로 들이대면 셋 다 무너진다. 모든 scRNA-seq 파운데이션 모델은 이 셋 중 하나 이상을 어떻게 다룰지에 대한 <strong>설계적 선택</strong>이다.
   </p>
   <div class="endemic-grid">
     <article class="endemic-card">
@@ -1349,7 +1349,7 @@ table.tok-tbl .chip{
   </div>
 
   <div class="cite-block">
-    <h4>인용 — wiki/single-cell-foundation 정리본 (25편 / 55편 중)</h4>
+    <h4>인용 — wiki/single-cell-foundation 정리본</h4>
     <ul id="citeList"><!-- injected --></ul>
   </div>
 </section>
@@ -1357,7 +1357,7 @@ table.tok-tbl .chip{
 <!-- ============== FOOTER ============== -->
 <div class="foot">
   <strong>audodidactic / single-cell-foundation-models</strong> · 2026-05-09 · joonan-lab onboarding 자료실<br>
-  자료 출처: lab 위키의 <code>wiki/single-cell-foundation/</code> 정리본 55편 + <code>wiki/overviews/</code> 9편 (single-cell-foundation-models-timeline,
+  자료 출처: lab 위키의 <code>wiki/single-cell-foundation/</code> 정리본 + <code>wiki/overviews/</code> 문서 (single-cell-foundation-models-timeline,
   foundation-models-biology-review, foundation-model-corpus-comparison, embedding-strategies-biological-foundation-models, virtual-cell-evolution 등).
   모든 인용은 Google Scholar 검색 링크로 변환됨 — 외부 자원 의존도 0.<br>
   본 페이지는 lab 내부의 작업 중인 manuscripts를 의도적으로 제외하고, 외부에 공개된 모델·논문만 다룸.<br>
