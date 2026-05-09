@@ -96,6 +96,8 @@ h1{
 }
 .method-btn:hover{transform:translateY(-1px);border-color:#9aa7b8}
 .method-btn.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,#fff)}
+.method-btn:focus{outline:0}
+.method-btn:focus-visible{box-shadow:inset 0 0 0 2px var(--accent)}
 .method-btn .k{display:block;font-size:13px;font-weight:800}
 .method-btn .s{display:block;font-size:11px;color:var(--muted);margin-top:4px}
 .grid{
@@ -1378,6 +1380,9 @@ function logX(x,w,pad){
   const lo=Math.log10(.00001), hi=Math.log10(1);
   return pad+(Math.log10(x)-lo)/(hi-lo)*(w-pad*2);
 }
+function plotX(x,w,pad){
+  return clamp(logX(x,w,pad),pad,w-pad);
+}
 function yPos(y,h,pad){return h-pad-y*(h-pad*2);}
 
 function drawLandscape(){
@@ -1405,14 +1410,14 @@ function drawLandscape(){
   }
 
   ctx.fillStyle="rgba(37,92,153,.05)";
-  ctx.fillRect(logX(.05,w,pad),yPos(.32,h,pad),logX(.98,w,pad)-logX(.05,w,pad),yPos(.03,h,pad)-yPos(.32,h,pad));
+  ctx.fillRect(plotX(.05,w,pad),yPos(.32,h,pad),plotX(.98,w,pad)-plotX(.05,w,pad),yPos(.03,h,pad)-yPos(.32,h,pad));
   ctx.fillStyle="rgba(166,107,19,.06)";
-  ctx.fillRect(logX(.00001,w,pad),yPos(.85,h,pad),logX(.04,w,pad)-logX(.00001,w,pad),yPos(.18,h,pad)-yPos(.85,h,pad));
+  ctx.fillRect(plotX(.00001,w,pad),yPos(.85,h,pad),plotX(.04,w,pad)-plotX(.00001,w,pad),yPos(.18,h,pad)-yPos(.85,h,pad));
   ctx.fillStyle="rgba(178,58,72,.06)";
-  ctx.fillRect(logX(.000001,w,pad),yPos(.95,h,pad),logX(.012,w,pad)-logX(.000001,w,pad),yPos(.28,h,pad)-yPos(.95,h,pad));
+  ctx.fillRect(plotX(.000001,w,pad),yPos(.95,h,pad),plotX(.012,w,pad)-plotX(.000001,w,pad),yPos(.28,h,pad)-yPos(.95,h,pad));
 
   const r=selected.range;
-  const x1=logX(r.x1,w,pad),x2=logX(r.x2,w,pad),y1=yPos(r.y2,h,pad),y2=yPos(r.y1,h,pad);
+  const x1=plotX(r.x1,w,pad),x2=plotX(r.x2,w,pad),y1=yPos(r.y2,h,pad),y2=yPos(r.y1,h,pad);
   ctx.fillStyle=colorWithAlpha(methodColor(),.13);
   ctx.strokeStyle=methodColor();
   ctx.lineWidth=2;

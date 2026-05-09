@@ -1,0 +1,2980 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>유비퀴틴 × 암 — 분해 코드와 멀티오믹스 | Audodidactic</title>
+<meta name="description" content="유비퀴틴-프로테아좀 시스템(UPS), E3 리가아제와 DUB, 멀티오믹스 프로테오제노믹스, PROTAC·분자 글루까지 — 암에서의 단백질 분해 코드를 한 페이지로 익히는 한글 인터랙티브.">
+<style>
+:root{
+  /* surfaces */
+  --bg: oklch(0.985 0.005 290);
+  --surface: oklch(1 0 0);
+  --surface-glass: oklch(1 0 0 / 0.65);
+  --surface-glass-strong: oklch(1 0 0 / 0.88);
+  --soft: oklch(0.97 0.012 290);
+  --soft-2: oklch(0.95 0.018 290);
+
+  /* ink */
+  --ink: oklch(0.18 0.025 290);
+  --ink-soft: oklch(0.36 0.025 290);
+  --muted: oklch(0.55 0.018 290);
+  --line: oklch(0.9 0.008 290);
+  --line-soft: oklch(0.94 0.005 290);
+
+  /* ubiquitin palette — rich violet for "the code" */
+  --ub: oklch(0.5 0.18 295);
+  --ub-glow: oklch(0.78 0.16 295);
+  --ub-tint: oklch(0.96 0.025 295);
+  --ub-deep: oklch(0.36 0.18 295);
+
+  /* cancer palette — warm crimson for tumor signaling */
+  --tumor: oklch(0.5 0.16 25);
+  --tumor-glow: oklch(0.78 0.14 25);
+  --tumor-tint: oklch(0.97 0.022 25);
+
+  /* tumor suppressor — cool teal */
+  --supp: oklch(0.5 0.13 200);
+  --supp-glow: oklch(0.78 0.12 200);
+  --supp-tint: oklch(0.96 0.022 200);
+
+  /* multi-omics palette */
+  --omics-rna: oklch(0.6 0.13 35);
+  --omics-prot: oklch(0.5 0.13 200);
+  --omics-phospho: oklch(0.5 0.14 130);
+  --omics-ub: oklch(0.5 0.18 295);
+  --omics-ac: oklch(0.6 0.14 80);
+
+  /* chain palette — distinct hues for each Ub chain type */
+  --chain-k48: oklch(0.55 0.2 25);     /* red */
+  --chain-k63: oklch(0.55 0.18 230);   /* blue */
+  --chain-m1:  oklch(0.55 0.2 295);    /* violet */
+  --chain-k11: oklch(0.6 0.18 145);    /* green */
+  --chain-k27: oklch(0.6 0.18 65);     /* orange */
+  --chain-k29: oklch(0.55 0.16 350);   /* magenta */
+  --chain-k33: oklch(0.6 0.18 105);    /* lime */
+  --chain-k6:  oklch(0.55 0.16 200);   /* teal */
+  --chain-mono: oklch(0.55 0.05 290);  /* gray-violet */
+
+  /* shadows */
+  --shadow-1: 0 1px 2px oklch(0.2 0.02 290 / 0.05),
+              0 2px 6px oklch(0.2 0.02 290 / 0.05);
+  --shadow-2: 0 2px 4px oklch(0.2 0.02 290 / 0.06),
+              0 8px 20px oklch(0.2 0.02 290 / 0.06);
+  --shadow-card: 0 1px 2px oklch(0.2 0.02 290 / 0.04),
+                 0 4px 12px oklch(0.2 0.02 290 / 0.05),
+                 0 16px 40px oklch(0.2 0.02 290 / 0.05);
+  --shadow-hover: 0 2px 4px oklch(0.2 0.02 290 / 0.06),
+                  0 12px 28px oklch(0.2 0.02 290 / 0.08),
+                  0 32px 72px oklch(0.2 0.02 290 / 0.1);
+
+  /* radius */
+  --r-card: 22px;
+  --r-inner: 14px;
+  --r-pill: 999px;
+  --r-btn: 12px;
+
+  /* motion */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.4, 1);
+
+  /* fonts */
+  --f-display: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR",
+               -apple-system, BlinkMacSystemFont, "Segoe UI Variable", system-ui, sans-serif;
+  --f-body: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR",
+            -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+  --f-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--f-body);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  text-wrap: pretty;
+  position: relative;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* liquid background */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  background:
+    radial-gradient(60% 50% at 14% 8%, oklch(0.78 0.16 295 / 0.18), transparent 60%),
+    radial-gradient(50% 45% at 92% 22%, oklch(0.78 0.14 25 / 0.13), transparent 65%),
+    radial-gradient(55% 50% at 75% 92%, oklch(0.78 0.12 200 / 0.12), transparent 65%),
+    radial-gradient(45% 45% at 30% 65%, oklch(0.85 0.06 295 / 0.1), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: drift 30s ease-in-out infinite alternate;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(oklch(0.2 0.02 290 / 0.012) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: multiply;
+}
+@keyframes drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+  50%  { transform: translate3d(2%, -1.5%, 0) scale(1.04) rotate(0.3deg); }
+  100% { transform: translate3d(-1.5%, 2%, 0) scale(1.03) rotate(-0.4deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; }
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 28px 80px;
+}
+
+/* =========== TOP BAR =========== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0 24px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 36px;
+}
+.brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.2s var(--ease);
+}
+.brand-link:hover { color: var(--ink); }
+.brand-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: conic-gradient(from 220deg at 50% 50%,
+    var(--ub-glow), var(--tumor-glow) 35%,
+    var(--supp-glow) 70%, var(--ub-glow) 100%);
+  box-shadow:
+    0 1px 2px oklch(0.2 0.02 290 / 0.1),
+    inset 0 0 0 1.5px oklch(1 0 0 / 0.6);
+  position: relative;
+}
+.brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: var(--surface);
+}
+.brand-link b { color: var(--ink); font-weight: 700; }
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.nav a {
+  text-decoration: none;
+  color: var(--ink-soft);
+  font-size: 12.5px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  padding: 6px 12px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s var(--ease);
+  font-weight: 500;
+}
+.nav a:hover {
+  border-color: var(--ub);
+  color: var(--ub-deep);
+  background: var(--ub-tint);
+}
+
+/* =========== HERO =========== */
+.hero {
+  margin-bottom: 60px;
+  display: grid;
+  gap: 32px;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--ub-tint);
+  border: 1px solid oklch(from var(--ub) l c h / 0.25);
+  border-radius: var(--r-pill);
+  font-family: var(--f-mono);
+  font-size: 11.5px;
+  color: var(--ub-deep);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+.hero-badge::before {
+  content: "";
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--ub);
+  box-shadow: 0 0 0 4px oklch(from var(--ub) l c h / 0.18);
+}
+.hero h1 {
+  font-family: var(--f-display);
+  font-size: clamp(34px, 5vw, 56px);
+  font-weight: 850;
+  letter-spacing: -0.022em;
+  line-height: 1.08;
+  margin: 0;
+  max-width: 980px;
+}
+.hero h1 .accent {
+  background: linear-gradient(120deg,
+    var(--ub) 0%, var(--tumor) 50%, var(--supp) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.hero-lead {
+  font-size: 17px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+  max-width: 720px;
+}
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(10px) saturate(1.4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.chip b { color: var(--ink); font-weight: 700; font-family: var(--f-mono); }
+
+/* =========== TOC =========== */
+.toc {
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(14px) saturate(1.3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 24px 28px;
+  margin-bottom: 56px;
+  box-shadow: var(--shadow-1);
+}
+.toc-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.toc-head h2 {
+  font-family: var(--f-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+.toc-head .label {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.toc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+.toc-grid a {
+  text-decoration: none;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  padding: 10px 14px;
+  border-radius: var(--r-btn);
+  transition: all 0.2s var(--ease);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: oklch(1 0 0 / 0.5);
+  border: 1px solid transparent;
+}
+.toc-grid a:hover {
+  background: var(--ub-tint);
+  color: var(--ub-deep);
+  border-color: oklch(from var(--ub) l c h / 0.2);
+  transform: translateX(2px);
+}
+.toc-grid a .num {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--ub);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* =========== SECTION =========== */
+section.s {
+  margin-bottom: 80px;
+}
+.s-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.s-num {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--ub);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.s-num::before {
+  content: "";
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--ub);
+  box-shadow: 0 0 0 4px oklch(from var(--ub) l c h / 0.18);
+}
+.s-title {
+  font-family: var(--f-display);
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.018em;
+  line-height: 1.18;
+  flex: 1;
+  min-width: 280px;
+}
+.s-sub {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.s-blurb {
+  font-size: 15px;
+  color: var(--ink-soft);
+  max-width: 760px;
+  line-height: 1.75;
+  margin: 16px 0 28px;
+}
+
+/* =========== CARDS, PANELS =========== */
+.panel {
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 24px;
+  box-shadow: var(--shadow-1);
+}
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.panel-head h3 {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+.panel-head .tag {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--line);
+  padding: 3px 8px;
+  border-radius: var(--r-pill);
+  background: oklch(1 0 0 / 0.6);
+}
+.panel-blurb {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  margin-bottom: 16px;
+}
+
+/* =========== Section 1: Cascade =========== */
+.cascade-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 920px) {
+  .cascade-wrap { grid-template-columns: minmax(0,1.2fr) minmax(0,0.9fr); }
+}
+
+.cascade-panel {
+  position: relative;
+  padding: 32px 28px;
+  background:
+    radial-gradient(60% 60% at 50% 0%, var(--ub-tint), transparent 70%),
+    var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+.cascade-panel h3 {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  margin-bottom: 4px;
+}
+.cascade-panel p.sub {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 20px;
+}
+
+.cascade-svg-wrap {
+  width: 100%;
+  background: oklch(1 0 0 / 0.6);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-inner);
+  padding: 12px;
+  margin-bottom: 14px;
+}
+.cascade-svg-wrap svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* svg styles */
+.cas-node circle, .cas-node rect, .cas-node ellipse {
+  transition: all 0.5s var(--ease);
+  cursor: pointer;
+}
+.cas-node text {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 700;
+  pointer-events: none;
+  fill: oklch(0.18 0.02 290);
+}
+.cas-node.dim circle, .cas-node.dim rect, .cas-node.dim ellipse {
+  opacity: 0.25;
+}
+.cas-arrow { fill: none; stroke: var(--ub); stroke-width: 2; }
+.cas-arrow.flow { stroke-dasharray: 6 4; animation: flow 1.6s linear infinite; }
+@keyframes flow {
+  to { stroke-dashoffset: -20; }
+}
+
+.cascade-step-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.cascade-step-buttons button {
+  font: inherit;
+  font-size: 12.5px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  background: oklch(1 0 0 / 0.6);
+  color: var(--ink-soft);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  font-weight: 600;
+}
+.cascade-step-buttons button:hover {
+  border-color: var(--ub);
+  color: var(--ub-deep);
+}
+.cascade-step-buttons button.active {
+  background: var(--ub);
+  border-color: var(--ub);
+  color: oklch(1 0 0);
+}
+
+.cascade-info {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  background: var(--soft);
+  padding: 14px 16px;
+  border-radius: var(--r-inner);
+  border-left: 3px solid var(--ub);
+}
+.cascade-info b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* Stats panel */
+.cascade-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-content: start;
+}
+.stat-card {
+  padding: 18px 16px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: -10px; right: -10px;
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: var(--ub-tint);
+  opacity: 0.6;
+  z-index: 0;
+}
+.stat-card .num {
+  font-family: var(--f-mono);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--ub-deep);
+  position: relative; z-index: 1;
+}
+.stat-card .label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  position: relative; z-index: 1;
+}
+.stat-card .label b { color: var(--ink-soft); font-weight: 600; }
+
+/* =========== Chain types switcher =========== */
+.chain-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+.chain-card {
+  position: relative;
+  padding: 14px;
+  background: oklch(1 0 0 / 0.6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  overflow: hidden;
+}
+.chain-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--cc), transparent 70%);
+  opacity: 0.08;
+  z-index: 0;
+}
+.chain-card:hover {
+  border-color: var(--cc);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-1);
+}
+.chain-card.active {
+  border-color: var(--cc);
+  background: oklch(from var(--cc) l c h / 0.06);
+}
+.chain-card.active::before { opacity: 0.18; }
+.chain-card .label {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--cc);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  position: relative; z-index: 1;
+}
+.chain-card .name {
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 2px;
+  position: relative; z-index: 1;
+}
+.chain-card .desc {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin-top: 6px;
+  line-height: 1.5;
+  position: relative; z-index: 1;
+}
+
+/* visualization for chain */
+.chain-vis {
+  margin-top: 16px;
+  background: oklch(1 0 0 / 0.5);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-inner);
+  padding: 14px;
+}
+.chain-vis svg {
+  width: 100%;
+  height: auto;
+  max-height: 120px;
+  display: block;
+}
+.chain-detail {
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+  margin-top: 10px;
+}
+.chain-detail b { color: var(--ink); }
+
+/* =========== E3 Ligase Atlas =========== */
+.e3-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.e3-card {
+  position: relative;
+  padding: 20px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  transition: all 0.3s var(--ease);
+  --ec: var(--ub);
+  --ec-tint: var(--ub-tint);
+}
+.e3-card[data-role="suppressor"] { --ec: var(--supp); --ec-tint: var(--supp-tint); }
+.e3-card[data-role="oncogene"] { --ec: var(--tumor); --ec-tint: var(--tumor-tint); }
+.e3-card[data-role="dual"] { --ec: oklch(0.55 0.16 295); --ec-tint: var(--ub-tint); }
+
+.e3-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--ec-tint), transparent 50%);
+  border-radius: inherit;
+  z-index: 0;
+  opacity: 0.5;
+}
+.e3-card:hover {
+  border-color: var(--ec);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-2);
+}
+.e3-card > * { position: relative; z-index: 1; }
+.e3-card .head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.e3-card .gene {
+  font-family: var(--f-mono);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ec);
+  letter-spacing: -0.005em;
+}
+.e3-card .role-tag {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ec);
+  background: oklch(from var(--ec) l c h / 0.12);
+  padding: 3px 8px;
+  border-radius: var(--r-pill);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.e3-card .family {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--f-mono);
+  margin-bottom: 10px;
+  letter-spacing: 0.04em;
+}
+.e3-card .substrates {
+  font-size: 13px;
+  margin: 8px 0 10px;
+}
+.e3-card .substrates b {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 5px;
+  font-family: var(--f-mono);
+  font-weight: 700;
+}
+.e3-card .substrate-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.substrate-pill {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  background: oklch(1 0 0 / 0.7);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  color: var(--ink-soft);
+}
+.e3-card .desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.e3-card .cancers {
+  margin-top: 10px;
+  font-size: 11.5px;
+  color: var(--muted);
+  font-family: var(--f-mono);
+  letter-spacing: 0.04em;
+}
+.e3-card .cancers span { color: var(--ec); font-weight: 700; }
+
+.role-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.role-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.role-legend-item .dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+}
+
+/* =========== Multi-omics simulator =========== */
+.omics-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+@media (min-width: 980px) {
+  .omics-wrap {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  }
+}
+.omics-vis {
+  padding: 20px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+}
+.omics-layers {
+  display: grid;
+  gap: 14px;
+}
+.omics-layer {
+  padding: 14px 16px;
+  border-radius: var(--r-inner);
+  background: oklch(1 0 0 / 0.5);
+  border: 1px solid var(--line-soft);
+  position: relative;
+}
+.omics-layer .layer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.omics-layer .name {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--lc);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.omics-layer .value {
+  font-family: var(--f-mono);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--lc);
+}
+.omics-layer .bar {
+  height: 14px;
+  background: oklch(0.92 0.005 290);
+  border-radius: 7px;
+  overflow: hidden;
+  position: relative;
+}
+.omics-layer .bar .fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--lc), oklch(from var(--lc) calc(l + 0.15) c h));
+  border-radius: 7px;
+  transition: width 0.4s var(--ease);
+}
+.omics-layer .axis {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.omics-layer:nth-child(1) { --lc: var(--omics-rna); }
+.omics-layer:nth-child(2) { --lc: var(--omics-prot); }
+.omics-layer:nth-child(3) { --lc: var(--omics-phospho); }
+.omics-layer:nth-child(4) { --lc: var(--omics-ub); }
+.omics-layer:nth-child(5) { --lc: var(--omics-ac); }
+
+.omics-controls {
+  padding: 18px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+.scen-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.scen-buttons button {
+  font: inherit;
+  font-size: 12px;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  background: oklch(1 0 0 / 0.6);
+  color: var(--ink-soft);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  font-weight: 600;
+}
+.scen-buttons button:hover {
+  border-color: var(--ub);
+  color: var(--ub-deep);
+}
+.scen-buttons button.active {
+  background: var(--ub);
+  border-color: var(--ub);
+  color: oklch(1 0 0);
+}
+
+.scen-explain {
+  background: var(--soft);
+  border-radius: var(--r-inner);
+  padding: 14px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  border-left: 3px solid var(--ub);
+}
+.scen-explain h4 {
+  font-family: var(--f-display);
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+.scen-explain b { color: var(--ink); }
+
+/* Cancer mechanisms map */
+.mech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.mech-card {
+  padding: 18px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  position: relative;
+  transition: all 0.3s var(--ease);
+  --mc: var(--ub);
+}
+.mech-card:hover {
+  border-color: var(--mc);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-1);
+}
+.mech-card .axis {
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  color: var(--mc);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.mech-card h4 {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.005em;
+  margin-bottom: 8px;
+}
+.mech-card .actors {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  background: oklch(from var(--mc) l c h / 0.08);
+  color: var(--mc);
+  padding: 6px 10px;
+  border-radius: var(--r-btn);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.mech-card .desc {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+.mech-card[data-axis="cell-cycle"] { --mc: oklch(0.55 0.16 25); }
+.mech-card[data-axis="p53"] { --mc: oklch(0.5 0.18 295); }
+.mech-card[data-axis="ddr"] { --mc: oklch(0.55 0.18 230); }
+.mech-card[data-axis="hypoxia"] { --mc: oklch(0.55 0.14 145); }
+.mech-card[data-axis="erad"] { --mc: oklch(0.55 0.16 65); }
+.mech-card[data-axis="autophagy"] { --mc: oklch(0.55 0.13 200); }
+.mech-card[data-axis="mitophagy"] { --mc: oklch(0.55 0.16 350); }
+.mech-card[data-axis="immune"] { --mc: oklch(0.5 0.18 295); }
+
+/* =========== PROTAC =========== */
+.protac-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 980px) {
+  .protac-wrap { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); }
+}
+.protac-vis {
+  padding: 24px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-1);
+}
+.protac-svg {
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  display: block;
+  margin-bottom: 16px;
+}
+.protac-stages {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.protac-stages button {
+  font: inherit;
+  font-size: 12px;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  background: oklch(1 0 0 / 0.6);
+  color: var(--ink-soft);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  font-weight: 600;
+}
+.protac-stages button.active {
+  background: var(--ub);
+  border-color: var(--ub);
+  color: oklch(1 0 0);
+}
+.protac-explain {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  background: var(--soft);
+  padding: 14px 16px;
+  border-radius: var(--r-inner);
+  border-left: 3px solid var(--ub);
+}
+
+.protac-list {
+  display: grid;
+  gap: 10px;
+}
+.protac-item {
+  padding: 14px 16px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  display: grid;
+  gap: 4px;
+}
+.protac-item .name {
+  font-family: var(--f-mono);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ub-deep);
+}
+.protac-item .target {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.protac-item .target b { color: var(--ink); }
+.protac-item .stage {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* =========== Concept comparisons =========== */
+.concept-compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 14px;
+}
+.concept-compare-card {
+  padding: 22px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  transition: all 0.3s var(--ease);
+  position: relative;
+  overflow: hidden;
+  --pc: var(--ub);
+}
+.concept-compare-card[data-concept="01"] { --pc: oklch(0.5 0.16 25); }
+.concept-compare-card[data-concept="02"] { --pc: oklch(0.5 0.18 295); }
+.concept-compare-card[data-concept="03"] { --pc: oklch(0.5 0.16 145); }
+.concept-compare-card[data-concept="04"] { --pc: oklch(0.5 0.16 65); }
+.concept-compare-card[data-concept="05"] { --pc: oklch(0.48 0.14 210); }
+.concept-compare-card[data-concept="06"] { --pc: oklch(0.48 0.16 330); }
+.concept-compare-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 50% at 100% 0%, oklch(from var(--pc) l c h / 0.18), transparent 60%);
+  z-index: 0;
+}
+.concept-compare-card > * { position: relative; z-index: 1; }
+.concept-compare-card:hover {
+  border-color: var(--pc);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-2);
+}
+.concept-compare-card .num {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--pc);
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.concept-compare-card h4 {
+  font-family: var(--f-display);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.005em;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+.concept-compare-card .lead {
+  font-family: var(--f-mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-bottom: 12px;
+  letter-spacing: 0.04em;
+}
+.concept-compare-card .lead b { color: var(--ink-soft); font-weight: 700; }
+.concept-compare-card .desc {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+/* =========== Study guide catalog =========== */
+.catalog-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  align-items: center;
+}
+.catalog-search {
+  flex: 1;
+  min-width: 200px;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font: inherit;
+  font-size: 13px;
+  background: oklch(1 0 0 / 0.7);
+  color: var(--ink);
+}
+.catalog-search:focus {
+  outline: none;
+  border-color: var(--ub);
+  box-shadow: 0 0 0 3px oklch(from var(--ub) l c h / 0.15);
+}
+.catalog-filter {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.catalog-filter button {
+  font: inherit;
+  font-size: 11.5px;
+  padding: 6px 11px;
+  border: 1px solid var(--line);
+  background: oklch(1 0 0 / 0.6);
+  color: var(--ink-soft);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  font-weight: 600;
+}
+.catalog-filter button.active {
+  background: var(--ub);
+  border-color: var(--ub);
+  color: oklch(1 0 0);
+}
+
+.catalog-list {
+  display: grid;
+  gap: 10px;
+}
+.paper-card {
+  padding: 16px 18px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  transition: all 0.25s var(--ease);
+}
+.paper-card.hidden { display: none; }
+.paper-card:hover {
+  border-color: var(--ub);
+  background: oklch(from var(--ub) l c h / 0.04);
+}
+.paper-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.paper-card .title {
+  font-family: var(--f-display);
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  line-height: 1.4;
+  flex: 1;
+  min-width: 240px;
+}
+.paper-card .meta {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+.paper-card .meta b { color: var(--ub); font-weight: 700; }
+.paper-card .blurb {
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.65;
+  margin: 4px 0 6px;
+}
+.paper-card .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+.paper-card .tag {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  padding: 2px 7px;
+  background: oklch(1 0 0 / 0.7);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.paper-card .refs {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-soft);
+  display: grid;
+  gap: 7px;
+}
+.paper-card .refs-title {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.paper-card .ref-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.paper-card .ref-text {
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.paper-card .ref-text b {
+  color: var(--ink);
+  font-weight: 700;
+}
+.paper-card .ref-actions {
+  display: inline-flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.paper-card .ref-actions a {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  text-decoration: none;
+  color: var(--ub-deep);
+  border: 1px solid oklch(from var(--ub) l c h / 0.28);
+  background: var(--ub-tint);
+  border-radius: var(--r-pill);
+  padding: 4px 8px;
+  transition: all 0.2s var(--ease);
+}
+.paper-card .ref-actions a:hover {
+  background: var(--ub);
+  color: oklch(1 0 0);
+  border-color: var(--ub);
+}
+.catalog-meta {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 10px;
+  text-align: right;
+}
+
+/* =========== FOOT =========== */
+.foot {
+  margin-top: 80px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.75;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.foot a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.foot a:hover { color: var(--ink); }
+.foot strong { color: var(--ink-soft); font-weight: 700; }
+.foot .right { font-family: var(--f-mono); font-size: 12px; }
+
+/* =========== Misc helpers =========== */
+.kbd {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  padding: 2px 6px;
+  background: oklch(1 0 0 / 0.7);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--ink-soft);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.gene {
+  font-family: var(--f-mono);
+  font-weight: 700;
+  color: var(--ub-deep);
+}
+
+/* small phones */
+@media (max-width: 560px) {
+  .shell { padding: 20px 16px 60px; }
+  .topbar { padding: 8px 0 16px; }
+  .nav { gap: 4px; }
+  .nav a { font-size: 11.5px; padding: 5px 10px; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ============== TOP BAR ============== -->
+<header class="topbar">
+  <a href="../index.html" class="brand-link">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span><b>audodidactic</b> · public learning guide</span>
+  </a>
+  <nav class="nav">
+    <a href="#primer">기초</a>
+    <a href="#chains">Ub 코드</a>
+    <a href="#e3atlas">E3 아틀라스</a>
+    <a href="#dub">DUB</a>
+    <a href="#omics">멀티오믹스</a>
+    <a href="#mech">암 기전</a>
+    <a href="#protac">PROTAC</a>
+    <a href="#concepts">개념 비교</a>
+    <a href="#study-guide">학습 카드</a>
+  </nav>
+</header>
+
+<!-- ============== HERO ============== -->
+<section class="hero">
+  <span class="hero-badge">Track 05 · Ubiquitin × Cancer Multi-omics</span>
+  <h1>유비퀴틴은 어떻게 암 세포의 <span class="accent">생사 결정 코드</span>가 되는가</h1>
+  <p class="hero-lead">
+    세포는 단백질을 그저 만들기만 하는 게 아니라 끊임없이 분해한다. <b>유비퀴틴(Ub)</b>이라는 76 잔기 마커가 어떤 라이신에 어떤 사슬 형태로 붙느냐가 단백질의 운명을 결정한다 — 프로테아좀 분해, DNA 손상 신호, 면역 신호 전달, 세포 운명 전환까지. 암은 이 코드의 오작동이다. <b>VHL·BRCA1·SPOP</b> 같은 종양억제 E3가 사라지면 종양 단백질이 안정화되고, 반대로 <b>MDM2·SKP2</b>처럼 oncogene 역할을 하는 E3가 amplified되면 종양억제자가 과분해된다. 여기에 <b>USP7·BAP1·CYLD</b> 같은 DUB가 어긋나면 분해의 균형이 깨진다. 멀티오믹스 — 게놈·전사체·프로테옴·인산화체·유비퀴티놈 — 가 함께 등장해야 비로소 보이는 신호가 있다. 이 페이지는 처음 공부하는 학생이 Ub 시스템, 사슬 코드, E3/DUB, 측정법, 암에서의 해석을 한 번에 연결해 읽도록 구성한 개념 지도다.
+  </p>
+  <div class="hero-meta">
+    <span class="chip"><b>9</b> 섹션</span>
+    <span class="chip"><b>40+</b> E3·DUB</span>
+    <span class="chip"><b>6</b> 멀티오믹스 시나리오</span>
+    <span class="chip"><b>23</b> 개념 카드</span>
+    <span class="chip"><b>한글</b> 학습 자료</span>
+  </div>
+</section>
+
+<!-- ============== TOC ============== -->
+<nav class="toc">
+  <div class="toc-head">
+    <h2>이 페이지의 길</h2>
+    <span class="label">9 sections · click to jump</span>
+  </div>
+  <div class="toc-grid">
+    <a href="#primer"><span class="num">01</span> Ub 시스템 기초</a>
+    <a href="#chains"><span class="num">02</span> 8가지 Ub 코드</a>
+    <a href="#e3atlas"><span class="num">03</span> E3 리가아제 아틀라스</a>
+    <a href="#dub"><span class="num">04</span> DUB와 분해 역행</a>
+    <a href="#omics"><span class="num">05</span> 멀티오믹스 레이어</a>
+    <a href="#mech"><span class="num">06</span> 암의 8가지 기전 축</a>
+    <a href="#protac"><span class="num">07</span> PROTAC·분자글루</a>
+    <a href="#concepts"><span class="num">08</span> 헷갈리는 개념 비교</a>
+    <a href="#study-guide"><span class="num">09</span> 학습 카드</a>
+  </div>
+</nav>
+
+<!-- ============== SECTION 01 — PRIMER ============== -->
+<section class="s" id="primer">
+  <header class="s-head">
+    <span class="s-num">section 01</span>
+    <h2 class="s-title">유비퀴틴-프로테아좀 시스템 (UPS) 기초</h2>
+    <span class="s-sub">E1 → E2 → E3 → substrate · 26S proteasome</span>
+  </header>
+  <p class="s-blurb">
+    유비퀴틴은 76 잔기짜리 작은 단백질이다. 1980년대 Ciechanover·Hershko·Rose의 단백질 분해 코드 발견(2004 Nobel)으로 시작해, 이제는 세포 단백질의 <b>약 80%</b>가 이 시스템으로 조절된다고 본다. 핵심은 <b>3-효소 캐스케이드</b>: E1이 ATP를 써서 Ub을 활성화하고, E2가 Ub을 받고, E3 리가아제가 substrate를 골라 Ub을 옮긴다. 인간 게놈에는 E1 2개, E2 ~40개, E3 <b>>600개</b>가 있다. 마지막 분해는 <b>26S 프로테아좀</b>이 K48-poly-Ub 사슬을 인식해 펩타이드로 자른다.
+  </p>
+
+  <div class="cascade-wrap">
+    <div class="cascade-panel">
+      <h3>3-효소 캐스케이드 시각화</h3>
+      <p class="sub">단계 버튼을 눌러서 E1·E2·E3·substrate·proteasome로 차례로 이동합니다.</p>
+
+      <div class="cascade-svg-wrap">
+        <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" id="cascade-svg" role="img" aria-label="Ubiquitin cascade illustration">
+          <!-- Background grid -->
+          <defs>
+            <linearGradient id="ubg" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="oklch(0.88 0.13 295)"/>
+              <stop offset="100%" stop-color="oklch(0.62 0.18 295)"/>
+            </linearGradient>
+            <radialGradient id="protea-grad">
+              <stop offset="0%" stop-color="oklch(0.55 0.04 290)"/>
+              <stop offset="100%" stop-color="oklch(0.3 0.04 290)"/>
+            </radialGradient>
+          </defs>
+
+          <!-- arrows between stages -->
+          <path class="cas-arrow" id="arrow-1" d="M 90 120 L 200 120" marker-end="url(#arrow)"/>
+          <path class="cas-arrow" id="arrow-2" d="M 270 120 L 380 120" marker-end="url(#arrow)"/>
+          <path class="cas-arrow" id="arrow-3" d="M 450 120 L 560 120" marker-end="url(#arrow)"/>
+
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 Z" fill="oklch(0.5 0.18 295)"/>
+            </marker>
+          </defs>
+
+          <!-- ATP label on arrow 1 -->
+          <text x="145" y="105" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="oklch(0.5 0.18 295)" font-weight="700">+ATP +Ub</text>
+
+          <!-- Stage E1 -->
+          <g class="cas-node" id="node-e1" data-step="1">
+            <circle cx="50" cy="120" r="36" fill="oklch(0.96 0.02 295)" stroke="oklch(0.5 0.18 295)" stroke-width="2"/>
+            <text x="50" y="120" text-anchor="middle" alignment-baseline="middle" font-size="14" font-weight="800">E1</text>
+            <text x="50" y="172" text-anchor="middle" font-size="10" fill="oklch(0.55 0.018 290)">activation · 2개</text>
+          </g>
+
+          <!-- Stage E2 -->
+          <g class="cas-node" id="node-e2" data-step="2">
+            <circle cx="235" cy="120" r="36" fill="oklch(0.96 0.02 295)" stroke="oklch(0.5 0.18 295)" stroke-width="2"/>
+            <text x="235" y="120" text-anchor="middle" alignment-baseline="middle" font-size="14" font-weight="800">E2</text>
+            <text x="235" y="172" text-anchor="middle" font-size="10" fill="oklch(0.55 0.018 290)">conjugation · ~40개</text>
+          </g>
+
+          <!-- Stage E3 -->
+          <g class="cas-node" id="node-e3" data-step="3">
+            <ellipse cx="415" cy="120" rx="40" ry="36" fill="oklch(0.96 0.02 295)" stroke="oklch(0.5 0.18 295)" stroke-width="2"/>
+            <text x="415" y="116" text-anchor="middle" alignment-baseline="middle" font-size="14" font-weight="800">E3</text>
+            <text x="415" y="132" text-anchor="middle" font-size="9" fill="oklch(0.55 0.018 290)">RING/HECT/RBR</text>
+            <text x="415" y="172" text-anchor="middle" font-size="10" fill="oklch(0.55 0.018 290)">ligase · &gt;600개</text>
+          </g>
+
+          <!-- Substrate -->
+          <g class="cas-node" id="node-sub" data-step="4">
+            <rect x="568" y="80" width="100" height="80" rx="14" fill="oklch(0.96 0.02 25)" stroke="oklch(0.5 0.16 25)" stroke-width="2"/>
+            <text x="618" y="116" text-anchor="middle" font-size="13" font-weight="800" fill="oklch(0.36 0.16 25)">substrate</text>
+            <text x="618" y="135" text-anchor="middle" font-size="10" fill="oklch(0.55 0.16 25)">K residue</text>
+            <!-- Ub chains on substrate -->
+            <g id="ub-chain-anim">
+              <circle cx="640" cy="55" r="9" fill="url(#ubg)" opacity="0"/>
+              <circle cx="650" cy="38" r="9" fill="url(#ubg)" opacity="0"/>
+              <circle cx="660" cy="22" r="9" fill="url(#ubg)" opacity="0"/>
+              <line x1="640" y1="55" x2="650" y2="38" stroke="oklch(0.5 0.18 295)" stroke-width="2" opacity="0"/>
+              <line x1="650" y1="38" x2="660" y2="22" stroke="oklch(0.5 0.18 295)" stroke-width="2" opacity="0"/>
+            </g>
+          </g>
+
+          <!-- Proteasome -->
+          <g class="cas-node" id="node-pr" data-step="5" opacity="0.3">
+            <rect x="688" y="60" width="14" height="120" fill="url(#protea-grad)" rx="3"/>
+            <rect x="690" y="68" width="10" height="6" fill="oklch(0.7 0.02 290)"/>
+            <rect x="690" y="80" width="10" height="6" fill="oklch(0.7 0.02 290)"/>
+            <rect x="690" y="92" width="10" height="6" fill="oklch(0.7 0.02 290)"/>
+            <rect x="690" y="104" width="10" height="6" fill="oklch(0.7 0.02 290)"/>
+            <rect x="690" y="116" width="10" height="6" fill="oklch(0.7 0.02 290)"/>
+            <rect x="690" y="128" width="10" height="6" fill="oklch(0.7 0.02 290)"/>
+            <rect x="690" y="140" width="10" height="6" fill="oklch(0.7 0.02 290)"/>
+            <rect x="690" y="152" width="10" height="6" fill="oklch(0.7 0.02 290)"/>
+            <rect x="690" y="164" width="10" height="6" fill="oklch(0.7 0.02 290)"/>
+            <text x="695" y="200" text-anchor="middle" font-size="9" fill="oklch(0.36 0.04 290)">26S</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="cascade-step-buttons" role="tablist">
+        <button class="active" data-step="1">1. E1 activation</button>
+        <button data-step="2">2. E2 conjugation</button>
+        <button data-step="3">3. E3 ligation</button>
+        <button data-step="4">4. Poly-Ub on K</button>
+        <button data-step="5">5. Proteasomal degradation</button>
+      </div>
+
+      <div class="cascade-info" id="cascade-info">
+        <b>1단계 — E1 activation.</b> E1 효소(인간 2개: UBA1, UBA6)가 ATP를 가수분해해 Ub의 C-말단을 활성화하고, Ub-AMP 중간체를 거쳐 자기 cysteine 잔기에 thioester 결합으로 Ub을 부착한다. 한 번 활성화된 Ub은 다음 단계에서 E2로 이동한다.
+      </div>
+    </div>
+
+    <div class="cascade-stats">
+      <div class="stat-card">
+        <div class="num">76</div>
+        <div class="label"><b>amino acids</b><br>유비퀴틴 단백질 길이</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">~600</div>
+        <div class="label"><b>E3 ligases</b><br>인간 게놈 내</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">~100</div>
+        <div class="label"><b>DUBs</b><br>탈유비퀴틴화 효소</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">26S</div>
+        <div class="label"><b>proteasome</b><br>20S core + 19S regulatory</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">8</div>
+        <div class="label"><b>linkage types</b><br>K6/K11/K27/K29/K33/K48/K63/M1</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">~80%</div>
+        <div class="label"><b>cellular proteins</b><br>UPS 통한 turnover</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 02 — Chain types ============== -->
+<section class="s" id="chains">
+  <header class="s-head">
+    <span class="s-num">section 02</span>
+    <h2 class="s-title">8가지 유비퀴틴 코드 — Ub chain language</h2>
+    <span class="s-sub">linkage type → cellular function</span>
+  </header>
+  <p class="s-blurb">
+    Ub 자체에 7개 라이신(K6, K11, K27, K29, K33, K48, K63)과 N-말단 메티오닌(M1)이 있다. 다음 Ub의 C-말단이 어디에 붙느냐가 사슬의 의미를 바꾼다. 같은 K48 4-mer는 프로테아좀 분해 표지, K63 사슬은 DNA 손상 신호와 endocytosis, M1 선형 사슬은 NF-κB 신호. <b>"Ub code"</b>는 이 8가지 사슬과 분기/혼합 사슬, 모노유비퀴틴, 그리고 같은 위치의 acetylation·phosphorylation crosstalk이 만드는 다중 어휘다.
+  </p>
+
+  <div class="panel" style="--cc: var(--ub);">
+    <div class="panel-head">
+      <h3>사슬 종류를 클릭해 의미를 바꿔보기</h3>
+      <span class="tag">interactive · 9 chain types</span>
+    </div>
+
+    <div class="chain-grid" id="chain-grid">
+      <button class="chain-card active" data-chain="k48" style="--cc: var(--chain-k48);">
+        <div class="label">K48-linked</div>
+        <div class="name">poly-Ub K48</div>
+        <div class="desc">프로테아좀 분해의 정식 표지. 4개 이상 ≥4-mer 사슬이 26S에 인식됨.</div>
+      </button>
+      <button class="chain-card" data-chain="k63" style="--cc: var(--chain-k63);">
+        <div class="label">K63-linked</div>
+        <div class="name">poly-Ub K63</div>
+        <div class="desc">DNA 손상 반응(BRCA1/RNF8/RNF168), endocytosis, NF-κB 활성화.</div>
+      </button>
+      <button class="chain-card" data-chain="m1" style="--cc: var(--chain-m1);">
+        <div class="label">M1 linear</div>
+        <div class="name">linear chain</div>
+        <div class="desc">LUBAC가 만드는 N-말단 선형 사슬. NF-κB·면역 신호의 핵심.</div>
+      </button>
+      <button class="chain-card" data-chain="k11" style="--cc: var(--chain-k11);">
+        <div class="label">K11-linked</div>
+        <div class="name">poly-Ub K11</div>
+        <div class="desc">APC/C 의존 mitotic 단백질 분해(cyclin B, securin). ERAD에도 관여.</div>
+      </button>
+      <button class="chain-card" data-chain="k27" style="--cc: var(--chain-k27);">
+        <div class="label">K27-linked</div>
+        <div class="name">poly-Ub K27</div>
+        <div class="desc">DNA 손상, 미토파지(PARKIN), 분비 단백질 신호. 분기 사슬에서도 자주.</div>
+      </button>
+      <button class="chain-card" data-chain="k29" style="--cc: var(--chain-k29);">
+        <div class="label">K29-linked</div>
+        <div class="name">poly-Ub K29</div>
+        <div class="desc">Wnt 경로 dishevelled 분해, autophagy 조절. UBE3C/HUWE1.</div>
+      </button>
+      <button class="chain-card" data-chain="k33" style="--cc: var(--chain-k33);">
+        <div class="label">K33-linked</div>
+        <div class="name">poly-Ub K33</div>
+        <div class="desc">T 세포 수용체 신호 약화, 골지 트래픽. 비교적 덜 흔함.</div>
+      </button>
+      <button class="chain-card" data-chain="k6" style="--cc: var(--chain-k6);">
+        <div class="label">K6-linked</div>
+        <div class="name">poly-Ub K6</div>
+        <div class="desc">미토파지(PARKIN), DNA 손상. BRCA1/BARD1 자가 유비퀴틴화에서.</div>
+      </button>
+      <button class="chain-card" data-chain="mono" style="--cc: var(--chain-mono);">
+        <div class="label">monoUb</div>
+        <div class="name">monoubiquitin</div>
+        <div class="desc">히스톤(H2AK119Ub, H2BK120Ub), PCNA monoUb, endocytosis 표지.</div>
+      </button>
+    </div>
+
+    <div class="chain-vis">
+      <svg viewBox="0 0 600 80" xmlns="http://www.w3.org/2000/svg" id="chain-svg" role="img" aria-label="Ubiquitin chain visualization">
+        <!-- Substrate -->
+        <rect x="20" y="30" width="80" height="40" rx="8" fill="oklch(0.96 0.02 25)" stroke="oklch(0.5 0.16 25)" stroke-width="2"/>
+        <text x="60" y="55" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.36 0.16 25)">substrate</text>
+        <!-- Ub molecules dynamic -->
+        <g id="chain-ubs"></g>
+      </svg>
+      <div class="chain-detail" id="chain-detail">
+        <b>K48-linked poly-Ub.</b> 가장 잘 알려진 분해 표지. 다음 Ub의 C-말단이 이전 Ub의 K48에 isopeptide 결합으로 붙어 직선형 사슬을 만든다. ≥4-mer가 26S 프로테아좀의 19S subunit (RPN1, RPN10, RPN13)에 인식되어 단백질이 풀려 20S core로 들어가 분해된다. <b>대표 E3:</b> SCF^β-TrCP, SCF^SKP2, MDM2, VHL, CHIP. <b>대표 DUB:</b> USP14, RPN11, UCH-L5.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 03 — E3 LIGASE ATLAS ============== -->
+<section class="s" id="e3atlas">
+  <header class="s-head">
+    <span class="s-num">section 03</span>
+    <h2 class="s-title">E3 리가아제 아틀라스 — 암을 정의하는 substrate 선택자</h2>
+    <span class="s-sub">RING · HECT · RBR · cullin-RING families</span>
+  </header>
+  <p class="s-blurb">
+    E3 리가아제가 <b>substrate를 고른다</b>. 어떤 단백질을 어떤 사슬로 표지할지를 결정하므로, E3의 변이 자체가 종양 표현형이 된다. <b>RING</b>형은 E2와 substrate를 가깝게 만들어 직접 전달, <b>HECT</b>형은 자기 cysteine에 Ub을 잠시 잡았다가 substrate로 옮긴다. <b>cullin-RING ligase(CRL)</b>는 cullin scaffold + RBX1 RING + substrate receptor(F-box, SOCS, BTB, DCAF) 네 부분이 모듈로 결합. SCF^SKP2(p27 분해)와 CRL2^VHL(HIF-1α 분해)이 대표 예다.
+  </p>
+
+  <div class="role-legend">
+    <span class="role-legend-item"><span class="dot" style="background: var(--supp);"></span> Tumor suppressor — 분해해야 할 oncogene을 못 분해하면 종양</span>
+    <span class="role-legend-item"><span class="dot" style="background: var(--tumor);"></span> Oncogene — 종양억제자(p53 등)를 분해해 암 촉진</span>
+    <span class="role-legend-item"><span class="dot" style="background: oklch(0.55 0.16 295);"></span> Dual / context-dependent</span>
+  </div>
+
+  <div class="e3-grid" id="e3-grid">
+    <!-- E3 cards will be populated via JS for ease of management -->
+  </div>
+</section>
+
+<!-- ============== SECTION 04 — DUB ============== -->
+<section class="s" id="dub">
+  <header class="s-head">
+    <span class="s-num">section 04</span>
+    <h2 class="s-title">DUB와 분해 역행 — deubiquitinase의 반대 부호</h2>
+    <span class="s-sub">~100 DUBs · USP · OTU · UCH · MJD · JAMM</span>
+  </header>
+  <p class="s-blurb">
+    DUB(deubiquitinase)는 사슬을 자른다. E3가 Ub을 붙이고 DUB가 떼는 균형이 깨지면 단백질 농도와 신호 상태가 어긋난다. 인간에 약 <b>100개 DUB</b>: <b>USP</b>(60+, cysteine protease), <b>OTU</b>(~17), <b>UCH</b>(4), <b>MJD/Josephin</b>(4), <b>JAMM/MPN</b>(zinc-dependent). 암에서 USP7(MDM2 안정화 → p53 분해), USP22(MHC-I 억제, 면역 회피), BAP1(BRCA1 deubiquitinase, mesothelioma 종양억제), A20(K63→K48 전환, NF-κB 음성 조절)이 대표 노드다.
+  </p>
+
+  <div class="e3-grid" id="dub-grid">
+    <!-- DUB cards via JS -->
+  </div>
+</section>
+
+<!-- ============== SECTION 05 — Multi-omics simulator ============== -->
+<section class="s" id="omics">
+  <header class="s-head">
+    <span class="s-num">section 05</span>
+    <h2 class="s-title">멀티오믹스 레이어 시뮬레이터 — 어디서 신호가 갈리는가</h2>
+    <span class="s-sub">DNA · RNA · protein · phospho · ubiquitin · acetyl</span>
+  </header>
+  <p class="s-blurb">
+    DNA 변이가 있어도 RNA 변화가 없을 수 있고, RNA가 올라가도 단백질이 안 바뀔 수 있다. 단백질 상승해도 인산화/유비퀴틴화 상태에 따라 활성이 다르다. <b>mRNA-protein 상관계수는 평균 0.4–0.6</b>밖에 안 되며, 인산화·유비퀴틴화 사이트 중 상당수는 단순히 단백질 농도 증가에 끌려간 신호인 경우가 많다. 그래서 공개 proteogenomics 연구에서 반복해서 강조되는 것처럼 layer별 정량과 protein-anchored 보정이 필요하다. 시나리오를 바꿔가며 어디서 신호가 갈리는지 보자.
+  </p>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h3>4가지 시나리오 — RNA · 단백질 · 인산화 · 유비퀴틴화 변화</h3>
+      <span class="tag">multi-omics layers</span>
+    </div>
+
+    <div class="omics-wrap">
+      <div class="omics-vis">
+        <div class="omics-layers" id="omics-layers">
+          <div class="omics-layer">
+            <div class="layer-head">
+              <span class="name">① mRNA · transcriptome</span>
+              <span class="value" id="v-rna">+1.2×</span>
+            </div>
+            <div class="bar"><div class="fill" id="bar-rna" style="width: 60%"></div></div>
+            <div class="axis"><span>0×</span><span>2× baseline</span><span>4×↑</span></div>
+          </div>
+          <div class="omics-layer">
+            <div class="layer-head">
+              <span class="name">② protein · proteome</span>
+              <span class="value" id="v-prot">+1.1×</span>
+            </div>
+            <div class="bar"><div class="fill" id="bar-prot" style="width: 55%"></div></div>
+            <div class="axis"><span>0×</span><span>2×</span><span>4×↑</span></div>
+          </div>
+          <div class="omics-layer">
+            <div class="layer-head">
+              <span class="name">③ phospho · phosphoproteome</span>
+              <span class="value" id="v-phospho">+1.4×</span>
+            </div>
+            <div class="bar"><div class="fill" id="bar-phospho" style="width: 70%"></div></div>
+            <div class="axis"><span>0×</span><span>2×</span><span>4×↑</span></div>
+          </div>
+          <div class="omics-layer">
+            <div class="layer-head">
+              <span class="name">④ ubiquitin · ubiquitinome (K-ε-GG)</span>
+              <span class="value" id="v-ub">+1.0×</span>
+            </div>
+            <div class="bar"><div class="fill" id="bar-ub" style="width: 50%"></div></div>
+            <div class="axis"><span>0×</span><span>2×</span><span>4×↑</span></div>
+          </div>
+          <div class="omics-layer">
+            <div class="layer-head">
+              <span class="name">⑤ acetyl · acetylome</span>
+              <span class="value" id="v-ac">+1.0×</span>
+            </div>
+            <div class="bar"><div class="fill" id="bar-ac" style="width: 50%"></div></div>
+            <div class="axis"><span>0×</span><span>2×</span><span>4×↑</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="omics-controls">
+        <div>
+          <div style="font-family: var(--f-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px;">시나리오 선택</div>
+          <div class="scen-buttons" id="scen-buttons">
+            <button class="active" data-scen="mdm2">MDM2 amplification → p53 destruction</button>
+            <button data-scen="vhl">VHL loss → HIF-1α stabilization (ccRCC)</button>
+            <button data-scen="skp2">SKP2 over-expression → p27 destruction (cell cycle)</button>
+            <button data-scen="kinase">Kinase activity → phospho-only signal</button>
+            <button data-scen="usp7">USP7 inhibition → MDM2 destabilized → p53 rescue</button>
+            <button data-scen="m6a">RNA-binding program multi-omics</button>
+          </div>
+        </div>
+        <div class="scen-explain" id="scen-explain">
+          <h4>MDM2 amplification → p53 destruction</h4>
+          <p>Sarcoma 7%, glioma 11%에서 <b>MDM2</b> 유전자가 12q14에 amplified. RNA·단백질 모두 올라가지만 핵심은 <b>p53의 K48 사슬</b>이 폭발적으로 증가해서 p53 단백질이 거의 검출 안 됨(반대 방향 변화). 이 케이스는 <b>MDM2 inhibitor (idasanutlin, milademetan)</b>로 p53 회복이 가능. <span class="kbd">CPTAC + DepMap</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 06 — Cancer mechanisms ============== -->
+<section class="s" id="mech">
+  <header class="s-head">
+    <span class="s-num">section 06</span>
+    <h2 class="s-title">암의 8가지 분해 코드 축</h2>
+    <span class="s-sub">cell cycle · p53 · DDR · hypoxia · ERAD · autophagy · mitophagy · immune</span>
+  </header>
+  <p class="s-blurb">
+    유비퀴틴 코드는 암의 거의 모든 큰 축을 지나간다. 어떤 axis든 <b>"분해되어야 할 게 분해되지 않는다"</b> 또는 <b>"분해되지 말아야 할 게 분해된다"</b>로 정리된다. 8개 핵심 축을 한눈에 — 각 축이 어떤 E3/DUB/사슬을 쓰는지, 어떤 약물 표적이 떠오르는지.
+  </p>
+
+  <div class="mech-grid" id="mech-grid">
+    <div class="mech-card" data-axis="cell-cycle">
+      <div class="axis">cell cycle · 세포주기</div>
+      <h4>SCF·APC/C가 시계를 돌린다</h4>
+      <div class="actors">SCF^SKP2 → p27, p21, p57<br>APC/C^Cdh1 → cyclin B, securin (K11)<br>SCF^β-TrCP → EMI1, CDC25A</div>
+      <div class="desc">G1/S·G2/M 전환마다 특정 cyclin과 CDK inhibitor가 K48·K11 사슬로 표지돼 분해된다. <b>SKP2 amplification</b>은 p27 과분해 → cell cycle 가속 → 유방·전립선·식도암에서 흔히 발견. APC/C 결손은 mitotic exit 실패로 chromosomal instability를 부른다.</div>
+    </div>
+
+    <div class="mech-card" data-axis="p53">
+      <div class="axis">p53 axis · 종양억제 게이트</div>
+      <h4>MDM2·USP7의 줄다리기</h4>
+      <div class="actors">MDM2 (RING) → p53 K48 → degradation<br>USP7 → MDM2 안정화 (DUB)<br>MDMX → MDM2 partner</div>
+      <div class="desc">정상에선 MDM2가 p53을 항상 분해해 베이스라인을 낮춘다. 스트레스(DNA 손상, oncogene)로 ATM/CHK2가 인산화하면 MDM2-p53 결합이 풀려 p53이 안정화. 50% 이상 암에서 p53 axis가 흔들린다 — TP53 변이 또는 MDM2 amplification(sarcoma 7%, glioma 11%).</div>
+    </div>
+
+    <div class="mech-card" data-axis="ddr">
+      <div class="axis">DDR · DNA 손상 반응</div>
+      <h4>K63 사슬의 신호 등불</h4>
+      <div class="actors">RNF8/RNF168 → H2A K63<br>BRCA1/BARD1 → end resection<br>RAD18 → PCNA monoUb</div>
+      <div class="desc">DSB 발생시 γH2AX → MDC1 → RNF8 → K63 사슬이 손상 부위에 53BP1·BRCA1을 모은다. <b>BRCA1 mut → HR deficiency → PARPi 민감도</b>. PARPi 저항성은 BRCA reversion으로 원래 ligase activity가 회복되며 발생.</div>
+    </div>
+
+    <div class="mech-card" data-axis="hypoxia">
+      <div class="axis">hypoxia · 산소 센싱</div>
+      <h4>VHL이 HIF-1α를 항상 분해한다</h4>
+      <div class="actors">PHD prolyl-hydroxylation → VHL 인식<br>VHL (CRL2) → HIF-1α K48</div>
+      <div class="desc">정상 산소에선 PHD가 HIF-1α의 prolyl을 OH해 VHL이 인식, 즉시 분해. 저산소나 VHL loss(신장암 ccRCC, von Hippel-Lindau syndrome)에선 HIF-1α 안정화 → VEGF/EPO/GLUT1 발현 → 혈관신생·해당작용. PROTAC E3 ligand로 가장 많이 쓰이는 ligase.</div>
+    </div>
+
+    <div class="mech-card" data-axis="erad">
+      <div class="axis">ERAD · ER 단백질 품질관리</div>
+      <h4>HRD1·gp78이 ER에서 풀린다</h4>
+      <div class="actors">HRD1 (RING) → SEL1L 복합체<br>gp78 / RNF5 / TEB4<br>p97/VCP retrotranslocation</div>
+      <div class="desc">ER에서 잘못 접힌 단백질을 cytosol로 retrotranslocation해 26S 프로테아좀에 보낸다. 다발성 골수종은 면역글로불린 단백질 폭주 → ERAD 의존도 ↑ → <b>bortezomib(20S 억제제)</b>이 효과적인 이유.</div>
+    </div>
+
+    <div class="mech-card" data-axis="autophagy">
+      <div class="axis">autophagy · 선택적 자가포식</div>
+      <h4>p62·NDP52가 Ub를 LC3로 잇는다</h4>
+      <div class="actors">p62/SQSTM1, OPTN, NDP52, TAX1BP1<br>K63/K27 사슬 → autophagy receptor<br>LC3 conjugation system</div>
+      <div class="desc">단백질 응집체나 손상된 미토콘드리아를 K63·K27 사슬로 표지하면 p62가 인식해 LC3와 결합, 자가포식소체 안으로 들어간다. <b>p62 amplification은 HCC 종양 촉진</b>, 반대로 BECN1 loss는 자가포식 결핍 종양.</div>
+    </div>
+
+    <div class="mech-card" data-axis="mitophagy">
+      <div class="axis">mitophagy · 미토콘드리아 청소</div>
+      <h4>PINK1-PARKIN axis</h4>
+      <div class="actors">PINK1 → mito 표면 안정화<br>PARKIN (RBR) → mito 표면 단백질 K6/K11/K48/K63</div>
+      <div class="desc">손상된 미토콘드리아의 막전위 소실 → PINK1 안정화 → PARKIN 활성화 → 표면 단백질에 다중 사슬 표지 → autophagy receptor 모집 → mitophagy. PARKIN loss는 mtDNA 손상 누적 → 종양 ROS·대사 변화.</div>
+    </div>
+
+    <div class="mech-card" data-axis="immune">
+      <div class="axis">immune · 면역 회피·T cell exhaustion</div>
+      <h4>면역 신호는 K63·M1 사슬을 많이 읽는다</h4>
+      <div class="actors">TRAF6, LUBAC → NF-kB 신호<br>A20/TNFAIP3, CYLD → K63·M1 사슬 편집<br>MARCH family → antigen presentation 조절</div>
+      <div class="desc">면역 축에서는 “분해”보다 “신호 복합체를 모으는 표지”가 중요할 때가 많다. K63 사슬과 M1 linear chain은 NF-kB, TNF receptor, innate immune signaling에서 scaffold처럼 작동하고, A20·CYLD 같은 DUB는 이 사슬을 잘라 과도한 염증 신호를 낮춘다. 암에서는 antigen presentation, cytokine signaling, T cell exhaustion을 읽을 때 Ub 사슬 종류와 DUB 상태를 함께 봐야 한다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 07 — PROTAC ============== -->
+<section class="s" id="protac">
+  <header class="s-head">
+    <span class="s-num">section 07</span>
+    <h2 class="s-title">PROTAC·분자글루 — 세포 분해 시스템을 약물로</h2>
+    <span class="s-sub">induced proximity · TPD · CRBN · VHL</span>
+  </header>
+  <p class="s-blurb">
+    저해제(inhibitor)는 단백질 활성을 막을 뿐이지만, <b>분해제(degrader)</b>는 단백질을 아예 없앤다. <b>PROTAC</b>은 두 ligand를 linker로 잇는다: 한쪽은 표적 단백질, 다른 쪽은 E3 ligase. 두 개를 가깝게 묶으면 E3가 표적을 substrate로 인식해 K48 사슬을 붙인다. 1번 분해 후 PROTAC은 다시 다음 분자로 이동(촉매적). <b>Molecular glue</b>는 linker 없이 한 분자가 표면 보완성으로 ternary complex를 만든다 — lenalidomide(IMiD)가 CRBN-IKZF1/3 분해를 유도해 다발성 골수종을 치료하는 게 대표 예다.
+  </p>
+
+  <div class="protac-wrap">
+    <div class="protac-vis">
+      <svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg" class="protac-svg" id="protac-svg" role="img" aria-label="PROTAC mechanism">
+        <defs>
+          <linearGradient id="pg-target" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="oklch(0.85 0.13 25)"/>
+            <stop offset="100%" stop-color="oklch(0.55 0.18 25)"/>
+          </linearGradient>
+          <linearGradient id="pg-e3" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="oklch(0.85 0.13 295)"/>
+            <stop offset="100%" stop-color="oklch(0.5 0.18 295)"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Target POI -->
+        <g id="protac-target">
+          <ellipse cx="120" cy="140" rx="60" ry="50" fill="url(#pg-target)" opacity="0.9"/>
+          <text x="120" y="135" text-anchor="middle" font-size="13" font-weight="800" fill="oklch(0.2 0.04 25)">target</text>
+          <text x="120" y="152" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="oklch(0.36 0.04 25)">POI</text>
+          <!-- POI ligand pocket -->
+          <circle cx="170" cy="140" r="9" fill="oklch(0.4 0.18 25)" opacity="0.7"/>
+        </g>
+
+        <!-- Linker -->
+        <g id="protac-linker">
+          <line x1="170" y1="140" x2="430" y2="140" stroke="oklch(0.55 0.018 290)" stroke-width="2" stroke-dasharray="4 4"/>
+          <text x="300" y="130" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="oklch(0.4 0.018 290)">linker</text>
+        </g>
+
+        <!-- E3 ligand -->
+        <g id="protac-e3lig">
+          <circle cx="430" cy="140" r="9" fill="oklch(0.4 0.18 295)" opacity="0.7"/>
+        </g>
+
+        <!-- E3 ligase -->
+        <g id="protac-e3">
+          <ellipse cx="490" cy="140" rx="60" ry="50" fill="url(#pg-e3)" opacity="0.9"/>
+          <text x="490" y="135" text-anchor="middle" font-size="13" font-weight="800" fill="oklch(0.2 0.06 295)">E3 ligase</text>
+          <text x="490" y="152" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="oklch(0.36 0.06 295)">VHL/CRBN</text>
+        </g>
+
+        <!-- Ub chain forming -->
+        <g id="protac-ub" opacity="0">
+          <circle cx="120" cy="80" r="9" fill="oklch(0.6 0.18 295)"/>
+          <circle cx="105" cy="62" r="9" fill="oklch(0.55 0.18 295)"/>
+          <circle cx="90" cy="44" r="9" fill="oklch(0.5 0.18 295)"/>
+          <circle cx="75" cy="26" r="9" fill="oklch(0.45 0.18 295)"/>
+          <line x1="120" y1="80" x2="105" y2="62" stroke="oklch(0.5 0.18 295)" stroke-width="2"/>
+          <line x1="105" y1="62" x2="90" y2="44" stroke="oklch(0.5 0.18 295)" stroke-width="2"/>
+          <line x1="90" y1="44" x2="75" y2="26" stroke="oklch(0.5 0.18 295)" stroke-width="2"/>
+        </g>
+
+        <!-- Proteasome -->
+        <g id="protac-proteasome" opacity="0">
+          <rect x="240" y="220" width="120" height="40" rx="6" fill="oklch(0.4 0.04 290)"/>
+          <text x="300" y="245" text-anchor="middle" font-size="11" font-weight="700" fill="oklch(1 0 0)">26S proteasome</text>
+        </g>
+
+        <!-- Stage label -->
+        <text x="300" y="30" text-anchor="middle" font-family="ui-monospace" font-size="13" font-weight="800" fill="oklch(0.36 0.025 290)" id="protac-stage-label">stage 01 — PROTAC 구조</text>
+      </svg>
+
+      <div class="protac-stages">
+        <button class="active" data-stage="1">1. PROTAC 구조</button>
+        <button data-stage="2">2. ternary complex</button>
+        <button data-stage="3">3. K48 ubiquitination</button>
+        <button data-stage="4">4. proteasomal degradation</button>
+        <button data-stage="5">5. catalytic cycling</button>
+      </div>
+
+      <div class="protac-explain" id="protac-explain">
+        <b>Stage 01 — PROTAC 구조.</b> PROTAC은 세 부분으로 구성된다: <b>warhead</b>(target POI ligand), <b>linker</b>(PEG/alkyl), <b>E3 ligand</b>(VHL ligand는 hydroxyproline-mimic, CRBN ligand는 thalidomide 유래 IMiD). 각각 따로는 그냥 약한 결합이지만, 같이 있으면 두 단백질을 가깝게 만든다.
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>임상 진입한 분해제 사례</h3>
+        <span class="tag">PROTAC · molecular glue</span>
+      </div>
+      <div class="protac-list">
+        <div class="protac-item">
+          <span class="name">ARV-471 (Vepdegestrant)</span>
+          <span class="target"><b>ER</b> degrader · ER+ breast cancer · Arvinas/Pfizer</span>
+          <span class="stage">PROTAC · CRBN · Phase 3</span>
+        </div>
+        <div class="protac-item">
+          <span class="name">ARV-110 (Bavdegalutamide)</span>
+          <span class="target"><b>AR</b> degrader · prostate cancer · Arvinas</span>
+          <span class="stage">PROTAC · CRBN · Phase 2</span>
+        </div>
+        <div class="protac-item">
+          <span class="name">Lenalidomide / Pomalidomide</span>
+          <span class="target"><b>IKZF1/3</b> degrader · multiple myeloma · Bristol Myers Squibb</span>
+          <span class="stage">Molecular glue · CRBN · approved</span>
+        </div>
+        <div class="protac-item">
+          <span class="name">DT2216</span>
+          <span class="target"><b>BCL-XL</b> degrader · solid tumors · Dialectic</span>
+          <span class="stage">PROTAC · VHL · Phase 1</span>
+        </div>
+        <div class="protac-item">
+          <span class="name">CFT8634</span>
+          <span class="target"><b>BRD9</b> degrader · synovial sarcoma · C4 Therapeutics</span>
+          <span class="stage">PROTAC · CRBN · Phase 1</span>
+        </div>
+        <div class="protac-item">
+          <span class="name">Indisulam</span>
+          <span class="target"><b>RBM39</b> degrader · NHL · re-discovered</span>
+          <span class="stage">Molecular glue · DCAF15 · Phase 2</span>
+        </div>
+        <div class="protac-item">
+          <span class="name">CFT1946</span>
+          <span class="target"><b>BRAF V600E</b> degrader · BRAF-mut cancer · C4 Therapeutics</span>
+          <span class="stage">PROTAC · CRBN · Phase 1</span>
+        </div>
+        <div class="protac-item">
+          <span class="name">KT-474</span>
+          <span class="target"><b>IRAK4</b> degrader · autoimmune · Kymera</span>
+          <span class="stage">PROTAC · CRBN · Phase 2</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 08 — Concept comparisons ============== -->
+<section class="s" id="concepts">
+  <header class="s-head">
+    <span class="s-num">section 08</span>
+    <h2 class="s-title">헷갈리는 개념 비교 — 처음 배울 때 꼭 나눠 읽기</h2>
+    <span class="s-sub">degradation vs signaling · writer vs eraser · proteasome vs autophagy</span>
+  </header>
+  <p class="s-blurb">
+    유비퀴틴을 처음 공부할 때 가장 흔한 오해는 “붙으면 무조건 분해된다”입니다. 실제로는 <b>어떤 사슬인지</b>, <b>누가 붙였는지</b>, <b>어디에 붙었는지</b>, <b>어떤 reader가 읽는지</b>에 따라 의미가 달라집니다. 아래 카드는 단백질 PTM·ubiquitination 개념 노트를 바탕으로 학생들이 먼저 구분해야 할 개념을 비교식으로 정리한 것입니다.
+  </p>
+
+  <div class="concept-compare-grid">
+    <div class="concept-compare-card" data-concept="01">
+      <div class="num">비교 01</div>
+      <h4>K48 사슬 vs K63 사슬</h4>
+      <div class="lead">같은 Ub라도 문장의 뜻이 다릅니다</div>
+      <div class="desc"><b>K48-linked poly-Ub</b>는 26S proteasome이 읽는 전형적인 분해 표지입니다. 반면 <b>K63-linked poly-Ub</b>는 DNA 손상 반응, endocytosis, NF-kB 신호처럼 “분해하라”보다 “여기로 모여라/신호를 켜라”에 가깝습니다. 따라서 Western blot에서 ubiquitination이 늘었다고 바로 단백질 분해 증가로 해석하면 안 됩니다.</div>
+    </div>
+
+    <div class="concept-compare-card" data-concept="02">
+      <div class="num">비교 02</div>
+      <h4>E3 ligase vs DUB</h4>
+      <div class="lead">writer와 eraser지만 단순한 반대말은 아닙니다</div>
+      <div class="desc"><b>E3 ligase</b>는 substrate를 고르는 효소입니다. 그래서 E1/E2보다 수가 훨씬 많고, 암에서는 “무엇을 잘못 고르는가”가 중요합니다. <b>DUB</b>는 Ub 사슬을 떼거나 다듬지만, 무조건 단백질을 살리는 효소는 아닙니다. 어떤 DUB는 K63 신호를 끊고, 어떤 DUB는 E3 자체를 안정화해 오히려 substrate 분해를 촉진할 수 있습니다.</div>
+    </div>
+
+    <div class="concept-compare-card" data-concept="03">
+      <div class="num">비교 03</div>
+      <h4>Proteasome vs Autophagy</h4>
+      <div class="lead">둘 다 분해지만 처리하는 화물이 다릅니다</div>
+      <div class="desc"><b>Proteasome</b>은 대체로 짧은 수명 단백질, misfolded protein, cell-cycle regulator처럼 개별 단백질을 빠르게 분해합니다. <b>Autophagy</b>는 단백질 응집체, 손상된 미토콘드리아, 큰 세포 구조물을 통째로 처리합니다. Ub 사슬은 두 길 모두에 붙을 수 있지만, reader가 proteasome인지 p62/OPTN/NDP52 같은 autophagy receptor인지가 운명을 가릅니다.</div>
+    </div>
+
+    <div class="concept-compare-card" data-concept="04">
+      <div class="num">비교 04</div>
+      <h4>단백질 양 vs PTM 상태</h4>
+      <div class="lead">단백질이 많아도 활성은 다를 수 있습니다</div>
+      <div class="desc">RNA와 단백질 양만 보면 “얼마나 만들어졌는가”를 봅니다. 하지만 ubiquitination, phosphorylation, acetylation은 “그 단백질이 어떤 상태인가”를 말합니다. 예를 들어 단백질 총량은 그대로인데 K48 ubiquitination만 늘면 곧 분해될 수 있고, phosphorylation이 늘면 같은 단백질이라도 신호 활성이 달라질 수 있습니다.</div>
+    </div>
+
+    <div class="concept-compare-card" data-concept="05">
+      <div class="num">비교 05</div>
+      <h4>RING vs HECT/RBR E3</h4>
+      <div class="lead">Ub을 넘기는 손동작이 다릅니다</div>
+      <div class="desc"><b>RING E3</b>는 E2-Ub와 substrate를 가까이 붙여 Ub이 바로 넘어가게 합니다. <b>HECT E3</b>는 자기 cysteine에 Ub을 잠깐 잡은 뒤 substrate로 넘기므로 catalytic-dead mutant가 좋은 검증 도구가 됩니다. <b>RBR E3</b>는 RING과 HECT의 중간형처럼 작동합니다. 같은 “E3”라도 assay 설계와 해석이 달라집니다.</div>
+    </div>
+
+    <div class="concept-compare-card" data-concept="06">
+      <div class="num">비교 06</div>
+      <h4>PROTAC vs molecular glue</h4>
+      <div class="lead">둘 다 분해를 유도하지만 붙이는 방식이 다릅니다</div>
+      <div class="desc"><b>PROTAC</b>은 target ligand와 E3 ligand를 linker로 연결해 target과 E3를 물리적으로 가까이 둡니다. <b>Molecular glue</b>는 작은 분자가 새로운 단백질-단백질 접촉면을 만들어 원래 substrate가 아니던 단백질을 E3에 붙입니다. 그래서 PROTAC은 구조·linker 최적화가, glue는 neo-substrate와 off-target 확인이 특히 중요합니다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 09 — Study guide ============== -->
+<section class="s" id="study-guide">
+  <header class="s-head">
+    <span class="s-num">section 09</span>
+    <h2 class="s-title">유비퀴틴 학습 카드 — 무엇을 물어보며 읽을까</h2>
+    <span class="s-sub">basic concepts · assays · cancer interpretation · therapeutics</span>
+  </header>
+  <p class="s-blurb">
+    논문 제목을 외우기보다 먼저 질문의 틀을 잡는 것이 중요합니다. 아래 카드는 유비퀴틴을 공부할 때 자주 만나는 기본 개념을 검색·필터로 다시 찾아볼 수 있게 만든 작은 위키입니다. 각 카드는 “정의 → 읽는 법 → 실험에서 확인할 것” 순서로 읽으면 됩니다.
+  </p>
+
+  <div class="catalog-controls">
+    <input type="text" class="catalog-search" placeholder="개념·유전자·측정법으로 검색…" id="catalog-search">
+    <div class="catalog-filter" id="catalog-filter">
+      <button class="active" data-filter="all">전체</button>
+      <button data-filter="basic">기초</button>
+      <button data-filter="code">Ub 코드</button>
+      <button data-filter="assay">측정법</button>
+      <button data-filter="cancer">암 해석</button>
+      <button data-filter="therapy">치료</button>
+    </div>
+  </div>
+
+  <div class="catalog-list" id="catalog-list">
+    <!-- Populated via JS -->
+  </div>
+
+  <div class="catalog-meta" id="catalog-meta"></div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer class="foot">
+  <div>
+    <strong>audodidactic</strong> · 학생용 학습 지도<br>
+    공개 문헌과 개념 노트를 바탕으로 정리한 유비퀴틴·암 멀티오믹스 기초 위키<br>
+    핵심 축: PTM, Ub chain code, E3/DUB, proteasome, autophagy, K-epsilon-GG ubiquitinome, targeted protein degradation.
+  </div>
+  <div class="right">
+    <a href="../index.html">← audodidactic index</a>
+  </div>
+</footer>
+
+</div>
+
+<!-- ================ JS ================ -->
+<script>
+/* ========== Cascade animation ========== */
+const cascadeInfoEl = document.getElementById('cascade-info');
+const cascadeButtons = document.querySelectorAll('.cascade-step-buttons button');
+const cascadeContents = {
+  1: `<b>1단계 — E1 activation.</b> E1 효소(인간 2개: <span class="gene">UBA1</span>, <span class="gene">UBA6</span>)가 ATP를 가수분해해 Ub의 C-말단을 활성화하고, Ub-AMP 중간체를 거쳐 자기 cysteine 잔기에 thioester 결합으로 Ub을 부착한다. 한 번 활성화된 Ub은 다음 단계에서 E2로 이동한다.`,
+  2: `<b>2단계 — E2 conjugation.</b> ~40개 E2 효소가 E1로부터 thioester 결합으로 Ub을 받는다. 각 E2는 특정 E3 family와 짝지어 일하며, 어떤 사슬(K48 vs K63 등)을 만들지에도 영향을 준다. <span class="gene">UBE2D</span>(K48), <span class="gene">UBE2N/UBC13</span>(K63), <span class="gene">UBE2S</span>(K11)가 예시.`,
+  3: `<b>3단계 — E3 ligation.</b> E3 ligase가 substrate를 인식한다. <b>RING</b>형(>95%)은 E2와 substrate를 가깝게 두고 직접 전달, <b>HECT</b>형은 자기 cysteine에 잠시 잡았다가 substrate로 옮긴다. <b>RBR</b>형(<span class="gene">PARKIN</span>, HOIP)은 RING+HECT 하이브리드. <b>cullin-RING ligase(CRL)</b>는 cullin scaffold + RBX1 + substrate receptor 모듈로 결합.`,
+  4: `<b>4단계 — Poly-Ub on K residue.</b> Substrate의 라이신(K)에 첫 Ub이 isopeptide 결합으로 붙고, 다음 Ub의 C-말단이 이전 Ub의 K48(또는 K63 등)에 추가로 붙어 사슬이 자란다. ≥4-mer K48 사슬이 가장 강한 분해 표지.`,
+  5: `<b>5단계 — Proteasomal degradation.</b> 26S 프로테아좀(20S core + 19S regulatory cap)이 K48 사슬을 인식한다. 19S의 RPN1·RPN10·RPN13가 사슬을 잡고, RPT 6개 ATPase가 substrate를 풀어 20S core(α/β subunit)로 보낸다. β1(caspase-like)·β2(trypsin-like)·β5(chymotrypsin-like)이 펩타이드(8–12 aa)로 자른다.`
+};
+function setStage(step) {
+  cascadeButtons.forEach(b => b.classList.toggle('active', +b.dataset.step === step));
+  cascadeInfoEl.innerHTML = cascadeContents[step];
+
+  // Visualize: dim non-relevant nodes
+  document.querySelectorAll('.cas-node').forEach(n => {
+    const ns = +n.dataset.step;
+    n.classList.toggle('dim', ns > step);
+  });
+  // Animate Ub chain on substrate at step 4+
+  const ubChain = document.getElementById('ub-chain-anim');
+  if (ubChain) {
+    Array.from(ubChain.children).forEach((c, i) => {
+      c.style.opacity = step >= 4 ? Math.min(1, (step-3) * 0.5) : 0;
+      c.style.transition = 'opacity 0.5s';
+    });
+  }
+  // Proteasome at step 5
+  const pr = document.getElementById('node-pr');
+  pr.style.opacity = step >= 5 ? 1 : 0.3;
+
+  // Add "flow" dash to active arrow
+  document.querySelectorAll('.cas-arrow').forEach((a, i) => {
+    a.classList.toggle('flow', i === step - 1 && step <= 3);
+  });
+}
+cascadeButtons.forEach(b => b.addEventListener('click', () => setStage(+b.dataset.step)));
+setStage(1);
+
+
+/* ========== Chain types ========== */
+const chainCards = document.querySelectorAll('.chain-card');
+const chainSvg = document.getElementById('chain-svg');
+const chainUbsG = document.getElementById('chain-ubs');
+const chainDetail = document.getElementById('chain-detail');
+const chainData = {
+  k48: {
+    color: 'oklch(0.55 0.2 25)',
+    pattern: 'linear',
+    count: 5,
+    detail: `<b>K48-linked poly-Ub.</b> 가장 잘 알려진 분해 표지. 다음 Ub의 C-말단이 이전 Ub의 K48에 isopeptide 결합으로 붙어 직선형 사슬을 만든다. ≥4-mer가 26S 프로테아좀의 19S subunit (RPN1, RPN10, RPN13)에 인식되어 단백질이 풀려 20S core로 들어가 분해된다. <b>대표 E3:</b> SCF^β-TrCP, SCF^SKP2, MDM2, VHL, CHIP. <b>대표 DUB:</b> USP14, RPN11, UCH-L5.`
+  },
+  k63: {
+    color: 'oklch(0.55 0.18 230)',
+    pattern: 'linear',
+    count: 4,
+    detail: `<b>K63-linked poly-Ub.</b> 분해가 아니라 신호의 사슬. DNA 손상 부위에서 RNF8·RNF168이 H2A에 K63 사슬을 만들어 53BP1·BRCA1을 모집한다. NF-κB 활성화에선 TRAF6가 K63 사슬을 만들어 TAB2·NEMO를 끌어들인다. <b>대표 E3:</b> RNF8/168, TRAF6, BRCA1/BARD1. <b>대표 DUB:</b> A20(K63→K48 전환), CYLD.`
+  },
+  m1: {
+    color: 'oklch(0.55 0.2 295)',
+    pattern: 'linear',
+    count: 4,
+    detail: `<b>M1 linear chain.</b> Ub의 N-말단 메티오닌(M1)에 다음 Ub의 C-말단이 펩타이드 결합으로 붙는, 유일한 비-isopeptide 사슬. <span class="gene">LUBAC</span>(HOIP+HOIL-1L+SHARPIN) 복합체만 만들 수 있다. NF-κB·TNF 신호의 핵심으로 면역 반응에 결정적. M1-DUB는 OTULIN.`
+  },
+  k11: {
+    color: 'oklch(0.6 0.18 145)',
+    pattern: 'linear',
+    count: 4,
+    detail: `<b>K11-linked poly-Ub.</b> APC/C(anaphase promoting complex)가 mitotic 단백질(cyclin B, securin)을 K11 사슬로 표지해 분해. ERAD에서도 흔히 등장. <b>대표 E3:</b> APC/C^Cdc20/Cdh1, BRCA1/BARD1. <b>대표 DUB:</b> Cezanne(OTUD7B).`
+  },
+  k27: {
+    color: 'oklch(0.6 0.18 65)',
+    pattern: 'linear',
+    count: 3,
+    detail: `<b>K27-linked poly-Ub.</b> 분기 사슬에서 자주 등장. 미토파지에서 PARKIN이 만든다. DNA 손상 신호에도 관여. 분비 단백질·ER 표면 단백질 유비퀴틴화. <b>대표 E3:</b> PARKIN, RNF168.`
+  },
+  k29: {
+    color: 'oklch(0.55 0.16 350)',
+    pattern: 'linear',
+    count: 3,
+    detail: `<b>K29-linked poly-Ub.</b> Wnt 경로의 dishevelled 분해. autophagy 조절. <b>대표 E3:</b> UBE3C, HUWE1, TRIP12. <b>대표 DUB:</b> TRABID.`
+  },
+  k33: {
+    color: 'oklch(0.6 0.18 105)',
+    pattern: 'linear',
+    count: 3,
+    detail: `<b>K33-linked poly-Ub.</b> T 세포 수용체 신호 약화, 골지 트래픽 조절. 비교적 덜 흔한 사슬이지만 면역 조절에 관여. <b>대표 E3:</b> Cbl-b. <b>대표 DUB:</b> TRABID.`
+  },
+  k6: {
+    color: 'oklch(0.55 0.16 200)',
+    pattern: 'linear',
+    count: 3,
+    detail: `<b>K6-linked poly-Ub.</b> 미토파지(PARKIN), DNA 손상. BRCA1/BARD1 자가 유비퀴틴화에서 가장 흔한 사슬 중 하나. <b>대표 E3:</b> BRCA1/BARD1, PARKIN, HUWE1.`
+  },
+  mono: {
+    color: 'oklch(0.55 0.05 290)',
+    pattern: 'mono',
+    count: 1,
+    detail: `<b>Monoubiquitin.</b> 1개만 붙는 표지. 분해가 아니라 위치/기능을 바꾼다. 히스톤(<span class="gene">H2AK119Ub</span> Polycomb PRC1, <span class="gene">H2BK120Ub</span> Bre1/RNF20), <span class="gene">PCNA</span>(K164 monoUb → translesion synthesis), <span class="gene">FANCD2</span>(FA pathway), endocytic 수용체.`
+  }
+};
+function renderChain(type) {
+  const d = chainData[type];
+  chainUbsG.innerHTML = '';
+  if (d.pattern === 'mono') {
+    // single Ub
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', 130);
+    c.setAttribute('cy', 30);
+    c.setAttribute('r', 12);
+    c.setAttribute('fill', d.color);
+    c.setAttribute('opacity', 0.85);
+    chainUbsG.appendChild(c);
+    const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    l.setAttribute('x1', 100);
+    l.setAttribute('y1', 30);
+    l.setAttribute('x2', 130);
+    l.setAttribute('y2', 30);
+    l.setAttribute('stroke', d.color);
+    l.setAttribute('stroke-width', 2);
+    chainUbsG.appendChild(l);
+    const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    t.setAttribute('x', 130);
+    t.setAttribute('y', 33);
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('font-size', 10);
+    t.setAttribute('font-weight', 700);
+    t.setAttribute('fill', 'oklch(1 0 0)');
+    t.setAttribute('font-family', 'ui-monospace');
+    t.textContent = 'Ub';
+    chainUbsG.appendChild(t);
+  } else {
+    // linear chain
+    let x = 100;
+    let y = 30;
+    for (let i = 0; i < d.count; i++) {
+      // line from prev
+      if (i > 0) {
+        const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        l.setAttribute('x1', x - 40);
+        l.setAttribute('y1', y);
+        l.setAttribute('x2', x);
+        l.setAttribute('y2', y);
+        l.setAttribute('stroke', d.color);
+        l.setAttribute('stroke-width', 2);
+        chainUbsG.appendChild(l);
+      } else {
+        const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        l.setAttribute('x1', 100);
+        l.setAttribute('y1', 50);
+        l.setAttribute('x2', 130);
+        l.setAttribute('y2', 30);
+        l.setAttribute('stroke', d.color);
+        l.setAttribute('stroke-width', 2);
+        chainUbsG.appendChild(l);
+        x = 130;
+      }
+      // Ub circle
+      const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c.setAttribute('cx', x);
+      c.setAttribute('cy', y);
+      c.setAttribute('r', 13);
+      c.setAttribute('fill', d.color);
+      c.setAttribute('opacity', 0.85);
+      chainUbsG.appendChild(c);
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      t.setAttribute('x', x);
+      t.setAttribute('y', y + 3);
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('font-size', 9);
+      t.setAttribute('font-weight', 700);
+      t.setAttribute('fill', 'oklch(1 0 0)');
+      t.setAttribute('font-family', 'ui-monospace');
+      t.textContent = 'Ub';
+      chainUbsG.appendChild(t);
+      x += 40;
+    }
+    // K label on substrate
+    const kl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    kl.setAttribute('x', 90);
+    kl.setAttribute('y', 28);
+    kl.setAttribute('text-anchor', 'end');
+    kl.setAttribute('font-size', 10);
+    kl.setAttribute('font-weight', 700);
+    kl.setAttribute('fill', d.color);
+    kl.setAttribute('font-family', 'ui-monospace');
+    kl.textContent = type.startsWith('k') ? type.toUpperCase() : 'Ub';
+    chainUbsG.appendChild(kl);
+  }
+  chainDetail.innerHTML = d.detail;
+}
+chainCards.forEach(c => c.addEventListener('click', () => {
+  chainCards.forEach(x => x.classList.remove('active'));
+  c.classList.add('active');
+  renderChain(c.dataset.chain);
+}));
+renderChain('k48');
+
+
+/* ========== E3 Ligase Atlas ========== */
+const e3Data = [
+  // Tumor suppressor E3s
+  { gene: 'VHL', family: 'CRL2 (cullin-RING) · BC-box', role: 'suppressor',
+    substrates: ['HIF-1α', 'HIF-2α'],
+    desc: 'von Hippel-Lindau syndrome 원인. 신장암 ccRCC의 90% 변이/결손 → HIF-1α 분해 못해 안정화 → VEGF/혈관신생/해당작용. PROTAC E3 ligand로 가장 많이 쓰이는 ligase 중 하나.',
+    cancers: 'ccRCC · pheochromocytoma · hemangioblastoma' },
+  { gene: 'BRCA1', family: 'RING · BARD1 heterodimer', role: 'suppressor',
+    substrates: ['CtIP', 'H2AK127/129', 'γ-tubulin', 'p53'],
+    desc: 'HR-mediated DSB 수리의 중심. BRCA1 mut → HR 결핍 → PARP 의존 → PARPi 효과. K6/K48/K63 사슬 모두 만들 수 있어 다기능. 유방암·난소암 가족성.',
+    cancers: 'breast · ovarian · prostate' },
+  { gene: 'PARKIN', family: 'RBR · UBE3 family', role: 'suppressor',
+    substrates: ['mitofusin', 'MIRO', 'TOMM20', 'VDAC1'],
+    desc: 'PINK1과 함께 mitophagy 조절. PD에서 well-known이지만 HCC·신장암에서 종양억제. 손상된 미토콘드리아 표면을 K6/K11/K48/K63 분기 사슬로 표지.',
+    cancers: 'HCC · 폐암 · 췌장암' },
+  { gene: 'CHIP / STUB1', family: 'U-box · TPR', role: 'suppressor',
+    substrates: ['HSP70', 'HSP90 client', 'ERα', 'AKT'],
+    desc: 'HSP chaperone과 함께 misfolded 단백질을 분해(quality control). 여러 oncogenic kinase의 K48 분해. 유방암·전립선암에서 발현 감소.',
+    cancers: 'breast · prostate · gastric' },
+  { gene: 'TRIP12', family: 'HECT', role: 'suppressor',
+    substrates: ['glucocerebrosidase', 'p14ARF', 'BAF57'],
+    desc: 'p14ARF degradation을 통해 p53 axis 조절. ID·Clark-Baraitser 신경발달 변이로도 알려짐(Aerden 2023, Yi 2022). 종양에선 HECT 활성을 통해 다양한 oncogene을 분해.',
+    cancers: 'breast · CRC · 신경발달 장애' },
+  { gene: 'SPOP', family: 'CRL3 · BTB', role: 'suppressor',
+    substrates: ['SRC-3', 'AR', 'BET', 'ERG', 'DEK'],
+    desc: 'CRL3 substrate adaptor. 전립선암 9% 변이. AR·BET 단백질 분해를 막아 androgen 신호 안정화.',
+    cancers: 'prostate · 자궁내막' },
+
+  // Oncogene-functioning E3s
+  { gene: 'MDM2', family: 'RING', role: 'oncogene',
+    substrates: ['p53', 'MDMX', 'p21', 'Rb'],
+    desc: 'p53 axis의 핵심. 정상에선 p53을 항상 분해해 베이스라인을 낮춤. Sarcoma 7%, glioma 11% MDM2 amplification → p53 과분해 → 종양. MDM2 inhibitor(idasanutlin, milademetan) 임상.',
+    cancers: 'sarcoma · glioma · liposarcoma' },
+  { gene: 'MDMX (MDM4)', family: 'RING (Inactive paralog)', role: 'oncogene',
+    substrates: ['p53 (with MDM2)'],
+    desc: 'MDM2 partner. RING 활성은 약하지만 MDM2 stabilization으로 p53 분해 가속. melanoma·breast cancer에서 amplified. ALRN-6924로 dual inhibition.',
+    cancers: 'melanoma · breast · neuroblastoma' },
+  { gene: 'SKP2', family: 'F-box · SCF', role: 'oncogene',
+    substrates: ['p27', 'p21', 'p57', 'FOXO1'],
+    desc: 'CDK inhibitor를 분해해 cell cycle 가속. 유방·전립선·식도암에서 over-expression.',
+    cancers: 'breast · prostate · esophageal' },
+  { gene: 'β-TrCP', family: 'F-box · SCF', role: 'dual',
+    substrates: ['IκB', 'β-catenin', 'CDC25', 'EMI1', 'YAP1'],
+    desc: 'NF-κB(IκB 분해 → 종양 촉진), Wnt(β-catenin 분해 → 종양억제) 양쪽에 관여. context-dependent. 췌장암·CRC에서 amplified.',
+    cancers: 'pancreatic · CRC · gastric' },
+  { gene: 'HUWE1', family: 'HECT', role: 'dual',
+    substrates: ['MCL1', 'p53', 'c-MYC', 'TopBP1', 'N-MYC'],
+    desc: '단일 HECT가 oncogene과 종양억제 단백질을 모두 분해. c-MYC degradation으로 종양억제, p53 degradation으로 oncogene. context로 결정.',
+    cancers: 'colon · breast · CNS' },
+  { gene: 'TRIM25', family: 'TRIM RING', role: 'oncogene',
+    substrates: ['p53', 'RIG-I (innate immunity)'],
+    desc: '면역 회피·바이러스 감시. 유방암에서 p53 분해 가속. 분자 글루 표적으로 떠오름.',
+    cancers: 'breast · 위암' },
+  { gene: 'CRBN', family: 'CRL4 · DCAF', role: 'dual',
+    substrates: ['IKZF1/3', 'CK1α', 'GSPT1', 'SALL4'],
+    desc: '분자글루 IMiD(lenalidomide, pomalidomide, thalidomide)의 hijacked target. neo-substrate(IKZF1/3) 분해로 다발성 골수종 치료. PROTAC E3 ligand로도 광범위 사용.',
+    cancers: 'multiple myeloma · MDS · 분자글루 platform' },
+  { gene: 'DCAF15', family: 'CRL4', role: 'oncogene',
+    substrates: ['RBM39 (with indisulam)'],
+    desc: 'Indisulam·E7820 분자글루의 hijacked E3. RBM39 분해 → splicing 결함 → AML/NHL 효과. 분자글루가 E3 substrate 범위를 바꾸는 대표적인 platform.',
+    cancers: 'AML · NHL · 표적' },
+
+  // Dual / context
+  { gene: 'CUL4-DDB1', family: 'CRL4 scaffold', role: 'dual',
+    substrates: ['CDT1', 'p21', 'XPC'],
+    desc: 'DNA 복제 라이센싱(CDT1), DNA 수리(XPC), histone(H3K56ac) 등 다기능. CRBN·DCAF15 substrate receptor가 결합해 PROTAC platform이 됨.',
+    cancers: 'breast · lung · CRL platform' },
+  { gene: 'APC/C', family: 'multimer · RING', role: 'suppressor',
+    substrates: ['cyclin B', 'securin', 'CDC20', 'CDC25'],
+    desc: '마이토시스 종료를 책임지는 RING ligase complex. K11 사슬을 만든다. APC11+APC2가 RING+cullin 역할. 변이는 aneuploidy → 게놈 불안정성.',
+    cancers: 'CIN tumors · WGD' }
+];
+
+const e3Grid = document.getElementById('e3-grid');
+e3Data.forEach(e => {
+  const card = document.createElement('div');
+  card.className = 'e3-card';
+  card.dataset.role = e.role;
+  card.innerHTML = `
+    <div class="head">
+      <span class="gene">${e.gene}</span>
+      <span class="role-tag">${e.role === 'suppressor' ? 'tumor suppressor' : e.role === 'oncogene' ? 'oncogene' : 'dual / context'}</span>
+    </div>
+    <div class="family">${e.family}</div>
+    <div class="substrates">
+      <b>substrates</b>
+      <div class="substrate-list">${e.substrates.map(s => `<span class="substrate-pill">${s}</span>`).join('')}</div>
+    </div>
+    <div class="desc">${e.desc}</div>
+    <div class="cancers"><span>cancers:</span> ${e.cancers}</div>
+  `;
+  e3Grid.appendChild(card);
+});
+
+
+/* ========== DUB Atlas ========== */
+const dubData = [
+  { gene: 'USP7 / HAUSP', family: 'USP', role: 'oncogene',
+    substrates: ['MDM2', 'MDMX', 'PTEN', 'FOXO4', 'N-Myc'],
+    desc: 'MDM2를 deubiquitinate → MDM2 안정화 → p53 더 빨리 분해. P5091 / FT827 등 USP7 inhibitor 임상.',
+    cancers: 'multiple myeloma · DLBCL · neuroblastoma' },
+  { gene: 'USP22', family: 'USP · SAGA complex', role: 'oncogene',
+    substrates: ['H2A/H2B', 'BMI1', 'SIRT1', 'EZH2 partner'],
+    desc: 'MHC-I 발현 억제 → 면역 회피. T-cell exclusion에 기여. SAGA 복합체 일부로 chromatin 상태 변화. 다양한 암에서 prognosis marker.',
+    cancers: 'CRC · breast · HCC · 면역회피' },
+  { gene: 'BAP1', family: 'UCH', role: 'suppressor',
+    substrates: ['H2AK119Ub', 'HCF-1', 'BRCA1'],
+    desc: 'BRCA1-associated. mesothelioma 60%, uveal melanoma 84%, ccRCC 11% 변이. PRC1 H2AK119Ub 제거 → chromatin 활성. Tumor suppressor 역할.',
+    cancers: 'mesothelioma · uveal melanoma · ccRCC' },
+  { gene: 'A20 / TNFAIP3', family: 'OTU', role: 'suppressor',
+    substrates: ['RIPK1 (K63)', 'TRAF6', 'NEMO'],
+    desc: 'NF-κB 음성 조절자. K63 사슬 자르고 K48 사슬 추가하는 dual-function (E3+DUB). DLBCL 30% 변이 → NF-κB 과활성.',
+    cancers: 'DLBCL · MALT lymphoma · 자가면역' },
+  { gene: 'CYLD', family: 'USP', role: 'suppressor',
+    substrates: ['TRAF2/6', 'NEMO', 'RIPK1'],
+    desc: 'K63·M1 사슬 자르는 NF-κB 억제자. cylindromatosis(피부 종양) 원인. T-ALL·골수종·CLL에서 변이.',
+    cancers: 'cylindroma · T-ALL · CLL' },
+  { gene: 'OTUD7B', family: 'OTU', role: 'dual',
+    substrates: ['ZAP70', 'GRAIL', 'TRAF3'],
+    desc: 'T 세포 항상성·NF-κB 조절. K11 사슬 잘 자르는 specific DUB. 종양 면역에서 양쪽 효과.',
+    cancers: '면역세포 dysregulation · lung' },
+  { gene: 'USP14', family: 'USP · 26S 결합', role: 'oncogene',
+    substrates: ['proteasome substrates', 'AR'],
+    desc: '프로테아좀 19S에 결합해 sub의 K48 사슬을 잘라 분해 속도를 늦춘다. IU1 inhibitor가 발견됨. 다발성 골수종에서 표적.',
+    cancers: 'MM · prostate · NSCLC' },
+  { gene: 'USP10', family: 'USP', role: 'dual',
+    substrates: ['p53', 'FoxO3', 'AMPK', 'beclin-1'],
+    desc: 'p53 deubiquitinate(suppressor 역할), AMPK·autophagy 조절. context-dependent. 위암·CRC에서 prognosis marker.',
+    cancers: 'gastric · CRC · breast' },
+  { gene: 'USP9X', family: 'USP', role: 'dual',
+    substrates: ['MCL1', 'SMAD4', 'β-catenin', 'ITCH'],
+    desc: 'MCL1 안정화 → 항-apoptosis (oncogene-like). SMAD4 안정화 → TGF-β suppressor 역할. 다발성 골수종에서 표적.',
+    cancers: 'MM · pancreatic · colon' },
+  { gene: 'USP11', family: 'USP', role: 'oncogene',
+    substrates: ['BRCA2', 'PML', 'PALB2'],
+    desc: 'HR pathway 안정화 → BRCA mut에서 PARPi 저항 매개. Mitoxantrone-induced 분해 표적.',
+    cancers: 'breast · ovarian · PARPi 저항' },
+  { gene: 'OTULIN', family: 'OTU', role: 'suppressor',
+    substrates: ['M1 linear chain'],
+    desc: 'M1 (linear) 사슬을 자르는 유일한 DUB. NF-κB 신호 음성 조절. autoinflammation syndrome 원인.',
+    cancers: '면역결핍 · 자가염증' },
+  { gene: 'USP1', family: 'USP', role: 'oncogene',
+    substrates: ['FANCD2', 'PCNA monoUb', 'ID family'],
+    desc: 'FA/HR pathway 활성화. ID 단백질 안정화. KSQ-4279 inhibitor 임상.',
+    cancers: 'BRCA-deficient cancer · TNBC' }
+];
+const dubGrid = document.getElementById('dub-grid');
+dubData.forEach(e => {
+  const card = document.createElement('div');
+  card.className = 'e3-card';
+  card.dataset.role = e.role;
+  card.innerHTML = `
+    <div class="head">
+      <span class="gene">${e.gene}</span>
+      <span class="role-tag">${e.role === 'suppressor' ? 'suppressor' : e.role === 'oncogene' ? 'oncogene' : 'dual / context'}</span>
+    </div>
+    <div class="family">${e.family}</div>
+    <div class="substrates">
+      <b>substrates</b>
+      <div class="substrate-list">${e.substrates.map(s => `<span class="substrate-pill">${s}</span>`).join('')}</div>
+    </div>
+    <div class="desc">${e.desc}</div>
+    <div class="cancers"><span>cancers:</span> ${e.cancers}</div>
+  `;
+  dubGrid.appendChild(card);
+});
+
+
+/* ========== Multi-omics simulator ========== */
+const scenButtons = document.querySelectorAll('#scen-buttons button');
+const scenExplain = document.getElementById('scen-explain');
+const scenarioData = {
+  mdm2: {
+    rna: 2.5, prot: 2.8, phospho: 1.0, ub: 0.7, ac: 0.9,
+    title: 'MDM2 amplification → p53 destruction',
+    body: `Sarcoma 7%, glioma 11%에서 <b>MDM2</b> 유전자가 12q14에 amplified. RNA·단백질 모두 올라가지만 핵심은 <b>p53의 K48 사슬</b>이 폭발적으로 증가해서 p53 단백질이 거의 검출 안 됨(반대 방향 변화). 이 케이스는 <b>MDM2 inhibitor (idasanutlin, milademetan)</b>로 p53 회복이 가능. <span class="kbd">CPTAC + DepMap</span>`
+  },
+  vhl: {
+    rna: 0.5, prot: 0.4, phospho: 0.6, ub: 0.1, ac: 1.0,
+    title: 'VHL loss → HIF-1α stabilization',
+    body: `ccRCC 90%에서 <b>VHL</b> 결손/변이. <b>VHL 자체는 RNA·단백질 모두 떨어지고</b>, 결과는 substrate인 <b>HIF-1α</b>의 K48 ubiquitination이 사라지면서 안정화 → VEGFA·GLUT1·PDK 발현 폭발. ub 레이어가 가장 극적으로 변하는 신호. <span class="kbd">CPTAC ccRCC</span>`
+  },
+  skp2: {
+    rna: 1.6, prot: 1.8, phospho: 1.2, ub: 2.4, ac: 1.0,
+    title: 'SKP2 over-expression → p27 destruction',
+    body: `<b>SKP2</b>(F-box · SCF)는 CDK inhibitor <b>p27·p21·p57</b>을 분해해 cell cycle을 가속한다. 유방·전립선·식도암에서 SKP2 over-expression이 흔히 발견됨. RNA·단백질 모두 약간 상승하지만 가장 큰 변화는 <b>유비퀴티놈에서 substrate p27의 K48 사슬이 ~2.4× 증가</b> — 즉 정상 단백질이 더 많이 분해되는 시그너처. 단백질 자체 측정은 오히려 떨어진 모습으로 보일 수 있어 ub 레이어가 결정적. <span class="kbd">Cancer Cell · DepMap</span>`
+  },
+  kinase: {
+    rna: 1.0, prot: 1.1, phospho: 2.6, ub: 1.0, ac: 1.0,
+    title: 'Kinase activity → phospho-only signal',
+    body: `어떤 암에서는 DNA 변이나 RNA 변화가 크지 않아도 kinase pathway가 이미 켜져 있을 수 있다. 이 경우 total protein은 거의 그대로인데 특정 substrate의 phosphorylation만 크게 올라간다. 그래서 proteogenomics에서는 RNA와 protein abundance뿐 아니라 <b>phosphoproteome</b>을 따로 보며, pathway activity score나 kinase-substrate enrichment로 “활성 상태”를 해석한다. <span class="kbd">phosphoproteome · pathway activity</span>`
+  },
+  usp7: {
+    rna: 1.0, prot: 1.0, phospho: 1.0, ub: 2.4, ac: 1.0,
+    title: 'USP7 inhibition → MDM2 destabilized → p53 rescue',
+    body: `<b>USP7</b>(HAUSP)는 MDM2를 deubiquitinate해 안정화한다. USP7 inhibitor(P5091, FT827)로 MDM2의 K48 자가 유비퀴틴화가 늘어나 MDM2가 분해되고 p53이 회복된다. RNA·단백질·인산화는 거의 변화 없는데 <b>유비퀴티놈만 ~2.4×</b> 폭증 — 다발성 골수종·DLBCL에서 활용되는 차세대 표적 전략의 시그너처. <span class="kbd">Multiple myeloma · DLBCL · neuroblastoma</span>`
+  },
+  m6a: {
+    rna: 1.4, prot: 2.1, phospho: 2.3, ub: 0.6, ac: 1.0,
+    title: 'RNA-binding program multi-omics',
+    body: `RNA modification reader나 RNA-binding protein program은 transcriptome, proteome, phosphoproteome이 같은 방향으로 움직일 때 해석력이 커집니다. 예를 들어 cell-cycle protein, angiogenesis marker, immune infiltration proxy가 함께 변하면 단일 RNA layer보다 더 강한 subtype 단서를 줍니다. <span class="kbd">RNA-binding · proteogenomics</span>`
+  }
+};
+function applyScenario(name) {
+  const d = scenarioData[name];
+  const update = (key, val) => {
+    const v = document.getElementById(`v-${key}`);
+    const b = document.getElementById(`bar-${key}`);
+    v.textContent = (val >= 1 ? '+' : '') + val.toFixed(1) + '×';
+    b.style.width = Math.min(100, val / 4 * 100) + '%';
+  };
+  update('rna', d.rna);
+  update('prot', d.prot);
+  update('phospho', d.phospho);
+  update('ub', d.ub);
+  update('ac', d.ac);
+  scenExplain.innerHTML = `<h4>${d.title}</h4><p>${d.body}</p>`;
+}
+scenButtons.forEach(b => b.addEventListener('click', () => {
+  scenButtons.forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  applyScenario(b.dataset.scen);
+}));
+applyScenario('mdm2');
+
+
+/* ========== PROTAC stages ========== */
+const protacStageButtons = document.querySelectorAll('.protac-stages button');
+const protacStageLabel = document.getElementById('protac-stage-label');
+const protacExplain = document.getElementById('protac-explain');
+const protacStageData = {
+  1: {
+    label: 'stage 01 — PROTAC 구조',
+    body: `<b>Stage 01 — PROTAC 구조.</b> PROTAC은 세 부분으로 구성된다: <b>warhead</b>(target POI ligand), <b>linker</b>(PEG/alkyl), <b>E3 ligand</b>(VHL ligand는 hydroxyproline-mimic, CRBN ligand는 thalidomide 유래 IMiD). 각각 따로는 그냥 약한 결합이지만, 같이 있으면 두 단백질을 가깝게 만든다.`
+  },
+  2: {
+    label: 'stage 02 — ternary complex 형성',
+    body: `<b>Stage 02 — Ternary complex.</b> warhead가 target에, E3 ligand가 E3 ligase에 결합하면 세 단백질(target·PROTAC·E3)이 ternary complex를 만든다. 이 cooperativity가 중요해서, ligand 두 개의 단순 합보다 훨씬 강한 결합이 된다(α > 1, "positive cooperativity"). hook effect도 흔히 나타남.`
+  },
+  3: {
+    label: 'stage 03 — K48 ubiquitination',
+    body: `<b>Stage 03 — Ubiquitination.</b> 가까이 있는 E2가 target의 라이신에 Ub을 옮긴다. K48 사슬이 자란다. 일반 substrate처럼 인식되어 multivalent K48-poly-Ub로 표지됨. PROTAC linker length·rigidity가 어떤 K가 표지될지 결정.`
+  },
+  4: {
+    label: 'stage 04 — proteasomal degradation',
+    body: `<b>Stage 04 — Degradation.</b> K48 사슬이 26S proteasome에 인식되어 target이 펩타이드로 분해된다. 단순 inhibitor와 달리 단백질 자체가 사라지므로 scaffolding function까지 모두 제거 가능 — drug-resistance kinase mutation이나 enzymatically inactive form도 표적할 수 있다.`
+  },
+  5: {
+    label: 'stage 05 — catalytic cycling',
+    body: `<b>Stage 05 — Catalytic cycling.</b> PROTAC은 분해 후 free되어 다음 target 분자로 이동한다. <b>sub-stoichiometric</b>로 작동 — 즉 PROTAC 1 분자가 여러 target을 분해. 이 점이 inhibitor 대비 강력한 이유. 한 번 분해 후 새 단백질 합성까지의 시간이 약효 지속을 결정.`
+  }
+};
+function setProtacStage(s) {
+  protacStageButtons.forEach(b => b.classList.toggle('active', +b.dataset.stage === s));
+  const d = protacStageData[s];
+  protacStageLabel.textContent = d.label;
+  protacExplain.innerHTML = d.body;
+
+  // visualize
+  const ub = document.getElementById('protac-ub');
+  const pr = document.getElementById('protac-proteasome');
+  const target = document.getElementById('protac-target');
+  ub.style.opacity = s >= 3 ? 1 : 0;
+  pr.style.opacity = s >= 4 ? 1 : 0;
+  // shift target left when degraded
+  if (s >= 4) {
+    target.style.transition = 'transform 0.6s';
+    target.style.transform = 'translateY(60px) scale(0.8)';
+    target.style.opacity = s === 4 ? 0.6 : (s === 5 ? 0 : 1);
+  } else {
+    target.style.transform = '';
+    target.style.opacity = 1;
+  }
+}
+protacStageButtons.forEach(b => b.addEventListener('click', () => setProtacStage(+b.dataset.stage)));
+setProtacStage(1);
+
+
+/* ========== Study guide concept cards ========== */
+const refLibrary = {
+  ciechanover1994: {
+    authors: 'Ciechanover',
+    year: '1994',
+    journal: 'Cell',
+    title: 'The ubiquitin-proteasome proteolytic pathway',
+    doi: '10.1016/0092-8674(94)90396-4'
+  },
+  varshavsky2012: {
+    authors: 'Varshavsky',
+    year: '2012',
+    journal: 'Annual Review of Biochemistry',
+    title: 'The Ubiquitin System, an Immense Realm',
+    doi: '10.1146/annurev-biochem-051910-094049'
+  },
+  komander2012: {
+    authors: 'Komander & Rape',
+    year: '2012',
+    journal: 'Annual Review of Biochemistry',
+    title: 'The Ubiquitin Code',
+    doi: '10.1146/annurev-biochem-060310-170328'
+  },
+  yau2016: {
+    authors: 'Yau & Rape',
+    year: '2016',
+    journal: 'Nature Cell Biology',
+    title: 'The increasing complexity of the ubiquitin code',
+    doi: '10.1038/ncb3358'
+  },
+  deshaies2009: {
+    authors: 'Deshaies & Joazeiro',
+    year: '2009',
+    journal: 'Annual Review of Biochemistry',
+    title: 'RING Domain E3 Ubiquitin Ligases',
+    doi: '10.1146/annurev.biochem.78.101807.093809'
+  },
+  zheng2017: {
+    authors: 'Zheng & Shabek',
+    year: '2017',
+    journal: 'Annual Review of Biochemistry',
+    title: 'Ubiquitin Ligases: Structure, Function, and Regulation',
+    doi: '10.1146/annurev-biochem-060815-014922'
+  },
+  petroski2005: {
+    authors: 'Petroski & Deshaies',
+    year: '2005',
+    journal: 'Nature Reviews Molecular Cell Biology',
+    title: 'Function and regulation of cullin-RING ubiquitin ligases',
+    doi: '10.1038/nrm1547'
+  },
+  swatek2016: {
+    authors: 'Swatek & Komander',
+    year: '2016',
+    journal: 'Cell Research',
+    title: 'Ubiquitin modifications',
+    doi: '10.1038/cr.2016.39'
+  },
+  mevissen2017: {
+    authors: 'Mevissen & Komander',
+    year: '2017',
+    journal: 'Annual Review of Biochemistry',
+    title: 'Mechanisms of Deubiquitinase Specificity and Regulation',
+    doi: '10.1146/annurev-biochem-061516-044916'
+  },
+  dikic2017: {
+    authors: 'Dikic',
+    year: '2017',
+    journal: 'Annual Review of Biochemistry',
+    title: 'Proteasomal and Autophagic Degradation Systems',
+    doi: '10.1146/annurev-biochem-061516-044908'
+  },
+  ryan2024: {
+    authors: 'Ryan & Rubinsztein',
+    year: '2024',
+    journal: 'FEBS Letters',
+    title: 'The autophagy of stress granules',
+    doi: '10.1002/1873-3468.14787'
+  },
+  kim2011: {
+    authors: 'Kim et al.',
+    year: '2011',
+    journal: 'Molecular Cell',
+    title: 'Systematic and Quantitative Assessment of the Ubiquitin-Modified Proteome',
+    doi: '10.1016/j.molcel.2011.08.025'
+  },
+  hjerpe2009: {
+    authors: 'Hjerpe et al.',
+    year: '2009',
+    journal: 'EMBO Reports',
+    title: 'Efficient protection and isolation of ubiquitylated proteins using tandem ubiquitin-binding entities',
+    doi: '10.1038/embor.2009.192'
+  },
+  demeulemeester2024: {
+    authors: 'Demeulemeester et al.',
+    year: '2024',
+    journal: 'Molecular & Cellular Proteomics',
+    title: 'msqrob2PTM: Differential Abundance and Differential Usage Analysis of MS-Based Proteomics Data at the Posttranslational Modification and Peptidoform Level',
+    doi: '10.1016/j.mcpro.2023.100708'
+  },
+  mertins2016: {
+    authors: 'Mertins et al.',
+    year: '2016',
+    journal: 'Nature',
+    title: 'Proteogenomics connects somatic mutations to signalling in breast cancer',
+    doi: '10.1038/nature18003'
+  },
+  maxwell1999: {
+    authors: 'Maxwell et al.',
+    year: '1999',
+    journal: 'Nature',
+    title: 'The tumour suppressor protein VHL targets hypoxia-inducible factors for oxygen-dependent proteolysis',
+    doi: '10.1038/20459'
+  },
+  haupt1997: {
+    authors: 'Haupt et al.',
+    year: '1997',
+    journal: 'Nature',
+    title: 'Mdm2 promotes the rapid degradation of p53',
+    doi: '10.1038/387296a0'
+  },
+  carrano1999: {
+    authors: 'Carrano et al.',
+    year: '1999',
+    journal: 'Nature Cell Biology',
+    title: 'SKP2 is required for ubiquitin-mediated degradation of the CDK inhibitor p27',
+    doi: '10.1038/12013'
+  },
+  sakamoto2001: {
+    authors: 'Sakamoto et al.',
+    year: '2001',
+    journal: 'Proceedings of the National Academy of Sciences',
+    title: 'Protacs: Chimeric molecules that target proteins to the Skp1-Cullin-F box complex for ubiquitination and degradation',
+    doi: '10.1073/pnas.141230798'
+  },
+  bondeson2015: {
+    authors: 'Bondeson et al.',
+    year: '2015',
+    journal: 'Nature Chemical Biology',
+    title: 'Catalytic in vivo protein knockdown by small-molecule PROTACs',
+    doi: '10.1038/nchembio.1858'
+  },
+  kronke2014: {
+    authors: 'Kroenke et al.',
+    year: '2014',
+    journal: 'Science',
+    title: 'Lenalidomide Causes Selective Degradation of IKZF1 and IKZF3 in Multiple Myeloma Cells',
+    doi: '10.1126/science.1244851'
+  },
+  richardson2003: {
+    authors: 'Richardson et al.',
+    year: '2003',
+    journal: 'New England Journal of Medicine',
+    title: 'A Phase 2 Study of Bortezomib in Relapsed, Refractory Myeloma',
+    doi: '10.1056/NEJMoa030288'
+  }
+};
+
+const studyCards = [
+  {
+    title: '유비퀴틴은 단백질에 붙는 작은 표지입니다',
+    kind: '기초 개념',
+    tags: ['basic'],
+    blurb: 'Ub은 76 amino acid 단백질입니다. 보통 substrate의 lysine에 isopeptide bond로 붙고, 하나만 붙을 수도 있고 여러 개가 사슬처럼 이어질 수도 있습니다.',
+    read: '먼저 “Ub이 붙었다”와 “분해된다”를 분리해서 읽습니다. 사슬 종류와 reader가 정해져야 의미가 정해집니다.'
+  },
+  {
+    title: 'E1-E2-E3 cascade는 substrate 선택 과정을 나눕니다',
+    kind: '기초 개념',
+    tags: ['basic'],
+    blurb: 'E1은 Ub을 ATP로 활성화하고, E2는 Ub을 운반하며, E3 ligase는 어떤 단백질을 표지할지 고릅니다. 인간에서 E3가 600개 이상인 이유는 substrate 선택성이 필요하기 때문입니다.',
+    read: '논문에서 E3가 나오면 family(RING, HECT, RBR, CRL), substrate receptor, degron 인식 조건을 함께 찾습니다.'
+  },
+  {
+    title: 'RING, HECT, RBR은 Ub을 넘기는 방식이 다릅니다',
+    kind: '기초 개념',
+    tags: ['basic', 'code'],
+    blurb: 'RING E3는 E2-Ub와 substrate를 가깝게 붙여 직접 전달을 돕고, HECT E3는 자기 cysteine에 Ub을 잠깐 잡았다가 substrate로 넘깁니다. RBR E3는 두 방식을 섞은 하이브리드처럼 이해하면 쉽습니다.',
+    read: 'HECT/RBR 연구에서는 catalytic-dead mutant가 중요한 대조군입니다. RING/CRL 연구에서는 substrate receptor, E2 조합, neddylation 상태를 함께 봅니다.'
+  },
+  {
+    title: 'Degron은 “분해될 단백질”을 알아보는 표지입니다',
+    kind: '기초 개념',
+    tags: ['basic', 'code'],
+    blurb: 'D-box, KEN box, phosphodegron처럼 특정 서열이나 인산화 상태가 E3 인식을 허용합니다. 같은 단백질도 세포주기나 스트레스 상태에 따라 degron이 노출될 수 있습니다.',
+    read: '단백질 안정성 변화가 보이면 mutation, phosphorylation, localization, binding partner가 degron 인식을 바꾸는지 확인합니다.'
+  },
+  {
+    title: 'CRL은 scaffold와 substrate receptor를 조립한 E3입니다',
+    kind: '기초 개념',
+    tags: ['basic', 'cancer'],
+    blurb: 'Cullin-RING ligase(CRL)는 cullin scaffold, RBX1 RING, adaptor, substrate receptor가 조립된 모듈형 E3입니다. SCF-SKP2, CRL2-VHL, CRL4-DDB2처럼 receptor가 바뀌면 고르는 substrate도 바뀝니다.',
+    read: 'CRL을 읽을 때는 cullin 종류, receptor 이름, NEDD8이 붙어 활성화됐는지, substrate degron이 phosphorylation 같은 조건을 요구하는지 확인합니다.'
+  },
+  {
+    title: 'K48 사슬은 proteasome 분해의 대표 신호입니다',
+    kind: 'Ub 코드',
+    tags: ['code', 'basic'],
+    blurb: 'K48-linked poly-Ub, 특히 여러 Ub이 이어진 사슬은 26S proteasome의 ubiquitin receptor가 인식하기 좋은 표지입니다.',
+    read: 'K48 증가, cycloheximide chase에서 half-life 감소, MG132/bortezomib 처리 시 substrate 축적이 같이 보이면 분해 해석이 강해집니다.'
+  },
+  {
+    title: 'K63과 M1 사슬은 신호 플랫폼에 가깝습니다',
+    kind: 'Ub 코드',
+    tags: ['code'],
+    blurb: 'K63은 DNA damage response, endocytosis, NF-kB 신호에 자주 쓰이고, M1 linear chain은 LUBAC가 만들어 TNF/NF-kB 신호에서 중요합니다.',
+    read: 'K63/M1 증가는 “단백질이 없어질 것이다”보다 “복합체가 모인다, 신호가 켜진다, 위치가 바뀐다”로 먼저 해석합니다.'
+  },
+  {
+    title: 'Monoubiquitin은 분해보다 위치와 기능을 바꾸는 경우가 많습니다',
+    kind: 'Ub 코드',
+    tags: ['code', 'basic'],
+    blurb: 'Ub이 하나만 붙는 monoubiquitination은 histone, PCNA, receptor endocytosis처럼 단백질의 위치, 복합체 결합, DNA repair 선택을 바꾸는 표지로 자주 쓰입니다.',
+    read: 'monoUb가 보이면 proteasome degradation을 바로 떠올리기보다 chromatin, DNA repair, membrane trafficking, receptor internalization 같은 기능 변화를 먼저 확인합니다.'
+  },
+  {
+    title: 'DUB는 Ub을 떼지만 항상 rescue 효소는 아닙니다',
+    kind: 'E3/DUB',
+    tags: ['basic', 'cancer'],
+    blurb: 'DUB는 Ub 사슬을 제거하거나 편집합니다. 어떤 DUB는 substrate를 안정화하지만, 어떤 DUB는 E3 ligase를 안정화해 간접적으로 다른 단백질 분해를 늘릴 수 있습니다.',
+    read: 'DUB knockdown 후 substrate와 E3 양이 어떻게 동시에 바뀌는지, K48/K63 중 어느 사슬이 변하는지 따로 봅니다.'
+  },
+  {
+    title: 'E3-substrate 주장은 증거 사다리로 읽습니다',
+    kind: '측정법',
+    tags: ['assay', 'basic'],
+    blurb: '좋은 E3-substrate 주장은 보통 결합(co-IP/PLA), ubiquitination 증가, catalytic-dead 대조군, in vitro 재구성, K-to-R site mutation, MG132 rescue, half-life 변화가 단계적으로 쌓입니다.',
+    read: '“E3가 substrate를 분해한다”는 문장을 보면 단백질이 같이 붙는지, 실제 Ub이 붙는지, 어느 lysine인지, proteasome inhibitor로 되돌아오는지 순서대로 확인합니다.'
+  },
+  {
+    title: 'Proteasome과 autophagy는 서로 다른 분해 경로입니다',
+    kind: '기초 비교',
+    tags: ['basic'],
+    blurb: 'Proteasome은 주로 개별 단백질을 빠르게 분해하고, autophagy는 응집체·소기관·큰 구조물을 처리합니다. Ub은 두 경로 모두에서 cargo 표지로 쓰일 수 있습니다.',
+    read: 'MG132/bortezomib, lysosome inhibitor, LC3-II, p62/SQSTM1, proteasome activity assay를 함께 봐야 어느 경로인지 구분됩니다.'
+  },
+  {
+    title: 'p97/VCP와 p62는 Ub 표지를 다른 분해 장치로 넘겨줍니다',
+    kind: '기초 비교',
+    tags: ['basic', 'code'],
+    blurb: 'p97/VCP는 ubiquitinated complex를 풀어내는 ATPase로 ERAD, stress granule 해체, proteasome/autophagy 연결에서 자주 등장합니다. p62/SQSTM1은 Ub cargo와 LC3를 이어 selective autophagy로 보냅니다.',
+    read: '응집체나 stress granule이 오래 남는 실험에서는 K48/K63 사슬만 보지 말고 p62, LC3, VCP/p97, lysosome flux를 함께 봅니다.'
+  },
+  {
+    title: 'K-epsilon-GG는 ubiquitinome을 재는 mass spec 흔적입니다',
+    kind: '측정법',
+    tags: ['assay'],
+    blurb: 'Trypsin digestion 뒤 ubiquitinated lysine에는 diGly 또는 K-epsilon-GG remnant가 남습니다. 항체로 이 peptide를 enrichment하면 site-level ubiquitination을 LC-MS/MS로 정량할 수 있습니다.',
+    read: '단백질 총량이 늘어 Ub peptide도 같이 늘었는지, 아니면 protein-anchored correction 후에도 site가 특이적으로 변하는지 확인합니다.'
+  },
+  {
+    title: 'TUBE와 linkage-specific antibody는 사슬을 끌어내는 도구입니다',
+    kind: '측정법',
+    tags: ['assay'],
+    blurb: 'TUBE(tandem ubiquitin-binding entity)는 ubiquitinated protein을 농축하는 도구이고, K48/K63-specific antibody는 사슬 종류를 구분하는 데 쓰입니다. 둘 다 enrichment bias와 antibody specificity를 함께 생각해야 합니다.',
+    read: 'IP나 pulldown 결과를 볼 때 input, IgG control, proteasome inhibitor 처리, DUB 처리, linkage-specific blot이 같이 있는지 확인합니다.'
+  },
+  {
+    title: 'Protein-anchored correction은 PTM 해석의 안전장치입니다',
+    kind: '측정법',
+    tags: ['assay'],
+    blurb: 'PTM peptide가 증가해도 단백질 자체가 많이 늘었기 때문일 수 있습니다. PTM signal을 해당 protein abundance로 보정하면 “수식어 상태 변화”와 “단백질 양 변화”를 분리할 수 있습니다.',
+    read: 'phospho, acetyl, ubiquitinome 분석에서는 total protein layer가 있는지, 보정 전후 결론이 같은지 확인합니다.'
+  },
+  {
+    title: 'DPA와 DPU는 PTM 질문을 서로 다르게 묻습니다',
+    kind: '측정법',
+    tags: ['assay'],
+    blurb: 'Differential PTM abundance(DPA)는 PTM peptide 자체가 조건 간에 달라졌는지 묻고, differential PTM usage(DPU)는 parent protein 양을 고려한 뒤 해당 site의 상대적 사용이 달라졌는지 묻습니다.',
+    read: '단백질 총량 변화가 큰 암 샘플에서는 DPA와 DPU를 모두 확인합니다. DPU가 남아 있으면 “단백질이 많아서”가 아니라 “그 site가 더 많이 쓰였다”는 해석이 강해집니다.'
+  },
+  {
+    title: 'CHX chase, MG132, rescue는 분해 주장을 강하게 만듭니다',
+    kind: '측정법',
+    tags: ['assay'],
+    blurb: 'Cycloheximide chase는 새 단백질 합성을 막고 half-life를 보며, MG132는 proteasome 분해를 막아 substrate 축적을 확인합니다. E3/DUB rescue는 원인성을 보강합니다.',
+    read: '단순 abundance 차이보다 half-life 변화, ubiquitination IP, proteasome inhibitor rescue가 같이 있으면 degradation mechanism 주장이 더 튼튼합니다.'
+  },
+  {
+    title: 'VHL-HIF 축은 산소 감지와 분해가 만나는 대표 예입니다',
+    kind: '암 해석',
+    tags: ['cancer', 'code'],
+    blurb: '정상 산소에서는 HIF-1alpha가 hydroxylation된 뒤 CRL2-VHL에 인식되어 K48 ubiquitination과 proteasomal degradation으로 제거됩니다. VHL loss에서는 HIF가 안정화됩니다.',
+    read: 'DNA 변이, VHL 단백질 감소, HIF target gene, angiogenesis program, ubiquitination 감소를 한 축으로 연결합니다.'
+  },
+  {
+    title: 'MDM2-p53 축은 E3가 tumor suppressor를 과분해하는 예입니다',
+    kind: '암 해석',
+    tags: ['cancer'],
+    blurb: 'MDM2는 p53을 ubiquitinate해 분해합니다. MDM2 amplification이나 p53 regulation 이상은 DNA damage checkpoint와 apoptosis를 약화할 수 있습니다.',
+    read: 'TP53 mutation 상태, MDM2/MDMX abundance, p53 target gene activation, DUB(예: USP7) 효과를 같이 봅니다.'
+  },
+  {
+    title: 'SKP2-p27 축은 cell-cycle inhibitor를 과분해하는 예입니다',
+    kind: '암 해석',
+    tags: ['cancer'],
+    blurb: 'SKP2는 SCF E3 substrate receptor로 p27 같은 CDK inhibitor를 분해해 G1/S 전환을 밀어줍니다. SKP2가 과활성화되면 p27이 낮아지고 세포주기가 빨라질 수 있습니다.',
+    read: '이 축은 E3 abundance 증가, p27 protein 감소, K48 ubiquitination 증가, cell-cycle marker 상승을 함께 읽으면 좋습니다.'
+  },
+  {
+    title: 'Kinase 활성은 단백질 양보다 phosphorylation에서 먼저 보일 수 있습니다',
+    kind: '암 해석',
+    tags: ['cancer', 'assay'],
+    blurb: '암 신호는 항상 RNA나 total protein 증가로 보이지 않습니다. 같은 단백질 양에서도 phosphorylation site가 바뀌면 pathway activity가 달라질 수 있습니다.',
+    read: 'RNA/protein layer가 조용한데 phenotype이 강하면 phosphoproteome, kinase-substrate enrichment, inhibitor response를 함께 확인합니다.'
+  },
+  {
+    title: 'PROTAC과 molecular glue는 분해 시스템을 약물로 빌려 씁니다',
+    kind: '치료 개념',
+    tags: ['therapy'],
+    blurb: 'PROTAC은 target ligand와 E3 ligand를 linker로 연결해 target-E3 proximity를 만들고, molecular glue는 작은 분자가 새로운 protein-protein interface를 만들어 neo-substrate 분해를 유도합니다.',
+    read: 'E3가 무엇인지(CRBN, VHL 등), ternary complex가 잘 생기는지, target degradation이 proteasome-dependent인지, hook effect와 off-target degradation이 있는지 봅니다.'
+  },
+  {
+    title: 'Proteasome inhibitor와 degrader는 방향이 반대입니다',
+    kind: '치료 개념',
+    tags: ['therapy'],
+    blurb: 'Bortezomib 같은 proteasome inhibitor는 분해 장치 전체를 막아 많은 substrate가 쌓이게 합니다. PROTAC/degrader는 특정 target을 E3에 데려가 더 잘 분해되게 만듭니다.',
+    read: '치료 논문을 읽을 때는 “분해를 막는 약”인지 “분해를 유도하는 약”인지 먼저 나눕니다. 독성, 내성, biomarker, rescue experiment가 완전히 다르게 설계됩니다.'
+  }
+];
+
+const cardRefs = {
+  '유비퀴틴은 단백질에 붙는 작은 표지입니다': ['ciechanover1994', 'varshavsky2012'],
+  'E1-E2-E3 cascade는 substrate 선택 과정을 나눕니다': ['ciechanover1994', 'deshaies2009'],
+  'RING, HECT, RBR은 Ub을 넘기는 방식이 다릅니다': ['deshaies2009', 'zheng2017'],
+  'Degron은 “분해될 단백질”을 알아보는 표지입니다': ['zheng2017', 'petroski2005'],
+  'CRL은 scaffold와 substrate receptor를 조립한 E3입니다': ['petroski2005', 'zheng2017'],
+  'K48 사슬은 proteasome 분해의 대표 신호입니다': ['komander2012', 'yau2016'],
+  'K63과 M1 사슬은 신호 플랫폼에 가깝습니다': ['komander2012', 'swatek2016'],
+  'Monoubiquitin은 분해보다 위치와 기능을 바꾸는 경우가 많습니다': ['swatek2016', 'komander2012'],
+  'DUB는 Ub을 떼지만 항상 rescue 효소는 아닙니다': ['mevissen2017'],
+  'E3-substrate 주장은 증거 사다리로 읽습니다': ['zheng2017', 'hjerpe2009'],
+  'Proteasome과 autophagy는 서로 다른 분해 경로입니다': ['dikic2017'],
+  'p97/VCP와 p62는 Ub 표지를 다른 분해 장치로 넘겨줍니다': ['dikic2017', 'ryan2024'],
+  'K-epsilon-GG는 ubiquitinome을 재는 mass spec 흔적입니다': ['kim2011'],
+  'TUBE와 linkage-specific antibody는 사슬을 끌어내는 도구입니다': ['hjerpe2009'],
+  'Protein-anchored correction은 PTM 해석의 안전장치입니다': ['demeulemeester2024', 'mertins2016'],
+  'DPA와 DPU는 PTM 질문을 서로 다르게 묻습니다': ['demeulemeester2024'],
+  'CHX chase, MG132, rescue는 분해 주장을 강하게 만듭니다': ['hjerpe2009', 'kim2011'],
+  'VHL-HIF 축은 산소 감지와 분해가 만나는 대표 예입니다': ['maxwell1999'],
+  'MDM2-p53 축은 E3가 tumor suppressor를 과분해하는 예입니다': ['haupt1997'],
+  'SKP2-p27 축은 cell-cycle inhibitor를 과분해하는 예입니다': ['carrano1999'],
+  'Kinase 활성은 단백질 양보다 phosphorylation에서 먼저 보일 수 있습니다': ['mertins2016'],
+  'PROTAC과 molecular glue는 분해 시스템을 약물로 빌려 씁니다': ['sakamoto2001', 'bondeson2015', 'kronke2014'],
+  'Proteasome inhibitor와 degrader는 방향이 반대입니다': ['richardson2003', 'bondeson2015']
+};
+
+studyCards.forEach(card => {
+  card.refs = cardRefs[card.title] || [];
+});
+
+const catalogList = document.getElementById('catalog-list');
+const catalogSearch = document.getElementById('catalog-search');
+const catalogFilterButtons = document.querySelectorAll('#catalog-filter button');
+const catalogMeta = document.getElementById('catalog-meta');
+const tagLabel = {basic:'기초', code:'Ub 코드', assay:'측정법', cancer:'암 해석', therapy:'치료'};
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+function renderRefs(refIds) {
+  const refs = (refIds || []).map(id => refLibrary[id]).filter(Boolean);
+  if (!refs.length) return '';
+  return `
+    <div class="refs">
+      <div class="refs-title">근거 문헌</div>
+      ${refs.map(ref => {
+        const searchQuery = `${ref.title} ${ref.authors} ${ref.year} ${ref.journal} ${ref.doi}`;
+        const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+        const doiUrl = `https://doi.org/${encodeURI(ref.doi)}`;
+        return `
+          <div class="ref-row">
+            <div class="ref-text">
+              <b>${escapeHtml(ref.authors)} ${escapeHtml(ref.year)}</b> · ${escapeHtml(ref.journal)} · DOI: ${escapeHtml(ref.doi)}
+            </div>
+            <div class="ref-actions">
+              <a href="${doiUrl}" target="_blank" rel="noopener">DOI</a>
+              <a href="${googleUrl}" target="_blank" rel="noopener">Google 검색</a>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderCatalog() {
+  const q = catalogSearch.value.toLowerCase().trim();
+  const activeFilter = document.querySelector('#catalog-filter button.active').dataset.filter;
+  let visible = 0;
+  catalogList.innerHTML = '';
+  studyCards.forEach(cardData => {
+    const refText = (cardData.refs || []).map(id => {
+      const ref = refLibrary[id];
+      return ref ? `${ref.authors} ${ref.year} ${ref.journal} ${ref.title} ${ref.doi}` : '';
+    }).join(' ');
+    const haystack = [cardData.title, cardData.kind, cardData.blurb, cardData.read, cardData.tags.join(' '), refText].join(' ').toLowerCase();
+    const matchesQ = !q || haystack.includes(q);
+    const matchesF = activeFilter === 'all' || cardData.tags.includes(activeFilter);
+    if (!matchesQ || !matchesF) return;
+    visible++;
+    const card = document.createElement('article');
+    card.className = 'paper-card';
+    card.innerHTML = `
+      <div class="paper-head">
+        <div class="title">${cardData.title}</div>
+        <div class="meta">${cardData.kind}</div>
+      </div>
+      <div class="blurb">${cardData.blurb}</div>
+      <div class="blurb"><b>읽는 법:</b> ${cardData.read}</div>
+      <div class="tags">${cardData.tags.map(t => `<span class="tag">${tagLabel[t] || t}</span>`).join('')}</div>
+      ${renderRefs(cardData.refs)}
+    `;
+    catalogList.appendChild(card);
+  });
+  if (visible === 0) {
+    catalogList.innerHTML = `<div class="paper-card"><div class="blurb">현재 검색어와 필터에 맞는 개념 카드가 없습니다. 검색어를 줄이거나 필터를 전체로 바꿔보세요.</div></div>`;
+  }
+  catalogMeta.textContent = `${visible} / ${studyCards.length}개 개념 카드 표시`;
+}
+catalogSearch.addEventListener('input', renderCatalog);
+catalogFilterButtons.forEach(b => b.addEventListener('click', () => {
+  catalogFilterButtons.forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  renderCatalog();
+}));
+renderCatalog();
+</script>
+
+</body>
+</html>

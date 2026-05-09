@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Variant Effect Measurement — MPRA와 Perturbation Methods</title>
+<meta name="description" content="genetic variants의 effect를 측정하는 MPRA, lentiMPRA, CRISPRi/a, Perturb-seq, CROP-seq, MAVE, SGE, in silico mutagenesis 방법론을 한 화면에서 비교하는 한글 인터랙티브.">
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#f8f7f2;
+  --paper:#fffdf8;
+  --paper2:#f4f7f4;
+  --ink:#17201d;
+  --ink-soft:#35433e;
+  --muted:#69736f;
+  --line:#d8ded7;
+  --line-soft:#e9ede8;
+  --teal:#126f73;
+  --teal-soft:#e1f1ef;
+  --coral:#b74b3f;
+  --coral-soft:#fae6df;
+  --moss:#536f2c;
+  --moss-soft:#e9efd9;
+  --violet:#6453a4;
+  --violet-soft:#ebe8f6;
+  --gold:#9d7016;
+  --gold-soft:#f3ead5;
+  --slate:#53606c;
+  --shadow:0 14px 34px rgba(23,32,29,.08);
+  --shadow-soft:0 8px 20px rgba(23,32,29,.055);
+}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  color:var(--ink);
+  background:
+    linear-gradient(rgba(18,111,115,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(18,111,115,.04) 1px,transparent 1px),
+    var(--bg);
+  background-size:38px 38px;
+  font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  line-height:1.48;
+  -webkit-font-smoothing:antialiased;
+  text-wrap:pretty;
+}
+button,input{font:inherit}
+button{color:inherit}
+a{color:inherit}
+.page{max-width:1520px;margin:0 auto;padding:28px 24px 50px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:14px;
+}
+.crumb,.source-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid rgba(216,222,215,.92);
+  background:rgba(255,253,248,.82);
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:12px;
+  color:#53605b;
+  text-decoration:none;
+  white-space:nowrap;
+}
+.crumb:hover{color:var(--teal)}
+.source-pill{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.mast{
+  display:grid;
+  grid-template-columns:minmax(0,1.04fr) minmax(420px,.96fr);
+  gap:18px;
+  align-items:stretch;
+  min-height:410px;
+  margin-bottom:16px;
+}
+.hero-copy{
+  display:grid;
+  align-content:center;
+  min-width:0;
+  padding:16px 0;
+}
+.eyebrow{
+  font-size:12px;
+  letter-spacing:0;
+  text-transform:uppercase;
+  color:#52615b;
+  font-weight:850;
+  margin-bottom:8px;
+}
+h1{
+  margin:0;
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  font-size:clamp(34px,4.2vw,58px);
+  line-height:1.04;
+  letter-spacing:0;
+  font-weight:760;
+  word-break:keep-all;
+  max-width:980px;
+}
+.dek{
+  max-width:800px;
+  margin:17px 0 0;
+  color:#3f4d48;
+  font-size:16px;
+  line-height:1.68;
+}
+.mast-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  max-width:760px;
+  margin-top:22px;
+}
+.stat{
+  border:1px solid rgba(216,222,215,.95);
+  background:rgba(255,253,248,.88);
+  border-radius:8px;
+  padding:12px;
+  min-height:96px;
+  box-shadow:var(--shadow-soft);
+}
+.stat b{display:block;font-size:25px;line-height:1.08;font-variant-numeric:tabular-nums}
+.stat span{display:block;font-size:12px;color:var(--muted);margin-top:7px}
+.hero-visual{
+  position:relative;
+  border:1px solid rgba(198,207,198,.96);
+  border-radius:8px;
+  overflow:hidden;
+  background:
+    linear-gradient(90deg,rgba(248,247,242,.96) 0%,rgba(248,247,242,.78) 34%,rgba(248,247,242,.2) 100%),
+    url("assets/variant-effect-flow.png") center/cover no-repeat;
+  box-shadow:0 22px 60px rgba(18,111,115,.11);
+  min-height:410px;
+}
+.hero-visual::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(rgba(23,32,29,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(23,32,29,.03) 1px,transparent 1px);
+  background-size:44px 44px;
+  pointer-events:none;
+}
+.hero-badges{
+  position:absolute;
+  left:14px;
+  right:14px;
+  bottom:14px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.hero-badges span{
+  border:1px solid rgba(216,222,215,.92);
+  background:rgba(255,253,248,.84);
+  backdrop-filter:blur(10px);
+  border-radius:8px;
+  padding:8px 9px;
+  color:#40504a;
+  font-size:11px;
+}
+.scenario-strip{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(124px,1fr));
+  gap:9px;
+  margin:12px 0 16px;
+}
+.scenario-btn,.filter-btn,.method-btn{
+  border:1px solid rgba(216,222,215,.98);
+  background:rgba(255,253,248,.92);
+  border-radius:8px;
+  cursor:pointer;
+  text-align:left;
+  transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease;
+}
+.scenario-btn{
+  padding:10px 11px;
+  min-height:72px;
+  box-shadow:0 6px 16px rgba(23,32,29,.035);
+}
+.scenario-btn:hover,.filter-btn:hover,.method-btn:hover{
+  transform:translateY(-1px);
+  border-color:#9aaba3;
+  box-shadow:var(--shadow-soft);
+}
+.scenario-btn.active{
+  border-color:var(--active-color,var(--teal));
+  background:color-mix(in srgb,var(--active-color,var(--teal)) 10%,#fffdf8);
+}
+.scenario-btn .k{display:block;font-size:13px;font-weight:850;line-height:1.22}
+.scenario-btn .s{display:block;font-size:11px;color:var(--muted);margin-top:5px}
+.workbench{
+  display:grid;
+  grid-template-columns:minmax(320px,.86fr) minmax(520px,1.36fr) minmax(330px,.92fr);
+  gap:16px;
+  align-items:start;
+}
+.panel{
+  border:1px solid rgba(216,222,215,.98);
+  border-radius:8px;
+  background:rgba(255,253,248,.95);
+  overflow:hidden;
+  box-shadow:0 10px 26px rgba(23,32,29,.045);
+  container-type:inline-size;
+}
+.panel-head{
+  padding:14px 14px 11px;
+  border-bottom:1px solid rgba(216,222,215,.9);
+  display:grid;
+  grid-template-columns:minmax(0,auto) minmax(0,1fr);
+  align-items:flex-start;
+  gap:14px;
+}
+.panel-title{font-size:14px;font-weight:850;letter-spacing:0;min-width:0}
+.panel-note{font-size:12px;color:var(--muted);max-width:390px;text-align:right;justify-self:end;overflow-wrap:anywhere}
+.panel-body{padding:14px}
+.question-card{
+  border:1px solid rgba(216,222,215,.96);
+  background:#f9fbf5;
+  border-radius:8px;
+  padding:13px;
+  margin-bottom:11px;
+}
+.question-card h2{
+  margin:0;
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  font-size:clamp(21px,6.2cqw,26px);
+  line-height:1.18;
+  letter-spacing:0;
+  word-break:keep-all;
+  overflow-wrap:normal;
+  padding-bottom:2px;
+}
+.question-card p{margin:9px 0 0;color:#3e4c47;font-size:13px;line-height:1.62}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{
+  border:1px solid #cdd7cf;
+  background:#fff;
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:10.5px;
+  color:#394942;
+  white-space:nowrap;
+}
+.readout-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.readout{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:8px;
+  padding:10px;
+  min-height:86px;
+}
+.readout .label{
+  display:block;
+  color:var(--muted);
+  font-size:10.5px;
+  font-weight:850;
+  text-transform:uppercase;
+}
+.readout .value{
+  display:block;
+  margin-top:6px;
+  color:#283832;
+  font-size:12px;
+}
+.stack{display:grid;gap:8px;margin-top:11px}
+.stack-step{
+  display:grid;
+  grid-template-columns:36px minmax(0,1fr);
+  gap:9px;
+  border:1px solid rgba(216,222,215,.98);
+  background:#fff;
+  border-radius:8px;
+  padding:9px;
+}
+.stack-step.active{
+  border-color:color-mix(in srgb,var(--active-color,var(--teal)) 45%,#d8ded7);
+  background:color-mix(in srgb,var(--active-color,var(--teal)) 8%,#fff);
+}
+.step-num{
+  width:32px;
+  height:32px;
+  display:grid;
+  place-items:center;
+  justify-self:center;
+  align-self:start;
+  border-radius:999px;
+  background:#edf2ee;
+  color:#53605b;
+  font-weight:850;
+  font-size:12px;
+}
+.stack-step.active .step-num{background:var(--active-color,var(--teal));color:#fff}
+.stack-step b{display:block;font-size:12px}
+.stack-step span{display:block;margin-top:3px;font-size:11px;color:var(--muted);line-height:1.45}
+.canvas-wrap{
+  border:1px solid rgba(198,207,198,.96);
+  border-radius:8px;
+  overflow:hidden;
+  background:
+    linear-gradient(#fffdf8,#f9faf7),
+    repeating-linear-gradient(90deg,rgba(18,111,115,.035) 0 1px,transparent 1px 36px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.88);
+}
+canvas{display:block;width:100%;height:478px;cursor:crosshair;touch-action:manipulation}
+.plot-focus{
+  display:grid;
+  grid-template-columns:128px minmax(0,1fr);
+  gap:10px;
+  align-items:start;
+  border:1px solid rgba(216,222,215,.96);
+  border-radius:8px;
+  background:#fff;
+  padding:10px 11px;
+  margin-top:10px;
+}
+.plot-focus b{font-size:12px;color:#273832}
+.plot-focus span{font-size:12px;color:#52615b;line-height:1.5}
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:10px;
+}
+.metric{
+  border:1px solid rgba(216,222,215,.96);
+  border-radius:8px;
+  background:linear-gradient(180deg,#fff,#fbfcf8);
+  padding:10px;
+  min-height:78px;
+}
+.metric b{display:block;font-size:17px;line-height:1.1;font-variant-numeric:tabular-nums}
+.metric span{display:block;font-size:11px;color:var(--muted);margin-top:5px}
+.legend{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+  margin-top:10px;
+}
+.legend-item{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border:1px solid rgba(216,222,215,.96);
+  border-radius:7px;
+  padding:7px 8px;
+  font-size:11px;
+  color:#465650;
+  min-width:0;
+}
+.dot{width:10px;height:10px;border-radius:999px;display:inline-block;flex:0 0 auto}
+.claim-box,.caveat-box{
+  border:1px solid rgba(216,222,215,.98);
+  border-radius:8px;
+  padding:12px;
+  background:#f9fbf5;
+  margin-bottom:10px;
+}
+.claim-box h2,.caveat-box h2{
+  margin:0;
+  font-size:16px;
+  line-height:1.18;
+}
+.claim-box p,.caveat-box p{margin:8px 0 0;color:#3e4c47;font-size:12px;line-height:1.58}
+.score-list{display:grid;gap:8px}
+.score-row{
+  display:grid;
+  grid-template-columns:98px minmax(0,1fr) 38px;
+  gap:8px;
+  align-items:center;
+  border:1px solid rgba(216,222,215,.96);
+  background:#fff;
+  border-radius:7px;
+  padding:8px;
+}
+.score-row b{font-size:11px;color:#293832}
+.score-track{height:9px;background:#edf2ee;border-radius:999px;overflow:hidden}
+.score-fill{height:100%;background:var(--active-color,var(--teal));border-radius:999px}
+.score-row span{font-size:11px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.wide{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+  margin-top:16px;
+}
+.section-grid{
+  display:grid;
+  grid-template-columns:minmax(340px,.72fr) minmax(560px,1.28fr);
+  gap:16px;
+  align-items:start;
+}
+.filter-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(70px,1fr));
+  gap:8px;
+}
+.filter-btn{
+  padding:9px 10px;
+  min-height:48px;
+  text-align:center;
+  font-size:12px;
+  font-weight:800;
+}
+.filter-btn.active{
+  border-color:var(--filter-color,var(--teal));
+  background:color-mix(in srgb,var(--filter-color,var(--teal)) 10%,#fff);
+}
+.method-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:12px;
+}
+.method-btn{
+  padding:12px;
+  min-height:138px;
+  display:grid;
+  align-content:start;
+  gap:8px;
+}
+.method-btn.active{
+  border-color:var(--method-color,var(--teal));
+  background:color-mix(in srgb,var(--method-color,var(--teal)) 8%,#fff);
+  box-shadow:inset 3px 0 0 var(--method-color,var(--teal));
+}
+.method-btn i{
+  display:block;
+  width:38px;
+  height:4px;
+  border-radius:999px;
+  background:var(--method-color,var(--teal));
+}
+.method-btn b{font-size:13px;line-height:1.2}
+.method-btn span{font-size:11px;color:var(--muted);line-height:1.48}
+.detail-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.detail-block{
+  border:1px solid rgba(216,222,215,.96);
+  border-radius:8px;
+  background:#fff;
+  padding:11px;
+  min-height:96px;
+}
+.detail-block b{display:block;font-size:12px;color:#26362f}
+.detail-block span{display:block;font-size:11px;color:var(--muted);margin-top:6px;line-height:1.55}
+.axis-table{
+  display:grid;
+  gap:8px;
+  margin-top:10px;
+}
+.axis-row{
+  display:grid;
+  grid-template-columns:116px repeat(4,1fr);
+  gap:6px;
+  align-items:center;
+}
+.axis-row.header span{
+  font-size:10px;
+  font-weight:850;
+  color:#53605b;
+  text-transform:uppercase;
+  text-align:center;
+}
+.axis-name{font-size:11px;font-weight:850;color:#273832}
+.pill-score{
+  height:20px;
+  border-radius:999px;
+  background:#edf2ee;
+  position:relative;
+  overflow:hidden;
+}
+.pill-score i{
+  position:absolute;
+  inset:0 auto 0 0;
+  width:var(--w);
+  background:var(--method-color,var(--teal));
+  opacity:.78;
+}
+.paper-tools{
+  display:grid;
+  grid-template-columns:minmax(220px,1fr) minmax(160px,.42fr);
+  gap:10px;
+  margin-bottom:12px;
+}
+.paper-tools input{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px 11px;
+  background:#fff;
+  color:var(--ink);
+}
+.paper-count{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px 11px;
+  background:#fff;
+  color:#52615b;
+  font-size:12px;
+  text-align:center;
+  font-variant-numeric:tabular-nums;
+}
+.paper-list{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.paper{
+  position:relative;
+  border:1px solid rgba(216,222,215,.98);
+  border-radius:8px;
+  background:linear-gradient(180deg,#fff,#fbfcf8);
+  padding:12px;
+  min-height:150px;
+  display:grid;
+  align-content:start;
+  gap:8px;
+  overflow:hidden;
+  transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.paper::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:3px;
+  background:var(--paper-color,var(--teal));
+  opacity:.74;
+}
+.paper:hover{border-color:#9aaba3;box-shadow:0 12px 25px rgba(23,32,29,.06);transform:translateY(-1px)}
+.paper-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.paper-stage{
+  border:1px solid color-mix(in srgb,var(--paper-color,var(--teal)) 55%,#fff);
+  background:color-mix(in srgb,var(--paper-color,var(--teal)) 9%,#fff);
+  color:#26362f;
+  border-radius:999px;
+  padding:4px 7px;
+  font-size:10px;
+  white-space:nowrap;
+}
+.paper-year{font-size:11px;color:#69736f;font-variant-numeric:tabular-nums}
+.paper h3{margin:0;font-size:14px;line-height:1.25;text-wrap:pretty}
+.paper p{margin:0;color:#47554f;font-size:12px;line-height:1.52}
+.paper a{
+  justify-self:start;
+  font-size:11px;
+  color:var(--teal);
+  text-decoration:none;
+  border-bottom:1px solid #a7c9c7;
+}
+.paper a:hover{color:#0c4e51}
+.compare-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.compare{
+  border:1px solid rgba(216,222,215,.98);
+  background:#fff;
+  border-radius:8px;
+  padding:12px;
+  min-height:154px;
+}
+.compare b{font-size:13px}
+.compare p{margin:8px 0 0;font-size:12px;color:#47554f;line-height:1.58}
+.compare .mini-line{
+  display:block;
+  width:42px;
+  height:4px;
+  border-radius:999px;
+  margin-bottom:9px;
+  background:var(--compare-color,var(--teal));
+}
+.foot{
+  margin-top:18px;
+  border-top:1px solid var(--line);
+  padding-top:18px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.7;
+}
+.foot strong{color:#3d4c47}
+@media (max-width:1180px){
+  .mast,.workbench,.section-grid{grid-template-columns:1fr}
+  .hero-visual{min-height:330px}
+  .scenario-strip{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:760px){
+  .page{padding:18px 14px 36px}
+  .topbar{align-items:flex-start;flex-direction:column}
+  .mast-stats,.metrics,.legend,.filter-row,.method-grid,.paper-list,.compare-grid{grid-template-columns:1fr}
+  .scenario-strip{grid-template-columns:1fr 1fr}
+  .readout-grid,.detail-grid{grid-template-columns:1fr}
+  .panel-head{grid-template-columns:1fr;gap:5px}
+  .panel-note{text-align:left;justify-self:start;max-width:none}
+  .question-card h2{font-size:clamp(22px,8vw,30px);line-height:1.2}
+  .stack-step{grid-template-columns:40px minmax(0,1fr)}
+  .plot-focus{grid-template-columns:1fr}
+  canvas{height:420px}
+  .axis-row{grid-template-columns:96px repeat(4,1fr)}
+  .hero-badges{grid-template-columns:1fr}
+}
+@media (max-width:520px){
+  .scenario-strip{grid-template-columns:1fr}
+  h1{font-size:32px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="topbar">
+    <a class="crumb" href="../index.html">Audodidactic 홈</a>
+    <span class="source-pill">문헌 기반 학습 지도</span>
+  </div>
+
+  <section class="mast" aria-labelledby="page-title">
+    <div class="hero-copy">
+      <div class="eyebrow">Variant effect measurement · MPRA · Perturbation</div>
+      <h1 id="page-title">Genetic variant의 effect는 어디에서 측정되는가</h1>
+      <p class="dek">
+        MPRA는 allele이 reporter activity를 바꾸는지 잘 본다. CRISPR perturbation은 endogenous locus와 target gene을 묻는다. Perturb-seq는 세포 상태의 downstream program을 읽고, MAVE와 precise editing은 exact variant causality에 가까워진다. 한 연구 질문이 어떤 assay stack을 요구하는지 한 화면에서 비교한다.
+      </p>
+      <div class="mast-stats">
+        <div class="stat"><b>8</b><span>assay families</span></div>
+        <div class="stat"><b>5</b><span>evidence levels</span></div>
+        <div class="stat"><b>11</b><span>reference anchors</span></div>
+      </div>
+    </div>
+    <div class="hero-visual" role="img" aria-label="barcoded DNA variant library, reporter plasmid, pooled cells, sequencing reads, and effect-size map">
+      <div class="hero-badges">
+        <span>Barcode RNA/DNA: reporter activity</span>
+        <span>Guide identity + scRNA: perturbation program</span>
+        <span>REF vs ALT delta: variant effect map</span>
+      </div>
+    </div>
+  </section>
+
+  <nav class="scenario-strip" aria-label="study question scenarios" id="scenarioStrip"></nav>
+
+  <main class="workbench">
+    <section class="panel">
+      <header class="panel-head">
+        <div class="panel-title">Study Frame</div>
+        <div class="panel-note" id="scenarioNote"></div>
+      </header>
+      <div class="panel-body">
+        <div class="question-card">
+          <h2 id="scenarioTitle"></h2>
+          <p id="scenarioSummary"></p>
+          <div class="chips" id="scenarioChips"></div>
+        </div>
+        <div class="readout-grid" id="readoutGrid"></div>
+        <div class="stack" id="stackList"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <header class="panel-head">
+        <div class="panel-title">Evidence Ladder</div>
+        <div class="panel-note">association에서 native causality까지 이어지는 assay 위치</div>
+      </header>
+      <div class="panel-body">
+        <div class="canvas-wrap">
+          <canvas id="ladderCanvas" width="900" height="560" aria-label="assay evidence ladder visualization"></canvas>
+        </div>
+        <div class="plot-focus">
+          <b id="plotFocusTitle">Selected layer</b>
+          <span id="plotFocusText"></span>
+        </div>
+        <div class="metrics" id="scenarioMetrics"></div>
+        <div class="legend">
+          <div class="legend-item"><span class="dot" style="background:var(--moss)"></span>Native</div>
+          <div class="legend-item"><span class="dot" style="background:var(--teal)"></span>Reporter</div>
+          <div class="legend-item"><span class="dot" style="background:var(--coral)"></span>CRISPR</div>
+          <div class="legend-item"><span class="dot" style="background:var(--violet)"></span>Model</div>
+          <div class="legend-item"><span class="dot" style="background:var(--gold)"></span>Edit</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <header class="panel-head">
+        <div class="panel-title">Claim Strength</div>
+        <div class="panel-note">이 stack으로 말할 수 있는 것과 아직 못 말하는 것</div>
+      </header>
+      <div class="panel-body">
+        <div class="claim-box">
+          <h2 id="claimTitle"></h2>
+          <p id="claimText"></p>
+        </div>
+        <div class="caveat-box">
+          <h2 id="caveatTitle"></h2>
+          <p id="caveatText"></p>
+        </div>
+        <div class="score-list" id="scoreList"></div>
+      </div>
+    </section>
+  </main>
+
+  <section class="wide">
+    <div class="section-grid">
+      <section class="panel">
+        <header class="panel-head">
+          <div class="panel-title">Method Families</div>
+          <div class="panel-note">method별 readout과 한계</div>
+        </header>
+        <div class="panel-body">
+          <div class="filter-row" id="filterRow"></div>
+          <div class="method-grid" id="methodGrid"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header class="panel-head">
+          <div class="panel-title">Selected Method</div>
+          <div class="panel-note" id="methodStage"></div>
+        </header>
+        <div class="panel-body">
+          <div class="question-card">
+            <h2 id="methodTitle"></h2>
+            <p id="methodSummary"></p>
+            <div class="chips" id="methodTags"></div>
+          </div>
+          <div class="detail-grid" id="methodDetails"></div>
+          <div class="axis-table" id="axisTable"></div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="wide">
+    <div class="section-grid">
+      <section class="panel">
+        <header class="panel-head">
+          <div class="panel-title">Assay Trade-offs</div>
+          <div class="panel-note">같은 variant라도 readout 층이 다르면 결론도 다름</div>
+        </header>
+        <div class="panel-body">
+          <div class="compare-grid">
+            <div class="compare" style="--compare-color:var(--teal)">
+              <i class="mini-line"></i>
+              <b>MPRA/lentiMPRA</b>
+              <p>대규모 allele activity에는 강하지만 target gene과 chromatin context는 직접 읽지 않는다. emVar claim은 active element와 allelic imbalance를 같이 요구할 때 강해진다.</p>
+            </div>
+            <div class="compare" style="--compare-color:var(--coral)">
+              <i class="mini-line"></i>
+              <b>CRISPR perturbation</b>
+              <p>endogenous element나 gene을 건드려 necessity, sufficiency, downstream program을 묻는다. guide efficiency, off-target, delivery bias, readout window가 해석을 제한한다.</p>
+            </div>
+            <div class="compare" style="--compare-color:var(--gold)">
+              <i class="mini-line"></i>
+              <b>MAVE / precise editing</b>
+              <p>exact nucleotide나 amino-acid causality에 가장 가깝다. 다만 editor window, PAM, repair outcome, viability, assay dynamic range가 실험 설계를 강하게 지배한다.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header class="panel-head">
+          <div class="panel-title">문헌 지도</div>
+          <div class="panel-note">MPRA, perturbation, MAVE, foundation model 근거 문헌</div>
+        </header>
+        <div class="panel-body">
+          <div class="paper-tools">
+            <input id="paperSearch" type="search" placeholder="MPRA, CROP-seq, exact edit, AlphaGenome">
+            <div class="paper-count" id="paperCount"></div>
+          </div>
+          <div class="paper-list" id="paperList"></div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <strong>문헌 기준:</strong> Lee 2025, Deng 2024, Kreimer 2022, Gasperini 2017, Perturb-seq, MAVE/SGE, AlphaGenome 및 sequence-to-function model 관련 공개 문헌을 초보자용 학습 흐름으로 압축했습니다.
+  </footer>
+</div>
+
+<script>
+const COLORS = {
+  native: "#536f2c",
+  reporter: "#126f73",
+  crispr: "#b74b3f",
+  model: "#6453a4",
+  edit: "#9d7016",
+  neutral: "#53606c"
+};
+
+const scenarios = [
+  {
+    id:"gwas",
+    label:"GWAS locus",
+    sub:"functional allele",
+    color:COLORS.reporter,
+    title:"GWAS peak 안에서 실제 regulatory allele을 찾기",
+    note:"association은 시작점이고, reporter와 native-context validation이 분리되어야 한다.",
+    summary:"fine-mapping이 후보를 줄이고, MPRA/lentiMPRA가 allele-specific reporter activity를 측정한다. 이후 eQTL, ABC, chromatin contact, CRISPRi CROP-seq로 target gene을 붙인다.",
+    chips:["PIP","credible set","emVar","eQTL","ABC","CRISPRi"],
+    readouts:[
+      ["Perturbation unit","SNP 또는 150-200 bp allele-centered element"],
+      ["Primary readout","barcode RNA/DNA ratio + allelic imbalance"],
+      ["Best claim","functional regulatory allele or likely variant-gene link"],
+      ["Needs next","endogenous gene perturbation or precise edit"]
+    ],
+    stack:[
+      ["Statistical locus","GWAS, fine-mapping, LD, functional prior로 테스트할 variant set을 만든다."],
+      ["MPRA/lentiMPRA","reference와 alternate allele이 reporter output을 다르게 만드는지 본다."],
+      ["Native support","eQTL, caQTL, allele-specific RNA/ATAC, chromatin contact로 locus biology를 붙인다."],
+      ["CRISPR validation","CRISPRi/a, deletion, CROP-seq로 endogenous target gene과 cell program을 확인한다."],
+      ["Exact causality","강한 causal claim에는 base/prime editing 또는 SGE가 필요하다."]
+    ],
+    metrics:{scale:92, context:56, causality:63, readout:74},
+    claim:"MPRA-active + allelic imbalance가 함께 있으면 high-confidence emVar라고 부를 수 있다. Lee 2025처럼 eQTL/ABC/contact와 CRISPRi를 붙이면 target gene claim이 강해진다.",
+    caveat:"MPRA는 target gene을 직접 읽지 않고, episomal reporter는 chromatin과 3D context를 잃는다. lead SNP가 functional allele이라는 보장은 거의 없다.",
+    path:["assoc","native","reporter","crispr","program"],
+    activeMethods:["fine","native","mpra","crispr","perturbseq"]
+  },
+  {
+    id:"rare",
+    label:"Rare noncoding",
+    sub:"candidate pathogenic effect",
+    color:COLORS.moss,
+    title:"rare noncoding variant가 regulatory function을 바꾸는지 묻기",
+    note:"rarity와 annotation만으로는 pathogenic regulatory effect를 증명하기 어렵다.",
+    summary:"유전 양식, rarity, constraint, fetal brain regulatory annotation으로 후보를 만들고 MPRA 또는 allele-specific native assay로 activity를 본다. exact variant claim은 editing으로 강화한다.",
+    chips:["DNV","rare inherited","regulatory annotation","MPRA","base editing"],
+    readouts:[
+      ["Perturbation unit","개별 rare variant 또는 small variant set"],
+      ["Primary readout","reporter activity, ASE/ASATAC, edited-cell phenotype"],
+      ["Best claim","candidate pathogenic regulatory effect"],
+      ["Needs next","matched cell type, target gene, rescue logic"]
+    ],
+    stack:[
+      ["Genetic triage","inheritance, recurrence, constraint, TFBS disruption, disease-relevant chromatin으로 후보를 좁힌다."],
+      ["Context match","fetal cortex, iPSC neuron, organoid처럼 variant가 작동할 cell state를 맞춘다."],
+      ["Functional test","MPRA, lentiMPRA, allele-specific assay가 local regulatory effect를 측정한다."],
+      ["Endogenous edit","base/prime editing이나 targeted replacement로 native locus effect를 확인한다."],
+      ["Disease readout","RNA, fate, morphology, electrophysiology, rescue가 pathogenic mechanism을 만든다."]
+    ],
+    metrics:{scale:58, context:72, causality:70, readout:68},
+    claim:"rare variant에서는 'activity delta가 있다'와 'disease mechanism이다' 사이의 거리가 크다. matched cell type과 endogenous target gene evidence가 핵심이다.",
+    caveat:"한 cell line MPRA에서 나온 effect는 developmental timing, chromatin, methylation, long-context mechanism을 놓칠 수 있다.",
+    path:["assoc","native","reporter","edit","program"],
+    activeMethods:["native","mpra","edit","mono"]
+  },
+  {
+    id:"element",
+    label:"Enhancer-gene",
+    sub:"endogenous link",
+    color:COLORS.coral,
+    title:"candidate enhancer가 실제 target gene을 조절하는지 보기",
+    note:"reporter activity와 endogenous necessity는 서로 다른 질문이다.",
+    summary:"CRISPRi/a, paired deletion scanning, enhancer tiling이 endogenous element의 필요성과 충분성을 묻는다. readout을 RNA, chromatin, growth, marker, CROP-seq로 확장할 수 있다.",
+    chips:["CRISPRi","CRISPRa","ScanDel","enhancer tiling","CROP-seq"],
+    readouts:[
+      ["Perturbation unit","CRE, promoter, TF motif, deletion window"],
+      ["Primary readout","target-gene RNA, cell marker, selection, scRNA program"],
+      ["Best claim","functional regulatory element and likely target gene"],
+      ["Needs next","allele-specific edit for exact SNP causality"]
+    ],
+    stack:[
+      ["Candidate CRE","ATAC, H3K27ac, contact, MPRA-active element로 조절 후보를 정한다."],
+      ["CRISPRi/a","dCas9-KRAB 또는 activator로 element activity를 낮추거나 올린다."],
+      ["Deletion scan","paired gRNA tiling으로 필요 영역을 kb scale에서 찾는다."],
+      ["Target readout","bulk RNA, qPCR, reporter-free RNA-seq, CROP-seq로 gene effect를 측정한다."],
+      ["Variant bridge","후보 SNP가 원인인지 보려면 precise edit이 별도 필요하다."]
+    ],
+    metrics:{scale:70, context:86, causality:78, readout:76},
+    claim:"endogenous chromatin 안에서 element가 target gene expression에 필요한지 또는 충분한지 말할 수 있다. Gasperini 2017 ScanDel과 Lee 2025 RERE/DCC validation이 좋은 예다.",
+    caveat:"element perturbation은 allele perturbation이 아니다. CRISPRi는 넓은 chromatin repression을 만들 수 있고, deletion은 local sequence architecture를 크게 바꾼다.",
+    path:["native","crispr","program"],
+    activeMethods:["crispr","perturbseq","native"]
+  },
+  {
+    id:"program",
+    label:"Disease gene",
+    sub:"cell state program",
+    color:COLORS.coral,
+    title:"gene perturbation이 어떤 cell-state program을 만드는지 보기",
+    note:"variant effect보다 gene dosage, loss/gain, downstream convergence를 묻는 프레임이다.",
+    summary:"KO, CRISPRi/a, overexpression, ASO, rescue를 단일세포 transcriptome이나 morphology와 연결하면 disease gene이 어느 lineage와 pathway를 흔드는지 볼 수 있다.",
+    chips:["Perturb-seq","CROP-seq","CHOOSE","organoid","in vivo"],
+    readouts:[
+      ["Perturbation unit","gene, isoform, TF, dosage, rescue construct"],
+      ["Primary readout","scRNA/snRNA, fate shift, morphology, protein, behavior"],
+      ["Best claim","gene mechanism, downstream convergence, therapeutic direction"],
+      ["Needs next","exact variant if allele-specific mechanism is required"]
+    ],
+    stack:[
+      ["Gene set","ASD/NDD gene panel, GWAS target genes, TFs, disease drivers를 정한다."],
+      ["Perturbation","KO, CRISPRi/a, OE, ASO, rescue로 dosage direction을 만든다."],
+      ["Single-cell readout","guide identity와 transcriptome을 연결해 cell-state shifts를 본다."],
+      ["Context upgrade","organoid, assembloid, in vivo, spatial, morphology로 biology를 넓힌다."],
+      ["Convergence","여러 gene이 같은 vulnerable cell type이나 pathway로 모이는지 평가한다."]
+    ],
+    metrics:{scale:78, context:80, causality:68, readout:94},
+    claim:"Perturb-seq/CROP-seq는 어떤 gene perturbation이 세포 상태와 pathway를 어떻게 바꾸는지 풍부하게 보여준다. disease gene convergence에는 매우 강하다.",
+    caveat:"일반 Perturb-seq는 exact allele effect를 말하지 않는다. transcriptome-only readout은 morphology, electrophysiology, protein effect를 놓칠 수 있다.",
+    path:["crispr","program"],
+    activeMethods:["perturbseq","crispr","mono"]
+  },
+  {
+    id:"exact",
+    label:"Exact allele",
+    sub:"variant causality",
+    color:COLORS.edit,
+    title:"정확한 nucleotide나 amino-acid change가 causal인지 보기",
+    note:"가장 강한 variant-level claim은 native edit 또는 saturation functional map에서 나온다.",
+    summary:"DMS는 protein variant function을, SGE와 base/prime editing은 endogenous locus의 nucleotide effect를, CRISPEY류 parallel editing은 많은 자연 변이를 동시에 검정한다.",
+    chips:["DMS","MAVE","SGE","base editing","prime editing","CRISPEY"],
+    readouts:[
+      ["Perturbation unit","single nucleotide, codon, amino-acid variant, saturation library"],
+      ["Primary readout","fitness, protein function, expression, cell state, clinical calibration"],
+      ["Best claim","variant-level causal functional effect"],
+      ["Needs next","disease-relevant cell model and phenotype dynamic range"]
+    ],
+    stack:[
+      ["Assay fit","variant가 protein function, splicing, enhancer activity, expression 중 무엇을 바꾸는지 정한다."],
+      ["Library/edit design","DMS, SGE, base editor, prime editor, precise parallel editing을 고른다."],
+      ["Functional selection","fitness, reporter, protein abundance, RNA, cell state 등 disease-relevant readout을 둔다."],
+      ["Calibration","known benign/pathogenic controls와 clinical evidence로 score를 보정한다."],
+      ["Mechanism","structure, motif, transcript, rescue를 붙여 effect direction을 설명한다."]
+    ],
+    metrics:{scale:62, context:82, causality:94, readout:70},
+    claim:"exact edit 또는 saturation map은 variant causality에 가장 가깝다. Tabet 2022의 MAVE/SGE framework와 Sharon 2018 CRISPEY가 이 층의 기준점이다.",
+    caveat:"editing window, PAM, repair outcome, bystander edit, cell viability, assay dynamic range가 강한 제약이다. 모든 variant type을 한 플랫폼에서 커버하기 어렵다.",
+    path:["edit","program"],
+    activeMethods:["edit","mono"]
+  },
+  {
+    id:"prior",
+    label:"In silico prior",
+    sub:"what to test first",
+    color:COLORS.violet,
+    title:"어떤 variant와 perturbation을 먼저 실험할지 예측하기",
+    note:"prediction은 실험 우선순위이지 proof가 아니다.",
+    summary:"AlphaGenome, NTv3 ISM, Enformer류 sequence-to-function model은 REF-vs-ALT delta를 준다. single-cell foundation model은 post-perturbation expression이나 fate response를 예측한다.",
+    chips:["ISM","AlphaGenome","NTv3","Enformer","virtual cell"],
+    readouts:[
+      ["Perturbation unit","all substitutions, sequence window, gene KO/OE, drug token"],
+      ["Primary readout","predicted track delta, expression response, DE recovery"],
+      ["Best claim","functional prior and hypothesis ranking"],
+      ["Needs next","MPRA, QTL, CRISPR, editing validation"]
+    ],
+    stack:[
+      ["Model choice","sequence model은 variant delta, virtual-cell model은 perturbation response를 예측한다."],
+      ["Context conditioning","cell-type track, accessibility input, organoid atlas, perturbation compendium을 맞춘다."],
+      ["Saturation map","가능한 모든 substitutions나 gene perturbations를 rank한다."],
+      ["Experimental partner","상위 후보를 MPRA, QTL, CRISPRi, Perturb-seq, editing으로 검증한다."],
+      ["Failure audit","conservation bias, context mismatch, target self-expression artifacts를 확인한다."]
+    ],
+    metrics:{scale:98, context:58, causality:34, readout:60},
+    claim:"모든 후보를 wet-lab에서 실험할 수 없을 때 hypothesis generator로 강하다. Enformer, AlphaGenome, DNA language model류 점수는 MPRA·QTL·CRISPR follow-up 후보를 줄이는 functional prior로 쓰기 좋다.",
+    caveat:"sequence-only pretraining은 dynamic regulatory biology에 약할 수 있고, virtual-cell model은 perturbation data와 validation context에 의존한다.",
+    path:["model","reporter","crispr","edit"],
+    activeMethods:["model","mpra","perturbseq"]
+  }
+];
+
+const methods = [
+  {
+    id:"fine",
+    group:"native",
+    color:COLORS.neutral,
+    title:"Association and Fine-mapping",
+    stage:"candidate discovery",
+    summary:"GWAS, rare-variant burden, credible set, PIP로 후보 locus와 variant set을 만든다. causal mechanism을 직접 측정하지는 않는다.",
+    tags:["GWAS","SuSiE","FINEMAP","burden","CWAS"],
+    measured:"statistical association and posterior probability",
+    strong:"large cohort에서 locus discovery와 prioritization",
+    weak:"LD와 cell context 때문에 molecular mechanism은 별도 assay 필요",
+    axes:{scale:95, native:58, causal:22, readout:24}
+  },
+  {
+    id:"native",
+    group:"native",
+    color:COLORS.moss,
+    title:"Native QTL and Allelic Assays",
+    stage:"native molecular effect",
+    summary:"eQTL, sQTL, caQTL, ASE/ASATAC는 real genome context에서 allele imbalance와 molecular effect를 측정한다.",
+    tags:["eQTL","sQTL","caQTL","ASE","single-cell QTL"],
+    measured:"expression, splicing, accessibility, allele-specific imbalance",
+    strong:"endogenous chromatin과 individual genome context",
+    weak:"LD, cell composition, environmental confounding, target ambiguity",
+    axes:{scale:80, native:96, causal:48, readout:62}
+  },
+  {
+    id:"mpra",
+    group:"reporter",
+    color:COLORS.reporter,
+    title:"MPRA, lentiMPRA, STARR-seq",
+    stage:"reporter activity",
+    summary:"수천에서 십만 개 sequence 또는 allele을 barcode로 묶고 reporter transcript output을 sequencing으로 읽는다.",
+    tags:["MPRA","lentiMPRA","STARR-seq","TSS-MPRA","emVar"],
+    measured:"barcode RNA/DNA ratio, element activity, allelic imbalance",
+    strong:"large-scale regulatory allele screening and motif-level activity",
+    weak:"target gene, chromatin, 3D genome, methylation, long-range context",
+    axes:{scale:92, native:42, causal:58, readout:48}
+  },
+  {
+    id:"crispr",
+    group:"crispr",
+    color:COLORS.coral,
+    title:"CRISPRi/a and Deletion Scanning",
+    stage:"endogenous element perturbation",
+    summary:"dCas9-KRAB/activator, paired-gRNA deletion, enhancer tiling으로 native regulatory element의 necessity와 sufficiency를 묻는다.",
+    tags:["CRISPRi","CRISPRa","ScanDel","tiling","enhancer-gene"],
+    measured:"target gene expression, growth, marker, chromatin, selected phenotype",
+    strong:"endogenous element-gene validation",
+    weak:"allele-specific causality와는 다르고 perturbation footprint가 넓을 수 있음",
+    axes:{scale:72, native:90, causal:78, readout:70}
+  },
+  {
+    id:"perturbseq",
+    group:"crispr",
+    color:COLORS.coral,
+    title:"Perturb-seq and CROP-seq",
+    stage:"downstream cell program",
+    summary:"pooled CRISPR perturbation identity를 single-cell transcriptome과 연결해 cell-state shift, DEG, pathway, interaction을 본다.",
+    tags:["Perturb-seq","CROP-seq","CHOOSE","in vivo","organoid"],
+    measured:"guide identity plus scRNA/snRNA profile, sometimes chromatin or morphology",
+    strong:"disease-gene convergence and cell-type-specific vulnerability",
+    weak:"exact allele effect, protein, circuit, spatial effect는 별도 readout 필요",
+    axes:{scale:82, native:72, causal:64, readout:96}
+  },
+  {
+    id:"edit",
+    group:"edit",
+    color:COLORS.edit,
+    title:"MAVE, DMS, SGE, Precise Editing",
+    stage:"exact variant causality",
+    summary:"DMS는 protein variant function을, SGE/base/prime/CRISPEY는 endogenous or precise variant effect를 saturation scale로 측정한다.",
+    tags:["MAVE","DMS","SGE","base editing","prime editing"],
+    measured:"fitness, protein function, expression, cell phenotype, clinical calibration",
+    strong:"single-base or amino-acid functional causality",
+    weak:"editing constraints, assay dynamic range, disease-cell matching",
+    axes:{scale:64, native:84, causal:96, readout:72}
+  },
+  {
+    id:"mono",
+    group:"crispr",
+    color:COLORS.coral,
+    title:"Disease-Gene Perturbation Models",
+    stage:"gene mechanism",
+    summary:"KO/KI, CRISPRi/a, ASO, rescue, organoid or mouse model로 gene dosage와 disease biology를 직접 묻는다.",
+    tags:["KO","KI","ASO","rescue","organoid","mouse"],
+    measured:"developmental fate, RNA, protein, morphology, physiology, behavior",
+    strong:"mechanism, dosage direction, rescue feasibility",
+    weak:"variant-level allele effect와 population genetics는 별도 evidence 필요",
+    axes:{scale:50, native:88, causal:76, readout:92}
+  },
+  {
+    id:"model",
+    group:"model",
+    color:COLORS.violet,
+    title:"ISM and Foundation Models",
+    stage:"functional prior",
+    summary:"sequence-to-function model은 REF-vs-ALT track delta를, virtual-cell model은 post-perturbation transcriptome이나 fate response를 예측한다.",
+    tags:["AlphaGenome","NTv3","ISM","Enformer","scGPT"],
+    measured:"predicted regulatory track delta, expression response, perturbation embedding",
+    strong:"genome-wide prioritization and saturation hypothesis generation",
+    weak:"prediction is not proof, context mismatch and training bias remain",
+    axes:{scale:99, native:38, causal:28, readout:58}
+  }
+];
+
+const papers = [
+  {stage:"MPRA", color:COLORS.reporter, year:"2025", title:"Lee et al. cross-disorder MPRA", text:"17,841 variants, 683 emVars, 103 loci, eQTL/ABC/contact integration, RERE/DCC CRISPRi CROP-seq validation.", query:"Lee 2025 massively parallel reporter assay eight psychiatric disorders"},
+  {stage:"lentiMPRA", color:COLORS.reporter, year:"2024", title:"Deng et al. developing human cortex", text:"102,767 sequences, 46,802 active enhancers, 164 psychiatric variants, primary cortex and organoid concordance.", query:"Deng 2024 massively parallel characterization regulatory elements developing human cortex"},
+  {stage:"MPRA perturb", color:COLORS.reporter, year:"2022", title:"Kreimer et al. neural differentiation", text:">2,000 TF motif perturbations across seven time points, separating sequence-determined direction from context-dependent magnitude.", query:"Kreimer 2022 massively parallel reporter perturbation neural differentiation"},
+  {stage:"CRISPR scan", color:COLORS.coral, year:"2017", title:"Gasperini et al. ScanDel", text:"4,342 overlapping programmed deletions over 206 kb at HPRT1, distinguishing distal element requirement from coding spillover.", query:"Gasperini 2017 CRISPR Cas9 mediated scanning regulatory elements HPRT1"},
+  {stage:"Perturb-seq", color:COLORS.coral, year:"2016", title:"Dixit et al. Perturb-seq", text:"CRISPR perturbation identity plus single-cell transcriptome across about 200,000 cells, enabling program and interaction readout.", query:"Dixit 2016 Perturb-seq dissecting molecular circuits"},
+  {stage:"Perturb-seq", color:COLORS.coral, year:"2016", title:"Adamson et al. multiplexed CRISPR", text:"CRISPRi with droplet scRNA-seq resolves unfolded-protein-response branches and perturbation-specific transcriptional states.", query:"Adamson 2016 multiplexed single-cell CRISPR unfolded protein response"},
+  {stage:"MAVE", color:COLORS.edit, year:"2022", title:"Tabet et al. scalable functional assays", text:"Framework for MAVEs, DMS, SGE, MPRA-based regulatory assays, VEmaps, controls, clinical PS3/BS3 evidence.", query:"Tabet 2022 scalable functional assays interpretation human genetic variation"},
+  {stage:"Precise edit", color:COLORS.edit, year:"2018", title:"Sharon et al. CRISPEY", text:"Precise parallel genome editing of 16,006 natural yeast variants, finding 572 fitness-affecting variants enriched in noncoding regions.", query:"Sharon 2018 functional genetic variants massively parallel precise genome editing"},
+  {stage:"Sequence model", color:COLORS.violet, year:"2021", title:"Avsec et al. Enformer", text:"Long-context sequence-to-function modeling connects DNA sequence to gene expression and enhancer-gene prioritization.", query:"Avsec 2021 Enformer gene expression long range interactions variant effect"},
+  {stage:"AlphaGenome", color:COLORS.violet, year:"2026", title:"Avsec et al. AlphaGenome", text:"1 Mb input, 5,930 human tracks, 11 modalities, broad regulatory variant effect prediction across expression and chromatin.", query:"AlphaGenome regulatory variant effect prediction Avsec 2026"},
+  {stage:"Review", color:COLORS.moss, year:"2026", title:"Variant-effect measurement overview", text:"Assay ladder connecting association, native molecular effect, reporter activity, endogenous perturbation, exact editing, and computational saturation.", query:"genetic variant effect measurement MPRA Perturb-seq MAVE review"}
+];
+
+const filters = [
+  ["all","All","#53606c"],
+  ["native","Native",COLORS.moss],
+  ["reporter","Reporter",COLORS.reporter],
+  ["crispr","CRISPR",COLORS.coral],
+  ["edit","Edit",COLORS.edit],
+  ["model","Model",COLORS.violet]
+];
+
+const ladderNodes = {
+  assoc:{x:.10,y:.72,label:"Association",group:"native"},
+  native:{x:.28,y:.56,label:"Native QTL",group:"native"},
+  reporter:{x:.45,y:.38,label:"MPRA",group:"reporter"},
+  crispr:{x:.63,y:.48,label:"CRISPRi/a",group:"crispr"},
+  program:{x:.80,y:.28,label:"Perturb-seq",group:"crispr"},
+  edit:{x:.78,y:.72,label:"Exact edit",group:"edit"},
+  model:{x:.20,y:.26,label:"In silico",group:"model"}
+};
+
+const layerInfo = {
+  assoc:{title:"Association", text:"GWAS, burden, fine-mapping은 후보 locus와 variant set을 만든다. 기능 효과 자체를 직접 측정하지는 않는다.", method:"fine"},
+  native:{title:"Native QTL", text:"eQTL, sQTL, caQTL, allele-specific assay는 실제 genome context 안에서 molecular imbalance를 읽는다.", method:"native"},
+  reporter:{title:"MPRA", text:"MPRA/lentiMPRA는 많은 allele과 regulatory sequence의 reporter activity를 barcode RNA/DNA로 정량화한다.", method:"mpra"},
+  crispr:{title:"CRISPRi/a", text:"CRISPRi/a와 deletion scanning은 endogenous element가 target gene expression에 필요한지 또는 충분한지 묻는다.", method:"crispr"},
+  program:{title:"Perturb-seq", text:"Perturb-seq/CROP-seq는 guide identity와 single-cell transcriptome을 연결해 downstream cell-state program을 본다.", method:"perturbseq"},
+  edit:{title:"Exact edit", text:"MAVE, SGE, base/prime editing은 정확한 nucleotide나 amino-acid change의 causal function에 가장 가깝다.", method:"edit"},
+  model:{title:"In silico prior", text:"Sequence-to-function model과 virtual-cell model은 실험 우선순위화를 위한 predicted delta와 perturbation response를 제공한다.", method:"model"}
+};
+
+let activeScenario = scenarios[0];
+let activeMethod = methods.find(m => m.id === "mpra");
+let activeFilter = "all";
+let rafTick = 0;
+let hoveredNodeKey = null;
+let selectedNodeKey = "reporter";
+
+function el(id){return document.getElementById(id)}
+function setActiveColor(color){document.documentElement.style.setProperty("--active-color", color)}
+
+function renderScenarios(){
+  const strip = el("scenarioStrip");
+  strip.innerHTML = scenarios.map(s => `
+    <button class="scenario-btn ${s.id===activeScenario.id?"active":""}" data-id="${s.id}" style="--active-color:${s.color}">
+      <span class="k">${s.label}</span>
+      <span class="s">${s.sub}</span>
+    </button>
+  `).join("");
+  strip.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeScenario = scenarios.find(s => s.id === btn.dataset.id);
+      const preferred = activeScenario.activeMethods[0];
+      activeMethod = methods.find(m => m.id === preferred) || activeMethod;
+      renderAll();
+    });
+  });
+}
+
+function renderScenario(){
+  setActiveColor(activeScenario.color);
+  el("scenarioNote").textContent = activeScenario.note;
+  el("scenarioTitle").textContent = activeScenario.title;
+  el("scenarioSummary").textContent = activeScenario.summary;
+  el("scenarioChips").innerHTML = activeScenario.chips.map(c => `<span class="chip">${c}</span>`).join("");
+  el("readoutGrid").innerHTML = activeScenario.readouts.map(([k,v]) => `
+    <div class="readout"><span class="label">${k}</span><span class="value">${v}</span></div>
+  `).join("");
+  el("stackList").innerHTML = activeScenario.stack.map(([k,v],i) => `
+    <div class="stack-step ${i<4?"active":""}">
+      <span class="step-num">${i+1}</span>
+      <div><b>${k}</b><span>${v}</span></div>
+    </div>
+  `).join("");
+  el("scenarioMetrics").innerHTML = [
+    ["Scale", activeScenario.metrics.scale],
+    ["Native context", activeScenario.metrics.context],
+    ["Causal strength", activeScenario.metrics.causality],
+    ["Readout breadth", activeScenario.metrics.readout]
+  ].map(([k,v]) => `<div class="metric"><b>${v}</b><span>${k}</span></div>`).join("");
+  el("claimTitle").textContent = "Strongest claim";
+  el("claimText").textContent = activeScenario.claim;
+  el("caveatTitle").textContent = "Main caveat";
+  el("caveatText").textContent = activeScenario.caveat;
+  el("scoreList").innerHTML = [
+    ["scale","Scale",activeScenario.metrics.scale],
+    ["context","Native context",activeScenario.metrics.context],
+    ["causality","Causality",activeScenario.metrics.causality],
+    ["readout","Readout breadth",activeScenario.metrics.readout]
+  ].map(([id,k,v]) => `
+    <div class="score-row">
+      <b>${k}</b>
+      <div class="score-track"><div class="score-fill" style="width:${v}%"></div></div>
+      <span>${v}</span>
+    </div>
+  `).join("");
+}
+
+function renderFilters(){
+  el("filterRow").innerHTML = filters.map(([id,label,color]) => `
+    <button class="filter-btn ${id===activeFilter?"active":""}" data-id="${id}" style="--filter-color:${color}">${label}</button>
+  `).join("");
+  el("filterRow").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeFilter = btn.dataset.id;
+      const visible = methods.filter(m => activeFilter === "all" || m.group === activeFilter);
+      if(!visible.find(m => m.id === activeMethod.id)) activeMethod = visible[0] || methods[0];
+      renderAll();
+    });
+  });
+}
+
+function renderMethods(){
+  const visible = methods.filter(m => activeFilter === "all" || m.group === activeFilter);
+  el("methodGrid").innerHTML = visible.map(m => `
+    <button class="method-btn ${m.id===activeMethod.id?"active":""}" data-id="${m.id}" style="--method-color:${m.color}">
+      <i></i><b>${m.title}</b><span>${m.summary}</span>
+    </button>
+  `).join("");
+  el("methodGrid").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeMethod = methods.find(m => m.id === btn.dataset.id);
+      renderAll();
+    });
+  });
+}
+
+function renderMethodDetail(){
+  el("methodStage").textContent = activeMethod.stage;
+  el("methodTitle").textContent = activeMethod.title;
+  el("methodSummary").textContent = activeMethod.summary;
+  el("methodTags").innerHTML = activeMethod.tags.map(t => `<span class="chip">${t}</span>`).join("");
+  el("methodDetails").innerHTML = [
+    ["Measured", activeMethod.measured],
+    ["Strong at", activeMethod.strong],
+    ["Weak at", activeMethod.weak],
+    ["Stack role", activeScenario.activeMethods.includes(activeMethod.id) ? "현재 study frame의 추천 stack에 포함됨" : "다른 frame에서 더 자주 쓰이는 보조 evidence layer"]
+  ].map(([k,v]) => `<div class="detail-block"><b>${k}</b><span>${v}</span></div>`).join("");
+
+  const rows = [
+    ["Scale", activeMethod.axes.scale],
+    ["Native context", activeMethod.axes.native],
+    ["Causality", activeMethod.axes.causal],
+    ["Readout", activeMethod.axes.readout]
+  ];
+  el("axisTable").innerHTML = `
+    <div class="axis-row header"><span></span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+    ${rows.map(([k,v]) => `
+      <div class="axis-row" style="--method-color:${activeMethod.color}">
+        <div class="axis-name">${k}</div>
+        <div class="pill-score" style="grid-column:span 4"><i style="--w:${v}%;background:${activeMethod.color}"></i></div>
+      </div>
+    `).join("")}
+  `;
+}
+
+function renderPapers(){
+  const q = (el("paperSearch").value || "").trim().toLowerCase();
+  const filtered = papers.filter(p => {
+    const hay = `${p.stage} ${p.year} ${p.title} ${p.text}`.toLowerCase();
+    return !q || hay.includes(q);
+  });
+  el("paperCount").textContent = `${filtered.length} / ${papers.length} papers`;
+  el("paperList").innerHTML = filtered.map(p => `
+    <article class="paper" style="--paper-color:${p.color}">
+      <div class="paper-top">
+        <span class="paper-stage">${p.stage}</span>
+        <span class="paper-year">${p.year}</span>
+      </div>
+      <h3>${p.title}</h3>
+      <p>${p.text}</p>
+      <a href="https://scholar.google.com/scholar?q=${encodeURIComponent(p.query)}" target="_blank" rel="noopener">Google Scholar</a>
+    </article>
+  `).join("");
+}
+
+function canvasPoint(canvas, node){
+  return {x:node.x * canvas.width, y:node.y * canvas.height};
+}
+
+function methodNodeKey(method){
+  if(method.group === "reporter") return "reporter";
+  if(method.group === "edit") return "edit";
+  if(method.group === "model") return "model";
+  if(method.id === "fine") return "assoc";
+  if(method.id === "native") return "native";
+  if(method.id === "perturbseq" || method.id === "mono") return "program";
+  return "crispr";
+}
+
+function updatePlotFocus(key = selectedNodeKey){
+  const info = layerInfo[key] || layerInfo.reporter;
+  el("plotFocusTitle").textContent = info.title;
+  el("plotFocusText").textContent = info.text;
+}
+
+function nodeAtEvent(event){
+  const canvas = el("ladderCanvas");
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const px = (event.clientX - rect.left) * dpr;
+  const py = (event.clientY - rect.top) * dpr;
+  let best = null;
+  let bestDist = Infinity;
+  Object.entries(ladderNodes).forEach(([key,node]) => {
+    const p = canvasPoint(canvas,node);
+    const dist = Math.hypot(px - p.x, py - p.y);
+    if(dist < bestDist){bestDist = dist; best = key}
+  });
+  return bestDist <= 34 * dpr ? best : null;
+}
+
+function drawCanvas(){
+  const canvas = el("ladderCanvas");
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(1, Math.floor(rect.width * dpr));
+  const h = Math.max(1, Math.floor(rect.height * dpr));
+  if(canvas.width !== w || canvas.height !== h){canvas.width = w; canvas.height = h}
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = "#fffdf8";
+  ctx.fillRect(0,0,w,h);
+
+  ctx.save();
+  ctx.globalAlpha = .72;
+  ctx.strokeStyle = "rgba(83,96,108,.12)";
+  ctx.lineWidth = 1*dpr;
+  for(let x=0;x<w;x+=42*dpr){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+  for(let y=0;y<h;y+=42*dpr){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+  ctx.restore();
+
+  const pad = 54*dpr;
+  ctx.strokeStyle = "rgba(83,96,108,.38)";
+  ctx.lineWidth = 1.4*dpr;
+  ctx.beginPath();
+  ctx.moveTo(pad,h-pad);
+  ctx.bezierCurveTo(w*.32,h*.68,w*.55,h*.42,w-pad,pad*1.15);
+  ctx.stroke();
+
+  const axisFont = Math.max(13, Math.min(18, rect.width / 62));
+  const nodeFont = Math.max(12.5, Math.min(15, rect.width / 70));
+  ctx.fillStyle = "rgba(23,32,29,.66)";
+  ctx.font = `600 ${axisFont*dpr}px ui-monospace, SFMono-Regular, Menlo`;
+  ctx.fillText("association", pad, h-pad+25*dpr);
+  const causalityLabel = "variant causality";
+  ctx.fillText(causalityLabel, w-pad-ctx.measureText(causalityLabel).width, pad*1.16);
+
+  const path = activeScenario.path;
+  ctx.lineWidth = 3.2*dpr;
+  ctx.strokeStyle = activeScenario.color;
+  ctx.globalAlpha = .78;
+  ctx.beginPath();
+  path.forEach((key,i) => {
+    const p = canvasPoint(canvas, ladderNodes[key]);
+    if(i===0) ctx.moveTo(p.x,p.y);
+    else {
+      const prev = canvasPoint(canvas, ladderNodes[path[i-1]]);
+      ctx.bezierCurveTo((prev.x+p.x)/2, prev.y, (prev.x+p.x)/2, p.y, p.x, p.y);
+    }
+  });
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  const t = rafTick / 60;
+  Object.entries(ladderNodes).forEach(([key,node]) => {
+    const p = canvasPoint(canvas,node);
+    const isPath = path.includes(key);
+    const color = COLORS[node.group] || COLORS.neutral;
+    const isSelected = selectedNodeKey === key;
+    const isHover = hoveredNodeKey === key;
+    const pulse = (isPath || isSelected) ? Math.sin(t + p.x*.01)*2*dpr : 0;
+    ctx.beginPath();
+    ctx.fillStyle = isPath || isSelected ? color : "rgba(83,96,108,.18)";
+    ctx.strokeStyle = isPath || isSelected ? "rgba(255,255,255,.9)" : "rgba(83,96,108,.28)";
+    ctx.lineWidth = isPath || isSelected ? 3*dpr : 1.5*dpr;
+    ctx.arc(p.x,p.y,(isPath || isSelected ? 16 : 11)*dpr + pulse,0,Math.PI*2);
+    ctx.fill();
+    ctx.stroke();
+
+    if(isPath || isSelected || isHover){
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = isHover ? .22 : .14;
+      ctx.lineWidth = (isSelected ? 12 : 10)*dpr;
+      ctx.arc(p.x,p.y,(isSelected ? 27 : 24)*dpr + pulse,0,Math.PI*2);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    ctx.fillStyle = isPath || isSelected ? "#17201d" : "rgba(23,32,29,.62)";
+    ctx.font = `${isPath || isSelected ? 750 : 650} ${(isPath || isSelected ? nodeFont + 1 : nodeFont)*dpr}px ui-sans-serif, system-ui`;
+    ctx.fillText(node.label, p.x + 18*dpr, p.y - 17*dpr);
+  });
+
+  const activeNodeKey = methodNodeKey(activeMethod);
+  const activeNode = canvasPoint(canvas, ladderNodes[activeNodeKey]);
+  ctx.strokeStyle = activeMethod.color;
+  ctx.lineWidth = 2*dpr;
+  ctx.setLineDash([5*dpr,4*dpr]);
+  ctx.beginPath();
+  ctx.arc(activeNode.x,activeNode.y,34*dpr,0,Math.PI*2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  rafTick += 1;
+  if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+    requestAnimationFrame(drawCanvas);
+  }
+}
+
+function renderAll(){
+  selectedNodeKey = methodNodeKey(activeMethod);
+  renderScenarios();
+  renderScenario();
+  renderFilters();
+  renderMethods();
+  renderMethodDetail();
+  renderPapers();
+  updatePlotFocus();
+}
+
+el("paperSearch").addEventListener("input", renderPapers);
+el("ladderCanvas").addEventListener("mousemove", event => {
+  hoveredNodeKey = nodeAtEvent(event);
+  el("ladderCanvas").style.cursor = hoveredNodeKey ? "pointer" : "crosshair";
+  updatePlotFocus(hoveredNodeKey || selectedNodeKey);
+});
+el("ladderCanvas").addEventListener("mouseleave", () => {
+  hoveredNodeKey = null;
+  el("ladderCanvas").style.cursor = "crosshair";
+  updatePlotFocus(selectedNodeKey);
+});
+el("ladderCanvas").addEventListener("click", event => {
+  const key = nodeAtEvent(event);
+  if(!key) return;
+  selectedNodeKey = key;
+  const info = layerInfo[key];
+  activeMethod = methods.find(m => m.id === info.method) || activeMethod;
+  activeFilter = "all";
+  renderAll();
+});
+renderAll();
+drawCanvas();
+window.addEventListener("resize", drawCanvas);
+</script>
+</body>
+</html>

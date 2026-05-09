@@ -1,0 +1,2341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>멀티모달 파운데이션 모델 — 레이어, 토큰, 패턴 | Audodidactic</title>
+<meta name="description" content="single-cell·protein·DNA·structure·image를 한 모델로 묶는 멀티모달 파운데이션 모델 방법론. Transformer/VAE/Discrete Diffusion 수식, 7가지 토큰화 전략, 9가지 아키텍처 패턴, 2024–2026 트렌드, 30+ 모델 카탈로그를 한 페이지로.">
+<style>
+:root{
+  --bg: oklch(0.985 0.005 240);
+  --surface: oklch(1 0 0);
+  --surface-glass: oklch(1 0 0 / 0.65);
+  --surface-glass-strong: oklch(1 0 0 / 0.88);
+  --soft: oklch(0.97 0.012 240);
+
+  --ink: oklch(0.18 0.025 240);
+  --ink-soft: oklch(0.36 0.025 240);
+  --muted: oklch(0.55 0.018 240);
+  --line: oklch(0.9 0.008 240);
+  --line-soft: oklch(0.94 0.005 240);
+
+  /* core architecture palette */
+  --tx: oklch(0.5 0.16 240);     /* transformer · deep blue */
+  --tx-glow: oklch(0.78 0.14 240);
+  --tx-tint: oklch(0.96 0.022 240);
+  --tx-deep: oklch(0.36 0.16 240);
+
+  --vae: oklch(0.55 0.16 60);    /* VAE · warm orange */
+  --vae-glow: oklch(0.8 0.14 60);
+  --vae-tint: oklch(0.97 0.025 60);
+
+  --dif: oklch(0.5 0.18 295);    /* diffusion · violet */
+  --dif-glow: oklch(0.78 0.16 295);
+  --dif-tint: oklch(0.96 0.025 295);
+
+  /* modality palette */
+  --m-dna:  oklch(0.5 0.13 160);   /* moss green */
+  --m-rna:  oklch(0.6 0.13 35);    /* coral */
+  --m-prot: oklch(0.5 0.18 350);   /* magenta */
+  --m-atac: oklch(0.5 0.14 200);   /* teal */
+  --m-spat: oklch(0.55 0.13 220);  /* cyan */
+  --m-img:  oklch(0.65 0.14 90);   /* gold */
+  --m-text: oklch(0.55 0.04 280);  /* gray-violet */
+  --m-pert: oklch(0.55 0.18 330);  /* pink */
+
+  /* shadows */
+  --shadow-1: 0 1px 2px oklch(0.2 0.02 240 / 0.05),
+              0 2px 6px oklch(0.2 0.02 240 / 0.05);
+  --shadow-2: 0 2px 4px oklch(0.2 0.02 240 / 0.06),
+              0 8px 20px oklch(0.2 0.02 240 / 0.06);
+  --shadow-card: 0 1px 2px oklch(0.2 0.02 240 / 0.04),
+                 0 4px 12px oklch(0.2 0.02 240 / 0.05),
+                 0 16px 40px oklch(0.2 0.02 240 / 0.05);
+  --shadow-hover: 0 2px 4px oklch(0.2 0.02 240 / 0.06),
+                  0 12px 28px oklch(0.2 0.02 240 / 0.08),
+                  0 32px 72px oklch(0.2 0.02 240 / 0.1);
+
+  --r-card: 22px;
+  --r-inner: 14px;
+  --r-pill: 999px;
+  --r-btn: 12px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.4, 1);
+
+  --f-display: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR",
+               -apple-system, BlinkMacSystemFont, "Segoe UI Variable", system-ui, sans-serif;
+  --f-body: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR",
+            -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+  --f-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--f-body);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  text-wrap: pretty;
+  position: relative;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  background:
+    radial-gradient(60% 50% at 12% 8%, oklch(0.78 0.14 240 / 0.18), transparent 60%),
+    radial-gradient(50% 45% at 92% 22%, oklch(0.8 0.14 60 / 0.13), transparent 65%),
+    radial-gradient(55% 50% at 75% 92%, oklch(0.78 0.16 295 / 0.13), transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+  animation: drift 30s ease-in-out infinite alternate;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(oklch(0.2 0.02 240 / 0.012) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(-1.5%, 2%, 0) scale(1.04); }
+}
+@media (prefers-reduced-motion: reduce) { body::before { animation: none; } }
+
+.shell {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 28px 80px;
+}
+
+/* ===== topbar ===== */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0 24px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 36px;
+}
+.brand-link {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em;
+  color: var(--muted); text-transform: uppercase; text-decoration: none;
+  transition: color 0.2s var(--ease);
+}
+.brand-link:hover { color: var(--ink); }
+.brand-mark {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: conic-gradient(from 220deg at 50% 50%,
+    var(--tx-glow), var(--vae-glow) 35%, var(--dif-glow) 70%, var(--tx-glow) 100%);
+  box-shadow: 0 1px 2px oklch(0.2 0.02 240 / 0.1),
+              inset 0 0 0 1.5px oklch(1 0 0 / 0.6);
+  position: relative;
+}
+.brand-mark::after {
+  content: ""; position: absolute; inset: 6px;
+  border-radius: 50%; background: var(--surface);
+}
+.brand-link b { color: var(--ink); font-weight: 700; }
+.nav { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.nav a {
+  text-decoration: none; color: var(--ink-soft); font-size: 12.5px;
+  border: 1px solid var(--line); border-radius: var(--r-pill);
+  padding: 6px 12px; background: var(--surface-glass);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s var(--ease); font-weight: 500;
+}
+.nav a:hover { border-color: var(--tx); color: var(--tx-deep); background: var(--tx-tint); }
+
+/* ===== hero ===== */
+.hero { margin-bottom: 60px; display: grid; gap: 24px; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; background: var(--tx-tint);
+  border: 1px solid oklch(from var(--tx) l c h / 0.25);
+  border-radius: var(--r-pill);
+  font-family: var(--f-mono); font-size: 11.5px; color: var(--tx-deep);
+  font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  width: fit-content;
+}
+.hero-badge::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--tx); box-shadow: 0 0 0 4px oklch(from var(--tx) l c h / 0.18);
+}
+.hero h1 {
+  font-family: var(--f-display);
+  font-size: clamp(34px, 5vw, 56px); font-weight: 850;
+  letter-spacing: -0.022em; line-height: 1.08;
+  margin: 0; max-width: 980px;
+}
+.hero h1 .accent {
+  background: linear-gradient(120deg, var(--tx) 0%, var(--vae) 50%, var(--dif) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+}
+.hero-lead {
+  font-size: 17px; color: var(--ink-soft);
+  line-height: 1.7; max-width: 760px;
+}
+.hero-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 14px; background: var(--surface-glass);
+  backdrop-filter: blur(10px) saturate(1.4);
+  border: 1px solid var(--line); border-radius: var(--r-pill);
+  font-size: 12.5px; color: var(--ink-soft);
+}
+.chip b { color: var(--ink); font-weight: 700; font-family: var(--f-mono); }
+
+/* ===== TOC ===== */
+.toc {
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(14px) saturate(1.3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 24px 28px; margin-bottom: 56px;
+  box-shadow: var(--shadow-1);
+}
+.toc-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+}
+.toc-head h2 { font-family: var(--f-display); font-size: 18px; font-weight: 700; }
+.toc-head .label {
+  font-family: var(--f-mono); font-size: 11px;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+}
+.toc-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+.toc-grid a {
+  text-decoration: none; color: var(--ink-soft); font-size: 13.5px;
+  padding: 10px 14px; border-radius: var(--r-btn);
+  transition: all 0.2s var(--ease);
+  display: flex; align-items: center; gap: 10px;
+  background: oklch(1 0 0 / 0.5);
+  border: 1px solid transparent;
+}
+.toc-grid a:hover {
+  background: var(--tx-tint); color: var(--tx-deep);
+  border-color: oklch(from var(--tx) l c h / 0.2);
+  transform: translateX(2px);
+}
+.toc-grid a .num {
+  font-family: var(--f-mono); font-size: 11px;
+  color: var(--tx); font-weight: 700; letter-spacing: 0.05em;
+}
+
+/* ===== sections ===== */
+section.s { margin-bottom: 80px; }
+.s-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  flex-wrap: wrap; gap: 16px; margin-bottom: 12px;
+  padding-bottom: 14px; border-bottom: 1px solid var(--line);
+}
+.s-num {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.08em;
+  color: var(--tx); font-weight: 700; text-transform: uppercase;
+}
+.s-num::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--tx); box-shadow: 0 0 0 4px oklch(from var(--tx) l c h / 0.18);
+}
+.s-title {
+  font-family: var(--f-display);
+  font-size: clamp(22px, 2.4vw, 30px); font-weight: 800;
+  letter-spacing: -0.018em; line-height: 1.18;
+  flex: 1; min-width: 280px;
+}
+.s-sub {
+  font-family: var(--f-mono); font-size: 12px;
+  color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase;
+}
+.s-blurb {
+  font-size: 15px; color: var(--ink-soft);
+  max-width: 780px; line-height: 1.75;
+  margin: 16px 0 28px;
+}
+
+.panel {
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 24px;
+  box-shadow: var(--shadow-1);
+}
+
+/* ===== Layer cards (3-up) ===== */
+.layer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+@media (min-width: 880px) {
+  .layer-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.layer-card {
+  position: relative; overflow: hidden;
+  padding: 22px 22px 18px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+  --lc: var(--tx);
+  --lc-tint: var(--tx-tint);
+}
+.layer-card[data-layer="vae"] { --lc: var(--vae); --lc-tint: var(--vae-tint); }
+.layer-card[data-layer="dif"] { --lc: var(--dif); --lc-tint: var(--dif-tint); }
+.layer-card::before {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(60% 60% at 100% 0%, oklch(from var(--lc) l c h / 0.16), transparent 60%);
+  opacity: 0.6; transition: opacity 0.3s var(--ease);
+}
+.layer-card > * { position: relative; z-index: 1; }
+.layer-card:hover, .layer-card.active {
+  border-color: var(--lc);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-2);
+}
+.layer-card.active::before { opacity: 1; }
+.layer-card .tag {
+  font-family: var(--f-mono); font-size: 10.5px; font-weight: 700;
+  color: var(--lc); letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.layer-card h3 {
+  font-family: var(--f-display); font-size: 18px; font-weight: 800;
+  letter-spacing: -0.005em; margin-bottom: 8px;
+}
+.layer-card .desc {
+  font-size: 13px; color: var(--ink-soft); line-height: 1.65;
+  margin-bottom: 12px;
+}
+.layer-card .formula {
+  font-family: var(--f-mono); font-size: 12px;
+  background: oklch(1 0 0 / 0.7);
+  border: 1px solid var(--line);
+  border-radius: var(--r-btn);
+  padding: 10px 12px;
+  color: var(--lc);
+  overflow-x: auto;
+  white-space: pre;
+  font-weight: 600;
+}
+.layer-detail {
+  padding: 22px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  font-size: 13.5px; line-height: 1.75; color: var(--ink-soft);
+  border-left: 4px solid var(--tx);
+  transition: border-color 0.3s var(--ease);
+}
+.layer-detail.vae { border-left-color: var(--vae); }
+.layer-detail.dif { border-left-color: var(--dif); }
+.layer-detail h4 {
+  font-family: var(--f-display);
+  font-size: 16px; font-weight: 700; margin-bottom: 10px;
+  color: var(--ink);
+}
+.layer-detail b { color: var(--ink); }
+.layer-detail ul { margin: 8px 0 0 20px; }
+.layer-detail li { margin-bottom: 4px; }
+.layer-detail .gene {
+  font-family: var(--f-mono); font-weight: 700; color: var(--tx-deep);
+}
+.layer-detail .formula-block {
+  font-family: var(--f-mono); font-size: 12.5px;
+  background: var(--soft); padding: 10px 14px;
+  border-radius: var(--r-btn); margin: 8px 0;
+  white-space: pre; overflow-x: auto;
+  color: var(--ink);
+}
+
+/* ===== Tokenization strategies ===== */
+.tok-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.tok-card {
+  position: relative; padding: 14px;
+  background: oklch(1 0 0 / 0.6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  overflow: hidden;
+  --tc: var(--tx);
+  font: inherit; text-align: left;
+}
+.tok-card::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--tc), transparent 70%);
+  opacity: 0.06; z-index: 0;
+}
+.tok-card:hover {
+  border-color: var(--tc);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-1);
+}
+.tok-card.active {
+  border-color: var(--tc);
+  background: oklch(from var(--tc) l c h / 0.06);
+}
+.tok-card.active::before { opacity: 0.15; }
+.tok-card > * { position: relative; z-index: 1; }
+.tok-card .label {
+  font-family: var(--f-mono); font-size: 10.5px; font-weight: 700;
+  color: var(--tc); letter-spacing: 0.05em; text-transform: uppercase;
+}
+.tok-card .name {
+  font-size: 14px; font-weight: 700; margin-top: 2px; color: var(--ink);
+}
+.tok-card .rep {
+  font-size: 11.5px; color: var(--ink-soft); margin-top: 6px;
+  line-height: 1.5; font-family: var(--f-mono);
+}
+.tok-vis {
+  background: oklch(1 0 0 / 0.55);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-inner);
+  padding: 18px;
+}
+.tok-vis svg {
+  width: 100%; height: auto; max-height: 180px;
+  display: block;
+}
+.tok-detail {
+  font-size: 13.5px; line-height: 1.75; color: var(--ink-soft);
+  margin-top: 14px;
+}
+.tok-detail h4 {
+  font-family: var(--f-display); font-size: 15px; font-weight: 700;
+  margin-bottom: 6px; color: var(--ink);
+}
+.tok-detail b { color: var(--ink); }
+
+/* ===== Tasks (single vs multi) ===== */
+.tasks-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 880px) {
+  .tasks-wrap { grid-template-columns: 1fr 1fr; }
+}
+.tasks-col {
+  padding: 22px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  --col: var(--tx);
+}
+.tasks-col.multi { --col: var(--dif); }
+.tasks-col h3 {
+  font-family: var(--f-display);
+  font-size: 17px; font-weight: 800; letter-spacing: -0.005em;
+  margin-bottom: 6px;
+  display: flex; align-items: baseline; gap: 10px;
+}
+.tasks-col h3 .badge {
+  font-family: var(--f-mono); font-size: 10px; font-weight: 700;
+  color: var(--col); background: oklch(from var(--col) l c h / 0.1);
+  padding: 3px 8px; border-radius: var(--r-pill);
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.tasks-col p {
+  font-size: 13px; color: var(--ink-soft); margin-bottom: 14px;
+}
+.task-list { list-style: none; display: grid; gap: 8px; }
+.task-list li {
+  padding: 11px 14px;
+  background: oklch(1 0 0 / 0.7);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-inner);
+  font-size: 13px; color: var(--ink-soft);
+  border-left: 3px solid var(--col);
+}
+.task-list li b { color: var(--ink); font-weight: 700; }
+.task-list li .ex {
+  display: block; font-family: var(--f-mono);
+  font-size: 11px; color: var(--muted);
+  margin-top: 4px; letter-spacing: 0.04em;
+}
+
+/* ===== Patterns ===== */
+.pat-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+@media (min-width: 1000px) {
+  .pat-wrap { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); }
+}
+.pat-list {
+  display: grid; gap: 8px;
+  align-content: start;
+}
+.pat-btn {
+  font: inherit; text-align: left;
+  padding: 14px 16px;
+  background: oklch(1 0 0 / 0.6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  display: grid; gap: 4px;
+  --pc: var(--tx);
+}
+.pat-btn:hover { border-color: var(--pc); transform: translateX(2px); }
+.pat-btn.active {
+  background: oklch(from var(--pc) l c h / 0.06);
+  border-color: var(--pc);
+  box-shadow: 0 0 0 3px oklch(from var(--pc) l c h / 0.1);
+}
+.pat-btn .num {
+  font-family: var(--f-mono); font-size: 10px;
+  color: var(--pc); font-weight: 700; letter-spacing: 0.06em;
+}
+.pat-btn .name {
+  font-size: 13.5px; font-weight: 700; color: var(--ink);
+  letter-spacing: -0.005em;
+}
+.pat-btn .meta {
+  font-family: var(--f-mono); font-size: 10.5px;
+  color: var(--muted); letter-spacing: 0.04em;
+}
+.pat-btn:nth-child(2) { --pc: var(--m-rna); }
+.pat-btn:nth-child(3) { --pc: var(--vae); }
+.pat-btn:nth-child(4) { --pc: var(--m-prot); }
+.pat-btn:nth-child(5) { --pc: var(--m-atac); }
+.pat-btn:nth-child(6) { --pc: var(--tx); }
+.pat-btn:nth-child(7) { --pc: var(--m-spat); }
+.pat-btn:nth-child(8) { --pc: var(--dif); }
+.pat-btn:nth-child(9) { --pc: var(--m-pert); }
+
+.pat-vis {
+  padding: 22px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  display: flex; flex-direction: column; gap: 16px;
+  box-shadow: var(--shadow-1);
+}
+.pat-vis svg {
+  width: 100%; height: auto; max-height: 280px;
+  display: block;
+}
+.pat-vis .head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  flex-wrap: wrap; gap: 10px;
+}
+.pat-vis h3 {
+  font-family: var(--f-display); font-size: 17px; font-weight: 800;
+  letter-spacing: -0.005em;
+}
+.pat-vis .pat-tag {
+  font-family: var(--f-mono); font-size: 11px;
+  color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase;
+}
+.pat-vis .desc {
+  font-size: 13.5px; line-height: 1.75; color: var(--ink-soft);
+}
+.pat-vis .desc b { color: var(--ink); }
+.pat-vis .desc .formula-block {
+  font-family: var(--f-mono); font-size: 12px;
+  background: var(--soft); padding: 10px 12px;
+  border-radius: var(--r-btn); margin-top: 8px;
+  white-space: pre; overflow-x: auto;
+}
+
+/* ===== Trends ===== */
+.trend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.trend-card {
+  position: relative; padding: 20px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  transition: all 0.3s var(--ease);
+  --trc: var(--tx);
+}
+.trend-card:hover {
+  border-color: var(--trc);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-1);
+}
+.trend-card .num {
+  font-family: var(--f-mono); font-size: 10.5px;
+  color: var(--trc); font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.trend-card h4 {
+  font-size: 15.5px; font-weight: 800; letter-spacing: -0.005em;
+  margin-bottom: 8px; color: var(--ink);
+}
+.trend-card .actors {
+  font-family: var(--f-mono); font-size: 11.5px;
+  background: oklch(from var(--trc) l c h / 0.08);
+  color: var(--trc);
+  padding: 6px 10px; border-radius: var(--r-btn);
+  margin-bottom: 10px; font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.trend-card .desc {
+  font-size: 13px; line-height: 1.7; color: var(--ink-soft);
+}
+.trend-card .desc b { color: var(--ink); }
+.trend-card[data-trend="1"] { --trc: var(--tx); }
+.trend-card[data-trend="2"] { --trc: var(--m-rna); }
+.trend-card[data-trend="3"] { --trc: var(--m-pert); }
+.trend-card[data-trend="4"] { --trc: var(--m-text); }
+.trend-card[data-trend="5"] { --trc: var(--m-spat); }
+.trend-card[data-trend="6"] { --trc: var(--m-prot); }
+.trend-card[data-trend="7"] { --trc: var(--vae); }
+.trend-card[data-trend="8"] { --trc: var(--dif); }
+.trend-card[data-trend="9"] { --trc: var(--m-dna); }
+
+/* ===== Models catalog ===== */
+.model-controls {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+  align-items: center;
+}
+.model-search {
+  flex: 1; min-width: 200px;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font: inherit; font-size: 13px;
+  background: oklch(1 0 0 / 0.7); color: var(--ink);
+}
+.model-search:focus {
+  outline: none; border-color: var(--tx);
+  box-shadow: 0 0 0 3px oklch(from var(--tx) l c h / 0.15);
+}
+.model-filter { display: flex; gap: 4px; flex-wrap: wrap; }
+.model-filter button {
+  font: inherit; font-size: 11.5px;
+  padding: 6px 11px;
+  border: 1px solid var(--line);
+  background: oklch(1 0 0 / 0.6); color: var(--ink-soft);
+  border-radius: var(--r-pill);
+  cursor: pointer; transition: all 0.2s var(--ease);
+  font-weight: 600;
+}
+.model-filter button.active {
+  background: var(--tx); border-color: var(--tx); color: oklch(1 0 0);
+}
+.model-list {
+  display: grid; gap: 10px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 720px) {
+  .model-list { grid-template-columns: 1fr 1fr; }
+}
+.model-card {
+  padding: 16px 18px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  transition: all 0.25s var(--ease);
+  text-decoration: none; color: inherit;
+  display: grid; gap: 4px;
+  --mc: var(--tx);
+}
+.model-card.hidden { display: none; }
+.model-card:hover {
+  border-color: var(--mc);
+  background: oklch(from var(--mc) l c h / 0.04);
+  transform: translateY(-2px);
+}
+.model-card[data-modality="single-cell"] { --mc: var(--m-rna); }
+.model-card[data-modality="protein"] { --mc: var(--m-prot); }
+.model-card[data-modality="dna"] { --mc: var(--m-dna); }
+.model-card[data-modality="multi"] { --mc: var(--tx); }
+.model-card[data-modality="spatial"] { --mc: var(--m-spat); }
+.model-card[data-modality="image"] { --mc: var(--m-img); }
+.model-card .head {
+  display: flex; justify-content: space-between;
+  align-items: baseline; gap: 8px; flex-wrap: wrap;
+}
+.model-card .name {
+  font-family: var(--f-mono); font-size: 14px;
+  font-weight: 800; color: var(--mc);
+}
+.model-card .pat {
+  font-family: var(--f-mono); font-size: 10px;
+  color: var(--muted); letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.model-card .modality {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  font-family: var(--f-mono);
+}
+.model-card .modality b { color: var(--mc); font-weight: 700; }
+.model-card .desc {
+  font-size: 12.5px; color: var(--ink-soft);
+  line-height: 1.6; margin-top: 4px;
+}
+.model-card .meta {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  font-family: var(--f-mono); font-size: 10.5px;
+  color: var(--muted); margin-top: 6px;
+  letter-spacing: 0.03em;
+}
+.model-card .meta span {
+  padding: 2px 8px;
+  background: oklch(1 0 0 / 0.7);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+}
+.catalog-meta {
+  font-family: var(--f-mono); font-size: 11px;
+  color: var(--muted); margin-top: 10px; text-align: right;
+}
+
+/* ===== Recommendation matrix ===== */
+.rec-grid {
+  display: grid; gap: 10px;
+}
+.rec-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  transition: all 0.2s var(--ease);
+}
+@media (min-width: 720px) {
+  .rec-row { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr) minmax(0, 1.1fr); }
+}
+.rec-row:hover { border-color: var(--tx); }
+.rec-row .goal {
+  font-size: 13.5px; font-weight: 700; color: var(--ink);
+  letter-spacing: -0.005em;
+}
+.rec-row .pat {
+  font-size: 12.5px; color: var(--ink-soft);
+}
+.rec-row .pat b { color: var(--tx-deep); }
+.rec-row .why {
+  font-size: 12px; color: var(--muted);
+  font-family: var(--f-mono); letter-spacing: 0.02em;
+  line-height: 1.55;
+}
+
+/* ===== Limitations ===== */
+.lim-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+.lim-card {
+  padding: 18px;
+  background: oklch(from var(--m-rna) l c h / 0.04);
+  border: 1px solid oklch(from var(--m-rna) l c h / 0.18);
+  border-radius: var(--r-inner);
+}
+.lim-card h4 {
+  font-size: 14px; font-weight: 800; color: var(--ink);
+  margin-bottom: 6px; letter-spacing: -0.005em;
+}
+.lim-card .num {
+  font-family: var(--f-mono); font-size: 11px;
+  color: var(--m-rna); font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.lim-card p {
+  font-size: 12.5px; line-height: 1.65; color: var(--ink-soft);
+}
+.lim-card p b { color: var(--ink); }
+
+/* ===== Paper catalog ===== */
+.paper-list { display: grid; gap: 8px; }
+.paper-card {
+  padding: 14px 16px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line);
+  border-radius: var(--r-inner);
+  text-decoration: none; color: inherit;
+  transition: all 0.2s var(--ease);
+}
+.paper-card.hidden { display: none; }
+.paper-card:hover {
+  border-color: var(--tx);
+  background: oklch(from var(--tx) l c h / 0.04);
+}
+.paper-card .h {
+  display: flex; justify-content: space-between;
+  align-items: baseline; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.paper-card .title {
+  font-family: var(--f-display);
+  font-size: 14px; font-weight: 700;
+  color: var(--ink); flex: 1; min-width: 240px;
+  letter-spacing: -0.005em; line-height: 1.4;
+}
+.paper-card .meta {
+  font-family: var(--f-mono); font-size: 11px;
+  color: var(--muted); letter-spacing: 0.04em;
+}
+.paper-card .meta b { color: var(--tx); font-weight: 700; }
+.paper-card .blurb {
+  font-size: 12.5px; color: var(--ink-soft);
+  line-height: 1.65;
+}
+.paper-card .tag {
+  display: inline-block; margin-top: 4px;
+  font-family: var(--f-mono); font-size: 10px;
+  padding: 2px 7px;
+  background: oklch(1 0 0 / 0.7);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  color: var(--muted); letter-spacing: 0.04em;
+  text-transform: uppercase; margin-right: 4px;
+}
+
+/* ===== foot ===== */
+.foot {
+  margin-top: 80px; padding-top: 28px;
+  border-top: 1px solid var(--line);
+  font-size: 13px; color: var(--muted);
+  line-height: 1.75;
+  display: flex; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+.foot a {
+  color: var(--muted); text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.foot a:hover { color: var(--ink); }
+.foot strong { color: var(--ink-soft); font-weight: 700; }
+.foot .right { font-family: var(--f-mono); font-size: 12px; }
+
+@media (max-width: 560px) {
+  .shell { padding: 20px 16px 60px; }
+  .nav { gap: 4px; }
+  .nav a { font-size: 11.5px; padding: 5px 10px; }
+}
+
+/* ===== text overflow safety — wrap long English / dot-joined runs ===== */
+.trend-card, .trend-card .desc, .trend-card .actors,
+.layer-card, .layer-card .desc, .layer-card .formula,
+.layer-detail, .layer-detail .formula-block,
+.tok-card, .tok-card .rep, .tok-detail,
+.pat-vis, .pat-vis .desc, .pat-vis .desc .formula-block,
+.pat-btn, .pat-btn .name, .pat-btn .meta,
+.tasks-col, .tasks-col p, .task-list li, .task-list li .ex,
+.lim-card, .lim-card p,
+.model-card, .model-card .desc, .model-card .modality, .model-card .meta,
+.paper-card, .paper-card .blurb, .paper-card .title,
+.rec-row, .rec-row .goal, .rec-row .pat, .rec-row .why,
+.s-blurb, .hero-lead, .toc-grid a {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.trend-card .actors, .layer-card .formula,
+.layer-detail .formula-block, .pat-vis .desc .formula-block,
+.tok-card .rep, .pat-btn .meta, .model-card .meta {
+  /* monospace runs sometimes have very long no-break atoms — let them wrap */
+  white-space: normal;
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<header class="topbar">
+  <a href="../index.html" class="brand-link">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span><b>audodidactic</b> · joonan-lab</span>
+  </a>
+  <nav class="nav">
+    <a href="#layers">레이어</a>
+    <a href="#tokens">토큰</a>
+    <a href="#tasks">태스크</a>
+    <a href="#patterns">패턴</a>
+    <a href="#trends">트렌드</a>
+    <a href="#models">모델</a>
+    <a href="#recs">추천</a>
+    <a href="#limits">한계</a>
+    <a href="#papers">논문</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <span class="hero-badge">Track 06 · Multimodal Foundation Model Methodology</span>
+  <h1>여러 modality를 한 모델로 묶으면 <span class="accent">무엇이 가능해지는가</span></h1>
+  <p class="hero-lead">
+    파운데이션 모델이 single-cell RNA에서 protein·DNA·structure·image·spatial까지 확장된다. 어떤 <b>레이어 수학</b>(Transformer/VAE/Discrete Diffusion)을 쓰는지, gene/cell/residue를 어떻게 <b>토큰화</b>하는지, 어떤 <b>태스크</b>는 single modality로 풀리고 어떤 것은 paired multimodal이 필수인지, 그리고 <b>9가지 아키텍처 패턴</b>이 그 위에서 어떻게 골라지는지를 한 페이지에 정리했다. 2024–2026 사이에 scaling laws, token unification, perturbation atlases, geometric DL 같은 새 흐름이 굳어지고 있고 — 이 페이지는 우리 wiki에 정리된 <b>30+ 모델</b>과 <b>9가지 트렌드</b>를 인터랙티브로 따라간다.
+  </p>
+  <div class="hero-meta">
+    <span class="chip"><b>9</b> 섹션</span>
+    <span class="chip"><b>3</b> layer math</span>
+    <span class="chip"><b>7</b> 토큰화 전략</span>
+    <span class="chip"><b>9</b> 아키텍처 패턴</span>
+    <span class="chip"><b>9</b> 최신 트렌드</span>
+    <span class="chip"><b>30+</b> 모델</span>
+  </div>
+</section>
+
+<nav class="toc">
+  <div class="toc-head">
+    <h2>이 페이지의 길</h2>
+    <span class="label">9 sections · click to jump</span>
+  </div>
+  <div class="toc-grid">
+    <a href="#layers"><span class="num">01</span> 3가지 layer math</a>
+    <a href="#tokens"><span class="num">02</span> 7가지 토큰화</a>
+    <a href="#tasks"><span class="num">03</span> single vs multi tasks</a>
+    <a href="#patterns"><span class="num">04</span> 9가지 아키텍처 패턴</a>
+    <a href="#trends"><span class="num">05</span> 2024–2026 트렌드</a>
+    <a href="#models"><span class="num">06</span> 모델 카탈로그</a>
+    <a href="#recs"><span class="num">07</span> 목적별 추천</a>
+    <a href="#limits"><span class="num">08</span> 한계와 미래</a>
+    <a href="#papers"><span class="num">09</span> 논문</a>
+  </div>
+</nav>
+
+<!-- ====== SECTION 01 — Layers ====== -->
+<section class="s" id="layers">
+  <header class="s-head">
+    <span class="s-num">section 01</span>
+    <h2 class="s-title">3가지 layer math — Transformer · VAE · Discrete Diffusion</h2>
+    <span class="s-sub">attention · ELBO · absorbing kernel</span>
+  </header>
+  <p class="s-blurb">
+    멀티모달 파운데이션 모델 corpus는 크게 세 갈래로 나뉜다. <b>Transformer</b>(self-attention 기반, 토큰 시퀀스로 modality를 다룸), <b>VAE</b>(modality-specific encoder + shared latent), <b>Discrete diffusion</b>(absorbing state로 categorical token을 마스크하고 복원). 카드를 클릭하면 수식과 사용 예시가 바뀐다.
+  </p>
+
+  <div class="layer-grid">
+    <button class="layer-card active" data-layer="tx">
+      <div class="tag">layer · token-based</div>
+      <h3>Transformer</h3>
+      <div class="desc">self-attention + FFN을 N번 쌓는다. single-cell에는 자연 순서가 없어 <b>rank·bin·projection</b> 전략으로 위치를 대체. scGPT/Geneformer/scFoundation/CellFM/Nicheformer/EpiAgent.</div>
+      <div class="formula">Attn(Q,K,V) = softmax(Q K^T / √d) V</div>
+    </button>
+    <button class="layer-card" data-layer="vae">
+      <div class="tag">layer · probabilistic</div>
+      <h3>VAE</h3>
+      <div class="desc">encoder가 Gaussian posterior 파라미터를 내고, reparameterization trick으로 latent를 샘플. modality-specific encoder가 합쳐져 shared z를 만든다. totalVI/Matilda/MultiVI/MOFA+/scButterfly.</div>
+      <div class="formula">z = μ + σ ⊙ ε,  ε ~ N(0,I)</div>
+    </button>
+    <button class="layer-card" data-layer="dif">
+      <div class="tag">layer · generative</div>
+      <h3>Discrete Diffusion</h3>
+      <div class="desc">categorical token(amino acid, structure)을 absorbing [MASK]로 부패시키고 transformer가 복원. forward kernel이 categorical, reverse는 variational bound로 학습. DPLM-2.</div>
+      <div class="formula">q(x^t | x^(t-1)) = Cat(β_t·x^(t-1) + (1-β_t)·q_noise)</div>
+    </button>
+  </div>
+
+  <div class="layer-detail" id="layer-detail">
+    <h4>Transformer block</h4>
+    <p>표준 구성: <span class="gene">token embedding → multi-head self-attention → FFN → LayerNorm</span>, N번 반복. single-cell 데이터엔 gene 순서가 없으므로 transformer를 적용할 때 위치 정보를 어떻게 부여할지가 첫 결정.</p>
+    <div class="formula-block">Q = X W_Q,  K = X W_K,  V = X W_V
+multi-head: head_i = Attn(QW_i^Q, KW_i^K, VW_i^V)
+output: Concat(head_1, …, head_h) W_O</div>
+    <p style="margin-top:10px;"><b>scGPT generative attention masking:</b> 매 step마다 일부 gene을 <code>unknown</code>으로 두고 visible set에서 예측, 예측된 gene이 다음 step에서 visible로 추가된다 — 순서 없는 set에 causal masking을 재현. condition token(modality, batch, perturbation)은 별도 토큰으로 들어가 elementwise sum.</p>
+    <p style="margin-top:8px;"><b>scFoundation asymmetric encoder/decoder:</b> 깊은 encoder + 얕은 decoder, MAE 스타일. binning 대신 expression scalar를 continuous projection으로 보존.</p>
+  </div>
+</section>
+
+<!-- ====== SECTION 02 — Tokenization ====== -->
+<section class="s" id="tokens">
+  <header class="s-head">
+    <span class="s-num">section 02</span>
+    <h2 class="s-title">7가지 토큰화 전략 — 같은 셀, 다른 어휘</h2>
+    <span class="s-sub">rank · bin · projection · text · epigenome · perturbation</span>
+  </header>
+  <p class="s-blurb">
+    foundation model은 결국 <b>"무엇을 토큰으로 보느냐"</b>가 시작이다. 같은 single-cell 데이터를 Geneformer는 rank로, scGPT는 bin으로, scFoundation은 continuous projection으로, scELMo는 LLM이 만든 텍스트 임베딩으로 본다. EpiAgent는 cCRE를 토큰화하고, Tahoe-x1은 drug까지 토큰화한다. 각 카드 클릭 시 토큰 시각화가 바뀐다.
+  </p>
+
+  <div class="panel">
+    <div class="tok-grid" id="tok-grid">
+      <button class="tok-card active" data-tok="rank" style="--tc: var(--m-rna);">
+        <div class="label">rank-based</div>
+        <div class="name">expression rank</div>
+        <div class="rep">Geneformer · scEMB · Nicheformer</div>
+      </button>
+      <button class="tok-card" data-tok="bin" style="--tc: var(--vae);">
+        <div class="label">binned-value</div>
+        <div class="name">discretized bin</div>
+        <div class="rep">scGPT · scBERT</div>
+      </button>
+      <button class="tok-card" data-tok="proj" style="--tc: var(--tx);">
+        <div class="label">value-projection</div>
+        <div class="name">continuous</div>
+        <div class="rep">CellFM · scFoundation</div>
+      </button>
+      <button class="tok-card" data-tok="text" style="--tc: var(--m-text);">
+        <div class="label">LLM-text</div>
+        <div class="name">gene description</div>
+        <div class="rep">scELMo · GenePT · scLAMBDA</div>
+      </button>
+      <button class="tok-card" data-tok="atac" style="--tc: var(--m-atac);">
+        <div class="label">epigenomic</div>
+        <div class="name">cCRE token</div>
+        <div class="rep">EpiAgent</div>
+      </button>
+      <button class="tok-card" data-tok="pert" style="--tc: var(--m-pert);">
+        <div class="label">perturbation-aware</div>
+        <div class="name">drug + gene</div>
+        <div class="rep">Tahoe-x1 · scLAMBDA</div>
+      </button>
+      <button class="tok-card" data-tok="struct" style="--tc: var(--m-prot);">
+        <div class="label">structure tokens</div>
+        <div class="name">LFQ / VQ-VAE</div>
+        <div class="rep">DPLM-2 · ESM3</div>
+      </button>
+    </div>
+
+    <div class="tok-vis">
+      <svg viewBox="0 0 600 180" id="tok-svg" role="img" aria-label="Tokenization visualization"></svg>
+    </div>
+
+    <div class="tok-detail" id="tok-detail"></div>
+  </div>
+</section>
+
+<!-- ====== SECTION 03 — Tasks ====== -->
+<section class="s" id="tasks">
+  <header class="s-head">
+    <span class="s-num">section 03</span>
+    <h2 class="s-title">single-modal로 가능한가, multimodal이 필수인가</h2>
+    <span class="s-sub">cell type · translation · cis-regulation · zero-shot</span>
+  </header>
+  <p class="s-blurb">
+    "멀티모달이면 다 좋다"가 답이 아니다. 어떤 task는 RNA 한 layer로도 SOTA가 나온다 (Geneformer가 dosage-sensitive gene을 AUC 0.91로 맞춤). 어떤 task는 paired multi-modal이 없으면 정의 자체가 안 된다 (cis-regulatory link, primed/committed progenitor 분리). 두 컬럼으로 비교.
+  </p>
+
+  <div class="tasks-wrap">
+    <div class="tasks-col">
+      <h3>single-modal로 충분 <span class="badge">multimodal 추가 시 정확도↑</span></h3>
+      <p>RNA 단일 modality에서 SOTA가 나오거나, 멀티모달이 정확도를 약간 올릴 뿐 정의가 안 바뀌는 task들.</p>
+      <ul class="task-list">
+        <li><b>Cell type annotation</b> — PBMC/pancreas/lung 벤치마크 SOTA가 RNA-only 모델로 도달. <span class="ex">scGPT · Geneformer · CellFM</span></li>
+        <li><b>Batch correction · integration</b> — Harmony·Scanorama·scVI 수준. <span class="ex">scGPT competitive</span></li>
+        <li><b>Expression denoising · imputation</b> — read-depth-aware MLM. <span class="ex">scFoundation RDA · scPRINT-2 XPressor</span></li>
+        <li><b>Genetic perturbation prediction</b> — drug/KO 효과 예측. <span class="ex">scGPT · GEARS · Tahoe-x1</span></li>
+        <li><b>GRN inference</b> — attention probing, in-silico deletion. <span class="ex">scGPT · Geneformer</span></li>
+        <li><b>Dosage-sensitive gene prediction</b> — Geneformer AUC 0.91, dilated cardiomyopathy iPSC 검증. <span class="ex">Geneformer</span></li>
+      </ul>
+    </div>
+    <div class="tasks-col multi">
+      <h3>multimodal이 필수 <span class="badge">paired data 없으면 정의 안 됨</span></h3>
+      <p>paired/aligned multimodal data가 본질적으로 필요한 task들. single modality로는 task 자체를 정의할 수 없다.</p>
+      <ul class="task-list">
+        <li><b>Cross-modal translation</b> — RNA→ATAC, RNA→protein, ATAC→RNA. <span class="ex">scButterfly · BABEL · Polarbear · sciPENN · UnitedNet</span></li>
+        <li><b>Cross-modal imputation</b> — 비싼 modality(ATAC, protein, structure)를 싼 modality(RNA)에서 복원.</li>
+        <li><b>Cis-regulatory link discovery</b> — 같은 cell의 ATAC peak ↔ RNA expression Pearson, ±500 kb 윈도. <span class="ex">10x Multiome 필수</span></li>
+        <li><b>Cell-state resolution beyond RNA</b> — primed vs committed progenitor가 RNA로 같지만 chromatin이 다른 케이스. <span class="ex">Multiome</span></li>
+        <li><b>Cross-modal explainability</b> — UnitedNet+SHAP가 한 modality 피처가 다른 modality 예측에 얼마나 기여하는지 정량.</li>
+        <li><b>Joint sequence-structure protein generation</b> — folding, inverse folding, motif scaffolding 한 모델로. <span class="ex">DPLM-2</span></li>
+        <li><b>Spatial multi-omics integration</b> — dissociated + spatial 동시 학습. <span class="ex">Nicheformer</span></li>
+        <li><b>Cross-modal zero-shot queries</b> — "이 DNA variant는 어떤 cell type에서?", "이 단백질 구조는 어떤 disease와?". <span class="ex">Cui 2025 vision</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SECTION 04 — Patterns ====== -->
+<section class="s" id="patterns">
+  <header class="s-head">
+    <span class="s-num">section 04</span>
+    <h2 class="s-title">9가지 아키텍처 패턴 — 어떻게 modality를 묶을 것인가</h2>
+    <span class="s-sub">fusion · alignment · diffusion · graph</span>
+  </header>
+  <p class="s-blurb">
+    멀티모달 파운데이션 모델 corpus를 펼치면 9가지 패턴으로 환원된다. 가장 단순한 <b>concatenation</b>(거의 안 쓰임)부터 Seurat의 <b>WNN</b>, totalVI/Matilda의 <b>shared-latent VAE</b>, scButterfly의 <b>dual-aligned</b>, UnitedNet의 <b>multi-task fusion</b>, scGPT의 <b>condition token</b>, Cui 2025 비전인 <b>CLIP-style</b>, DPLM-2의 <b>discrete diffusion</b>, 그리고 PINNACLE/ATOMICA의 <b>geometric DL</b>까지. 패턴 버튼을 누르면 architecture 다이어그램이 바뀐다.
+  </p>
+
+  <div class="pat-wrap">
+    <div class="pat-list" id="pat-list">
+      <button class="pat-btn active" data-pat="1">
+        <span class="num">pattern 01 · baseline</span>
+        <span class="name">Concatenation + shared encoder</span>
+        <span class="meta">early fusion · 거의 toy로만 사용</span>
+      </button>
+      <button class="pat-btn" data-pat="2">
+        <span class="num">pattern 02 · graph</span>
+        <span class="name">Weighted nearest neighbor (WNN)</span>
+        <span class="meta">Seurat v4 · CITE-seq / Multiome</span>
+      </button>
+      <button class="pat-btn" data-pat="3">
+        <span class="num">pattern 03 · VAE</span>
+        <span class="name">Joint shared-latent VAE</span>
+        <span class="meta">totalVI · Matilda · MultiVI · MOFA+</span>
+      </button>
+      <button class="pat-btn" data-pat="4">
+        <span class="num">pattern 04 · alignment</span>
+        <span class="name">Dual-aligned VAE (scButterfly)</span>
+        <span class="meta">RNA↔ATAC translation · adversarial</span>
+      </button>
+      <button class="pat-btn" data-pat="5">
+        <span class="num">pattern 05 · multi-task</span>
+        <span class="name">Adaptive fusion (UnitedNet)</span>
+        <span class="meta">7-loss composite · SHAP 설명</span>
+      </button>
+      <button class="pat-btn" data-pat="6">
+        <span class="num">pattern 06 · transformer</span>
+        <span class="name">Pretrain + condition tokens</span>
+        <span class="meta">scGPT · scFoundation</span>
+      </button>
+      <button class="pat-btn" data-pat="7">
+        <span class="num">pattern 07 · CLIP</span>
+        <span class="name">CLIP-style modular FM</span>
+        <span class="meta">Cui 2025 vision · ProteinAligner</span>
+      </button>
+      <button class="pat-btn" data-pat="8">
+        <span class="num">pattern 08 · diffusion</span>
+        <span class="name">Joint discrete diffusion (DPLM-2)</span>
+        <span class="meta">sequence + structure 통합 토큰</span>
+      </button>
+      <button class="pat-btn" data-pat="9">
+        <span class="num">pattern 09 · geometric</span>
+        <span class="name">Geometric DL (PINNACLE · ATOMICA)</span>
+        <span class="meta">SE(3)-equivariant · 3D 공간 보존</span>
+      </button>
+    </div>
+
+    <div class="pat-vis">
+      <div class="head">
+        <h3 id="pat-title">Concatenation + shared encoder</h3>
+        <span class="pat-tag" id="pat-tag">pattern 01 · early fusion</span>
+      </div>
+      <svg viewBox="0 0 540 220" id="pat-svg" role="img" aria-label="Pattern architecture diagram"></svg>
+      <div class="desc" id="pat-desc"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SECTION 05 — Trends ====== -->
+<section class="s" id="trends">
+  <header class="s-head">
+    <span class="s-num">section 05</span>
+    <h2 class="s-title">2024–2026 트렌드 9가지 — 패턴 위에서 어디로 움직이는가</h2>
+    <span class="s-sub">scaling · token unification · perturbation · CLIP · geometric</span>
+  </header>
+  <p class="s-blurb">
+    "8 패턴 steady state"가 끝나고, 2024–2026년에는 그 위에서 <b>scaling laws</b>가 경험적으로 확정되고, <b>token unification</b>이 protein → 중심 dogma 전체로 확장되고, <b>perturbation atlas</b>가 1급 modality로 들어오고, general LLM 재활용·spatial native·tri-modal CLIP·평가 강화·virtual cell·geometric DL 같은 갈래가 자리잡았다. 9가지 트렌드를 카드로.
+  </p>
+
+  <div class="trend-grid">
+    <div class="trend-card" data-trend="1">
+      <div class="num">trend 01 · scaling laws</div>
+      <h4>scaling은 이제 가설이 아니라 데이터다</h4>
+      <div class="actors">C2S-Scale 27B · Geneformer-v2 316M · CellFM 800M · Tahoe-x1 3B</div>
+      <div class="desc">2023년까지 scaling law는 NLP 유추였다. 이제는 <b>27B → 1B → 27B 410M</b> Pythia/Gemma family, Geneformer-v2의 4,096-gene context 38M/104M/316M scaling 실험이 power law를 직접 확인. 27B C2S-Scale은 perturbation prediction에서 GPT-4와 scGPT를 동시에 능가. 결과: <b>scratch pretraining + LoRA/QLoRA fine-tuning</b>이 default.</div>
+    </div>
+    <div class="trend-card" data-trend="2">
+      <div class="num">trend 02 · token unification</div>
+      <h4>protein을 넘어 central dogma 전체</h4>
+      <div class="actors">MIMIC 1B · MaxToki 1B · DPLM-2</div>
+      <div class="desc">DPLM-2가 sequence + structure 토큰을 한 stream으로 묶었다. 2026 MIMIC은 <b>DNA + RNA + protein sequence + AlphaFold backbone + DSSP + SASA + MaSIF + phyloP + ATAC-seq + CAGE + RASP2 + biomedical text</b>까지 통합. MIMIC 1B가 ESM3-open 1.4B, Evo 2 7B를 더 적은 파라미터로 능가 — <b>같은 파라미터에서 멀티모달 pretraining이 단일 modality를 추월</b>한다는 가장 강한 신호.</div>
+    </div>
+    <div class="trend-card" data-trend="3">
+      <div class="num">trend 03 · perturbation atlas</div>
+      <h4>관찰만으로는 인과를 못 배운다</h4>
+      <div class="actors">Tahoe-100M · scLAMBDA · causal cell-tissue atlas vision</div>
+      <div class="desc">2024년부터 perturbation atlas가 first-class training data. <b>Tahoe-100M</b>은 50 cancer cell line × 1,100+ 화합물 = 1억 perturbed cell. Tahoe-x1은 drug ID를 gene token과 함께 입력. scLAMBDA는 LLM-derived gene embedding을 disentangled VAE에 결합해 <b>unseen gene perturbation도 generalization</b>. Rood 2024 causal vision: 관찰 데이터만으로는 cellular mechanism의 인과를 학습할 수 없다.</div>
+    </div>
+    <div class="trend-card" data-trend="4">
+      <div class="num">trend 04 · general LLM 재활용</div>
+      <h4>cell sentence는 그냥 텍스트다</h4>
+      <div class="actors">C2S-Scale (Gemma-2 / Pythia) · scELMo · GenePT · scLAMBDA</div>
+      <div class="desc">domain-specific transformer를 scratch부터 만드는 대신, frontier general LLM을 그대로 적응. C2S-Scale은 cell을 "cell sentence"로 표현해 LLM을 그대로 학습. scELMo·GenePT는 <b>GPT-3.5/4의 텍스트 임베딩</b>을 gene embedding으로 그대로 사용 — domain pretraining이 아예 없다. 길이 갈래: domain-specific (scGPT, scFoundation) vs LLM repurposing (C2S-Scale). Cui 2025는 <b>둘 다 공존</b>한다고 본다 — instruction-following layer + molecular substrate layer.</div>
+    </div>
+    <div class="trend-card" data-trend="5">
+      <div class="num">trend 05 · spatial native</div>
+      <h4>spatial은 이제 modality다</h4>
+      <div class="actors">Nicheformer 110M · Virtual Embryo (Cao 2026)</div>
+      <div class="desc">Nicheformer는 110M cell(53.8M spatial) 학습. <b>technology-specific mean vector</b>로 MERFISH·Xenium·CosMx·dissociated를 같은 공간에서 정규화. spatial niche query가 first-class. Cao 2026 Virtual Embryo는 flow matching + foundation model embedding으로 volumetric 배아 지도를 spatial-temporal coordinate 조건부로 생성.</div>
+    </div>
+    <div class="trend-card" data-trend="6">
+      <div class="num">trend 06 · tri-modal CLIP</div>
+      <h4>CLIP-style alignment가 single modality를 이긴다</h4>
+      <div class="actors">ProteinAligner 867M (ESM-2 + ESM-IF1 + text)</div>
+      <div class="desc">Cui 2025 비전(Pattern 7)이 protein 쪽에서 처음 구체화. ProteinAligner는 sequence(ESM-2 650M) + 3D 구조(ESM-IF1 124M GVP-GNN) + 기능 텍스트(8-layer transformer)를 sequence-anchored contrastive로 묶음. 867M으로 ESM3 1.4B를 대부분의 downstream에서 능가. <b>pure contrastive 목적함수가 MLM/contrastive 충돌을 피한다</b>는 핵심 발견.</div>
+    </div>
+    <div class="trend-card" data-trend="7">
+      <div class="num">trend 07 · evaluation 강화</div>
+      <h4>"foundation model > 모든 baseline" 주장은 정량 조건부로</h4>
+      <div class="actors">Wei 2025 · Csendes 2025 · Kedzierska 2025 · scPRINT-2 42-config</div>
+      <div class="desc">2025년 벤치마크들이 이전 주장의 약점을 노출. <b>Wei 2025</b>: 27 perturbation 방법 × 29 데이터셋 × 6 metric — fine-tuning 데이터가 충분히 클 때만 foundation model이 baseline 능가, 항상 1등인 모델은 없음. <b>Csendes 2025</b>: gene-embedding 출처(scGPT vs scFoundation vs scELMo)보다 downstream 아키텍처가 더 중요. <b>Kedzierska 2025</b>: zero-shot에서는 Geneformer/scGPT가 단순 baseline보다 robustly 낫지 않다. scPRINT-2의 42-config 체계가 새 표준.</div>
+    </div>
+    <div class="trend-card" data-trend="8">
+      <div class="num">trend 08 · virtual cell program</div>
+      <h4>AIVC는 더 이상 슬로건이 아니다</h4>
+      <div class="actors">Bunne 2024 (HCA) · Cui 2025 (Nature) · Cao 2026 · Yang 2024</div>
+      <div class="desc">"AI Virtual Cell"이 구체적인 program으로 떠오른다. <b>Bunne 2024</b> HCA 리더십 서명 로드맵 → <b>Cui 2025</b> multimodal MFM blueprint → <b>Cao 2026</b> virtual embryo 예측 시뮬레이션 → <b>Yang 2024</b> cancer-focused AIVC perspective. VCell 2010에서 시작한 가상 세포 lineage가 이제 foundation model을 substrate로 한다.</div>
+    </div>
+    <div class="trend-card" data-trend="9">
+      <div class="num">trend 09 · geometric DL</div>
+      <h4>3D는 token으로 환원되지 않는다</h4>
+      <div class="actors">PINNACLE 394,760 representations · ATOMICA 2M+ interfaces</div>
+      <div class="desc">패턴 1–8은 transformer/VAE/diffusion 모두 token 기반. 그와 별도로 geometric DL family가 자라고 있다. <b>PINNACLE</b>: PPI × cell-type interaction × tissue 계층의 multiscale GNN, 156 contexts × 24 tissues = <b>같은 단백질에 394,760개 representation</b>. <b>ATOMICA</b>: protein-X 인터페이스(X = protein/ligand/RNA/DNA/metal/peptide) 200만 + 복합체에 대한 SE(3) equivariant geometric DL. AlphaFold3급 구조 데이터가 늘어나는 2026–2027에 이 family가 더 커질 전망.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SECTION 06 — Models catalog ====== -->
+<section class="s" id="models">
+  <header class="s-head">
+    <span class="s-num">section 06</span>
+    <h2 class="s-title">모델 카탈로그 — 30+ 멀티모달 파운데이션 모델</h2>
+    <span class="s-sub">single-cell · protein · DNA · spatial · multimodal-anchor</span>
+  </header>
+  <p class="s-blurb">
+    wiki에 정리된 모델들을 modality·anchor·아키텍처 패턴으로 분류해서 한 화면에. 검색·필터로 좁힐 수 있고, 각 카드는 모델 이름 + 파라미터 + 입력 modality + 핵심 innovation을 보여준다. <b>protein-anchor</b> 9 모델, <b>single-cell</b> 12 모델, <b>genomic·spatial</b> 8 모델 — 같은 패턴(예: CLIP-style)이 protein과 single-cell 양쪽에서 어떻게 다르게 구현되는지 비교에 유용.
+  </p>
+
+  <div class="model-controls">
+    <input type="text" class="model-search" placeholder="모델·아키텍처·modality 검색…" id="model-search">
+    <div class="model-filter" id="model-filter">
+      <button class="active" data-filter="all">전체</button>
+      <button data-filter="single-cell">single-cell</button>
+      <button data-filter="protein">protein</button>
+      <button data-filter="dna">DNA / genomic</button>
+      <button data-filter="multi">multimodal-anchor</button>
+      <button data-filter="spatial">spatial</button>
+    </div>
+  </div>
+
+  <div class="model-list" id="model-list"></div>
+  <div class="catalog-meta" id="model-meta"></div>
+</section>
+
+<!-- ====== SECTION 07 — Recommendations ====== -->
+<section class="s" id="recs">
+  <header class="s-head">
+    <span class="s-num">section 07</span>
+    <h2 class="s-title">목적별 패턴 추천 — 무엇을 하려면 무엇을 골라야 하는가</h2>
+    <span class="s-sub">goal → pattern → why</span>
+  </header>
+  <p class="s-blurb">
+    9가지 패턴 중 하나를 고르는 기준은 결국 "어떤 데이터가 있고, 어떤 deliverable이 필요한가"다. wiki 자료 기반 추천 매트릭스. 왼쪽에 task, 가운데 추천 패턴/모델, 오른쪽에 그렇게 고르는 이유.
+  </p>
+
+  <div class="rec-grid">
+    <div class="rec-row">
+      <div class="goal">CITE-seq · Multiome 빠른 임베딩</div>
+      <div class="pat">Pattern 02 <b>WNN (Seurat v4)</b> 또는 Pattern 03 <b>totalVI / MultiVI</b></div>
+      <div class="why">analytic graph 또는 가벼운 VAE로 충분 — 큰 모델이 필요 없는 routine integration.</div>
+    </div>
+    <div class="rec-row">
+      <div class="goal">CITE-seq / SHARE-seq / TEA-seq 다중태스크</div>
+      <div class="pat">Pattern 03 <b>Matilda</b> — multi-task VAE</div>
+      <div class="why">simulation·DR·classification·feature selection 4개를 한 모델에. rare cell type augmentation까지.</div>
+    </div>
+    <div class="rec-row">
+      <div class="goal">cross-modal translation이 주된 목적</div>
+      <div class="pat">Pattern 04 <b>scButterfly</b></div>
+      <div class="why">dual-aligned VAE + adversarial alignment가 RNA↔ATAC, RNA↔protein translation에서 BABEL/Polarbear/UnitedNet 능가.</div>
+    </div>
+    <div class="rec-row">
+      <div class="goal">cross-modal explainability (Patch-seq, GRN)</div>
+      <div class="pat">Pattern 05 <b>UnitedNet + SHAP</b></div>
+      <div class="why">한 modality 피처가 다른 modality 예측에 얼마나 기여하는지 정량 — Patch-seq 같은 multi-modal에서 핵심.</div>
+    </div>
+    <div class="rec-row">
+      <div class="goal">RNA-only 대규모 corpus 활용 → multi-omic fine-tune</div>
+      <div class="pat">Pattern 06 <b>scGPT · scFoundation</b></div>
+      <div class="why">3300만~5000만 cell pretraining 후 ATAC peak·protein·perturbation을 condition token으로 추가 — pretraining 자산을 그대로 활용.</div>
+    </div>
+    <div class="rec-row">
+      <div class="goal">protein sequence + structure 통합 task</div>
+      <div class="pat">Pattern 08 <b>DPLM-2</b></div>
+      <div class="why">folding·inverse folding·co-generation·motif scaffolding 5개를 한 모델로. LFQ structure token + AA token absorbing diffusion.</div>
+    </div>
+    <div class="rec-row">
+      <div class="goal">DNA → cell, protein → disease 같은 zero-shot cross-modal 쿼리</div>
+      <div class="pat">Pattern 07 <b>CLIP-style modular</b> (Cui 2025 blueprint)</div>
+      <div class="why">unimodal FM(Evo, ESM, Geneformer, scGPT, …)을 contrastive로 정렬. ProteinAligner가 protein 쪽 첫 성공 사례. end-to-end 통합 모델은 아직 미공개.</div>
+    </div>
+    <div class="rec-row">
+      <div class="goal">3D 분자 인터페이스·binding-site 분석</div>
+      <div class="pat">Pattern 09 <b>PINNACLE / ATOMICA</b></div>
+      <div class="why">SE(3) equivariance가 필요한 3D 분자 상호작용은 token-based로 구조 정보를 잃는다. graph/geometric DL이 필수.</div>
+    </div>
+    <div class="rec-row">
+      <div class="goal">spatial transcriptomics + dissociated 통합</div>
+      <div class="pat">Pattern 06 + spatial native <b>Nicheformer</b></div>
+      <div class="why">technology-specific mean vector로 MERFISH/Xenium/CosMx/dissociated를 같은 공간에 정렬. 110M cell(53.8M spatial) 학습.</div>
+    </div>
+    <div class="rec-row">
+      <div class="goal">drug perturbation 예측 (compound-aware cell representation)</div>
+      <div class="pat">Pattern 06 + perturbation token <b>Tahoe-x1</b></div>
+      <div class="why">drug ID를 gene token과 함께 입력 — 1억 perturbed cell 학습으로 unseen compound 일반화.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SECTION 08 — Limitations ====== -->
+<section class="s" id="limits">
+  <header class="s-head">
+    <span class="s-num">section 08</span>
+    <h2 class="s-title">한계와 미래 — AIVC를 향한 길</h2>
+    <span class="s-sub">paired data · batch effects · scalability · interpretability</span>
+  </header>
+  <p class="s-blurb">
+    전체 패턴에 공통된 5가지 한계와, Cui 2025가 제시한 열린 방향. AIVC(AI Virtual Cell) substrate가 진짜로 가능해지려면 어디를 더 풀어야 하는가.
+  </p>
+
+  <div class="lim-grid">
+    <div class="lim-card">
+      <div class="num">limit 01</div>
+      <h4>Paired data scarcity</h4>
+      <p>CITE-seq·10x Multiome도 RNA-only corpus(CELLxGENE 50M+)에 비하면 작다. 진짜 multimodal pretraining의 cap.</p>
+    </div>
+    <div class="lim-card">
+      <div class="num">limit 02</div>
+      <h4>Modality-specific batch effects</h4>
+      <p>RNA batch는 capture efficiency, ATAC batch는 Tn5 bias — 서로 다른 driver. <b>joint correction</b>이 within-modality보다 어렵다.</p>
+    </div>
+    <div class="lim-card">
+      <div class="num">limit 03</div>
+      <h4>Scalability</h4>
+      <p>~20K gene + ~500K ATAC peak를 동시에 모델링하면 sequence가 폭발. <b>CellPatch</b>의 gene patching이 10–100× 단축.</p>
+    </div>
+    <div class="lim-card">
+      <div class="num">limit 04</div>
+      <h4>Interpretability</h4>
+      <p>scGPT attention map·UnitedNet SHAP가 도와주지만 <b>biological causality</b>까지는 못 간다. counterfactual perturbation이 필요한 이유.</p>
+    </div>
+    <div class="lim-card">
+      <div class="num">limit 05</div>
+      <h4>Missing modality at test</h4>
+      <p>Pattern 3(joint VAE)은 variational marginalization, Pattern 4(dual-aligned)는 translation, Pattern 6(condition token)은 explicit "missing" handling이 필요.</p>
+    </div>
+    <div class="lim-card" style="background: oklch(from var(--tx) l c h / 0.05); border-color: oklch(from var(--tx) l c h / 0.2);">
+      <div class="num" style="color: var(--tx);">open direction · Cui 2025</div>
+      <h4>진짜 joint pretraining의 길</h4>
+      <p>DNA + RNA + protein + chromatin + image + spatial을 한 모델에. 엄밀한 벤치마크(cell type 예측, disease pseudo-sample 생성, in silico perturbation), guarded-uncertainty output, open leaderboard. AIVC는 거기서 비로소 가능해진다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SECTION 09 — Papers ====== -->
+<section class="s" id="papers">
+  <header class="s-head">
+    <span class="s-num">section 09</span>
+    <h2 class="s-title">핵심 논문 카탈로그 — wiki에 정리된 자료들</h2>
+    <span class="s-sub">overviews · single-cell FM · protein FM · genomic FM · spatial</span>
+  </header>
+  <p class="s-blurb">
+    검색·필터로 빠르게 스캔. 각 카드 클릭은 Google Scholar 검색으로 연결. <b>overview</b>·<b>FM</b>·<b>method</b>·<b>review</b>·<b>benchmark</b>로 분류.
+  </p>
+
+  <div class="model-controls">
+    <input type="text" class="model-search" placeholder="제목·저자 검색…" id="paper-search">
+    <div class="model-filter" id="paper-filter">
+      <button class="active" data-filter="all">전체</button>
+      <button data-filter="overview">overview</button>
+      <button data-filter="single-cell">single-cell</button>
+      <button data-filter="protein">protein</button>
+      <button data-filter="dna">DNA</button>
+      <button data-filter="benchmark">benchmark</button>
+      <button data-filter="review">review</button>
+    </div>
+  </div>
+
+  <div class="paper-list" id="paper-list"></div>
+  <div class="catalog-meta" id="paper-meta"></div>
+</section>
+
+<div id="rest-anchor"></div>
+
+<footer class="foot">
+  <div>
+    <strong>joonan-lab</strong> · audodidactic 학생용 학습 지도<br>
+    출처: <code>wiki/overviews/multimodal-foundation-model-methodology.md</code> + 30+ 개별 모델 페이지.<br>
+    인용은 Google Scholar로 연결.
+  </div>
+  <div class="right">
+    <a href="../index.html">← audodidactic index</a>
+  </div>
+</footer>
+
+</div>
+<script id="js-main">
+/* ===== Layer cards ===== */
+const layerCards = document.querySelectorAll('.layer-card');
+const layerDetail = document.getElementById('layer-detail');
+const layerData = {
+  tx: {
+    cls: '',
+    html: `<h4>Transformer block</h4>
+<p>표준 구성: <span class="gene">token embedding → multi-head self-attention → FFN → LayerNorm</span>, N번 반복. single-cell 데이터엔 gene 순서가 없으므로 transformer 적용 시 위치 정보를 어떻게 부여할지가 첫 결정.</p>
+<div class="formula-block">Q = X W_Q,  K = X W_K,  V = X W_V
+multi-head: head_i = Attn(QW_i^Q, KW_i^K, VW_i^V)
+output: Concat(head_1, …, head_h) W_O</div>
+<p style="margin-top:10px;"><b>Szałata 2024</b>가 transformer를 single-cell에 맞추는 3가지 전략으로 정리: <b>rank ordering</b>(Geneformer/scEMB/Nicheformer) · <b>value categorization</b>(scGPT/scBERT, gene token + bin token) · <b>continuous projection</b>(CellFM/scFoundation, expression scalar의 학습된 선형 사영).</p>
+<p style="margin-top:8px;"><b>scGPT generative attention masking:</b> 매 step에서 일부 gene을 <code>unknown</code>으로 두고 visible set에서 예측. 예측된 gene이 다음 step에서 visible로 추가 — 순서 없는 set에 causal masking을 재현. condition token(modality, batch, perturbation)은 별도 토큰으로 들어가 elementwise sum.</p>
+<p style="margin-top:8px;"><b>scFoundation asymmetric encoder/decoder:</b> 깊은 encoder + 얕은 decoder, MAE 스타일. binning 대신 expression scalar를 continuous projection으로 보존. <b>RDA pretraining</b>은 source/target read-depth 두 indicator를 condition으로 줘 inference 시 read-depth enhancement까지 수행.</p>`
+  },
+  vae: {
+    cls: 'vae',
+    html: `<h4>VAE block — modality-specific encoder + shared latent</h4>
+<p>encoder가 Gaussian posterior 파라미터를 내고 reparameterization으로 latent를 샘플. modality-specific encoder의 출력을 concatenate → FC → reparameterization으로 <b>shared z</b> 만들기.</p>
+<div class="formula-block">q_φ(z | x) = N(z; μ_φ(x), σ_φ(x)^2 I)
+z = μ + σ ⊙ ε,    ε ~ N(0, I)             (reparameterization)
+ELBO = E_q[log p_θ(x | z)]  −  KL(q_φ(z|x) ‖ p(z))</div>
+<p style="margin-top:10px;"><b>Matilda</b>(Liu 2023)는 per-modality FC encoder(RNA: 185 → ADT: 30 → ATAC: 185) → FC(100) + reparameterization → 두 head: (a) modality-specific decoder, (b) label-smoothed cross-entropy classifier. <b>L_total = L_simulation + 0.1 · L_classification</b>. rare cell type augmentation으로 two-step training.</p>
+<p style="margin-top:8px;"><b>scButterfly</b>(Cao 2024)는 두 modality VAE를 독립으로 학습한 뒤 shared translator로 정렬, adversarial discriminator가 pre/post-translation embedding을 구분. 128-dim shared embedding은 두 decoder 모두에서 해석 가능 → <b>RNA↔ATAC 양방향 translation</b>.</p>
+<p style="margin-top:8px;"><b>missing modality 자연스럽게 처리:</b> variational inference가 marginalize 가능. totalVI(RNA + protein), MultiVI, MOFA+(probabilistic factor variant)가 같은 template.</p>`
+  },
+  dif: {
+    cls: 'dif',
+    html: `<h4>Discrete diffusion (DPLM-2) — categorical token absorbing</h4>
+<p>amino acid처럼 categorical한 token을 <b>absorbing [MASK]</b>로 부패시키고 transformer가 복원. forward kernel은 categorical, reverse는 variational bound.</p>
+<div class="formula-block">q(x^t | x^(t-1)) = Cat(x^t; β_t · x^(t-1) + (1 − β_t) · q_noise)
+
+absorbing variant: q_noise = δ_{[MASK]}
+→ 각 token은 1−β̄_t 확률로 [MASK]로 absorb
+reverse: p_θ(x^(t-1) | x^t) by transformer
+loss: variational bound on log-likelihood</div>
+<p style="margin-top:10px;"><b>DPLM-2</b>(Wang 2025)는 sequence + structure를 한 token stream으로 묶음. 3D backbone 좌표는 <b>lookup-free quantizer (LFQ)</b>: GVP 기반 encoder가 invariant geometric feature를 만들고 LFQ가 8,192-codebook으로 사영, IPA-based decoder가 FAPE loss로 좌표 복원. amino acid는 표준 protein vocabulary.</p>
+<p style="margin-top:8px;"><b>한 모델로 5개 task:</b> (1) unconditional sequence-structure 공동 생성 · (2) 예측 task용 joint representation · (3) folding(structure prediction) · (4) inverse folding(fixed-backbone sequence design) · (5) motif scaffolding(mixed-modal motif input).</p>
+<p style="margin-top:8px;"><b>학습 데이터:</b> UniRef-50 45M 시퀀스 + PDB + AFDB-SwissProt ~200K(structure 포함). bidirectional transformer를 sequence-only DPLM에서 LoRA로 warm-start.</p>`
+  }
+};
+function setLayer(name) {
+  layerCards.forEach(c => c.classList.toggle('active', c.dataset.layer === name));
+  const d = layerData[name];
+  layerDetail.className = 'layer-detail ' + d.cls;
+  layerDetail.innerHTML = d.html;
+}
+layerCards.forEach(c => c.addEventListener('click', () => setLayer(c.dataset.layer)));
+setLayer('tx');
+
+
+/* ===== Tokenization ===== */
+const tokCards = document.querySelectorAll('.tok-card');
+const tokSvg = document.getElementById('tok-svg');
+const tokDetail = document.getElementById('tok-detail');
+
+const tokGenes = [
+  { name: 'CD3D', expr: 412, color: 'var(--m-rna)' },
+  { name: 'CD8A', expr: 287, color: 'var(--m-rna)' },
+  { name: 'GZMB', expr: 195, color: 'var(--m-rna)' },
+  { name: 'IFNG', expr: 78,  color: 'var(--m-rna)' },
+  { name: 'IL7R', expr: 12,  color: 'var(--m-rna)' },
+  { name: 'MS4A1', expr: 0,  color: 'var(--m-rna)' }
+];
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+
+function renderTokSvg(strategy) {
+  tokSvg.innerHTML = '';
+  tokSvg.setAttribute('viewBox', '0 0 600 180');
+
+  if (strategy === 'rank') {
+    // sort by expression desc; show rank order
+    const sorted = [...tokGenes].sort((a, b) => b.expr - a.expr);
+    sorted.forEach((g, i) => {
+      const x = 50 + i * 90;
+      tokSvg.appendChild(svgEl('rect', { x: x-32, y: 50, width: 64, height: 50, rx: 10,
+        fill: 'oklch(0.6 0.13 35 / 0.12)', stroke: 'oklch(0.5 0.13 35)', 'stroke-width': 2 }));
+      const t1 = svgEl('text', { x, y: 72, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 11, 'font-weight': 700,
+        fill: 'oklch(0.36 0.13 35)' });
+      t1.textContent = g.name; tokSvg.appendChild(t1);
+      const t2 = svgEl('text', { x, y: 90, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 9, fill: 'oklch(0.55 0.13 35)' });
+      t2.textContent = `rank ${i+1}`; tokSvg.appendChild(t2);
+
+      const rt = svgEl('text', { x, y: 130, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 10, fill: 'oklch(0.55 0.018 240)' });
+      rt.textContent = `expr ${g.expr}`; tokSvg.appendChild(rt);
+    });
+    const lt = svgEl('text', { x: 300, y: 32, 'text-anchor': 'middle',
+      'font-family': 'ui-monospace', 'font-size': 11, fill: 'oklch(0.36 0.018 240)', 'font-weight': 700 });
+    lt.textContent = 'token sequence = rank order, value 정보 폐기'; tokSvg.appendChild(lt);
+  }
+  else if (strategy === 'bin') {
+    const bins = [0, 1, 16, 64, 256, 9999];
+    const labels = ['0', '1–15', '16–63', '64–255', '256–1023', '≥1024'];
+    tokGenes.forEach((g, i) => {
+      const x = 50 + i * 90;
+      let bin = bins.findIndex((b, j) => g.expr >= b && g.expr < (bins[j+1] || 1e9));
+      if (bin < 0) bin = bins.length - 1;
+      // gene id token
+      tokSvg.appendChild(svgEl('rect', { x: x-32, y: 38, width: 64, height: 30, rx: 8,
+        fill: 'oklch(0.55 0.16 60 / 0.1)', stroke: 'oklch(0.55 0.16 60)', 'stroke-width': 1.6 }));
+      const t1 = svgEl('text', { x, y: 57, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 10.5, 'font-weight': 700,
+        fill: 'oklch(0.36 0.16 60)' });
+      t1.textContent = g.name; tokSvg.appendChild(t1);
+      // bin token
+      tokSvg.appendChild(svgEl('rect', { x: x-32, y: 78, width: 64, height: 30, rx: 8,
+        fill: 'oklch(0.55 0.16 60 / 0.22)', stroke: 'oklch(0.55 0.16 60)', 'stroke-width': 1.6 }));
+      const t2 = svgEl('text', { x, y: 97, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 9.5, 'font-weight': 700,
+        fill: 'oklch(0.3 0.16 60)' });
+      t2.textContent = `bin ${bin}`; tokSvg.appendChild(t2);
+
+      const rt = svgEl('text', { x, y: 132, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 10, fill: 'oklch(0.55 0.018 240)' });
+      rt.textContent = `${labels[bin]}`; tokSvg.appendChild(rt);
+    });
+    const lt = svgEl('text', { x: 300, y: 22, 'text-anchor': 'middle',
+      'font-family': 'ui-monospace', 'font-size': 11, fill: 'oklch(0.36 0.018 240)', 'font-weight': 700 });
+    lt.textContent = '2-token: gene id + expression bin'; tokSvg.appendChild(lt);
+  }
+  else if (strategy === 'proj') {
+    tokGenes.forEach((g, i) => {
+      const x = 50 + i * 90;
+      tokSvg.appendChild(svgEl('rect', { x: x-32, y: 38, width: 64, height: 30, rx: 8,
+        fill: 'oklch(0.5 0.16 240 / 0.1)', stroke: 'oklch(0.5 0.16 240)', 'stroke-width': 1.6 }));
+      const t1 = svgEl('text', { x, y: 57, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 10.5, 'font-weight': 700, fill: 'oklch(0.36 0.16 240)' });
+      t1.textContent = g.name; tokSvg.appendChild(t1);
+
+      // continuous bar
+      const barH = Math.min(50, g.expr / 10);
+      tokSvg.appendChild(svgEl('rect', { x: x-22, y: 130 - barH, width: 44, height: barH, rx: 4,
+        fill: 'oklch(0.5 0.16 240 / 0.5)' }));
+      const t2 = svgEl('text', { x, y: 148, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 9.5, 'font-weight': 700,
+        fill: 'oklch(0.36 0.16 240)' });
+      t2.textContent = g.expr; tokSvg.appendChild(t2);
+      const t3 = svgEl('text', { x, y: 162, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 9, fill: 'oklch(0.55 0.018 240)' });
+      t3.textContent = `+W·x`; tokSvg.appendChild(t3);
+    });
+    const lt = svgEl('text', { x: 300, y: 22, 'text-anchor': 'middle',
+      'font-family': 'ui-monospace', 'font-size': 11, fill: 'oklch(0.36 0.018 240)', 'font-weight': 700 });
+    lt.textContent = 'gene id + continuous projection W·expression — 양 보존'; tokSvg.appendChild(lt);
+  }
+  else if (strategy === 'text') {
+    const descs = ['T-cell coreceptor', 'cytotoxic CD8', 'cytotoxic granzyme B', 'IFN-γ cytokine', 'IL-7 receptor', 'B cell marker'];
+    tokGenes.forEach((g, i) => {
+      const y = 25 + i * 25;
+      tokSvg.appendChild(svgEl('rect', { x: 30, y, width: 90, height: 22, rx: 6,
+        fill: 'oklch(0.55 0.04 280 / 0.1)', stroke: 'oklch(0.55 0.04 280)', 'stroke-width': 1.4 }));
+      const t1 = svgEl('text', { x: 75, y: y+15, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 11, 'font-weight': 700,
+        fill: 'oklch(0.3 0.04 280)' });
+      t1.textContent = g.name; tokSvg.appendChild(t1);
+
+      const arrow = svgEl('text', { x: 130, y: y+15, 'font-family': 'ui-monospace',
+        'font-size': 12, fill: 'oklch(0.5 0.04 280)' });
+      arrow.textContent = '→'; tokSvg.appendChild(arrow);
+
+      tokSvg.appendChild(svgEl('rect', { x: 150, y, width: 250, height: 22, rx: 6,
+        fill: 'oklch(0.55 0.04 280 / 0.06)', stroke: 'oklch(0.55 0.04 280 / 0.4)', 'stroke-width': 1 }));
+      const t2 = svgEl('text', { x: 158, y: y+15,
+        'font-family': '"Apple SD Gothic Neo", ui-sans-serif',
+        'font-size': 10.5, fill: 'oklch(0.36 0.04 280)' });
+      t2.textContent = `"${descs[i]}"`; tokSvg.appendChild(t2);
+
+      const arr2 = svgEl('text', { x: 410, y: y+15, 'font-family': 'ui-monospace',
+        'font-size': 12, fill: 'oklch(0.5 0.04 280)' });
+      arr2.textContent = '→'; tokSvg.appendChild(arr2);
+
+      tokSvg.appendChild(svgEl('rect', { x: 430, y, width: 130, height: 22, rx: 6,
+        fill: 'oklch(0.55 0.04 280 / 0.18)' }));
+      const t3 = svgEl('text', { x: 495, y: y+15, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 9.5, 'font-weight': 700,
+        fill: 'oklch(1 0 0)' });
+      t3.textContent = 'GPT embedding [1536]'; tokSvg.appendChild(t3);
+    });
+  }
+  else if (strategy === 'atac') {
+    const peaks = [
+      { name: 'chr1:6.7M', tfidf: 4.21 },
+      { name: 'chr2:3.1M', tfidf: 3.85 },
+      { name: 'chr5:148M',tfidf: 3.42 },
+      { name: 'chr7:55M', tfidf: 2.91 },
+      { name: 'chr12:9M', tfidf: 2.18 },
+      { name: 'chr19:1M', tfidf: 1.04 }
+    ];
+    // CLS token first
+    tokSvg.appendChild(svgEl('rect', { x: 25, y: 60, width: 50, height: 40, rx: 8,
+      fill: 'oklch(0.5 0.14 200)', stroke: 'oklch(0.36 0.14 200)', 'stroke-width': 2 }));
+    const tcls = svgEl('text', { x: 50, y: 84, 'text-anchor': 'middle',
+      'font-family': 'ui-monospace', 'font-size': 11.5, 'font-weight': 800, fill: 'oklch(1 0 0)' });
+    tcls.textContent = '[CLS]'; tokSvg.appendChild(tcls);
+
+    peaks.forEach((p, i) => {
+      const x = 110 + i * 78;
+      tokSvg.appendChild(svgEl('rect', { x: x-32, y: 60, width: 64, height: 40, rx: 8,
+        fill: 'oklch(0.5 0.14 200 / 0.12)', stroke: 'oklch(0.5 0.14 200)', 'stroke-width': 1.6 }));
+      const t1 = svgEl('text', { x, y: 78, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 9, 'font-weight': 700,
+        fill: 'oklch(0.3 0.14 200)' });
+      t1.textContent = p.name; tokSvg.appendChild(t1);
+      const t2 = svgEl('text', { x, y: 92, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 9, fill: 'oklch(0.5 0.14 200)' });
+      t2.textContent = `tf-idf ${p.tfidf}`; tokSvg.appendChild(t2);
+    });
+    const lt = svgEl('text', { x: 300, y: 32, 'text-anchor': 'middle',
+      'font-family': 'ui-monospace', 'font-size': 11, fill: 'oklch(0.36 0.018 240)', 'font-weight': 700 });
+    lt.textContent = 'cCRE token, TF-IDF rank-ordered — [CLS] = cell embedding'; tokSvg.appendChild(lt);
+  }
+  else if (strategy === 'pert') {
+    // drug + gene
+    tokSvg.appendChild(svgEl('rect', { x: 30, y: 50, width: 110, height: 50, rx: 10,
+      fill: 'oklch(0.55 0.18 330)', stroke: 'oklch(0.36 0.18 330)', 'stroke-width': 2 }));
+    const dt = svgEl('text', { x: 85, y: 72, 'text-anchor': 'middle',
+      'font-family': 'ui-monospace', 'font-size': 12, 'font-weight': 800, fill: 'oklch(1 0 0)' });
+    dt.textContent = '[drug:GDC-0941]'; tokSvg.appendChild(dt);
+    const dt2 = svgEl('text', { x: 85, y: 90, 'text-anchor': 'middle',
+      'font-family': 'ui-monospace', 'font-size': 9, fill: 'oklch(1 0 0)' });
+    dt2.textContent = 'PI3K inhibitor 1µM'; tokSvg.appendChild(dt2);
+
+    const arrow = svgEl('text', { x: 158, y: 80, 'font-family': 'ui-monospace',
+      'font-size': 14, fill: 'oklch(0.5 0.018 240)' });
+    arrow.textContent = '⊕'; tokSvg.appendChild(arrow);
+
+    tokGenes.slice(0, 4).forEach((g, i) => {
+      const x = 200 + i * 90;
+      tokSvg.appendChild(svgEl('rect', { x: x-32, y: 60, width: 64, height: 30, rx: 8,
+        fill: 'oklch(0.6 0.13 35 / 0.12)', stroke: 'oklch(0.5 0.13 35)', 'stroke-width': 1.6 }));
+      const t1 = svgEl('text', { x, y: 79, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 10.5, 'font-weight': 700, fill: 'oklch(0.36 0.13 35)' });
+      t1.textContent = g.name; tokSvg.appendChild(t1);
+    });
+    const lt = svgEl('text', { x: 300, y: 32, 'text-anchor': 'middle',
+      'font-family': 'ui-monospace', 'font-size': 11, fill: 'oklch(0.36 0.018 240)', 'font-weight': 700 });
+    lt.textContent = 'drug perturbation token + gene token (Tahoe-x1)'; tokSvg.appendChild(lt);
+
+    const lt2 = svgEl('text', { x: 300, y: 130, 'text-anchor': 'middle',
+      'font-family': 'ui-monospace', 'font-size': 10, fill: 'oklch(0.55 0.018 240)' });
+    lt2.textContent = '→ compound-aware cell representation'; tokSvg.appendChild(lt2);
+  }
+  else if (strategy === 'struct') {
+    // sequence + structure tokens for protein
+    const aas = ['M', 'K', 'L', 'V', 'A', 'G'];
+    aas.forEach((aa, i) => {
+      const x = 50 + i * 60;
+      tokSvg.appendChild(svgEl('rect', { x: x-22, y: 35, width: 44, height: 32, rx: 8,
+        fill: 'oklch(0.5 0.18 350 / 0.12)', stroke: 'oklch(0.5 0.18 350)', 'stroke-width': 1.6 }));
+      const t1 = svgEl('text', { x, y: 56, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 13, 'font-weight': 800, fill: 'oklch(0.3 0.18 350)' });
+      t1.textContent = aa; tokSvg.appendChild(t1);
+    });
+    const labelaa = svgEl('text', { x: 18, y: 53, 'font-family': 'ui-monospace', 'font-size': 9, fill: 'oklch(0.55 0.018 240)' });
+    labelaa.textContent = 'AA'; tokSvg.appendChild(labelaa);
+
+    aas.forEach((aa, i) => {
+      const x = 50 + i * 60;
+      tokSvg.appendChild(svgEl('rect', { x: x-22, y: 88, width: 44, height: 32, rx: 8,
+        fill: 'oklch(0.5 0.18 295 / 0.12)', stroke: 'oklch(0.5 0.18 295)', 'stroke-width': 1.6 }));
+      const t2 = svgEl('text', { x, y: 109, 'text-anchor': 'middle',
+        'font-family': 'ui-monospace', 'font-size': 11, 'font-weight': 800, fill: 'oklch(0.3 0.18 295)' });
+      // pseudo structure ids
+      t2.textContent = `s${(i*1973 + 41) % 8192}`; tokSvg.appendChild(t2);
+    });
+    const labelst = svgEl('text', { x: 18, y: 108, 'font-family': 'ui-monospace', 'font-size': 9, fill: 'oklch(0.55 0.018 240)' });
+    labelst.textContent = 'LFQ'; tokSvg.appendChild(labelst);
+
+    const lt = svgEl('text', { x: 300, y: 22, 'text-anchor': 'middle',
+      'font-family': 'ui-monospace', 'font-size': 11, fill: 'oklch(0.36 0.018 240)', 'font-weight': 700 });
+    lt.textContent = 'AA token + structure token, mixed stream (DPLM-2)'; tokSvg.appendChild(lt);
+    const lt2 = svgEl('text', { x: 300, y: 145, 'text-anchor': 'middle',
+      'font-family': 'ui-monospace', 'font-size': 10, fill: 'oklch(0.55 0.018 240)' });
+    lt2.textContent = '3D backbone → GVP encoder → LFQ → 8,192-codebook'; tokSvg.appendChild(lt2);
+  }
+}
+
+const tokDetails = {
+  rank: `<h4>Rank ordering — Geneformer 가족</h4><p>각 cell에서 발현이 높은 gene부터 순서대로 토큰. <b>magnitude 정보를 버리는 대신</b> batch effect와 sequencing depth에 robust. Geneformer는 2,048개 top gene만 input. <b>Nicheformer</b>는 여기에 technology-specific mean vector를 더해 spatial과 dissociated를 같은 공간에서 정규화.</p>`,
+  bin: `<h4>Binned-value tokenization — scGPT</h4><p>같은 gene이 다른 cell에서 다른 bin token을 가짐. <b>2 토큰</b>(gene id + bin id) elementwise sum. discretization은 quantization error를 만들지만 표준 LM 아키텍처와 직접 호환. <b>scBERT</b>도 같은 패밀리.</p>`,
+  proj: `<h4>Continuous projection — CellFM · scFoundation</h4><p>expression scalar를 학습된 선형 사영 W·x로 임베딩에 더함. <b>magnitude를 그대로 보존</b> — drug response·perturbation처럼 양 변화가 중요한 task에 유리. 단점: batch effect에 더 민감.</p>`,
+  text: `<h4>LLM-derived text — scELMo · GenePT · scLAMBDA</h4><p>expression이 아니라 GPT-3.5/4가 만든 gene 기능 설명을 1,536-dim 임베딩으로 사용. <b>cell에서 한번도 본 적 없는 gene</b>도 임베딩이 있음 → unseen gene perturbation 일반화. 단점: static(cell context와 무관), LLM의 hallucination 위험.</p>`,
+  atac: `<h4>Epigenomic — EpiAgent</h4><p>scATAC-seq에선 gene이 아니라 cCRE(candidate cis-regulatory element)가 token. <b>TF-IDF</b>로 ranking, [CLS] 토큰이 cell embedding 역할. 1.4B 파라미터, ~5M cell, 35B token으로 학습. zero-shot annotation + in silico cCRE knockout 지원.</p>`,
+  pert: `<h4>Perturbation-aware — Tahoe-x1 · scLAMBDA</h4><p>표준 expression 모델은 cell state는 배워도 인과는 안 배움. perturbation token을 명시적으로 추가하면 <b>"이 약을 처리하면 어떻게 변하는가"</b>를 학습. Tahoe-x1은 50개 cell line × 1,100+ 화합물 = 100M perturbed cell. 비용은 비싸지만 drug response 예측에서 SOTA.</p>`,
+  struct: `<h4>Structure tokens — DPLM-2 · ESM3</h4><p>3D 좌표를 categorical token으로 quantize해 amino acid token과 같은 stream으로 묶음. <b>DPLM-2</b>: GVP encoder + LFQ(lookup-free quantizer) + 8,192-codebook + IPA decoder. <b>ESM3</b>: VQ-VAE 구조 토큰 + 98B 파라미터. 한 모델로 sequence·structure·function 통합.</p>`
+};
+
+function setTok(s) {
+  tokCards.forEach(c => c.classList.toggle('active', c.dataset.tok === s));
+  renderTokSvg(s);
+  tokDetail.innerHTML = tokDetails[s];
+}
+tokCards.forEach(c => c.addEventListener('click', () => setTok(c.dataset.tok)));
+setTok('rank');
+
+
+/* ===== Patterns ===== */
+const patBtns = document.querySelectorAll('.pat-btn');
+const patSvg = document.getElementById('pat-svg');
+const patTitle = document.getElementById('pat-title');
+const patTag = document.getElementById('pat-tag');
+const patDesc = document.getElementById('pat-desc');
+
+const patData = {
+  '1': {
+    title: 'Concatenation + shared encoder',
+    tag: 'pattern 01 · early fusion · baseline',
+    color: 'var(--tx)',
+    desc: `<p>가장 단순한 fusion. modality A·B·C의 피처를 그대로 이어붙여 한 encoder에 통과. <b>modality 간 noise/scale/sparsity 차이를 무시</b>해서 production에서는 거의 안 씀. UnitedNet 등 멀티태스크 모델이 baseline으로 인용.</p>`,
+    svg: (() => `
+      <rect x="40" y="30" width="100" height="36" rx="8" fill="oklch(0.6 0.13 35 / 0.18)" stroke="oklch(0.6 0.13 35)" stroke-width="2"/>
+      <text x="90" y="53" text-anchor="middle" font-family="ui-monospace" font-size="12" font-weight="700" fill="oklch(0.36 0.13 35)">RNA features</text>
+      <rect x="40" y="80" width="100" height="36" rx="8" fill="oklch(0.5 0.14 200 / 0.18)" stroke="oklch(0.5 0.14 200)" stroke-width="2"/>
+      <text x="90" y="103" text-anchor="middle" font-family="ui-monospace" font-size="12" font-weight="700" fill="oklch(0.3 0.14 200)">ATAC features</text>
+      <rect x="40" y="130" width="100" height="36" rx="8" fill="oklch(0.5 0.18 350 / 0.18)" stroke="oklch(0.5 0.18 350)" stroke-width="2"/>
+      <text x="90" y="153" text-anchor="middle" font-family="ui-monospace" font-size="12" font-weight="700" fill="oklch(0.3 0.18 350)">protein features</text>
+
+      <path d="M 145 48 L 220 90" stroke="oklch(0.5 0.018 240)" stroke-width="2"/>
+      <path d="M 145 98 L 220 100" stroke="oklch(0.5 0.018 240)" stroke-width="2"/>
+      <path d="M 145 148 L 220 110" stroke="oklch(0.5 0.018 240)" stroke-width="2"/>
+
+      <rect x="220" y="80" width="100" height="40" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.36 0.018 240)" stroke-width="2"/>
+      <text x="270" y="105" text-anchor="middle" font-family="ui-monospace" font-size="12" font-weight="700">concat</text>
+
+      <path d="M 320 100 L 380 100" stroke="oklch(0.5 0.16 240)" stroke-width="2" marker-end="url(#a-arrow)"/>
+
+      <rect x="380" y="60" width="120" height="80" rx="14" fill="oklch(0.5 0.16 240 / 0.18)" stroke="oklch(0.5 0.16 240)" stroke-width="2"/>
+      <text x="440" y="95" text-anchor="middle" font-family="ui-monospace" font-size="13" font-weight="800" fill="oklch(0.3 0.16 240)">shared</text>
+      <text x="440" y="115" text-anchor="middle" font-family="ui-monospace" font-size="13" font-weight="800" fill="oklch(0.3 0.16 240)">encoder</text>
+
+      <defs><marker id="a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="oklch(0.5 0.16 240)"/></marker></defs>
+    `)()
+  },
+  '2': {
+    title: 'Weighted Nearest Neighbor (Seurat v4)',
+    tag: 'pattern 02 · late fusion · graph',
+    color: 'var(--m-rna)',
+    desc: `<p>per-modality KNN 그래프를 만들고 cell마다 modality weight를 학습. WNN distance = α_RNA·d_RNA + α_ATAC·d_ATAC. 가중치는 한 modality의 neighborhood가 다른 modality의 profile을 얼마나 잘 예측하는지로 결정. CITE-seq·Multiome routine에서 가장 많이 쓰임.</p>
+    <div class="formula-block">WNN_dist(i,j) = α_RNA^(i)·d_RNA(i,j) + α_ATAC^(i)·d_ATAC(i,j)</div>`,
+    svg: (() => {
+      // two graph clusters merge
+      let s = '';
+      // RNA graph
+      s += `<text x="80" y="22" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.36 0.13 35)">RNA KNN</text>`;
+      const r1 = [[80,55],[55,80],[105,80],[60,115],[100,115]];
+      r1.forEach(([x,y],i)=>{ s += `<circle cx="${x}" cy="${y}" r="8" fill="oklch(0.6 0.13 35 / 0.6)" stroke="oklch(0.5 0.13 35)" stroke-width="1.5"/>`; });
+      // edges
+      [[0,1],[0,2],[1,3],[2,4],[3,4]].forEach(([a,b])=>{ s += `<line x1="${r1[a][0]}" y1="${r1[a][1]}" x2="${r1[b][0]}" y2="${r1[b][1]}" stroke="oklch(0.6 0.13 35 / 0.5)" stroke-width="1.5"/>`; });
+
+      // ATAC graph
+      s += `<text x="220" y="22" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.3 0.14 200)">ATAC KNN</text>`;
+      const r2 = [[220,55],[195,80],[245,80],[200,115],[240,115]];
+      r2.forEach(([x,y])=>{ s += `<circle cx="${x}" cy="${y}" r="8" fill="oklch(0.5 0.14 200 / 0.6)" stroke="oklch(0.36 0.14 200)" stroke-width="1.5"/>`; });
+      [[0,1],[0,2],[1,3],[2,4],[3,4]].forEach(([a,b])=>{ s += `<line x1="${r2[a][0]}" y1="${r2[a][1]}" x2="${r2[b][0]}" y2="${r2[b][1]}" stroke="oklch(0.5 0.14 200 / 0.5)" stroke-width="1.5"/>`; });
+
+      // weighted combination
+      s += `<text x="370" y="22" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.36 0.16 240)">WNN graph</text>`;
+      const r3 = [[370,55],[345,80],[395,80],[350,115],[390,115]];
+      r3.forEach(([x,y])=>{
+        s += `<circle cx="${x}" cy="${y}" r="9" fill="oklch(0.5 0.16 240 / 0.7)" stroke="oklch(0.36 0.16 240)" stroke-width="1.7"/>`;
+      });
+      [[0,1],[0,2],[1,3],[2,4],[3,4],[1,2],[3,4]].forEach(([a,b])=>{ s += `<line x1="${r3[a][0]}" y1="${r3[a][1]}" x2="${r3[b][0]}" y2="${r3[b][1]}" stroke="oklch(0.36 0.16 240)" stroke-width="2"/>`; });
+
+      // weights
+      s += `<text x="290" y="50" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.36 0.018 240)">α_RNA</text>`;
+      s += `<text x="290" y="100" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.36 0.018 240)">α_ATAC</text>`;
+      s += `<line x1="135" y1="85" x2="290" y2="50" stroke="oklch(0.5 0.13 35)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+      s += `<line x1="265" y1="85" x2="285" y2="100" stroke="oklch(0.5 0.14 200)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+      s += `<line x1="335" y1="60" x2="345" y2="80" stroke="oklch(0.36 0.16 240)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+      s += `<line x1="335" y1="115" x2="345" y2="100" stroke="oklch(0.36 0.16 240)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+      s += `<text x="270" y="180" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="oklch(0.55 0.018 240)">cell-specific weights from cross-modality prediction</text>`;
+      return s;
+    })()
+  },
+  '3': {
+    title: 'Joint shared-latent VAE',
+    tag: 'pattern 03 · mid fusion · ELBO',
+    color: 'var(--vae)',
+    desc: `<p>modality-specific encoder → concat → reparameterize → 단일 z → modality-specific decoder. loss는 per-modality reconstruction + KL 한 항. <b>missing modality를 자연스럽게 marginalize</b>. totalVI(RNA+protein), MultiVI, Matilda, MOFA+ probabilistic factor variant.</p>
+    <div class="formula-block">L = Σ_m  E_q[ -log p_θ(x_m | z) ]  +  β · KL( q_φ(z|x) ‖ p(z) )</div>`,
+    svg: (() => `
+      <rect x="20" y="40" width="80" height="32" rx="8" fill="oklch(0.6 0.13 35 / 0.18)" stroke="oklch(0.6 0.13 35)" stroke-width="1.7"/>
+      <text x="60" y="61" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.36 0.13 35)">RNA</text>
+      <rect x="20" y="90" width="80" height="32" rx="8" fill="oklch(0.5 0.14 200 / 0.18)" stroke="oklch(0.5 0.14 200)" stroke-width="1.7"/>
+      <text x="60" y="111" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.3 0.14 200)">ATAC</text>
+      <rect x="20" y="140" width="80" height="32" rx="8" fill="oklch(0.5 0.18 350 / 0.18)" stroke="oklch(0.5 0.18 350)" stroke-width="1.7"/>
+      <text x="60" y="161" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.3 0.18 350)">protein</text>
+
+      <rect x="115" y="40" width="60" height="32" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.6 0.13 35)" stroke-width="1.7"/>
+      <text x="145" y="61" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.36 0.13 35)">Enc_R</text>
+      <rect x="115" y="90" width="60" height="32" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.5 0.14 200)" stroke-width="1.7"/>
+      <text x="145" y="111" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.3 0.14 200)">Enc_A</text>
+      <rect x="115" y="140" width="60" height="32" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.5 0.18 350)" stroke-width="1.7"/>
+      <text x="145" y="161" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.3 0.18 350)">Enc_P</text>
+
+      <line x1="100" y1="56" x2="115" y2="56" stroke="oklch(0.36 0.018 240)" stroke-width="1.5"/>
+      <line x1="100" y1="106" x2="115" y2="106" stroke="oklch(0.36 0.018 240)" stroke-width="1.5"/>
+      <line x1="100" y1="156" x2="115" y2="156" stroke="oklch(0.36 0.018 240)" stroke-width="1.5"/>
+
+      <line x1="175" y1="56" x2="220" y2="100" stroke="oklch(0.36 0.018 240)" stroke-width="1.5"/>
+      <line x1="175" y1="106" x2="220" y2="106" stroke="oklch(0.36 0.018 240)" stroke-width="1.5"/>
+      <line x1="175" y1="156" x2="220" y2="112" stroke="oklch(0.36 0.018 240)" stroke-width="1.5"/>
+
+      <ellipse cx="280" cy="106" rx="60" ry="40" fill="oklch(0.55 0.16 60 / 0.18)" stroke="oklch(0.55 0.16 60)" stroke-width="2.5"/>
+      <text x="280" y="100" text-anchor="middle" font-family="ui-monospace" font-size="13" font-weight="800" fill="oklch(0.3 0.16 60)">shared z</text>
+      <text x="280" y="118" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="oklch(0.3 0.16 60)">μ + σε</text>
+
+      <line x1="340" y1="106" x2="385" y2="56" stroke="oklch(0.36 0.018 240)" stroke-width="1.5"/>
+      <line x1="340" y1="106" x2="385" y2="106" stroke="oklch(0.36 0.018 240)" stroke-width="1.5"/>
+      <line x1="340" y1="106" x2="385" y2="156" stroke="oklch(0.36 0.018 240)" stroke-width="1.5"/>
+
+      <rect x="385" y="40" width="60" height="32" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.6 0.13 35)" stroke-width="1.7"/>
+      <text x="415" y="61" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.36 0.13 35)">Dec_R</text>
+      <rect x="385" y="90" width="60" height="32" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.5 0.14 200)" stroke-width="1.7"/>
+      <text x="415" y="111" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.3 0.14 200)">Dec_A</text>
+      <rect x="385" y="140" width="60" height="32" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.5 0.18 350)" stroke-width="1.7"/>
+      <text x="415" y="161" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.3 0.18 350)">Dec_P</text>
+
+      <text x="280" y="180" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="oklch(0.55 0.018 240)">L = Σ_m E_q[-log p(x_m|z)] + β·KL</text>
+    `)()
+  },
+  '4': {
+    title: 'Dual-aligned VAE (scButterfly)',
+    tag: 'pattern 04 · alignment · adversarial',
+    color: 'var(--m-prot)',
+    desc: `<p>두 modality VAE를 독립으로 학습한 뒤 shared translator로 정렬. adversarial discriminator가 pre/post-translation embedding을 구분 → semantic alignment. <b>RNA↔ATAC, RNA↔protein 양방향 translation</b>이 주 사용처.</p>
+    <div class="formula-block">L = w_r[L_r(r→r) + L_r(a→r)]
+  + w_a[L_a(a→a) + L_a(r→a)]
+  + w_ELBO[L_ELBO(z_r) + L_ELBO(z_a)]
+  − w_dis · L_Dis</div>`,
+    svg: (() => `
+      <rect x="20" y="50" width="90" height="30" rx="8" fill="oklch(0.6 0.13 35 / 0.18)" stroke="oklch(0.6 0.13 35)" stroke-width="2"/>
+      <text x="65" y="69" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.36 0.13 35)">X_RNA</text>
+      <rect x="20" y="120" width="90" height="30" rx="8" fill="oklch(0.5 0.14 200 / 0.18)" stroke="oklch(0.5 0.14 200)" stroke-width="2"/>
+      <text x="65" y="139" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.3 0.14 200)">X_ATAC</text>
+
+      <rect x="125" y="50" width="60" height="30" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.6 0.13 35)" stroke-width="1.7"/>
+      <text x="155" y="69" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.36 0.13 35)">En_r (mask)</text>
+      <rect x="125" y="120" width="60" height="30" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.5 0.14 200)" stroke-width="1.7"/>
+      <text x="155" y="139" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.3 0.14 200)">En_a (mask)</text>
+
+      <line x1="110" y1="65" x2="125" y2="65" stroke="oklch(0.5 0.018 240)" stroke-width="1.6"/>
+      <line x1="110" y1="135" x2="125" y2="135" stroke="oklch(0.5 0.018 240)" stroke-width="1.6"/>
+
+      <rect x="200" y="80" width="80" height="40" rx="10" fill="oklch(0.5 0.18 350 / 0.18)" stroke="oklch(0.5 0.18 350)" stroke-width="2.5"/>
+      <text x="240" y="105" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="800" fill="oklch(0.3 0.18 350)">Translator T</text>
+
+      <line x1="185" y1="65" x2="210" y2="85" stroke="oklch(0.36 0.018 240)" stroke-width="1.6"/>
+      <line x1="185" y1="135" x2="210" y2="115" stroke="oklch(0.36 0.018 240)" stroke-width="1.6"/>
+
+      <rect x="295" y="50" width="60" height="30" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.6 0.13 35)" stroke-width="1.7"/>
+      <text x="325" y="69" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.36 0.13 35)">De_r</text>
+      <rect x="295" y="120" width="60" height="30" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.5 0.14 200)" stroke-width="1.7"/>
+      <text x="325" y="139" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.3 0.14 200)">De_a</text>
+
+      <line x1="270" y1="85" x2="295" y2="65" stroke="oklch(0.36 0.018 240)" stroke-width="1.6"/>
+      <line x1="270" y1="115" x2="295" y2="135" stroke="oklch(0.36 0.018 240)" stroke-width="1.6"/>
+
+      <rect x="370" y="50" width="80" height="30" rx="8" fill="oklch(0.6 0.13 35 / 0.12)" stroke="oklch(0.6 0.13 35 / 0.6)" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="410" y="69" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.36 0.13 35)">X̂_RNA</text>
+      <rect x="370" y="120" width="80" height="30" rx="8" fill="oklch(0.5 0.14 200 / 0.12)" stroke="oklch(0.5 0.14 200 / 0.6)" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="410" y="139" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.3 0.14 200)">X̂_ATAC</text>
+
+      <line x1="355" y1="65" x2="370" y2="65" stroke="oklch(0.5 0.018 240)" stroke-width="1.6"/>
+      <line x1="355" y1="135" x2="370" y2="135" stroke="oklch(0.5 0.018 240)" stroke-width="1.6"/>
+
+      <text x="465" y="100" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="oklch(0.5 0.018 240)" transform="rotate(90 465 100)">Dis_r, Dis_a</text>
+    `)()
+  },
+  '5': {
+    title: 'Adaptive fusion + multi-task (UnitedNet)',
+    tag: 'pattern 05 · multi-task · 7-loss',
+    color: 'var(--m-atac)',
+    desc: `<p>per-modality latent + adaptive fusion으로 shared latent. group identification + cross-modal prediction을 alternating으로 학습. 7개 loss(within-modality·cross-modality·generator·discriminator·contrastive·clustering·classification). <b>SHAP</b>로 cross-modal feature attribution.</p>`,
+    svg: (() => `
+      <rect x="20" y="40" width="80" height="28" rx="7" fill="oklch(0.6 0.13 35 / 0.18)" stroke="oklch(0.6 0.13 35)" stroke-width="1.6"/>
+      <text x="60" y="59" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.36 0.13 35)">RNA</text>
+      <rect x="20" y="86" width="80" height="28" rx="7" fill="oklch(0.5 0.14 200 / 0.18)" stroke="oklch(0.5 0.14 200)" stroke-width="1.6"/>
+      <text x="60" y="105" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.3 0.14 200)">ATAC</text>
+      <rect x="20" y="132" width="80" height="28" rx="7" fill="oklch(0.55 0.13 220 / 0.18)" stroke="oklch(0.55 0.13 220)" stroke-width="1.6"/>
+      <text x="60" y="151" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.3 0.13 220)">spatial</text>
+
+      <rect x="115" y="36" width="60" height="36" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.36 0.018 240)" stroke-width="1.5"/>
+      <text x="145" y="58" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700">z^(1)</text>
+      <rect x="115" y="82" width="60" height="36" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.36 0.018 240)" stroke-width="1.5"/>
+      <text x="145" y="104" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700">z^(2)</text>
+      <rect x="115" y="128" width="60" height="36" rx="8" fill="oklch(1 0 0)" stroke="oklch(0.36 0.018 240)" stroke-width="1.5"/>
+      <text x="145" y="150" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700">z^(3)</text>
+
+      <text x="200" y="58" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="oklch(0.5 0.018 240)">w_1</text>
+      <text x="200" y="104" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="oklch(0.5 0.018 240)">w_2</text>
+      <text x="200" y="150" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="oklch(0.5 0.018 240)">w_3</text>
+
+      <line x1="175" y1="54" x2="240" y2="105" stroke="oklch(0.5 0.018 240)" stroke-width="1.5"/>
+      <line x1="175" y1="100" x2="240" y2="105" stroke="oklch(0.5 0.018 240)" stroke-width="1.5"/>
+      <line x1="175" y1="146" x2="240" y2="105" stroke="oklch(0.5 0.018 240)" stroke-width="1.5"/>
+
+      <ellipse cx="285" cy="105" rx="50" ry="36" fill="oklch(0.5 0.14 200 / 0.18)" stroke="oklch(0.5 0.14 200)" stroke-width="2.5"/>
+      <text x="285" y="100" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="800" fill="oklch(0.3 0.14 200)">shared z</text>
+      <text x="285" y="116" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="oklch(0.3 0.14 200)">adaptive</text>
+
+      <rect x="370" y="36" width="100" height="28" rx="7" fill="oklch(1 0 0)" stroke="oklch(0.36 0.018 240)" stroke-width="1.4"/>
+      <text x="420" y="55" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700">M_k group</text>
+      <rect x="370" y="76" width="100" height="28" rx="7" fill="oklch(1 0 0)" stroke="oklch(0.36 0.018 240)" stroke-width="1.4"/>
+      <text x="420" y="95" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700">cross-modal</text>
+      <rect x="370" y="116" width="100" height="28" rx="7" fill="oklch(1 0 0)" stroke="oklch(0.36 0.018 240)" stroke-width="1.4"/>
+      <text x="420" y="135" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700">contrastive</text>
+      <rect x="370" y="156" width="100" height="20" rx="5" fill="oklch(1 0 0)" stroke="oklch(0.36 0.018 240)" stroke-width="1.4"/>
+      <text x="420" y="170" text-anchor="middle" font-family="ui-monospace" font-size="9" font-weight="700">+ SHAP</text>
+
+      <line x1="335" y1="105" x2="370" y2="50" stroke="oklch(0.5 0.018 240)" stroke-width="1.4"/>
+      <line x1="335" y1="105" x2="370" y2="90" stroke="oklch(0.5 0.018 240)" stroke-width="1.4"/>
+      <line x1="335" y1="105" x2="370" y2="130" stroke="oklch(0.5 0.018 240)" stroke-width="1.4"/>
+    `)()
+  },
+  '6': {
+    title: 'Pretrain + condition tokens (scGPT, scFoundation)',
+    tag: 'pattern 06 · transformer · MLM',
+    color: 'var(--tx)',
+    desc: `<p>RNA만으로 큰 transformer를 pretrain한 뒤, multi-omic fine-tuning에서 modality-specific condition token을 추가. ATAC peak·protein·perturbation token이 gene token과 elementwise sum.</p>
+    <div class="formula-block">L = (1/|U_unk|) Σ_{j∈U_unk} (MLP(h_j) − x_j)^2
+
+scFoundation RDA: condition on (S, T) read-depth
+inference: T &gt; S → read-depth enhancement</div>`,
+    svg: (() => `
+      <rect x="20" y="80" width="100" height="40" rx="10" fill="oklch(0.5 0.16 240 / 0.18)" stroke="oklch(0.5 0.16 240)" stroke-width="2.5"/>
+      <text x="70" y="95" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="800" fill="oklch(0.3 0.16 240)">RNA-only</text>
+      <text x="70" y="111" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="oklch(0.3 0.16 240)">pretrain 33–50M cell</text>
+
+      <line x1="120" y1="100" x2="180" y2="100" stroke="oklch(0.5 0.018 240)" stroke-width="2" marker-end="url(#a-arrow6)"/>
+      <text x="150" y="92" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="oklch(0.5 0.018 240)">+ condition tokens</text>
+      <defs><marker id="a-arrow6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="oklch(0.5 0.018 240)"/></marker></defs>
+
+      <rect x="190" y="40" width="80" height="22" rx="6" fill="oklch(0.6 0.13 35 / 0.16)" stroke="oklch(0.6 0.13 35)" stroke-width="1.4"/>
+      <text x="230" y="55" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.36 0.13 35)">gene token</text>
+      <rect x="190" y="68" width="80" height="22" rx="6" fill="oklch(0.5 0.14 200 / 0.16)" stroke="oklch(0.5 0.14 200)" stroke-width="1.4"/>
+      <text x="230" y="83" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.3 0.14 200)">ATAC peak</text>
+      <rect x="190" y="96" width="80" height="22" rx="6" fill="oklch(0.5 0.18 350 / 0.16)" stroke="oklch(0.5 0.18 350)" stroke-width="1.4"/>
+      <text x="230" y="111" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.3 0.18 350)">protein</text>
+      <rect x="190" y="124" width="80" height="22" rx="6" fill="oklch(0.55 0.18 330 / 0.16)" stroke="oklch(0.55 0.18 330)" stroke-width="1.4"/>
+      <text x="230" y="139" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.3 0.18 330)">drug / pert</text>
+      <rect x="190" y="152" width="80" height="22" rx="6" fill="oklch(0.55 0.13 220 / 0.16)" stroke="oklch(0.55 0.13 220)" stroke-width="1.4"/>
+      <text x="230" y="167" text-anchor="middle" font-family="ui-monospace" font-size="10" font-weight="700" fill="oklch(0.3 0.13 220)">spatial</text>
+
+      <text x="290" y="105" font-family="ui-monospace" font-size="14" fill="oklch(0.5 0.018 240)">⊕</text>
+
+      <rect x="320" y="60" width="160" height="100" rx="14" fill="oklch(0.5 0.16 240 / 0.18)" stroke="oklch(0.5 0.16 240)" stroke-width="2.5"/>
+      <text x="400" y="100" text-anchor="middle" font-family="ui-monospace" font-size="13" font-weight="800" fill="oklch(0.3 0.16 240)">Transformer</text>
+      <text x="400" y="120" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="oklch(0.3 0.16 240)">fine-tune (LoRA / QLoRA)</text>
+    `)()
+  },
+  '7': {
+    title: 'CLIP-style modular (Cui 2025 vision · ProteinAligner)',
+    tag: 'pattern 07 · contrastive · zero-shot',
+    color: 'var(--m-spat)',
+    desc: `<p>modality-specific FM(DNA LM, protein LM, cell LM, image, methylation)을 따로 학습한 뒤, 같은 cell에서 측정된 다른 modality의 positive pair로 contrastive 정렬. <b>zero-shot cross-modal query</b> 가능. ProteinAligner(867M)가 첫 성공 사례 — ESM3(1.4B) 능가.</p>
+    <div class="formula-block">L_contrastive = − log[ exp(sim(z_a, z_b)/τ) / Σ_k exp(sim(z_a, z_k)/τ) ]</div>`,
+    svg: (() => `
+      <rect x="20" y="40" width="80" height="36" rx="9" fill="oklch(0.5 0.13 160 / 0.18)" stroke="oklch(0.5 0.13 160)" stroke-width="2"/>
+      <text x="60" y="62" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.3 0.13 160)">DNA LM</text>
+      <rect x="20" y="86" width="80" height="36" rx="9" fill="oklch(0.5 0.18 350 / 0.18)" stroke="oklch(0.5 0.18 350)" stroke-width="2"/>
+      <text x="60" y="108" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.3 0.18 350)">protein LM</text>
+      <rect x="20" y="132" width="80" height="36" rx="9" fill="oklch(0.6 0.13 35 / 0.18)" stroke="oklch(0.6 0.13 35)" stroke-width="2"/>
+      <text x="60" y="154" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.36 0.13 35)">cell LM</text>
+
+      <line x1="100" y1="58" x2="170" y2="105" stroke="oklch(0.55 0.018 240)" stroke-width="1.5"/>
+      <line x1="100" y1="104" x2="170" y2="105" stroke="oklch(0.55 0.018 240)" stroke-width="1.5"/>
+      <line x1="100" y1="150" x2="170" y2="105" stroke="oklch(0.55 0.018 240)" stroke-width="1.5"/>
+
+      <ellipse cx="220" cy="105" rx="55" ry="38" fill="oklch(0.55 0.13 220 / 0.18)" stroke="oklch(0.55 0.13 220)" stroke-width="2.5" stroke-dasharray="5 4"/>
+      <text x="220" y="100" text-anchor="middle" font-family="ui-monospace" font-size="12" font-weight="800" fill="oklch(0.3 0.13 220)">contrastive</text>
+      <text x="220" y="116" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="oklch(0.3 0.13 220)">alignment τ</text>
+
+      <line x1="275" y1="105" x2="330" y2="105" stroke="oklch(0.55 0.018 240)" stroke-width="2" marker-end="url(#a-arrow7)"/>
+      <defs><marker id="a-arrow7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="oklch(0.55 0.018 240)"/></marker></defs>
+
+      <rect x="335" y="50" width="155" height="110" rx="14" fill="oklch(0.55 0.13 220 / 0.1)" stroke="oklch(0.55 0.13 220)" stroke-width="2"/>
+      <text x="412" y="80" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="800" fill="oklch(0.3 0.13 220)">unified space</text>
+      <text x="412" y="100" text-anchor="middle" font-family="ui-monospace" font-size="9.5" fill="oklch(0.36 0.13 220)">DNA → cell?</text>
+      <text x="412" y="116" text-anchor="middle" font-family="ui-monospace" font-size="9.5" fill="oklch(0.36 0.13 220)">protein → disease?</text>
+      <text x="412" y="132" text-anchor="middle" font-family="ui-monospace" font-size="9.5" fill="oklch(0.36 0.13 220)">cell → variant?</text>
+      <text x="412" y="150" text-anchor="middle" font-family="ui-monospace" font-size="9" font-weight="700" fill="oklch(0.55 0.13 220)">zero-shot queries</text>
+    `)()
+  },
+  '8': {
+    title: 'Joint discrete diffusion (DPLM-2)',
+    tag: 'pattern 08 · diffusion · 통합 토큰',
+    color: 'var(--dif)',
+    desc: `<p>sequence + structure를 하나의 mixed-modal token stream으로. AA token + LFQ structure token이 absorbing diffusion에서 같이 mask·복원된다. <b>한 모델로 5 task</b>: unconditional 공동 생성, joint representation, folding, inverse folding, motif scaffolding.</p>`,
+    svg: (() => `
+      <text x="270" y="22" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="700" fill="oklch(0.36 0.018 240)">absorbing diffusion: x^0 → x^t (mask) → x^0 (denoise)</text>
+
+      <text x="22" y="58" font-family="ui-monospace" font-size="9.5" fill="oklch(0.55 0.018 240)">x^0:</text>
+      ${['M','K','L','V','A','G','P','T','S','D'].map((a, i) => `
+        <rect x="${50 + i*42}" y="42" width="32" height="22" rx="5" fill="oklch(0.5 0.18 350 / 0.16)" stroke="oklch(0.5 0.18 350)" stroke-width="1.4"/>
+        <text x="${66 + i*42}" y="58" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="800" fill="oklch(0.3 0.18 350)">${a}</text>
+      `).join('')}
+      ${['s71','s32','s89','s14','s51','s09','s47','s23','s60','s17'].map((a, i) => `
+        <rect x="${50 + i*42}" y="68" width="32" height="22" rx="5" fill="oklch(0.5 0.18 295 / 0.16)" stroke="oklch(0.5 0.18 295)" stroke-width="1.4"/>
+        <text x="${66 + i*42}" y="84" text-anchor="middle" font-family="ui-monospace" font-size="9" font-weight="700" fill="oklch(0.3 0.18 295)">${a}</text>
+      `).join('')}
+
+      <text x="22" y="116" font-family="ui-monospace" font-size="9.5" fill="oklch(0.55 0.018 240)">x^t:</text>
+      ${['M','K','■','V','■','■','P','T','■','D'].map((a, i) => {
+        const masked = a === '■';
+        return `
+          <rect x="${50 + i*42}" y="100" width="32" height="22" rx="5" fill="${masked ? 'oklch(0.55 0.04 280)' : 'oklch(0.5 0.18 350 / 0.16)'}" stroke="${masked ? 'oklch(0.4 0.04 280)' : 'oklch(0.5 0.18 350)'}" stroke-width="1.4"/>
+          <text x="${66 + i*42}" y="116" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="800" fill="${masked ? 'oklch(1 0 0)' : 'oklch(0.3 0.18 350)'}">${a}</text>
+        `;
+      }).join('')}
+      ${['s71','■','■','■','s51','s09','■','■','s60','s17'].map((a, i) => {
+        const masked = a === '■';
+        return `
+          <rect x="${50 + i*42}" y="126" width="32" height="22" rx="5" fill="${masked ? 'oklch(0.55 0.04 280)' : 'oklch(0.5 0.18 295 / 0.16)'}" stroke="${masked ? 'oklch(0.4 0.04 280)' : 'oklch(0.5 0.18 295)'}" stroke-width="1.4"/>
+          <text x="${66 + i*42}" y="142" text-anchor="middle" font-family="ui-monospace" font-size="9" font-weight="700" fill="${masked ? 'oklch(1 0 0)' : 'oklch(0.3 0.18 295)'}">${a}</text>
+        `;
+      }).join('')}
+
+      <text x="270" y="180" text-anchor="middle" font-family="ui-monospace" font-size="10" fill="oklch(0.55 0.018 240)">→ bidirectional transformer reverses absorbing process</text>
+    `)()
+  },
+  '9': {
+    title: 'Geometric DL (PINNACLE · ATOMICA)',
+    tag: 'pattern 09 · graph / SE(3) equivariant',
+    color: 'var(--m-pert)',
+    desc: `<p>token 기반 transformer는 3D 분자 상호작용의 spatial inductive bias를 잃는다. geometric DL은 <b>SE(3) equivariance</b>와 continuous coordinate를 보존. <b>PINNACLE</b>: PPI × cell-type × tissue 계층 multiscale GNN, 156 contexts × 24 tissues = 같은 단백질에 394,760 representation. <b>ATOMICA</b>: protein-X 인터페이스 200만 + 복합체에서 atom/block/interface 계층.</p>`,
+    svg: (() => {
+      // multiscale graph
+      let s = '';
+      // tissue level
+      s += `<text x="80" y="22" font-family="ui-monospace" font-size="10" fill="oklch(0.36 0.018 240)" font-weight="700">tissue (24)</text>`;
+      [[80,40],[140,40],[200,40]].forEach(([x,y])=>{
+        s += `<circle cx="${x}" cy="${y}" r="14" fill="oklch(0.55 0.18 330 / 0.2)" stroke="oklch(0.55 0.18 330)" stroke-width="2"/>`;
+      });
+      // cell type level
+      s += `<text x="80" y="92" font-family="ui-monospace" font-size="10" fill="oklch(0.36 0.018 240)" font-weight="700">cell type (156)</text>`;
+      [40,80,120,160,200,240,280].forEach((x)=>{
+        s += `<circle cx="${x}" cy="110" r="9" fill="oklch(0.5 0.16 240 / 0.2)" stroke="oklch(0.5 0.16 240)" stroke-width="1.5"/>`;
+      });
+      // protein level
+      s += `<text x="80" y="160" font-family="ui-monospace" font-size="10" fill="oklch(0.36 0.018 240)" font-weight="700">protein × context</text>`;
+      [30,55,80,105,130,155,180,205,230,255,280,305].forEach((x)=>{
+        s += `<circle cx="${x}" cy="180" r="5" fill="oklch(0.5 0.18 350 / 0.4)" stroke="oklch(0.5 0.18 350)" stroke-width="1"/>`;
+      });
+      // edges
+      [[80,40,40,110],[80,40,80,110],[80,40,120,110],[140,40,160,110],[140,40,200,110],[200,40,240,110],[200,40,280,110]].forEach(([x1,y1,x2,y2])=>{
+        s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="oklch(0.55 0.018 240)" stroke-width="1" stroke-dasharray="3 3"/>`;
+      });
+      [40,80,120,160,200,240,280].forEach((cx, i) => {
+        const ctxs = [30,55,80,105,130,155,180,205,230,255,280,305];
+        const range = ctxs.slice(i*1, i*1+3);
+        range.forEach(px => {
+          s += `<line x1="${cx}" y1="119" x2="${px}" y2="173" stroke="oklch(0.55 0.018 240)" stroke-width="0.7"/>`;
+        });
+      });
+      // sidebar
+      s += `<rect x="370" y="40" width="160" height="140" rx="10" fill="oklch(0.55 0.18 330 / 0.06)" stroke="oklch(0.55 0.18 330 / 0.4)" stroke-width="1.5"/>`;
+      s += `<text x="450" y="62" text-anchor="middle" font-family="ui-monospace" font-size="11" font-weight="800" fill="oklch(0.36 0.18 330)">PINNACLE</text>`;
+      s += `<text x="450" y="82" text-anchor="middle" font-family="ui-monospace" font-size="9.5" fill="oklch(0.36 0.018 240)">multiscale GNN</text>`;
+      s += `<text x="450" y="100" text-anchor="middle" font-family="ui-monospace" font-size="9.5" fill="oklch(0.36 0.018 240)">156 ctx · 24 tissue</text>`;
+      s += `<text x="450" y="124" text-anchor="middle" font-family="ui-monospace" font-size="13" font-weight="800" fill="oklch(0.55 0.18 330)">394,760</text>`;
+      s += `<text x="450" y="142" text-anchor="middle" font-family="ui-monospace" font-size="9.5" fill="oklch(0.36 0.018 240)">protein representations</text>`;
+      s += `<text x="450" y="166" text-anchor="middle" font-family="ui-monospace" font-size="9" fill="oklch(0.55 0.018 240)">SE(3) equivariant · 3D 보존</text>`;
+      return s;
+    })()
+  }
+};
+
+function setPattern(n) {
+  patBtns.forEach(b => b.classList.toggle('active', b.dataset.pat === n));
+  const d = patData[n];
+  patTitle.textContent = d.title;
+  patTag.textContent = d.tag;
+  patSvg.innerHTML = d.svg;
+  patDesc.innerHTML = d.desc;
+}
+patBtns.forEach(b => b.addEventListener('click', () => setPattern(b.dataset.pat)));
+setPattern('1');
+
+
+/* ===== Models catalog ===== */
+const models = [
+  // single-cell
+  { name: 'scGPT', modality: 'single-cell', label: 'RNA → multi-omic fine-tune', params: '33M cell pretrain', arch: 'transformer · binned + mask schedule',
+    desc: 'generative attention masking으로 unordered gene set에 causal masking 재현. multi-omic fine-tune은 condition token으로.',
+    pat: 'pattern 06', scholar: 'scGPT Cui 2024 single-cell foundation transformer Nature Methods' },
+  { name: 'Geneformer', modality: 'single-cell', label: 'RNA · rank tokenization', params: '6 layer · 30M cell', arch: 'transformer · rank ordering',
+    desc: 'expression magnitude를 버리고 rank만 학습. dosage-sensitive gene 예측 AUC 0.91, dilated cardiomyopathy iPSC 검증.',
+    pat: 'pattern 06', scholar: 'Geneformer Theodoris 2023 transfer learning network biology' },
+  { name: 'scFoundation', modality: 'single-cell', label: 'RNA · continuous projection', params: '~100M params · 50M+ cell', arch: 'asymmetric transformer · MAE-style',
+    desc: 'depth encoder + 얕은 decoder. expression scalar를 continuous projection으로 보존. RDA로 read-depth enhancement까지.',
+    pat: 'pattern 06', scholar: 'scFoundation xTrimoscFoundation hao 2024 100 million' },
+  { name: 'CellFM', modality: 'single-cell', label: 'RNA · ERetNet', params: '800M params · 100M cell', arch: 'RetNet (parallel + recurrent)',
+    desc: 'transformer 대신 ERetNet — parallel 학습 + recurrent inference. 800M scale 실험.',
+    pat: 'pattern 06', scholar: 'CellFM 2025 ERetNet 800M single-cell foundation' },
+  { name: 'Tahoe-x1', modality: 'single-cell', label: 'perturbation token', params: '3B params · 100M perturbed cell', arch: 'transformer + drug token',
+    desc: '50 cancer cell line × 1,100+ 화합물. drug ID를 gene token과 함께 입력. unseen compound 일반화.',
+    pat: 'pattern 06', scholar: 'Tahoe-x1 Gandhi 2025 perturbation trained scFoundation' },
+  { name: 'C2S-Scale', modality: 'single-cell', label: 'cell sentence · LLM 재활용', params: '410M / 1B / 8B / 27B', arch: 'Gemma-2 / Pythia',
+    desc: 'cell을 자연어 문장으로 표현, frontier LLM 그대로 적응. perturbation에서 GPT-4 + scGPT 능가.',
+    pat: 'pattern 06+text', scholar: 'C2S-Scale Rizvi 2025 cell sentences LLM' },
+  { name: 'Geneformer-v2', modality: 'single-cell', label: 'rank · 4,096 context', params: '38M / 104M / 316M · 104M cell', arch: 'transformer + QLoRA',
+    desc: 'transcriptional MLM scaling laws 정량화. QLoRA로 ~95% 성능 유지하며 25% 메모리.',
+    pat: 'pattern 06', scholar: 'Geneformer v2 Chen 2026 scaling quantization' },
+  { name: 'scPRINT-2', modality: 'single-cell', label: 'XPressor + benchmark', params: '350M cell · 16 organism', arch: 'transformer',
+    desc: '42-config 체계적 벤치마크 — foundation model 평가의 새 표준.',
+    pat: 'pattern 06', scholar: 'scPRINT-2 Kalfon 2025 multi-organism foundation' },
+  { name: 'EpiAgent', modality: 'single-cell', label: 'cCRE 토큰', params: '1.4B · 5M cell · 35B token', arch: 'transformer · TF-IDF rank',
+    desc: 'scATAC-seq용. cCRE token을 TF-IDF로 ranking, [CLS] = cell embedding. zero-shot annotation + cCRE knockout.',
+    pat: 'pattern 06+atac', scholar: 'EpiAgent Chen 2024 scATAC foundation model' },
+  { name: 'Nicheformer', modality: 'spatial', label: 'rank + technology vector', params: '49.3M · 110M cell (53.8M spatial)', arch: 'transformer · 12 layer',
+    desc: 'MERFISH/Xenium/CosMx/dissociated 통합 정규화. spatial niche query first-class.',
+    pat: 'pattern 06+spatial', scholar: 'Nicheformer Schaar 2024 spatial foundation' },
+  { name: 'scELMo / GenePT', modality: 'single-cell', label: 'LLM-text embedding', params: 'GPT-3.5/4 임베딩', arch: 'static text embedding',
+    desc: 'gene 기능 텍스트의 LLM 임베딩(1,536-dim)을 그대로 gene vector로. unseen gene 일반화.',
+    pat: 'pattern 06+text', scholar: 'scELMo GenePT GPT gene embedding' },
+  { name: 'scLAMBDA', modality: 'single-cell', label: 'disentangled VAE + LLM', params: '—', arch: 'VAE',
+    desc: 'GenePT-derived gene embedding을 disentangled VAE에 결합 — perturbation 일반화.',
+    pat: 'pattern 03+text', scholar: 'scLAMBDA Wang 2024 disentangled perturbation' },
+  // protein
+  { name: 'DPLM-2', modality: 'protein', label: 'sequence + structure', params: '~650M (LoRA from DPLM)', arch: 'absorbing discrete diffusion',
+    desc: 'LFQ structure token(8,192-codebook) + AA token mixed stream. folding/inverse folding/co-gen/scaffolding.',
+    pat: 'pattern 08', scholar: 'DPLM-2 Wang 2025 multimodal diffusion protein structure' },
+  { name: 'ESM3', modality: 'protein', label: 'sequence + structure + function', params: '98B', arch: 'multimodal generative LM',
+    desc: 'frontier-scale 첫 멀티모달 protein LM. VQ structure token.',
+    pat: 'pattern 06+8', scholar: 'ESM3 Hayes 2024 evolutionary protein language model' },
+  { name: 'ProteinAligner', modality: 'protein', label: 'tri-modal contrastive', params: '867M', arch: 'CLIP-style: ESM-2 + ESM-IF1 + text',
+    desc: 'pure contrastive — ESM3 1.4B를 더 적은 파라미터로 능가. CLIP for protein 첫 성공.',
+    pat: 'pattern 07', scholar: 'ProteinAligner Zhang 2026 tri-modal contrastive protein' },
+  { name: 'totalVI', modality: 'protein', label: 'CITE-seq RNA + protein', params: '—', arch: 'VAE · negative-binomial mixture',
+    desc: 'CITE-seq용 첫 probabilistic 통합. protein noise를 명시적으로 모델.',
+    pat: 'pattern 03', scholar: 'totalVI Gayoso 2021 CITE-seq integration' },
+  { name: 'PINNACLE', modality: 'protein', label: 'protein × cell-type × tissue', params: 'multiscale GNN', arch: 'graph (Pattern 9)',
+    desc: '156 cell-type context × 24 tissue → 같은 단백질에 394,760 representation. self-supervised link prediction.',
+    pat: 'pattern 09', scholar: 'PINNACLE Li 2024 contextual protein representation' },
+  { name: 'ATOMICA', modality: 'protein', label: '인터페이스 자체가 modality', params: '2M+ 복합체', arch: 'geometric DL · SE(3)',
+    desc: 'protein-protein/ligand/RNA/DNA/metal/peptide 인터페이스 통합. atom/block/interface 계층.',
+    pat: 'pattern 09', scholar: 'ATOMICA Fang 2025 universal intermolecular interface' },
+  { name: 'Surleton', modality: 'protein', label: 'backbone + surface', params: '—', arch: 'inverse folding with surface',
+    desc: 'surface 정보가 surface-residue design에 필수임을 보임.',
+    pat: 'pattern 09', scholar: 'Surleton Hong 2026 protein inverse folding surface' },
+  // multi
+  { name: 'MIMIC', modality: 'multi', label: 'central dogma 통합', params: '1B', arch: 'split-track encoder + cross-attention',
+    desc: 'DNA + RNA + protein + AlphaFold + DSSP + SASA + MaSIF + phyloP + ATAC + CAGE + RASP2 + text. ESM3-open / Evo 2 능가.',
+    pat: 'pattern 06+8', scholar: 'MIMIC Golkar 2026 multimodal foundation biomolecules' },
+  { name: 'MaxToki', modality: 'multi', label: 'temporal scRNA-seq', params: '217M / 1B', arch: 'transformer · rank-value + temporal prompt',
+    desc: 'Geneformer를 시간 trajectory로 확장. 175M cell + aging trajectory.',
+    pat: 'pattern 06', scholar: 'MaxToki Ortega 2026 temporal aging scRNA' },
+  // dna
+  { name: 'Evo 2', modality: 'dna', label: 'DNA sequence', params: '7B', arch: 'StripedHyena',
+    desc: 'genome-scale DNA LM. variant effect 예측.',
+    pat: 'pattern 06', scholar: 'Evo 2 Brixi 2026 genome modeling design' },
+  { name: 'OmniNA', modality: 'dna', label: 'nucleotide foundation', params: '—', arch: 'transformer',
+    desc: 'DNA + RNA 통합 nucleotide sequence FM.',
+    pat: 'pattern 06', scholar: 'OmniNA Shen 2025 nucleotide foundation' },
+  // single-cell DL (pattern 3-5)
+  { name: 'Matilda', modality: 'single-cell', label: 'multi-task VAE', params: '—', arch: 'VAE + classifier head',
+    desc: 'simulation·DR·classification·feature selection 4개 task 한 모델. rare cell augmentation.',
+    pat: 'pattern 03', scholar: 'Matilda Liu 2023 multi-task VAE multimodal' },
+  { name: 'scButterfly', modality: 'single-cell', label: 'dual-aligned VAE', params: '—', arch: 'masked VAE + adversarial',
+    desc: 'RNA↔ATAC, RNA↔protein 양방향 translation에서 BABEL/Polarbear/UnitedNet 능가.',
+    pat: 'pattern 04', scholar: 'scButterfly Cao 2024 versatile single-cell translation' },
+  { name: 'UnitedNet', modality: 'single-cell', label: 'multi-task fusion', params: '—', arch: 'adaptive fusion + adversarial + contrastive',
+    desc: 'Patch-seq · CITE-seq · spatial 통합. SHAP로 cross-modal feature attribution.',
+    pat: 'pattern 05', scholar: 'UnitedNet Tang 2023 explainable multi-task multimodal' },
+  { name: 'BABEL', modality: 'single-cell', label: 'cross-modal translation', params: '—', arch: 'encoder-decoder',
+    desc: 'RNA ↔ ATAC translation의 초기 작업.',
+    pat: 'pattern 04', scholar: 'BABEL cross-modal RNA ATAC translation' },
+  // spatial / image
+  { name: 'Virtual Embryo', modality: 'spatial', label: 'volumetric 배아', params: '—', arch: 'flow matching + FM embedding',
+    desc: 'spatial-temporal coordinate 조건부로 volumetric 배아 지도 생성.',
+    pat: 'pattern 05+spatial', scholar: 'Cao 2026 virtual embryo predictive spatial' },
+  // methylation
+  { name: 'MethylGPT', modality: 'dna', label: 'DNA methylome', params: '—', arch: 'transformer',
+    desc: 'methylation 사이트의 token-based foundation model.',
+    pat: 'pattern 06', scholar: 'MethylGPT Ying 2024 methylome foundation' },
+  { name: 'CpGPT', modality: 'dna', label: 'CpG methylation', params: '—', arch: 'transformer',
+    desc: 'DNA methylation foundation model. CpG site 단위.',
+    pat: 'pattern 06', scholar: 'CpGPT Camillo 2024 DNA methylation foundation' },
+  // image / virtual cell
+  { name: 'AIVC roadmap', modality: 'multi', label: 'virtual cell substrate', params: '—', arch: 'meta',
+    desc: 'Bunne 2024 HCA roadmap → Cui 2025 multimodal blueprint → Cao 2026 virtual embryo.',
+    pat: 'meta', scholar: 'AI virtual cell Bunne 2024 roadmap' }
+];
+
+function renderModels() {
+  const q = document.getElementById('model-search').value.toLowerCase().trim();
+  const f = document.querySelector('#model-filter button.active').dataset.filter;
+  const list = document.getElementById('model-list');
+  list.innerHTML = '';
+  let n = 0;
+  models.forEach(m => {
+    const matchQ = !q || (m.name + ' ' + m.label + ' ' + m.arch + ' ' + m.desc).toLowerCase().includes(q);
+    const matchF = f === 'all' || m.modality === f;
+    if (!matchQ || !matchF) return;
+    n++;
+    const a = document.createElement('a');
+    a.className = 'model-card';
+    a.dataset.modality = m.modality;
+    a.href = `https://scholar.google.com/scholar?q=${encodeURIComponent(m.scholar)}`;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.innerHTML = `
+      <div class="head"><span class="name">${m.name}</span><span class="pat">${m.pat}</span></div>
+      <div class="modality"><b>${m.label}</b></div>
+      <div class="desc">${m.desc}</div>
+      <div class="meta">
+        <span>${m.params}</span><span>${m.arch}</span>
+      </div>
+    `;
+    list.appendChild(a);
+  });
+  document.getElementById('model-meta').textContent = `${n} / ${models.length} 모델 표시`;
+}
+document.getElementById('model-search').addEventListener('input', renderModels);
+document.querySelectorAll('#model-filter button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#model-filter button').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  renderModels();
+}));
+renderModels();
+
+
+/* ===== Paper catalog ===== */
+const papers = [
+  { title: 'Multimodal Foundation Model Methodology — overview (this page basis)', authors: 'concept overview', year: 2026, venue: 'audodidactic learning note',
+    tags: ['overview'], blurb: '본 페이지의 출발점이 된 41KB overview. 9 패턴, 7 토큰화, 9 트렌드 종합.', scholar: 'multimodal foundation model methodology biology' },
+  { title: 'Multimodal foundation models for molecular cell biology', authors: 'Cui et al.', year: 2025, venue: 'Nature',
+    tags: ['overview', 'review'], blurb: 'Pattern 7(CLIP-style) 비전 제안. zero-shot cross-modal query 의제.', scholar: 'Cui 2025 multimodal foundation molecular cell biology Nature' },
+  { title: 'scGPT: generative pretraining for single-cell biology', authors: 'Cui et al.', year: 2024, venue: 'Nature Methods',
+    tags: ['single-cell'], blurb: 'generative attention masking + condition token.', scholar: 'scGPT Cui 2024 generative single-cell' },
+  { title: 'Transfer learning enables predictions in network biology (Geneformer)', authors: 'Theodoris et al.', year: 2023, venue: 'Nature',
+    tags: ['single-cell'], blurb: 'rank-based gene token, 30M cell pretrain. dosage-sensitive prediction.', scholar: 'Geneformer Theodoris 2023 transfer learning network biology' },
+  { title: 'scFoundation: large-scale foundation model on single-cell transcriptomics', authors: 'Hao et al. / xTrimoscFoundation', year: 2024, venue: 'Nature Methods',
+    tags: ['single-cell'], blurb: 'asymmetric encoder/decoder + RDA pretraining.', scholar: 'scFoundation Hao 2024 50 million single cell' },
+  { title: 'Transformers in single-cell omics — survey', authors: 'Szałata et al.', year: 2024, venue: 'Nature Methods',
+    tags: ['review'], blurb: 'rank/bin/projection 3 전략과 transformer adaptation 정리.', scholar: 'Szalata 2024 transformers single cell omics review' },
+  { title: 'C2S-Scale: scaling LLMs for single-cell analysis', authors: 'Rizvi et al.', year: 2025, venue: 'preprint',
+    tags: ['single-cell', 'benchmark'], blurb: '410M → 27B scaling laws. cell sentence, Gemma-2/Pythia 적응.', scholar: 'C2S-Scale Rizvi 2025 cell sentences scaling' },
+  { title: 'Geneformer v2 — scaling and quantization', authors: 'Chen et al.', year: 2026, venue: 'preprint',
+    tags: ['single-cell'], blurb: '4,096 context · 38M/104M/316M scaling + QLoRA.', scholar: 'Geneformer v2 Chen 2026 scaling quantization' },
+  { title: 'Tahoe-x1: scaling perturbation-trained scFM', authors: 'Gandhi et al.', year: 2025, venue: 'preprint',
+    tags: ['single-cell'], blurb: '3B params · Tahoe-100M (50 cell line × 1,100+ 화합물).', scholar: 'Tahoe x1 Gandhi 2025 perturbation' },
+  { title: 'CellFM 800M', authors: 'CellFM team', year: 2025, venue: 'preprint',
+    tags: ['single-cell'], blurb: '800M ERetNet 기반.', scholar: 'CellFM 800M 2025 RetNet' },
+  { title: 'EpiAgent: foundation model for scATAC-seq', authors: 'Chen et al.', year: 2024, venue: 'preprint',
+    tags: ['single-cell'], blurb: '1.4B · cCRE token · TF-IDF rank.', scholar: 'EpiAgent 2024 scATAC foundation' },
+  { title: 'Nicheformer: a foundation model for spatial transcriptomics', authors: 'Schaar et al.', year: 2024, venue: 'preprint',
+    tags: ['single-cell'], blurb: '110M cell(53.8M spatial) · technology mean vector.', scholar: 'Nicheformer Schaar 2024 spatial foundation' },
+  { title: 'Matilda — multi-task multimodal single-cell', authors: 'Liu et al.', year: 2023, venue: 'NAR',
+    tags: ['single-cell'], blurb: 'Pattern 3 reference. simulation·classification·DR·feature selection 한 모델.', scholar: 'Matilda Liu 2023 multitask multimodal' },
+  { title: 'scButterfly — versatile single-cell cross-modal translation', authors: 'Cao et al.', year: 2024, venue: 'Nature Communications',
+    tags: ['single-cell'], blurb: 'Pattern 4 reference. dual-aligned masked VAE.', scholar: 'scButterfly Cao 2024 cross-modal translation' },
+  { title: 'UnitedNet — explainable multi-task multimodal', authors: 'Tang et al.', year: 2023, venue: 'Nature Communications',
+    tags: ['single-cell'], blurb: 'Pattern 5 reference. SHAP cross-modal attribution.', scholar: 'UnitedNet Tang 2023 explainable multimodal' },
+  { title: 'totalVI: joint probabilistic CITE-seq', authors: 'Gayoso et al.', year: 2021, venue: 'Nature Methods',
+    tags: ['single-cell'], blurb: 'Pattern 3 protein-side reference.', scholar: 'totalVI Gayoso 2021 CITE-seq' },
+
+  // protein
+  { title: 'DPLM-2: multimodal diffusion protein language model', authors: 'Wang et al.', year: 2025, venue: 'preprint',
+    tags: ['protein'], blurb: 'Pattern 8 reference. LFQ structure token + AA absorbing diffusion.', scholar: 'DPLM-2 Wang 2025 multimodal diffusion' },
+  { title: 'ESM3: simulating 500M years of evolution', authors: 'Hayes et al.', year: 2024, venue: 'preprint',
+    tags: ['protein'], blurb: '98B params · sequence + structure + function 한 모델.', scholar: 'ESM3 Hayes 2024 evolution scale protein' },
+  { title: 'ProteinAligner — tri-modal contrastive', authors: 'Zhang et al.', year: 2026, venue: 'preprint',
+    tags: ['protein'], blurb: 'Pattern 7 첫 성공 — 867M으로 ESM3 1.4B 능가.', scholar: 'ProteinAligner Zhang 2026 tri-modal protein' },
+  { title: 'PINNACLE — contextual AI models for single-cell protein', authors: 'Li et al.', year: 2024, venue: 'Nature Methods',
+    tags: ['protein'], blurb: 'Pattern 9. cell-type-context별 protein representation 394,760개.', scholar: 'PINNACLE Li 2024 contextual protein' },
+  { title: 'ATOMICA — universal intermolecular interface FM', authors: 'Fang et al.', year: 2025, venue: 'preprint',
+    tags: ['protein'], blurb: 'Pattern 9. protein-X 인터페이스 200만 + 복합체.', scholar: 'ATOMICA Fang 2025 universal intermolecular' },
+  { title: 'Hsieh 2025 — design space of multimodal protein LMs', authors: 'Hsieh et al.', year: 2025, venue: 'preprint',
+    tags: ['protein', 'review'], blurb: 'tokenizer + alignment를 핵심 design axis로 지목.', scholar: 'Hsieh 2025 design space multimodal protein' },
+  { title: 'Wang 2026 — sampling protein structural token space', authors: 'Wang et al.', year: 2026, venue: 'preprint',
+    tags: ['protein'], blurb: 'ESM3/DPLM-2 위에서 structure token space sampling.', scholar: 'Wang 2026 protein structural token space' },
+
+  // multi / dna / spatial
+  { title: 'MIMIC — multimodal foundation for biomolecules', authors: 'Golkar et al.', year: 2026, venue: 'preprint',
+    tags: ['dna', 'protein'], blurb: 'central dogma 전체 통합. 1B로 ESM3-open / Evo 2 능가.', scholar: 'MIMIC Golkar 2026 multimodal biomolecules' },
+  { title: 'Evo 2: genome modelling and design across all life', authors: 'Brixi et al.', year: 2026, venue: 'Science',
+    tags: ['dna'], blurb: '7B genome-scale DNA LM. variant effect prediction.', scholar: 'Evo 2 Brixi 2026 genome modeling design' },
+  { title: 'OmniNA — foundation model for nucleotide sequences', authors: 'Shen et al.', year: 2025, venue: 'preprint',
+    tags: ['dna'], blurb: 'DNA + RNA 통합 nucleotide FM.', scholar: 'OmniNA Shen 2025 nucleotide foundation' },
+  { title: 'Virtual embryo (Cao 2026)', authors: 'Cao et al.', year: 2026, venue: 'preprint',
+    tags: ['single-cell'], blurb: 'flow matching + FM embedding으로 volumetric 배아 simulation.', scholar: 'Cao 2026 virtual embryo predictive flow matching' },
+
+  // benchmarks / reviews
+  { title: 'Wei 2025 — benchmarking algorithms for generalizable single-cell perturbation', authors: 'Wei et al.', year: 2025, venue: 'Nature Methods',
+    tags: ['benchmark'], blurb: '27 method × 29 dataset × 6 metric — 항상 1등인 모델은 없다.', scholar: 'Wei 2025 benchmarking perturbation prediction' },
+  { title: 'Csendes 2025 — gene embedding source benchmark', authors: 'Csendes et al.', year: 2025, venue: 'preprint',
+    tags: ['benchmark'], blurb: 'gene-embedding 출처보다 downstream 아키텍처가 더 중요.', scholar: 'Csendes 2025 gene embedding benchmark' },
+  { title: 'Kedzierska 2025 — zero-shot evaluation of foundation cell models', authors: 'Kedzierska et al.', year: 2025, venue: 'preprint',
+    tags: ['benchmark'], blurb: 'zero-shot에서 Geneformer/scGPT가 baseline보다 robustly 낫지 않음.', scholar: 'Kedzierska 2025 zero-shot single-cell foundation' },
+  { title: 'scPRINT-2 — 42-config benchmark', authors: 'Kalfon et al.', year: 2025, venue: 'preprint',
+    tags: ['single-cell', 'benchmark'], blurb: '350M cell · 16 organism · 42-config — foundation 평가의 새 표준.', scholar: 'scPRINT-2 Kalfon 2025 benchmark' },
+
+  { title: 'AI Virtual Cell roadmap (Bunne 2024)', authors: 'Bunne et al.', year: 2024, venue: 'Cell',
+    tags: ['review'], blurb: 'HCA leadership 서명. AIVC 4 pillar.', scholar: 'Bunne 2024 virtual cell roadmap HCA' },
+  { title: 'Build the virtual cell with AI: a perspective for cancer research', authors: 'Yang et al.', year: 2024, venue: 'Mil Med Res',
+    tags: ['review'], blurb: 'AIVC를 cancer research에 어떻게 적용할지 — multi-omics 통합으로 cellular process simulation.', scholar: 'Yang 2024 build virtual cell AI cancer research' },
+
+  { title: 'Embedding strategies in biological foundation models — overview', authors: 'concept overview', year: 2026, venue: 'audodidactic learning note',
+    tags: ['overview'], blurb: '7가지 토큰화 전략 taxonomy.', scholar: 'embedding strategies biological foundation model' },
+  { title: 'Multimodal single-cell omics — overview', authors: 'concept overview', year: 2026, venue: 'audodidactic learning note',
+    tags: ['overview'], blurb: 'CITE-seq · 10x Multiome · 컴퓨터 method timeline.', scholar: 'multimodal single cell omics integration' }
+];
+
+function renderPapers() {
+  const q = document.getElementById('paper-search').value.toLowerCase().trim();
+  const f = document.querySelector('#paper-filter button.active').dataset.filter;
+  const list = document.getElementById('paper-list');
+  list.innerHTML = '';
+  let n = 0;
+  papers.forEach(p => {
+    const matchQ = !q || (p.title + ' ' + p.authors + ' ' + p.blurb + ' ' + p.tags.join(' ')).toLowerCase().includes(q);
+    const matchF = f === 'all' || p.tags.includes(f);
+    if (!matchQ || !matchF) return;
+    n++;
+    const a = document.createElement('a');
+    a.className = 'paper-card';
+    a.href = `https://scholar.google.com/scholar?q=${encodeURIComponent(p.scholar)}`;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.innerHTML = `
+      <div class="h">
+        <div class="title">${p.title}</div>
+        <div class="meta">${p.authors} · <b>${p.year}</b> · ${p.venue}</div>
+      </div>
+      <div class="blurb">${p.blurb}</div>
+      <div>${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+    `;
+    list.appendChild(a);
+  });
+  document.getElementById('paper-meta').textContent = `${n} / ${papers.length} 편 표시`;
+}
+document.getElementById('paper-search').addEventListener('input', renderPapers);
+document.querySelectorAll('#paper-filter button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#paper-filter button').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  renderPapers();
+}));
+renderPapers();
+</script>
+</body>
+</html>

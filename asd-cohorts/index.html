@@ -118,7 +118,7 @@ h1 {
 
 .metrics {
   display: grid;
-  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
   gap: 10px;
   margin: 18px 0;
 }
@@ -347,8 +347,8 @@ h1 {
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(360px, 0.9fr);
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 24vw, 340px);
+  gap: 16px;
   align-items: start;
 }
 
@@ -356,6 +356,12 @@ h1 {
 .side-stack {
   display: grid;
   gap: 20px;
+  min-width: 0;
+}
+
+.side-stack {
+  align-self: stretch;
+  align-content: start;
 }
 
 .panel {
@@ -536,19 +542,24 @@ h1 {
 
 .matrix-wrap {
   overflow-x: auto;
+  max-width: 100%;
+  scrollbar-gutter: stable;
 }
 
 .matrix {
-  min-width: 860px;
+  width: 100%;
+  min-width: 640px;
   display: grid;
-  grid-template-columns: 150px repeat(10, minmax(62px, 1fr));
+  grid-template-columns: minmax(128px, 1.35fr) repeat(10, minmax(48px, 1fr));
   border: 1px solid var(--line);
   border-radius: 8px;
   overflow: hidden;
 }
 
 .matrix-cell {
+  min-width: 0;
   min-height: 42px;
+  border: 0;
   border-right: 1px solid var(--line-soft);
   border-bottom: 1px solid var(--line-soft);
   display: flex;
@@ -556,6 +567,9 @@ h1 {
   justify-content: center;
   padding: 6px;
   font-size: 0.75rem;
+  line-height: 1.25;
+  text-align: center;
+  overflow-wrap: anywhere;
   color: var(--muted);
 }
 
@@ -566,7 +580,9 @@ h1 {
 }
 
 .matrix-row-label {
+  gap: 6px;
   justify-content: flex-start;
+  text-align: left;
   color: var(--ink);
   font-weight: 800;
 }
@@ -690,7 +706,7 @@ tr.study-row.selected td { background: #eef2ff; }
   font-weight: 760;
 }
 
-.detail {
+.panel.detail {
   position: sticky;
   top: 88px;
 }
@@ -783,14 +799,19 @@ footer {
 }
 
 @media (max-width: 1180px) {
-  .app-header,
-  .layout {
+  .app-header {
     grid-template-columns: 1fr;
   }
   .scope-card {
     width: 100%;
   }
-  .detail {
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .panel.detail {
     position: static;
   }
 }
@@ -1737,8 +1758,7 @@ function renderMetrics() {
     { value: studies.length, label: "출판 논문 및 코호트 리소스" },
     { value: allCohorts.length, label: "표시된 코호트 라벨" },
     { value: Object.keys(layerMeta).length, label: "유전체 증거 레이어" },
-    { value: `${Math.min(...years)}-${Math.max(...years)}`, label: "논문 연도 범위" },
-    { value: "0", label: "내부 draft 포함" }
+    { value: `${Math.min(...years)}-${Math.max(...years)}`, label: "논문 연도 범위" }
   ];
   document.getElementById("metrics").innerHTML = metrics.map(item => `
     <div class="metric">

@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tandem Repeat Atlas — motif, expansion, technology</title>
+<meta name="description" content="Tandem repeat의 motif, copy number, genomic context, sequencing technology, disease interpretation을 한 화면에서 비교하는 한글 인터랙티브.">
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#f7f6ef;
+  --paper:#fffdf8;
+  --paper-2:#f2f6f3;
+  --ink:#18201e;
+  --ink-soft:#35423d;
+  --muted:#68736e;
+  --line:#d9dfd8;
+  --line-soft:#e9ede7;
+  --teal:#117278;
+  --teal-soft:#dff0ee;
+  --indigo:#4f5e9b;
+  --indigo-soft:#e8ebf7;
+  --rust:#b55343;
+  --rust-soft:#f8e5df;
+  --moss:#5d7332;
+  --moss-soft:#e9efd9;
+  --gold:#a67516;
+  --gold-soft:#f5ead2;
+  --violet:#6b55a4;
+  --violet-soft:#ece8f6;
+  --shadow:0 15px 38px rgba(24,32,30,.075);
+  --shadow-soft:0 8px 22px rgba(24,32,30,.055);
+  --active:var(--teal);
+  --active-soft:var(--teal-soft);
+}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  color:var(--ink);
+  background:
+    linear-gradient(rgba(17,114,120,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(17,114,120,.04) 1px,transparent 1px),
+    radial-gradient(circle at 84% 8%,rgba(79,94,155,.09),transparent 31%),
+    radial-gradient(circle at 8% 40%,rgba(181,83,67,.075),transparent 28%),
+    var(--bg);
+  background-size:38px 38px,38px 38px,auto,auto,auto;
+  font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  text-wrap:pretty;
+}
+button,input,select{font:inherit}
+button{color:inherit}
+a{color:inherit}
+.page{max-width:1540px;margin:0 auto;padding:28px 24px 54px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px;
+}
+.crumb,.source-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid rgba(217,223,216,.95);
+  background:rgba(255,253,248,.82);
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:12px;
+  color:#53605b;
+  text-decoration:none;
+  white-space:nowrap;
+}
+.crumb:hover{color:var(--teal)}
+.source-pill{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.hero{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(420px,.92fr);
+  gap:18px;
+  align-items:stretch;
+  margin-bottom:16px;
+}
+.hero-copy{
+  min-width:0;
+  display:grid;
+  align-content:center;
+  padding:18px 0;
+}
+.eyebrow{
+  margin:0 0 9px;
+  font-size:12px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:#53615b;
+  font-weight:850;
+}
+h1{
+  margin:0;
+  max-width:920px;
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  font-size:clamp(36px,4.8vw,68px);
+  line-height:1.01;
+  letter-spacing:0;
+  font-weight:760;
+  word-break:keep-all;
+}
+.dek{
+  max-width:820px;
+  margin:18px 0 0;
+  color:#3f4d48;
+  font-size:16px;
+  line-height:1.7;
+}
+.hero-stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-top:23px;
+  max-width:860px;
+}
+.stat{
+  min-height:96px;
+  border:1px solid rgba(217,223,216,.94);
+  background:rgba(255,253,248,.9);
+  border-radius:8px;
+  padding:12px;
+  box-shadow:var(--shadow-soft);
+}
+.stat b{display:block;font-size:24px;line-height:1.08;font-variant-numeric:tabular-nums}
+.stat span{display:block;margin-top:7px;color:var(--muted);font-size:12px}
+.hero-visual{
+  position:relative;
+  min-height:410px;
+  border:1px solid rgba(195,207,198,.98);
+  border-radius:8px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 76% 20%,rgba(79,94,155,.09),transparent 30%),
+    radial-gradient(circle at 18% 74%,rgba(17,114,120,.11),transparent 32%),
+    linear-gradient(135deg,#fffdf8,#f1f5f2);
+  box-shadow:0 24px 64px rgba(17,114,120,.1);
+}
+.repeat-orbit{
+  position:absolute;
+  inset:28px;
+  border:1px solid rgba(24,32,30,.08);
+  border-radius:8px;
+  background:
+    linear-gradient(rgba(24,32,30,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(24,32,30,.032) 1px,transparent 1px);
+  background-size:34px 34px;
+  overflow:hidden;
+}
+.helix{
+  position:absolute;
+  left:6%;
+  right:6%;
+  top:45%;
+  height:118px;
+  transform:translateY(-50%);
+}
+.strand{
+  position:absolute;
+  left:0;
+  right:0;
+  height:24px;
+  border-radius:999px;
+  background:linear-gradient(90deg,rgba(17,114,120,.12),rgba(17,114,120,.5),rgba(181,83,67,.48),rgba(79,94,155,.18));
+  mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+}
+.strand.top{top:20px;transform:skewY(-7deg)}
+.strand.bottom{bottom:20px;transform:skewY(7deg)}
+.rungs{
+  position:absolute;
+  inset:8px 4%;
+  display:grid;
+  grid-template-columns:repeat(18,1fr);
+  align-items:center;
+}
+.rungs i{
+  display:block;
+  height:54px;
+  width:3px;
+  margin:auto;
+  border-radius:999px;
+  background:rgba(24,32,30,.14);
+  transform:rotate(var(--r));
+}
+.motif-ribbon{
+  position:absolute;
+  left:7%;
+  right:7%;
+  bottom:24px;
+  display:grid;
+  grid-template-columns:repeat(9,1fr);
+  gap:7px;
+}
+.motif-ribbon span{
+  min-width:0;
+  border:1px solid rgba(217,223,216,.9);
+  background:rgba(255,253,248,.8);
+  border-radius:7px;
+  padding:8px 6px;
+  text-align:center;
+  color:#31423c;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:12px;
+}
+.hero-callout{
+  position:absolute;
+  left:22px;
+  top:20px;
+  max-width:310px;
+  border:1px solid rgba(217,223,216,.92);
+  background:rgba(255,253,248,.86);
+  backdrop-filter:blur(10px);
+  border-radius:8px;
+  padding:13px;
+}
+.hero-callout b{display:block;font-size:13px;margin-bottom:4px}
+.hero-callout span{display:block;color:#53615b;font-size:12px;line-height:1.48}
+.scenario-strip{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(136px,1fr));
+  gap:9px;
+  margin:12px 0 16px;
+}
+.scenario-btn,.choice-btn,.method-btn,.paper{
+  border:1px solid rgba(217,223,216,.98);
+  background:rgba(255,253,248,.92);
+  border-radius:8px;
+  text-align:left;
+  transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease;
+}
+.scenario-btn,.choice-btn,.method-btn{cursor:pointer}
+.scenario-btn{min-height:78px;padding:13px}
+.scenario-btn:hover,.choice-btn:hover,.method-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-soft)}
+.scenario-btn.active,.choice-btn.active,.method-btn.active{
+  border-color:var(--active);
+  background:linear-gradient(180deg,var(--active-soft),rgba(255,253,248,.95));
+  box-shadow:inset 0 -3px 0 var(--active);
+}
+.scenario-btn b{display:block;font-size:13px;line-height:1.2}
+.scenario-btn span{display:block;margin-top:5px;color:var(--muted);font-size:11px;line-height:1.35}
+.main-grid{
+  display:grid;
+  grid-template-columns:minmax(350px,.86fr) minmax(0,1.16fr) minmax(330px,.82fr);
+  gap:16px;
+  align-items:start;
+}
+.panel{
+  border:1px solid rgba(217,223,216,.98);
+  border-radius:8px;
+  background:rgba(255,253,248,.9);
+  box-shadow:var(--shadow-soft);
+  overflow:hidden;
+  container-type:inline-size;
+}
+.panel-head{
+  display:grid;
+  grid-template-columns:minmax(0,auto) minmax(0,1fr);
+  gap:12px;
+  align-items:baseline;
+  padding:15px 16px;
+  border-bottom:1px solid var(--line-soft);
+}
+.panel-title{font-size:14px;font-weight:850;min-width:0}
+.panel-note{font-size:12px;color:var(--muted);justify-self:end;text-align:right;max-width:430px;overflow-wrap:anywhere}
+.panel-body{padding:15px}
+.builder-card{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:linear-gradient(180deg,#fffdf8,#f7faf7);
+  padding:14px;
+}
+.builder-card h2{
+  margin:0;
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  font-size:clamp(23px,6cqw,32px);
+  line-height:1.15;
+  font-weight:760;
+}
+.builder-card p{margin:9px 0 0;color:#41504a;font-size:13px;line-height:1.62}
+.control-group{display:grid;gap:9px;margin-top:14px}
+.control-group label{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  color:#2c3935;
+  font-size:12px;
+  font-weight:800;
+}
+.control-group small{color:var(--muted);font-weight:600}
+.motif-grid,.context-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.choice-btn{padding:10px;min-height:62px}
+.choice-btn b{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+.choice-btn span{display:block;margin-top:4px;color:var(--muted);font-size:10.5px;line-height:1.35}
+input[type="range"]{
+  width:100%;
+  accent-color:var(--active);
+}
+.copy-readout{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:11px;
+}
+.mini-stat{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:rgba(255,253,248,.82);
+  padding:10px;
+  min-height:72px;
+}
+.mini-stat b{display:block;font-size:17px;font-variant-numeric:tabular-nums}
+.mini-stat span{display:block;margin-top:4px;color:var(--muted);font-size:10.5px;line-height:1.32}
+.repeat-canvas-wrap{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:
+    linear-gradient(rgba(24,32,30,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(24,32,30,.035) 1px,transparent 1px),
+    #fffdf8;
+  background-size:34px 34px;
+  overflow:hidden;
+}
+#repeatCanvas,#contextCanvas{display:block;width:100%;height:auto}
+.focus-box{
+  margin-top:10px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fffdf8;
+  padding:12px;
+}
+.focus-box b{display:block;font-size:13px;margin-bottom:4px}
+.focus-box span{display:block;color:#53615b;font-size:12px;line-height:1.55}
+.stack-list{display:grid;gap:9px;margin-top:12px}
+.stack-step{
+  display:grid;
+  grid-template-columns:34px 1fr;
+  align-items:start;
+  gap:10px;
+  border:1px solid rgba(17,114,120,.42);
+  background:#edf6f5;
+  border-radius:8px;
+  padding:12px;
+  min-height:70px;
+}
+.stack-step.muted{border-color:var(--line);background:#fffdf8}
+.step-num{
+  width:28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+  background:var(--teal);
+  color:white;
+  font-size:12px;
+  font-weight:850;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.stack-step.muted .step-num{background:#dfe8e3;color:#5f6d66}
+.stack-step b{display:block;font-size:13px;line-height:1.22}
+.stack-step div > span{display:block;margin-top:5px;color:var(--muted);font-size:11.5px;line-height:1.48}
+.metric-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+  margin-top:12px;
+}
+.score-row{
+  display:grid;
+  grid-template-columns:86px 1fr 32px;
+  gap:8px;
+  align-items:center;
+  min-height:28px;
+  border:1px solid var(--line);
+  background:#fffdf8;
+  border-radius:7px;
+  padding:6px 7px;
+}
+.score-row b{font-size:10.5px}
+.score-row span{text-align:right;color:var(--muted);font-size:10.5px;font-variant-numeric:tabular-nums}
+.score-track{height:7px;border-radius:999px;background:#e9efeb;overflow:hidden}
+.score-fill{height:100%;width:0;background:var(--active);border-radius:999px}
+.method-tabs{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+.method-btn{padding:12px;min-height:98px;overflow-wrap:anywhere}
+.method-btn i{display:block;width:31px;height:3px;border-radius:999px;background:var(--method-color,var(--teal));margin-bottom:10px}
+.method-btn b{display:block;font-size:13px;line-height:1.22}
+.method-btn span{display:block;margin-top:6px;color:var(--muted);font-size:11px;line-height:1.42}
+.tech-detail{
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:10px;
+  margin-top:12px;
+}
+.detail-block,.mechanism-card,.compare,.context-note{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fffdf8;
+  padding:12px;
+}
+.detail-block b,.mechanism-card b,.compare b,.context-note b{display:block;font-size:12.5px}
+.detail-block span,.mechanism-card span,.compare p,.context-note span{
+  display:block;
+  margin-top:6px;
+  color:#53615b;
+  font-size:11px;
+  line-height:1.52;
+}
+.mechanism-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.mechanism-card{cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease}
+.mechanism-card:hover{transform:translateY(-1px)}
+.mechanism-card.active{border-color:var(--rust);background:var(--rust-soft)}
+.mechanism-detail-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+  margin-top:10px;
+}
+.mechanism-detail-grid .detail-block{background:#fffdf8}
+.deep-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.deep-card{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fffdf8;
+  padding:13px;
+  min-height:168px;
+}
+.deep-card b{display:block;font-size:13px;line-height:1.24}
+.deep-card p{margin:8px 0 0;color:#53615b;font-size:11.5px;line-height:1.55}
+.deep-card ul{
+  margin:9px 0 0;
+  padding-left:17px;
+  color:#53615b;
+  font-size:11px;
+  line-height:1.48;
+}
+.deep-card li{margin:4px 0}
+.compare-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.compare{min-height:176px}
+.compare::before{
+  content:"";
+  display:block;
+  width:38px;
+  height:3px;
+  border-radius:999px;
+  background:var(--compare-color,var(--teal));
+  margin-bottom:12px;
+}
+.atlas{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:11px;
+}
+.paper{
+  position:relative;
+  min-height:158px;
+  padding:16px 16px 14px;
+  overflow:hidden;
+}
+.paper::before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:4px;
+  background:var(--paper-color,var(--teal));
+}
+.paper-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px}
+.paper-tag{
+  border:1px solid color-mix(in srgb,var(--paper-color,var(--teal)) 48%,#d9dfd8);
+  background:color-mix(in srgb,var(--paper-color,var(--teal)) 10%,#fffdf8);
+  border-radius:999px;
+  padding:5px 9px;
+  font-size:10px;
+  color:#32423d;
+}
+.paper-year{font-size:11px;color:#69736f;font-variant-numeric:tabular-nums}
+.paper h3{margin:0;font-size:14px;line-height:1.25}
+.paper p{margin:9px 0 0;color:#47554f;font-size:12px;line-height:1.5}
+.paper a{
+  display:inline-block;
+  margin-top:10px;
+  color:var(--teal);
+  font-size:11px;
+  text-decoration:none;
+  border-bottom:1px solid rgba(17,114,120,.35);
+}
+.wide-grid{
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+  gap:16px;
+  margin-top:16px;
+  align-items:start;
+}
+.full-panel{grid-column:1/-1}
+.footer-note{
+  margin-top:18px;
+  padding-top:14px;
+  border-top:1px solid var(--line-soft);
+  color:#65716b;
+  font-size:12px;
+  line-height:1.6;
+}
+@media (max-width:1180px){
+  .hero{grid-template-columns:1fr}
+  .main-grid{grid-template-columns:1fr 1fr}
+  .main-grid .panel:nth-child(3){grid-column:1/-1}
+  .wide-grid{grid-template-columns:1fr}
+}
+@media (max-width:820px){
+  .page{padding:18px 10px 36px}
+  .topbar{align-items:flex-start;flex-direction:column}
+  h1{font-size:34px;line-height:1.07}
+  .dek{font-size:14px}
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .hero-visual{min-height:320px}
+  .scenario-strip{grid-template-columns:1fr}
+  .main-grid{grid-template-columns:1fr}
+  .main-grid .panel:nth-child(3){grid-column:auto}
+  .panel-head{grid-template-columns:1fr}
+  .panel-note{text-align:left;justify-self:start;max-width:none}
+  .motif-grid,.context-grid,.metric-grid,.method-tabs,.tech-detail,.mechanism-grid,.compare-grid,.atlas{grid-template-columns:1fr}
+  .mechanism-detail-grid,.deep-grid{grid-template-columns:1fr}
+  .copy-readout{grid-template-columns:1fr}
+  .score-row{grid-template-columns:76px 1fr 30px}
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="topbar">
+    <a class="crumb" href="../index.html">Audodidactic 홈</a>
+    <span class="source-pill">문헌 기반 학습 지도</span>
+  </div>
+
+  <section class="hero" aria-labelledby="page-title">
+    <div class="hero-copy">
+      <p class="eyebrow">Tandem repeat · STR · VNTR · expansion</p>
+      <h1 id="page-title">Tandem repeat은 왜 variant calling 밖으로 자꾸 새는가</h1>
+      <p class="dek">
+        Tandem repeat은 motif가 몇 번 반복되는지만의 문제가 아니다. 같은 `CAG`라도 coding exon, intron, enhancer, splice-proximal region,
+        mobile-element 안에서 전혀 다른 allele이 된다. 이 페이지는 motif, copy number, context, sequencing technology를 함께 움직이며
+        어떤 질문에 어떤 repeat method가 필요한지 보여준다.
+      </p>
+      <div class="hero-stats" aria-label="summary statistics">
+        <div class="stat"><b>1-6 bp</b><span>STR / microsatellite motif</span></div>
+        <div class="stat"><b>4.86M</b><span>TRExplorer v1.0 loci</span></div>
+        <div class="stat"><b>52%</b><span>polymorphic loci in HiFi resources</span></div>
+        <div class="stat"><b>73</b><span>curated disease-associated TR loci</span></div>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="repeat-orbit">
+        <div class="hero-callout">
+          <b>Length + sequence + context</b>
+          <span>Repeat allele은 motif count, interruption, flanking variation, tissue context가 같이 정의한다.</span>
+        </div>
+        <div class="helix">
+          <div class="strand top"></div>
+          <div class="strand bottom"></div>
+          <div class="rungs">
+            <i style="--r:-18deg"></i><i style="--r:10deg"></i><i style="--r:-12deg"></i><i style="--r:18deg"></i><i style="--r:-8deg"></i><i style="--r:14deg"></i>
+            <i style="--r:-16deg"></i><i style="--r:7deg"></i><i style="--r:-15deg"></i><i style="--r:17deg"></i><i style="--r:-6deg"></i><i style="--r:12deg"></i>
+            <i style="--r:-17deg"></i><i style="--r:8deg"></i><i style="--r:-11deg"></i><i style="--r:15deg"></i><i style="--r:-9deg"></i><i style="--r:14deg"></i>
+          </div>
+        </div>
+        <div class="motif-ribbon">
+          <span>CAG</span><span>CAG</span><span>CAG</span><span>CAG</span><span>CAA</span><span>CAG</span><span>CAG</span><span>CAG</span><span>CAG</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="scenario-strip" id="scenarioStrip" aria-label="research question"></nav>
+
+  <section class="main-grid">
+    <article class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Repeat Builder</div>
+        <div class="panel-note">motif와 genomic context를 바꾸면 allele 해석이 달라진다</div>
+      </div>
+      <div class="panel-body">
+        <div class="builder-card">
+          <h2 id="builderTitle"></h2>
+          <p id="builderSummary"></p>
+          <div class="control-group">
+            <label>Motif <small id="motifClass"></small></label>
+            <div class="motif-grid" id="motifGrid"></div>
+          </div>
+          <div class="control-group">
+            <label for="copySlider">Copy number <small id="copyLabel"></small></label>
+            <input id="copySlider" type="range" min="6" max="180" value="42">
+          </div>
+          <div class="control-group">
+            <label>Context <small id="contextLabel"></small></label>
+            <div class="context-grid" id="contextGrid"></div>
+          </div>
+        </div>
+        <div class="copy-readout" id="copyReadout"></div>
+        <div class="stack-list" id="biologyStack"></div>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Allele View</div>
+        <div class="panel-note">repeat count, interruption, short-read visibility, long-read resolution</div>
+      </div>
+      <div class="panel-body">
+        <div class="repeat-canvas-wrap">
+          <canvas id="repeatCanvas" width="900" height="520" aria-label="repeat allele visualization"></canvas>
+        </div>
+        <div class="focus-box">
+          <b id="focusTitle"></b>
+          <span id="focusText"></span>
+        </div>
+        <div class="metric-grid" id="metricGrid"></div>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Method Stack</div>
+        <div class="panel-note">질문별로 필요한 caller와 validation layer</div>
+      </div>
+      <div class="panel-body">
+        <div class="method-tabs" id="methodTabs"></div>
+        <div class="tech-detail" id="techDetail"></div>
+        <div class="stack-list" id="methodStack"></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="wide-grid">
+    <article class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Genomic Context Map</div>
+        <div class="panel-note">TRExplorer coordinate layer로 본 repeat 위치</div>
+      </div>
+      <div class="panel-body">
+        <div class="repeat-canvas-wrap">
+          <canvas id="contextCanvas" width="760" height="430" aria-label="TR genomic context distribution"></canvas>
+        </div>
+        <div class="context-note">
+          <b>가장 실용적인 해석</b>
+          <span>대부분의 TR은 intronic/intergenic에 있지만, 이 말은 “기능 없음”이 아니다. Intronic repeat는 transcription, R-loop, splicing, methylation, long neural gene vulnerability와 연결될 수 있고, promoter/enhancer/UTR/splice-proximal repeat는 copy number가 곧 regulatory dosage나 isoform change가 될 수 있다. 따라서 context map은 분포표가 아니라 해석 우선순위표로 읽어야 한다.</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Mechanism Board</div>
+        <div class="panel-note">repeat이 어떻게 생기고, 왜 커지고, 왜 세포마다 달라지는가</div>
+      </div>
+      <div class="panel-body">
+        <div class="mechanism-grid" id="mechanismGrid"></div>
+        <div class="focus-box">
+          <b id="mechanismTitle"></b>
+          <span id="mechanismText"></span>
+        </div>
+        <div class="mechanism-detail-grid" id="mechanismDetailGrid"></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="wide-grid">
+    <article class="panel full-panel">
+      <div class="panel-head">
+        <div class="panel-title">Interpretation Layers</div>
+        <div class="panel-note">repeat allele을 논문에서 읽을 때 빠지면 안 되는 여섯 가지 질문</div>
+      </div>
+      <div class="panel-body">
+        <div class="deep-grid" id="deepGrid"></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="wide-grid">
+    <article class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Assay Trade-offs</div>
+        <div class="panel-note">short read는 breadth, long read는 allele sequence</div>
+      </div>
+      <div class="panel-body">
+        <div class="compare-grid">
+          <div class="compare" style="--compare-color:var(--teal)">
+            <b>Short-read genotyping</b>
+            <p>HipSTR, GangSTR, lobSTR는 많은 known STR loci를 cohort scale로 genotype한다. Strength는 breadth와 sample size다. Weakness는 read length 밖 allele, stutter, motif composition, flanking complexity다. Association result는 catalog/QC와 함께 읽어야 한다.</p>
+          </div>
+          <div class="compare" style="--compare-color:var(--rust)">
+            <b>Expansion discovery</b>
+            <p>ExpansionHunter Denovo와 STRling은 read length를 넘는 expansion signal이나 outlier를 찾는다. Cohort burden과 candidate discovery에는 강하지만, size threshold, batch, ancestry control, exact boundary가 claim을 제한한다. Locus-level allele sequence는 추가 검증이 필요하다.</p>
+          </div>
+          <div class="compare" style="--compare-color:var(--indigo)">
+            <b>Long-read resolution</b>
+            <p>TRGT, TRGT-denovo, vclust, pangenome/graph methods는 motif mixture, interruptions, haplotype, variation cluster를 직접 읽는다. Disease-locus interpretation과 complex VNTR에는 필수적이지만, 비용, coverage, catalog subset, representation mismatch가 새 제약이 된다.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="panel-head">
+        <div class="panel-title">문헌 지도</div>
+        <div class="panel-note">tandem repeat biology와 algorithm 기준 문헌</div>
+      </div>
+      <div class="panel-body">
+        <div class="atlas" id="paperAtlas"></div>
+      </div>
+    </article>
+  </section>
+
+  <p class="footer-note">
+    <strong>문헌 기준:</strong> 공개 출판물과 공개 method/resource만 사용했습니다. Willems 2014, Gymrek 2017, Trost 2020, Mitra 2021, Kim 2024, Reinar 2024, Mokveld 2024, Weisburd 2026을 학습용 흐름으로 압축했습니다.
+  </p>
+</main>
+
+<script>
+const COLORS = {
+  teal:"#117278",
+  indigo:"#4f5e9b",
+  rust:"#b55343",
+  moss:"#5d7332",
+  gold:"#a67516",
+  violet:"#6b55a4",
+  neutral:"#8a958f"
+};
+
+const motifs = [
+  {id:"CAG", label:"CAG", class:"trinucleotide STR", example:"HTT coding / polyQ", risk:"hairpin + protein expansion", color:COLORS.teal},
+  {id:"CGG", label:"CGG", class:"trinucleotide STR", example:"FMR1 promoter/UTR", risk:"G-rich structure + methylation", color:COLORS.indigo},
+  {id:"GAA", label:"GAA", class:"trinucleotide STR", example:"FXN intron", risk:"H-DNA / gene silencing", color:COLORS.gold},
+  {id:"G4C2", label:"G4C2", class:"hexanucleotide STR", example:"C9orf72 intron", risk:"RNA foci + RAN translation", color:COLORS.rust},
+  {id:"AT", label:"AT", class:"dinucleotide STR", example:"common polymorphic STR", risk:"slippage-prone length variation", color:COLORS.moss},
+  {id:"VNTR", label:"30bp", class:"VNTR / minisatellite", example:"regulatory VNTR", risk:"motif composition + SV-like allele", color:COLORS.violet}
+];
+
+const contexts = [
+  {id:"coding", label:"Coding exon", short:"poly-amino acid", impact:"protein tract length, toxicity, threshold"},
+  {id:"intron", label:"Intron", short:"silencing / RNA", impact:"transcription, R-loop, splicing, chromatin"},
+  {id:"regulatory", label:"Promoter / enhancer", short:"expression", impact:"TF spacing, enhancer strength, methylation"},
+  {id:"splice", label:"Splice-proximal", short:"isoform", impact:"splice junction, exonization, weak splice-site buffering"},
+  {id:"vc", label:"Variation cluster", short:"complex allele", impact:"repeat plus flanking indels, interruptions, adjacent repeats"},
+  {id:"mobile", label:"Alu / SVA context", short:"repeat element", impact:"TE-derived enhancer, VNTR domain, insertion history"}
+];
+
+const scenarios = [
+  {
+    id:"population",
+    label:"Population STR catalog",
+    sub:"common polymorphism, eSTR, LD",
+    motif:"AT",
+    copies:28,
+    context:"regulatory",
+    method:"short",
+    color:COLORS.teal,
+    title:"많은 사람에서 흔한 STR allele을 비교하기",
+    summary:"Population STR analysis는 단순히 repeat count table을 만드는 일이 아니다. catalog boundary, mappability, stutter model, ancestry-specific allele frequency가 모두 association 결과를 바꾼다.",
+    stack:[["Catalog selection","pure-repeat boundary인지, flanking polymorphism까지 포함한 interval인지 먼저 정한다. 서로 다른 catalog는 같은 locus도 다른 copy number로 부를 수 있다."],["Short-read genotyping","HipSTR/GangSTR/lobSTR는 flanking read와 stutter model을 이용해 known loci의 allele length likelihood를 추정한다."],["Association layer","eSTR, trait association, LD, ancestry frequency를 붙이되 SNP tag로 설명되는 신호와 repeat-specific signal을 분리한다."],["Long-read follow-up","association peak가 VC, interruption, motif switch를 포함하면 long-read나 targeted assay로 allele sequence를 확인한다."]],
+    metrics:{visibility:78,sequence:36,discovery:54,clinical:42}
+  },
+  {
+    id:"rare",
+    label:"Rare expansion screen",
+    sub:"large allele, burden, outlier",
+    motif:"G4C2",
+    copies:112,
+    context:"intron",
+    method:"expansion",
+    color:COLORS.rust,
+    title:"short-read로 큰 rare expansion signal 찾기",
+    summary:"Expansion screen은 full allele을 읽기보다 abnormal signal을 잡는 단계다. insert-size batch, homopolymer artifact, ancestry-matched control frequency를 다루지 않으면 burden이 쉽게 흔들린다.",
+    stack:[["Genome-wide signal","EHdn은 anchored in-repeat reads, STRling은 STR-rich read와 mate location으로 candidate repeat-rich region을 잡는다."],["Cohort outlier filter","depth, insert size, ancestry, control frequency를 맞춰 rare expansion을 정의한다. 같은 threshold가 cohort마다 그대로 옮겨가지 않는다."],["Gene/context burden","exon, splice junction, enhancer, fetal/brain regulatory annotation처럼 prior가 있는 context에서 aggregate burden을 묻는다."],["Orthogonal validation","long-read, repeat-primed PCR, Southern/qPCR, targeted sequencing으로 boundary, motif, size를 검증해야 locus-level claim이 된다."]],
+    metrics:{visibility:66,sequence:24,discovery:86,clinical:65}
+  },
+  {
+    id:"trio",
+    label:"De novo TR mutation",
+    sub:"child-parent comparison",
+    motif:"CAG",
+    copies:46,
+    context:"regulatory",
+    method:"trio",
+    color:COLORS.moss,
+    title:"부모에게 없는 repeat change를 찾기",
+    summary:"De novo TR mutation은 Mendelian inconsistency만 세면 false positive가 폭발한다. child allele이 부모 read distribution에서 정말 빠져 있는지, 작은 unit change가 stutter를 넘는지 확인해야 한다.",
+    stack:[["Trio genotyping","child와 parents를 같은 repeat definition, coverage, QC 기준으로 genotype한다. catalog가 바뀌면 DNM 후보 수도 크게 바뀐다."],["Inheritance test","MonSTR는 genotype likelihood, TRGT-denovo는 allele-partitioned read evidence로 child-specific allele을 평가한다."],["Constraint prior","SISTR/MUTEA/allele frequency로 rare하고 constrained한 locus를 우선순위화한다. 대부분의 TR DNM은 benign background다."],["Validation","single-unit dinucleotide change 같은 작은 event는 stutter와 natural variability를 넘어서는지 targeted validation이 필요하다."]],
+    metrics:{visibility:72,sequence:58,discovery:63,clinical:48}
+  },
+  {
+    id:"clinical",
+    label:"Disease-locus interpretation",
+    sub:"threshold, interruptions, penetrance",
+    motif:"CGG",
+    copies:88,
+    context:"intron",
+    method:"long",
+    color:COLORS.indigo,
+    title:"known disease repeat을 allele 단위로 해석하기",
+    summary:"Known disease repeat은 length threshold만으로 끝나지 않는다. 같은 길이라도 interruption, motif switch, methylation, somatic mosaicism, phenotype fit에 따라 interpretation이 달라진다.",
+    stack:[["Known locus range","STRchive/clinical resource에서 normal, intermediate, premutation, pathogenic range와 assay-specific counting rule을 확인한다."],["Allele sequence","HiFi/ONT 또는 locus-specific assay로 motif composition, interruptions, orientation, adjacent repeat를 본다."],["Methylation/mosaicism","FMR1 같은 locus는 methylation, tissue mosaicism, somatic expansion이 phenotype과 penetrance를 바꾼다."],["Phenotype fit","allele size만으로 진단하지 말고 age of onset, family history, reduced penetrance, ancestry frequency를 함께 읽는다."]],
+    metrics:{visibility:54,sequence:88,discovery:50,clinical:92}
+  },
+  {
+    id:"complex",
+    label:"Complex VNTR / VC",
+    sub:"flank, graph, pangenome",
+    motif:"VNTR",
+    copies:23,
+    context:"vc",
+    method:"long",
+    color:COLORS.violet,
+    title:"repeat plus flanking sequence가 하나의 allele일 때",
+    summary:"Complex VNTR이나 variation cluster에서는 repeat count 하나가 allele을 대표하지 못한다. flanking indel, adjacent repeat, motif mixture가 clinical threshold나 association signal을 바꿀 수 있다.",
+    stack:[["Superset catalog","TRExplorer 같은 coordinate layer로 locus definition을 통일하고, genotyping할 subset을 목적에 맞게 줄인다."],["VC flag","vclust/variation-cluster flag로 repeat boundary 밖의 local polymorphism이 allele definition에 들어와야 하는지 확인한다."],["Long-read genotype","TRGT, assembly, graph/pangenome 방법으로 motif mixture, interruptions, haplotype, adjacent indel을 직접 읽는다."],["Frequency context","HPRC/AoU/ancestry-aware database에서 allele rarity와 complexity를 판단한다. reference allele과 다른 것이 곧 pathogenic은 아니다."]],
+    metrics:{visibility:44,sequence:94,discovery:76,clinical:74}
+  }
+];
+
+const methodFamilies = [
+  {
+    id:"short",
+    title:"Short-read genotyping",
+    sub:"HipSTR, GangSTR, lobSTR",
+    color:COLORS.teal,
+    measured:"known STR loci에서 repeat-spanning/enclosing reads와 stutter model로 추정한 allele length likelihood",
+    strong:"수천-수만 샘플의 common STR, eSTR, QTL, population frequency, broad cohort screening",
+    weak:"read length를 넘는 expansion, interruption/motif switch, homopolymer, segmental duplication, complex flanking variation",
+    tools:["HipSTR","GangSTR","lobSTR","popSTR"]
+  },
+  {
+    id:"expansion",
+    title:"Expansion discovery",
+    sub:"EHdn, STRling, outlier",
+    color:COLORS.rust,
+    measured:"read length를 넘는 repeat-rich signal, in-repeat read count, mate localization, cohort outlier expansion",
+    strong:"catalog-free discovery, ASD/rare-disease cohort burden, large allele screen, fragile-site or splice-proximal enrichment test",
+    weak:"full allele sequence, exact boundary, motif-composition interpretation, batch-sensitive insert-size artifacts",
+    tools:["ExpansionHunter Denovo","STRling","DBSCAN","repeat-primed PCR"]
+  },
+  {
+    id:"trio",
+    title:"Trio mutation layer",
+    sub:"MonSTR, SISTR, TRGT-denovo",
+    color:COLORS.moss,
+    measured:"child-parent repeat length difference, composition change, allele-partitioned read evidence, selection/constraint prior",
+    strong:"de novo mutation, paternal-age effects, fetal-brain regulatory enrichment, constrained-locus prioritization",
+    weak:"small unit changes in noisy loci, parental allele dropout, somatic mosaicism, low-coverage trio ambiguity",
+    tools:["MonSTR","SISTR","TRGT-denovo","MUTEA"]
+  },
+  {
+    id:"long",
+    title:"Long-read resolution",
+    sub:"TRGT, vclust, pangenome",
+    color:COLORS.indigo,
+    measured:"repeat-spanning allele sequence, interruption, motif mixture, methylation/mosaicism evidence, haplotype, variation cluster",
+    strong:"disease loci, complex VNTR, RFC1/FGF14-like motif-specific alleles, ancestry-aware allele-frequency resources",
+    weak:"cost, coverage, catalog choice, population-scale compute, representation mismatch between narrow TR and wider VC",
+    tools:["TRGT","TRExplorer","vclust","SAGA"]
+  }
+];
+
+const mechanisms = [
+  {
+    id:"slip",
+    title:"Replication slippage",
+    text:"Nascent/template strand misalignment가 repeat unit을 더하거나 뺀다. 짧은 STR의 stepwise polymorphism을 설명하는 기본 메커니즘이다.",
+    trigger:"짧은 motif가 여러 번 연속될수록 strand가 register를 잃기 쉽다. Lagging strand와 Okazaki fragment 환경에서 single-stranded window가 길어진다.",
+    signature:"+1/-1 repeat-unit 중심의 작은 length change, tract length가 길어질수록 instability 증가, paternal-age 또는 replication history와 연결될 수 있음.",
+    caveat:"큰 pathogenic jump를 모두 설명하지는 못한다. 긴 allele에서는 repair, non-B DNA, nick-driven pathway가 함께 들어온다."
+  },
+  {
+    id:"mmr",
+    title:"MMR paradox",
+    text:"MSH2-MSH3와 MLH1-MLH3는 hairpin loop-out을 고치기보다 expansion을 촉진할 수 있다. FAN1은 이를 억제하는 counter-balance로 읽힌다.",
+    trigger:"CAG/CTG/CGG 같은 구조형성 repeat에서 hairpin loop-out이 MSH2-MSH3에 인식된다. 이후 MLH1-MLH3 nicking과 gap fill-in이 expansion 방향으로 흐를 수 있다.",
+    signature:"CAG repeat disease의 age-of-onset modifier로 MSH3, MLH3, FAN1 같은 DNA repair gene이 반복적으로 관찰된다.",
+    caveat:"MMR은 원래 anti-mutagenic pathway다. repeat context에서는 substrate와 repair direction 때문에 paradoxical pro-expansion으로 읽힌다."
+  },
+  {
+    id:"nonb",
+    title:"Non-B DNA",
+    text:"CAG/CTG hairpin, G4C2 quadruplex, GAA H-DNA, R-loop는 replication/transcription/repair를 막아 instability를 키운다.",
+    trigger:"GC-rich, homopurine-homopyrimidine, G-rich repeat가 transcription/replication 중 single-stranded 상태를 만나면 hairpin, G4, H-DNA, R-loop를 만든다.",
+    signature:"FMR1 CGG, FXN GAA, C9orf72 G4C2처럼 motif마다 구조와 downstream toxicity가 다르다. 같은 copy number라도 motif identity가 해석을 바꾼다.",
+    caveat:"구조 예측만으로 pathogenicity를 결론내리면 위험하다. locus expression, chromatin, tissue, allele length threshold가 같이 필요하다."
+  },
+  {
+    id:"bir",
+    title:"Nick-BIR",
+    text:"repeat 근처 single-strand nick이 fork collapse와 break-induced replication을 유도하면 큰 jump expansion이 생길 수 있다.",
+    trigger:"Topoisomerase, oxidative damage repair, MutLγ nicking 등으로 repeat 근처 nick이 생기면 fork collapse와 one-ended DSB가 만들어질 수 있다.",
+    signature:"stepwise slippage보다 큰 expansion jump, long tract synthesis, GAA/structure-forming repeat에서 repair-driven instability 설명에 유용하다.",
+    caveat:"모든 cohort signal에서 직접 관찰되는 readout은 아니다. mechanistic model과 human genetic modifier evidence를 구분해서 읽어야 한다."
+  },
+  {
+    id:"te",
+    title:"Alu/SVA context",
+    text:"SVA VNTR domain이나 Alu-embedded STR은 repeat locus 자체를 만들고, enhancer/splicing context를 동시에 제공할 수 있다.",
+    trigger:"LINE-1 machinery가 Alu/SVA를 삽입하고 target-site duplication을 남긴다. SVA는 내부 VNTR domain을 갖고, Alu는 repeat-rich enhancer/splicing substrate가 될 수 있다.",
+    signature:"mobile-element 안의 repeat가 enhancer activity, splice isoform, local chromatin을 바꿀 수 있다. repeat만 떼어 보면 원인 context를 놓친다.",
+    caveat:"TE-derived sequence는 mapping과 annotation이 어렵다. short-read signal은 validation과 orthogonal annotation이 특히 중요하다."
+  },
+  {
+    id:"somatic",
+    title:"Somatic mosaicism",
+    text:"post-mitotic neuron에서도 repair-driven expansion이 누적될 수 있어 tissue, age, disease progression과 연결된다.",
+    trigger:"post-mitotic cell에서는 replication slippage 대신 transcription-coupled structure, oxidative damage, repair intermediates가 expansion substrate가 된다.",
+    signature:"blood와 brain, bulk와 vulnerable cell type의 allele length distribution이 다를 수 있다. Disease progression은 inherited allele보다 somatic expansion rate에 더 가까울 수 있다.",
+    caveat:"Blood WGS만으로 neural tissue mosaicism을 과소평가할 수 있다. tissue source와 assay sensitivity를 항상 같이 기록해야 한다."
+  }
+];
+
+const contextDistribution = [
+  ["Intronic",65.8,COLORS.teal],
+  ["Intergenic",27.8,COLORS.indigo],
+  ["Non-coding exon",2.6,COLORS.moss],
+  ["3' UTR",1.3,COLORS.gold],
+  ["Promoter",1.0,COLORS.rust],
+  ["CDS",0.9,COLORS.violet],
+  ["5' UTR",0.6,"#7b8791"]
+];
+
+const deepLayers = [
+  {
+    title:"1. Locus definition",
+    text:"repeat locus는 coordinate가 고정된 단위처럼 보이지만, catalog마다 pure repeat만 세는지, interrupted repeat와 flank까지 포함하는지가 다르다.",
+    bullets:["pathogenic threshold가 counting rule에 민감할 수 있음","TRExplorer/VC는 flanking variation까지 allele로 묶을지 묻는다","association study는 catalog version을 결과의 일부로 보고해야 한다"]
+  },
+  {
+    title:"2. Motif composition",
+    text:"copy number가 같아도 interruption, motif switch, orientation이 stability와 phenotype을 바꾼다.",
+    bullets:["FMR1 AGG, ATXN1 CAT, FXN interruption처럼 protective/risk motif가 있음","RFC1처럼 motif-specific pathogenic allele이 존재","length-only caller는 이 layer를 잃기 쉽다"]
+  },
+  {
+    title:"3. Read evidence",
+    text:"short-read caller들은 full allele을 직접 읽는 대신 read class와 likelihood를 조합한다.",
+    bullets:["enclosing/spanning/fully repetitive read가 서로 다른 evidence를 제공","EHdn/STRling signal은 exact allele sequence가 아니다","insert-size와 stutter artifact가 false burden을 만들 수 있다"]
+  },
+  {
+    title:"4. Functional context",
+    text:"intronic/intergenic이라고 기능이 없다는 뜻은 아니다. repeat가 gene boundary, enhancer, splice site, chromatin state와 만나는 위치가 중요하다.",
+    bullets:["promoter/enhancer STR은 expression dosage를 조절할 수 있음","splice-proximal expansion은 isoform과 exonization을 바꿀 수 있음","brain developmental annotation은 ASD/psychiatric 해석에서 특히 중요"]
+  },
+  {
+    title:"5. Population context",
+    text:"TR allele frequency는 ancestry와 cohort ascertainment에 민감하다. reference와 다르다는 사실은 pathogenic evidence가 아니다.",
+    bullets:["multi-ancestry frequency가 rare expansion 해석의 기본","population mode에서 얼마나 벗어났는지 보는 것이 copy number 절대값보다 유용할 때가 있음","control set이 batch-matched인지 확인해야 한다"]
+  },
+  {
+    title:"6. Claim boundary",
+    text:"TR 논문에서 claim은 signal discovery, burden association, allele resolution, functional validation 중 어디까지 갔는지 분리해서 읽어야 한다.",
+    bullets:["screening signal은 candidate discovery","burden은 aggregate risk evidence","long-read/PCR은 allele definition","cell assay나 molecular QTL은 mechanism support"]
+  }
+];
+
+const papers = [
+  {stage:"Population STR", year:"2014", color:COLORS.teal, title:"Willems et al. STR landscape", text:"~700,000 STR loci across >1,000 1000 Genomes samples; early population-scale STR catalog.", query:"Willems 2014 landscape human STR variation"},
+  {stage:"Review / methods", year:"2017", color:COLORS.teal, title:"Gymrek genomic view of STRs", text:"STR biology, functional effects, and why standard variant calling misses much repeat variation.", query:"Gymrek 2017 genomic view short tandem repeats"},
+  {stage:"ASD expansion", year:"2020", color:COLORS.rust, title:"Trost et al. expanded repeats in autism", text:"EHdn screen of 17,231 genomes; rare gene-associated expansions enriched in ASD.", query:"Trost 2020 genome-wide detection tandem DNA repeats expanded autism"},
+  {stage:"De novo TR", year:"2021", color:COLORS.moss, title:"Mitra et al. de novo TR mutations", text:"GangSTR + MonSTR + SISTR in SSC quads; fetal-brain regulatory enrichment.", query:"Mitra 2021 patterns of de novo tandem repeat mutations autism"},
+  {stage:"ASD severity", year:"2024", color:COLORS.rust, title:"Kim et al. STR expansions and severity", text:"Korean ASD WGS; rare expansions in cortical layer-specific genes and CREs linked to clinical severity.", query:"Kim 2024 short tandem repeat expansions cortical layer autism severity"},
+  {stage:"Gene architecture", year:"2024", color:COLORS.gold, title:"Reinar et al. STRs delineate gene bodies", text:"Across 1,270 eukaryotic species, monomer/dimer STR landscapes align with gene boundaries.", query:"Reinar 2024 short tandem repeats delineate gene bodies"},
+  {stage:"HiFi trio", year:"2024", color:COLORS.indigo, title:"Mokveld et al. TRGT-denovo", text:"Read-aware HiFi trio caller for repeat length and composition de novo changes; 19/20 tested candidates validated.", query:"Mokveld 2024 TRGT-denovo tandem repeat mutations"},
+  {stage:"Catalog", year:"2026", color:COLORS.violet, title:"Weisburd et al. TRExplorer", text:"4,863,041-locus catalog, HPRC/AoU HiFi genotyping, variation clusters for complex repeat alleles.", query:"Weisburd 2026 defining tandem repeat catalog variation clusters"}
+];
+
+let activeScenario = scenarios[0];
+let activeMotif = motifs.find(m => m.id === activeScenario.motif);
+let activeContext = contexts.find(c => c.id === activeScenario.context);
+let activeMethod = methodFamilies.find(m => m.id === activeScenario.method);
+let activeMechanism = mechanisms[0];
+let copyNumber = activeScenario.copies;
+let tick = 0;
+
+function el(id){return document.getElementById(id)}
+function setActive(color){
+  document.documentElement.style.setProperty("--active",color);
+  document.documentElement.style.setProperty("--active-soft",softColor(color));
+}
+function softColor(color){
+  if(color===COLORS.rust) return "#f8e5df";
+  if(color===COLORS.indigo) return "#e8ebf7";
+  if(color===COLORS.moss) return "#e9efd9";
+  if(color===COLORS.gold) return "#f5ead2";
+  if(color===COLORS.violet) return "#ece8f6";
+  return "#dff0ee";
+}
+function repeatLengthBp(){return activeMotif.id === "VNTR" ? copyNumber * 30 : copyNumber * activeMotif.label.length}
+function repeatClass(){
+  if(activeMotif.id === "VNTR") return "VNTR";
+  return activeMotif.label.length <= 6 ? "STR" : "TR";
+}
+function visibilityScores(){
+  const bp = repeatLengthBp();
+  const longAllele = bp > 180;
+  const complex = activeContext.id === "vc" || activeContext.id === "mobile" || activeMotif.id === "VNTR";
+  const disease = ["CAG","CGG","GAA","G4C2"].includes(activeMotif.id);
+  return {
+    short: Math.max(12, Math.min(92, 92 - bp/5 - (complex ? 18 : 0))),
+    expansion: Math.max(18, Math.min(95, (longAllele ? 66 : 36) + (disease ? 12 : 0) + (copyNumber > 90 ? 14 : 0))),
+    sequence: Math.max(24, Math.min(98, 42 + (complex ? 34 : 0) + (longAllele ? 18 : 0) + (activeContext.id === "clinical" ? 8 : 0))),
+    clinical: Math.max(22, Math.min(96, 30 + (disease ? 24 : 0) + (copyNumber > 55 ? 18 : 0) + (activeContext.id !== "intergenic" ? 10 : 0)))
+  };
+}
+
+function renderScenarios(){
+  el("scenarioStrip").innerHTML = scenarios.map(s => `
+    <button class="scenario-btn ${s.id===activeScenario.id?"active":""}" data-id="${s.id}" style="--active:${s.color};--active-soft:${softColor(s.color)}">
+      <b>${s.label}</b><span>${s.sub}</span>
+    </button>
+  `).join("");
+  el("scenarioStrip").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeScenario = scenarios.find(s => s.id === btn.dataset.id);
+      activeMotif = motifs.find(m => m.id === activeScenario.motif);
+      activeContext = contexts.find(c => c.id === activeScenario.context);
+      activeMethod = methodFamilies.find(m => m.id === activeScenario.method);
+      copyNumber = activeScenario.copies;
+      el("copySlider").value = copyNumber;
+      renderAll();
+    });
+  });
+}
+
+function renderBuilder(){
+  setActive(activeScenario.color);
+  el("builderTitle").textContent = activeScenario.title;
+  el("builderSummary").textContent = activeScenario.summary;
+  el("motifClass").textContent = activeMotif.class;
+  el("copyLabel").textContent = `${copyNumber} copies · ${repeatLengthBp().toLocaleString()} bp`;
+  el("contextLabel").textContent = activeContext.short;
+
+  el("motifGrid").innerHTML = motifs.map(m => `
+    <button class="choice-btn ${m.id===activeMotif.id?"active":""}" data-id="${m.id}" style="--active:${m.color};--active-soft:${softColor(m.color)}">
+      <b>${m.label}</b><span>${m.example}</span>
+    </button>
+  `).join("");
+  el("motifGrid").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeMotif = motifs.find(m => m.id === btn.dataset.id);
+      renderAll();
+    });
+  });
+
+  el("contextGrid").innerHTML = contexts.map(c => `
+    <button class="choice-btn ${c.id===activeContext.id?"active":""}" data-id="${c.id}">
+      <b>${c.label}</b><span>${c.impact}</span>
+    </button>
+  `).join("");
+  el("contextGrid").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeContext = contexts.find(c => c.id === btn.dataset.id);
+      renderAll();
+    });
+  });
+
+  el("copyReadout").innerHTML = [
+    [repeatClass(), "repeat class"],
+    [`${repeatLengthBp().toLocaleString()} bp`, "approximate tract length"],
+    [copyNumber > 90 ? "large" : copyNumber > 45 ? "expanded" : "polymorphic", "interpretation regime"]
+  ].map(([v,k]) => `<div class="mini-stat"><b>${v}</b><span>${k}</span></div>`).join("");
+
+  const bio = [
+    ["Motif identity", `${activeMotif.label} motif: ${activeMotif.risk}.`],
+    ["Allele length", copyNumber > 90 ? "large expansion regime; short reads mostly see signal, not full allele." : "length can often be modeled, but stutter and mapping still matter."],
+    ["Genomic context", `${activeContext.label}: ${activeContext.impact}.`],
+    ["Interpretation", "frequency, ancestry, phenotype, and assay quality decide whether the allele is meaningful."]
+  ];
+  el("biologyStack").innerHTML = bio.map(([k,v],i) => `
+    <div class="stack-step ${i>2?"muted":""}">
+      <span class="step-num">${i+1}</span>
+      <div><b>${k}</b><span>${v}</span></div>
+    </div>
+  `).join("");
+}
+
+function renderMethods(){
+  el("methodTabs").innerHTML = methodFamilies.map(m => `
+    <button class="method-btn ${m.id===activeMethod.id?"active":""}" data-id="${m.id}" style="--method-color:${m.color};--active:${m.color};--active-soft:${softColor(m.color)}">
+      <i></i><b>${m.title}</b><span>${m.sub}</span>
+    </button>
+  `).join("");
+  el("methodTabs").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeMethod = methodFamilies.find(m => m.id === btn.dataset.id);
+      renderAll();
+    });
+  });
+  el("techDetail").innerHTML = [
+    ["Measured", activeMethod.measured],
+    ["Strong at", activeMethod.strong],
+    ["Weak at", activeMethod.weak],
+    ["Typical tools", activeMethod.tools.join(", ")]
+  ].map(([k,v]) => `<div class="detail-block"><b>${k}</b><span>${v}</span></div>`).join("");
+
+  el("methodStack").innerHTML = activeScenario.stack.map(([k,v],i) => `
+    <div class="stack-step ${i===3?"muted":""}">
+      <span class="step-num">${i+1}</span>
+      <div><b>${k}</b><span>${v}</span></div>
+    </div>
+  `).join("");
+}
+
+function renderMetrics(){
+  const s = visibilityScores();
+  const rows = [
+    ["Short-read visibility", s.short],
+    ["Expansion signal", s.expansion],
+    ["Allele-sequence need", s.sequence],
+    ["Clinical caution", s.clinical]
+  ];
+  el("metricGrid").innerHTML = rows.map(([k,v]) => `
+    <div class="score-row">
+      <b>${k}</b>
+      <div class="score-track"><div class="score-fill" style="width:${v}%"></div></div>
+      <span>${Math.round(v)}</span>
+    </div>
+  `).join("");
+  el("focusTitle").textContent = `${activeMotif.label} x ${copyNumber} in ${activeContext.label}`;
+  el("focusText").textContent = `${activeMotif.class} allele이며 tract length는 약 ${repeatLengthBp().toLocaleString()} bp입니다. ${activeContext.impact}. ${copyNumber > 80 ? "큰 allele일수록 short-read는 signal을 잡아도 exact sequence는 잃기 쉽습니다." : "짧거나 중간 길이 allele은 cohort-wide genotyping이 가능하지만 locus complexity는 따로 확인해야 합니다."}`;
+}
+
+function renderMechanisms(){
+  el("mechanismGrid").innerHTML = mechanisms.map(m => `
+    <button class="mechanism-card ${m.id===activeMechanism.id?"active":""}" data-id="${m.id}">
+      <b>${m.title}</b><span>${m.text}</span>
+    </button>
+  `).join("");
+  el("mechanismGrid").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeMechanism = mechanisms.find(m => m.id === btn.dataset.id);
+      renderMechanisms();
+    });
+  });
+  el("mechanismTitle").textContent = activeMechanism.title;
+  el("mechanismText").textContent = activeMechanism.text;
+  el("mechanismDetailGrid").innerHTML = [
+    ["Trigger", activeMechanism.trigger],
+    ["Observed signature", activeMechanism.signature],
+    ["Interpretation caveat", activeMechanism.caveat]
+  ].map(([k,v]) => `<div class="detail-block"><b>${k}</b><span>${v}</span></div>`).join("");
+}
+
+function renderDeepLayers(){
+  el("deepGrid").innerHTML = deepLayers.map(layer => `
+    <section class="deep-card">
+      <b>${layer.title}</b>
+      <p>${layer.text}</p>
+      <ul>${layer.bullets.map(item => `<li>${item}</li>`).join("")}</ul>
+    </section>
+  `).join("");
+}
+
+function renderPapers(){
+  el("paperAtlas").innerHTML = papers.map(p => `
+    <article class="paper" style="--paper-color:${p.color}">
+      <div class="paper-top"><span class="paper-tag">${p.stage}</span><span class="paper-year">${p.year}</span></div>
+      <h3>${p.title}</h3>
+      <p>${p.text}</p>
+      <a href="https://scholar.google.com/scholar?q=${encodeURIComponent(p.query)}" target="_blank" rel="noopener">Google Scholar</a>
+    </article>
+  `).join("");
+}
+
+function drawRepeatCanvas(){
+  const canvas = el("repeatCanvas");
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(1, Math.floor(rect.width*dpr));
+  const h = Math.max(1, Math.floor(rect.width*.58*dpr));
+  if(canvas.width!==w || canvas.height!==h){canvas.width=w;canvas.height=h}
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = "#fffdf8";
+  ctx.fillRect(0,0,w,h);
+  ctx.save();
+  ctx.strokeStyle = "rgba(83,96,108,.11)";
+  ctx.lineWidth = 1*dpr;
+  for(let x=0;x<w;x+=42*dpr){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+  for(let y=0;y<h;y+=42*dpr){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+  ctx.restore();
+
+  const pad = 48*dpr;
+  const baseline = h*.48;
+  const units = Math.min(copyNumber, 96);
+  const gap = Math.max(5*dpr, Math.min(13*dpr, (w-pad*2)/units));
+  const unitW = gap*.76;
+  const start = (w - gap*units)/2;
+  const amp = 42*dpr;
+  const color = activeMotif.color;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  ctx.strokeStyle = "rgba(24,32,30,.25)";
+  ctx.lineWidth = 2*dpr;
+  ctx.beginPath();
+  ctx.moveTo(pad,baseline);
+  ctx.lineTo(w-pad,baseline);
+  ctx.stroke();
+
+  for(let i=0;i<units;i++){
+    const x = start + i*gap;
+    const y = baseline + Math.sin((i+tick*.025)/4)*amp;
+    const isInterrupt = activeMotif.id !== "AT" && i === Math.floor(units*.56);
+    ctx.fillStyle = isInterrupt ? "#fffdf8" : color;
+    ctx.strokeStyle = isInterrupt ? COLORS.gold : "rgba(255,255,255,.92)";
+    ctx.lineWidth = isInterrupt ? 2.5*dpr : 1.5*dpr;
+    ctx.beginPath();
+    ctx.roundRect(x,y-16*dpr,unitW,32*dpr,5*dpr);
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = "rgba(24,32,30,.76)";
+  ctx.font = `700 ${14*dpr}px ui-monospace, SFMono-Regular, Menlo`;
+  ctx.fillText(`${activeMotif.label} x ${copyNumber}`, pad, 34*dpr);
+  ctx.font = `600 ${12*dpr}px ui-sans-serif, system-ui`;
+  ctx.fillStyle = "rgba(83,96,108,.9)";
+  ctx.fillText(activeContext.label, pad, 55*dpr);
+
+  const readY = h*.78;
+  const shortSpan = Math.min(w*.34, 150*dpr);
+  for(let i=0;i<9;i++){
+    const x = pad + i*(shortSpan/8);
+    ctx.strokeStyle = i%2 ? "rgba(181,83,67,.58)" : "rgba(17,114,120,.62)";
+    ctx.lineWidth = 5*dpr;
+    ctx.beginPath();
+    ctx.moveTo(x,readY + (i%3-1)*12*dpr);
+    ctx.lineTo(x + shortSpan*.45, readY + (i%3-1)*12*dpr);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = "rgba(79,94,155,.65)";
+  ctx.lineWidth = 7*dpr;
+  ctx.beginPath();
+  ctx.moveTo(w*.55,readY);
+  ctx.bezierCurveTo(w*.66,readY-34*dpr,w*.82,readY+34*dpr,w-pad,readY-5*dpr);
+  ctx.stroke();
+
+  ctx.font = `650 ${12*dpr}px ui-sans-serif, system-ui`;
+  ctx.fillStyle = "rgba(24,32,30,.68)";
+  ctx.fillText("short reads: signal / partial length", pad, readY+50*dpr);
+  ctx.fillText("long read: allele sequence", w*.56, readY+50*dpr);
+
+  if(copyNumber > 96){
+    ctx.font = `800 ${15*dpr}px ui-sans-serif, system-ui`;
+    const hiddenLabel = `+${copyNumber-96} hidden repeat units`;
+    const compact = w < 620*dpr;
+    const hiddenX = compact ? pad : w-pad-ctx.measureText(hiddenLabel).width;
+    const hiddenY = compact ? 78*dpr : 34*dpr;
+    const hiddenW = ctx.measureText(hiddenLabel).width;
+    ctx.fillStyle = "rgba(255,253,248,.82)";
+    ctx.beginPath();
+    ctx.roundRect(hiddenX-7*dpr, hiddenY-19*dpr, hiddenW+14*dpr, 26*dpr, 6*dpr);
+    ctx.fill();
+    ctx.fillStyle = "rgba(181,83,67,.92)";
+    ctx.fillText(hiddenLabel, hiddenX, hiddenY);
+  }
+
+  tick += 1;
+  if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches) requestAnimationFrame(drawRepeatCanvas);
+}
+
+function drawContextCanvas(){
+  const canvas = el("contextCanvas");
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(1, Math.floor(rect.width*dpr));
+  const h = Math.max(1, Math.floor(rect.width*.72*dpr));
+  if(canvas.width!==w || canvas.height!==h){canvas.width=w;canvas.height=h}
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = "#fffdf8";
+  ctx.fillRect(0,0,w,h);
+  const pad = 42*dpr;
+  const chartW = w - pad*2;
+  const labelW = Math.min(132*dpr, chartW*.42);
+  const pctW = 52*dpr;
+  const barX = pad + labelW;
+  const barW = chartW - labelW - pctW;
+  const chartH = h - pad*1.8;
+  const barH = Math.max(16*dpr, chartH / 10);
+  const rowStep = Math.max(25*dpr, (chartH - barH) / (contextDistribution.length - 1));
+  ctx.font = `700 ${12*dpr}px ui-sans-serif, system-ui`;
+  contextDistribution.forEach(([label,value,color],i) => {
+    const y = pad + i*rowStep;
+    ctx.fillStyle = "rgba(233,237,231,.88)";
+    ctx.beginPath();
+    ctx.roundRect(barX,y,barW,barH,999*dpr);
+    ctx.fill();
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(barX,y,barW*(value/70),barH,999*dpr);
+    ctx.fill();
+    ctx.fillStyle = "#25332e";
+    ctx.fillText(label,pad,y+barH/2+4*dpr);
+    ctx.fillStyle = "rgba(83,96,108,.9)";
+    ctx.textAlign = "right";
+    ctx.fillText(`${value}%`,w-pad,y+barH/2+4*dpr);
+    ctx.textAlign = "left";
+  });
+}
+
+function renderAll(){
+  renderScenarios();
+  renderBuilder();
+  renderMethods();
+  renderMetrics();
+  renderMechanisms();
+  renderDeepLayers();
+  renderPapers();
+  drawContextCanvas();
+}
+
+el("copySlider").addEventListener("input", e => {
+  copyNumber = Number(e.target.value);
+  renderBuilder();
+  renderMetrics();
+});
+
+if(!CanvasRenderingContext2D.prototype.roundRect){
+  CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r){
+    const radius = Math.min(r,w/2,h/2);
+    this.moveTo(x+radius,y);
+    this.arcTo(x+w,y,x+w,y+h,radius);
+    this.arcTo(x+w,y+h,x,y+h,radius);
+    this.arcTo(x,y+h,x,y,radius);
+    this.arcTo(x,y,x+w,y,radius);
+    return this;
+  };
+}
+
+renderAll();
+drawRepeatCanvas();
+window.addEventListener("resize", () => {
+  drawContextCanvas();
+});
+</script>
+</body>
+</html>
