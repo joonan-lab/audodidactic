@@ -1,4 +1,4 @@
-# GPT Image 2 Visual Briefs For Audodidactic Interactives
+# GPT Image 2 Visual Briefs For Autodidact Interactives
 
 These prompts are written for public educational assets. They avoid non-public project references, vendor logos, fake data values, decorative gradients, and photorealistic lab claims that could be mistaken for real measurements.
 
