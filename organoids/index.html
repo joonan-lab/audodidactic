@@ -771,9 +771,9 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
             </div>
             <div class="concept-grid">
               <div class="concept-card"><b>환자 유래 cohort</b>Gordon 2026은 품질 검사를 통과한 hiPSC line 70개, ASD 관련 변이 8종, day 25-100 RNA-seq을 사용했습니다. 연구의 초점은 초기에 갈라지는 차이(divergence)와 SWI-SNF 중심의 공통 수렴(convergence)이었습니다.</div>
-              <div class="concept-card"><b>동질유전 모델</b>같은 유전 배경에서 특정 변이만 바꿉니다. PTEN, SCN2A, USP15, CEP41 모델처럼 donor 차이와 유전자형 효과를 분리하고 싶을 때 유리합니다.</div>
+              <div class="concept-card"><b>동질유전 모델</b>같은 유전 배경에서 특정 변이만 바꿉니다. FMR1, PTEN, SCN2A, CEP41 모델처럼 donor 차이와 유전자형 효과를 분리하고 싶을 때 유리합니다.</div>
               <div class="concept-card"><b>Pooled CRISPR screen</b>Li 2023 CHOOSE는 ASD 유전자 36개를 뇌 오가노이드에서 병렬로 perturb했습니다. Meng 2023은 NDD 유전자 425개를 어셈블로이드에서 세포 생성과 이동 측정값으로 나누어 보았습니다.</div>
-              <div class="concept-card"><b>Atlas-to-model</b>NOCAP/Telen-NOCAP 계열은 오가노이드 단일세포 atlas와 perturbation 예측을 연결합니다. 먼저 수천 개 유전자의 전사체 반응을 예측하고, 그 결과가 유전학 cohort와 맞는지 다시 확인합니다.</div>
+              <div class="concept-card"><b>Atlas-to-model</b>공개 단일세포 atlas와 계산 모델을 연결하면 어떤 세포 상태가 질환 경로와 가까운지 가설을 세울 수 있습니다. 다만 예측 결과는 후속 CRISPR, 환자 세포주, 기능 readout으로 다시 검증해야 합니다.</div>
             </div>
             <div class="deep-table">
               <table>
@@ -799,7 +799,7 @@ td:first-child{font-weight:730;color:#202938;white-space:nowrap}
               <div class="step-item"><span class="step-num">3</span><div><b>측정값의 층위</b><span>DEG만 보는지, 세포 운명, 이동, 칼슘 신호, 전기생리, rescue까지 보는지 봅니다.</span></div></div>
               <div class="step-item"><span class="step-num">4</span><div><b>반복성</b><span>donor 수, 배치 수, 시간대, 독립 검증이 충분한지 확인합니다.</span></div></div>
             </div>
-            <span class="source-line">대표 연구: Kang 2021, Li 2023, Meng 2023, Fleck 2023, Sarieva 2023, Gordon 2026, Koh 2025</span>
+            <span class="source-line">대표 연구: Kang 2021, Li 2023, Meng 2023, Fleck 2023, Sarieva 2023, Gordon 2026</span>
           </aside>
         </div>
       </section>
@@ -954,12 +954,10 @@ const studies = [
   {id:"kim-2025",year:2025,organ:"Brain",type:"Assembloid",source:"Four guided human neural organoids",title:"Human assembloid model of the ascending neural sensory pathway",short:"Kim sensory",method:"Sequential fusion of sensory, dorsal spinal, thalamic, and cortical organoids.",finding:"Models ascending somatosensory pathway propagation and SCN9A pain phenotypes.",application:"Human sensory circuit and pain modeling."},
   {id:"xu-2025",year:2025,organ:"Methods/NAM",type:"Atlas/benchmark",source:"Endoderm-derived organoids",title:"An integrated transcriptomic cell atlas of human endoderm-derived organoids",short:"Xu HEOCA",method:"806,646 single-cell/nucleus profiles from 218 samples across 9 endoderm-derived organ systems.",finding:"Adult stem cell organoids are most adult-like; PSC organoids are more fetal-like and often lower on-target.",application:"Cross-organ endoderm organoid fidelity benchmarking."},
   {id:"lee-2025-organometrics",year:2025,organ:"Methods/NAM",type:"Reference method",source:"111 organoid datasets across 8 organs",title:"OrganoMetrics: A unified toolkit for quantitative assessment of organoid developmental fidelity",short:"OrganoMetrics",method:"OrganoTime, transcriptomic fidelity, compositional fidelity, diversity, DevScore, and reference-free AIO.",finding:"Quantifies organoid fidelity across brain, lung, gut, kidney, heart, retina, spinal cord, and liver.",application:"Unified organoid QC and protocol comparison."},
-  {id:"koh-2025",year:2025,organ:"Brain",type:"In silico perturbation",source:"3.6M-cell brain organoid atlas",title:"AI-driven framework modelling perturbation in brain organoids reveals candidate genes for autism",short:"AIVC-ASD",method:"NOCAP atlas plus Telen-NOCAP perturbation model over 19,424 protein-coding genes.",finding:"Prioritizes ASD-relevant synaptic and ubiquitin/radial-glia perturbation clusters with genomic validation.",application:"Virtual-cell-to-organoid ASD candidate discovery."},
   {id:"cao-2025",year:2025,organ:"Brain",type:"Disease model",source:"Human brain tissues and hiPSC organoids",title:"Cell-type-resolved NRXN1 isoforms across human brain tissues and hiPSC organoids",short:"Cao NRXN1",method:"Targeted long-read transcript enrichment plus single-cell transcriptomics.",finding:"Catalogs NRXN1 isoforms across fetal/adult brain and hiPSC-derived cortical organoids.",application:"Isoform-resolved neurodevelopmental disease interpretation."},
   {id:"prasad-2025",year:2025,organ:"Brain",type:"Disease model",source:"Anterior neural organoids",title:"Characterization of Human Anterior Neural Organoids as a Model for Investigating Cohen Syndrome",short:"Prasad",method:"iPSC-derived anterior neural organoids for VPS13B/Cohen syndrome investigation.",finding:"Establishes organoids as a disease-model platform for Cohen syndrome-related neurodevelopment.",application:"Rare NDD organoid modeling."},
   {id:"yuan-2026",year:2026,organ:"Liver",type:"Assembloid",source:"Adult hepatocyte, cholangiocyte, and portal mesenchyme organoids",title:"Human assembloids recapitulate periportal liver tissue in vitro",short:"Yuan",method:"Long-term adult hepatocyte organoids plus matched cholangiocyte organoids and portal mesenchyme.",finding:"Patient-specific periportal liver assembloids reproduce key structure, function, and niche interactions.",application:"Liver tissue architecture, disease modeling, and regenerative workflows."},
   {id:"gordon-2026",year:2026,organ:"Brain",type:"Disease cohort",source:"70 ASD hiPSC cortical organoid lines",title:"Developmental convergence and divergence in human stem cell models of autism",short:"Gordon",method:"Patient-derived cortical organoids profiled across days 25-100 plus CRISPRi validation.",finding:"Diverse ASD mutations converge on chromatin/transcriptional dysregulation centered on SWI-SNF.",application:"Cohort-scale ASD organoid convergence."},
-  {id:"park-2026",year:2026,organ:"Brain",type:"Disease model",source:"USP15 isogenic cerebral organoids",title:"USP15 mutation associated with autism spectrum disorder alters progenitor fate and neuronal maturation",short:"Park USP15",method:"CRISPR isogenic USP15 heterozygous/homozygous cerebral organoids with day-107 scRNA-seq.",finding:"Allele-dose progenitor-centric corticogenesis defects and deep-layer projection neuron maturation changes.",application:"Korean ASD rare-variant functional validation."},
   {id:"hasenpusch-2026",year:2026,organ:"Brain",type:"Disease model",source:"CEP41 cortical and ventral organoids",title:"ASD mutations in the ciliary gene CEP41 impact development of projection neurons and interneurons",short:"CEP41",method:"CRISPR HDR R242H iPSCs; dorsal cortical and ventral telencephalic organoids.",finding:"Shorter cilia and reduced tubulin polyglutamylation accompany projection neuron and interneuron fate shifts.",application:"Ciliary route to ASD E/I imbalance."},
   {id:"yent-2026",year:2026,organ:"Brain",type:"Environmental model",source:"Dorsal forebrain organoids",title:"Multiomics analysis identifies VPA-induced changes in neural progenitor cells, ventricular-like regions, and cellular microenvironment",short:"Yent VPA",method:"VPA exposure from D21-D50 with bulk RNA-seq, scRNA-seq, secretome MS, imaging, and mechanics.",finding:"VPA disrupts VZ-like zones and alters ECM, integrin, PIEZO, and Hippo-YAP/TAZ pathways.",application:"Human teratogen and ASD environmental-risk modeling."},
   {id:"kamzina-2026",year:2026,organ:"Brain",type:"Disease model",source:"TREM2-R47H forebrain organoids",title:"The TREM2-R47H Variant Drives Alzheimer's-Relevant Alterations in Forebrain Organoids Beyond Microglial Populations",short:"Kamzina",method:"iPSC-derived forebrain organoids with AD-risk TREM2 variant context.",finding:"TREM2-R47H affects broader neurocellular networks beyond microglial populations.",application:"Neurodegeneration-relevant organoid genetics."},
@@ -1031,10 +1029,10 @@ const cultureMatrices = {
     label:"질환 / 약물",
     columns:["사용 목적","확장되는 규모","필요한 측정값","예시"],
     rows:[
-      ["단일유전자 질환 모델링", "환자 iPSC + 동질유전 CRISPR", "세포 종류별 표현형, 발생 시점, rescue", "FMR1, PTEN, NRXN1, SCN2A, USP15, CEP41"],
+      ["단일유전자 질환 모델링", "환자 iPSC + 동질유전 CRISPR", "세포 종류별 표현형, 발생 시점, rescue", "FMR1, PTEN, NRXN1, SCN2A, CEP41"],
       ["Cohort-scale 질환 모델링", "수십 개 iPSC line, 시간대별 profiling, 변이 종류 비교", "수렴/분기, 재현성, pathway-level signal", "Gordon 2026 ASD cortical organoid cohort"],
       ["Pooled functional screen", "오가노이드/어셈블로이드에서 수십-수백 개 유전자", "세포 구성, 이동, GRN, guide-linked scRNA-seq", "Li 2023 CHOOSE, Meng 2023 forebrain assembloid"],
-      ["Virtual perturbation", "atlas로 학습한 모델이 수천 개 유전자 효과를 예측", "생물학적 일관성, 유전체 검증, 후속 실험", "NOCAP/Telen-NOCAP, AIVC-ASD"],
+      ["Virtual perturbation", "공개 atlas로 학습한 모델이 후보 perturbation 효과를 예측", "생물학적 일관성, 유전체 검증, 후속 실험", "계산 예측은 실험 검증 전 가설로 해석"],
       ["Drug / NAM", "스크리닝 가능한 인간 조직 모델 + AI/clinical-trial-in-a-dish", "기능 rescue, 독성, 감염 반응, 사용 맥락", "Pocock 2025 heart, Kang/Han lung, Liu 2026 NAM"]
     ]
   }
