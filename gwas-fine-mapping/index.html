@@ -894,7 +894,7 @@ canvas{display:block;width:100%;height:496px}
       <article class="case-card" style="--case-color:#a66b13">
         <div class="case-meta"><span>Nat Genet 2024</span><span>MDD / ancestry</span></div>
         <h3>Major depression: ancestry LD diversity가 credible set을 줄임</h3>
-        <p class="case-thesis">Meng et al.은 특정 한 변이의 실험 검증보다, 다중 ancestry GWAS가 fine-mapping 해상도 자체를 어떻게 바꾸는지 보여 줍니다.</p>
+        <p class="case-thesis">Meng et al.은 특정 한 변이의 실험 검증 대신, 다중 ancestry GWAS가 fine-mapping 해상도 자체를 어떻게 바꾸는지에 초점을 맞췄습니다.</p>
         <dl class="case-flow">
           <div><dt>찾은 출발점</dt><dd>기존 MDD GWAS가 유럽계에 치우쳐 있었기 때문에, 21개 diverse cohort와 유럽계 자료를 합쳐 345,389 cases / 1,469,702 controls 규모의 meta-analysis를 만들었습니다.</dd></div>
           <div><dt>분석</dt><dd>22,941,580 SNP를 분석해 169 loci와 53 novel associations를 찾고, 155 significant loci에 multi-ancestry Bayesian fine-mapping을 수행했습니다. 99% credible set median은 유럽계 단독 65.5 variants에서 multi-ancestry 30 variants로 줄었습니다.</dd></div>
@@ -905,7 +905,7 @@ canvas{display:block;width:100%;height:496px}
       <article class="case-card" style="--case-color:#147a83">
         <div class="case-meta"><span>Cell 2025</span><span>MPRA / psychiatric</span></div>
         <h3>Cross-disorder MPRA: fine-mapping과 실험 신호의 불일치</h3>
-        <p class="case-thesis">Lee et al.은 psychiatric GWAS loci에서 통계적 credible set과 MPRA emVar가 겹치지만 완전히 같지는 않다는 점을 대규모로 보여 줍니다.</p>
+        <p class="case-thesis">Lee et al.은 psychiatric GWAS loci에서 통계적 credible set과 MPRA emVar가 겹치지만 완전히 같지는 않다는 점을 대규모로 정리했습니다.</p>
         <dl class="case-flow">
           <div><dt>찾은 출발점</dt><dd>PGC cross-disorder GWAS의 136 loci에서 p&lt;1e-5 변이 17,841개를 골라 human neural progenitors MPRA에 넣었습니다.</dd></div>
           <div><dt>분석</dt><dd>13,311 QC-passing variants 중 683 emVars를 찾았고, FINEMAP/SuSiE/CAVIAR credible set과 비교했습니다. 6,805 credible-set variants는 emVar가 아니었고, 반대로 438 emVars는 세 fine-mapping 결과 어디에도 없었습니다.</dd></div>
@@ -984,11 +984,11 @@ const papers = [
   {stage:"statistical",year:"2016",title:"FINEMAP — Bayesian fine-mapping with stochastic search",take:"여러 causal configuration을 탐색해 variant별 PIP와 credible set을 산출하는 대표 방법입니다.",query:"Benner FINEMAP 2016 Bayesian fine-mapping stochastic search"},
   {stage:"statistical",year:"2020",title:"SuSiE — Sum of Single Effects",take:"single-effect를 합쳐 여러 독립 signal별 credible set을 만드는 현재 핵심 방법론입니다.",query:"Wang 2020 SuSiE sum of single effects fine mapping"},
   {stage:"statistical",year:"2014",title:"CAVIAR / eCAVIAR lineage",take:"causal variant posterior와 PIP 기반 colocalization으로 이어지는 Bayesian fine-mapping 계열입니다.",query:"CAVIAR eCAVIAR causal variants fine mapping colocalization"},
-  {stage:"functional",year:"2016",title:"Ionita-Laza et al. — Eigen score",take:"보존성, chromatin, TF binding 등을 통합한 functional score를 fine-mapping prior로 쓸 수 있음을 보여줍니다.",query:"Ionita-Laza 2016 Eigen score functional genomic annotations fine mapping"},
+  {stage:"functional",year:"2016",title:"Ionita-Laza et al. — Eigen score",take:"보존성, chromatin, TF binding 등을 통합한 functional score를 fine-mapping prior로 쓰는 접근을 처음 정리했습니다.",query:"Ionita-Laza 2016 Eigen score functional genomic annotations fine mapping"},
   {stage:"functional",year:"2020",title:"PolyFun — Functionally informed fine-mapping",take:"S-LDSC 기반 per-SNP heritability prior를 SuSiE fine-mapping에 연결하는 흐름의 대표입니다.",query:"PolyFun 2020 functionally informed fine-mapping"},
   {stage:"functional",year:"2021",title:"Wang et al. — EMS for cis-eQTL fine-mapping",take:"GTEx fine-mapped eQTL과 6,121개 feature로 EMS를 학습해 eQTL PIP와 colocalization을 강화합니다.",query:"Wang 2021 expression modifier score cis-eQTL fine-mapping"},
   {stage:"functional",year:"2022",title:"Li et al. — MACIE multidimensional scoring",take:"coding/noncoding functional variant scoring을 확장해 prior 후보군을 더 정교하게 만드는 방향입니다.",query:"Li 2022 MACIE multi-dimensional integrative scoring functional variants"},
-  {stage:"functional",year:"2023",title:"Benegas et al. — DNA language models as variant effect predictors",take:"sequence model 기반 variant effect score가 fine-mapping prior 후보로 들어오는 흐름을 보여줍니다.",query:"Benegas 2023 DNA language models variant effects"},
+  {stage:"functional",year:"2023",title:"Benegas et al. — DNA language models as variant effect predictors",take:"sequence model 기반 variant effect score가 fine-mapping prior 후보로 들어오는 흐름의 대표 사례입니다.",query:"Benegas 2023 DNA language models variant effects"},
   {stage:"functional",year:"2026",title:"SCADS — single-cell chromatin accessibility disease score",take:"scATAC topic enrichment를 cell-level disease relevance로 바꾸고 fine-mapping prior로 연결합니다.",query:"SCADS single-cell ATAC disease score fine mapping"},
   {stage:"ancestry",year:"2024",title:"Meng et al. — Multi-ancestry GWAS of major depression",take:"ancestral diversity로 99% credible-set median이 유럽계 단독 65.5 variants에서 multi-ancestry 30 variants로 줄었습니다.",query:"Meng 2024 multi-ancestry GWAS major depression fine mapping credible set"},
   {stage:"ancestry",year:"2026",title:"Sakaue et al. — Multi-ancestral RA GWAS in MVP",take:"152 non-MHC RA loci 중 60개가 <10-variant 95% CS, 10개는 single-variant CS로 좁혀졌습니다.",query:"Sakaue 2026 multi-ancestral GWAS rheumatoid arthritis fine mapping credible sets"},
