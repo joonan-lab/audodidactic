@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>단세포 Foundation Model — 55편의 풍경 (Single-cell Foundation Models)</title>
+<meta name="description" content="scBERT(2022)부터 scPRINT-2·Tahoe-x1·Geneformer V2·MaxToki(2025-26)까지, 단세포 RNA-seq foundation model 55편을 한 페이지로 풀어둔 한글 인터랙티브 자료. 8가지 토큰화 전략, HEIMDALL 토크나이저 분해, 16개 모델 비교 테이블, Reality Check 4편 비판, Virtual Cell 비전을 포함.">
+<style>
+*{box-sizing:border-box}
+:root{
+  /* surfaces */
+  --bg:#fff;
+  --bg-soft:#fafbfc;
+  --ink:#17202a;
+  --ink-soft:#3f4b5d;
+  --muted:#667085;
+  --muted2:#8b95a3;
+  --line:#d9dee7;
+  --line-soft:#e9edf3;
+  --soft:#f6f8fb;
+  --soft2:#edf2f7;
+  --shadow:0 10px 30px rgba(23,32,42,.08);
+  --shadow-sm:0 2px 6px rgba(23,32,42,.05);
+
+  /* strategy palette — 8 colors */
+  --c-rank:#19735d;        /* green     · rank-based      */
+  --c-value:#b23a48;       /* red       · value-projection */
+  --c-binned:#a66b13;      /* gold      · binned-generative */
+  --c-llm:#6350a8;         /* violet    · llm-derived gene embedding */
+  --c-cross:#19728a;       /* cyan      · cross-species (protein-based) */
+  --c-base:#255c99;        /* blue      · llm-as-base */
+  --c-pert:#c2691a;        /* orange    · perturbation-aware */
+  --c-spatial:#0d6e75;     /* teal      · spatial / epigenomic */
+  --c-rank-bg:#e8f3ef;
+  --c-value-bg:#f6e6e8;
+  --c-binned-bg:#f5edd9;
+  --c-llm-bg:#ebe7f3;
+  --c-cross-bg:#e0eef2;
+  --c-base-bg:#e3ecf5;
+  --c-pert-bg:#f7e8d6;
+  --c-spatial-bg:#daece8;
+
+  /* category accents (intro / reality / virtual) */
+  --c-intro:#5b6b80;
+  --c-warn:#a44a3a;
+  --c-vision:#5b4ba8;
+}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',ui-sans-serif,system-ui,sans-serif;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select{font:inherit;color:inherit}
+a{color:inherit}
+code,kbd{font-family:ui-monospace,'JetBrains Mono','SF Mono',Menlo,monospace;font-size:.92em;background:var(--soft2);padding:.06em .35em;border-radius:4px}
+.page{max-width:1420px;margin:0 auto;padding:30px 26px 60px}
+
+/* ============== NAV ============== */
+.topnav{
+  display:flex;align-items:center;gap:1rem;
+  padding-bottom:14px;margin-bottom:18px;
+  border-bottom:1px solid var(--line);
+  font-size:13px;color:var(--muted);
+}
+.topnav .crumb{font-weight:600;letter-spacing:.02em}
+.topnav .crumb a{color:var(--muted);text-decoration:none}
+.topnav .crumb a:hover{color:var(--ink)}
+.topnav .sep{color:var(--line);margin:0 .25em}
+.topnav .now{color:var(--ink);font-weight:600}
+
+/* ============== MASTHEAD ============== */
+.mast{
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);
+  gap:24px;align-items:end;
+  padding-bottom:20px;border-bottom:1px solid var(--line);
+}
+.eyebrow{
+  font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;margin-bottom:10px;
+}
+h1{
+  font-family:"Apple SD Gothic Neo","Pretendard","Noto Sans KR",ui-sans-serif,sans-serif;
+  font-size:clamp(30px,3.8vw,50px);
+  line-height:1.08;font-weight:850;letter-spacing:-.005em;
+  margin:0;max-width:960px;
+}
+h1 em{font-style:normal;font-weight:850;color:var(--c-value)}
+.dek{
+  font-size:15px;color:var(--ink-soft);max-width:760px;
+  margin:14px 0 0;line-height:1.65;
+}
+.mast-stats{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:8px;
+}
+.stat{
+  border:1px solid var(--line);background:#fff;border-radius:8px;
+  padding:11px 12px;min-height:78px;
+}
+.stat b{display:block;font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.01em}
+.stat span{display:block;font-size:11.5px;color:var(--muted);margin-top:5px}
+.stat em{font-style:normal;color:var(--c-pert);font-size:14px;font-weight:700}
+
+/* ============== SECTIONS ============== */
+section{padding:38px 0 4px;border-bottom:1px solid var(--line-soft)}
+section:last-of-type{border-bottom:none}
+.s-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;flex-wrap:wrap}
+.s-num{
+  font-family:ui-monospace,'JetBrains Mono',monospace;
+  font-size:11.5px;letter-spacing:.08em;color:var(--muted);
+  border:1px solid var(--line);padding:3px 8px;border-radius:999px;
+  font-weight:700;
+}
+h2{
+  font-family:"Apple SD Gothic Neo","Pretendard","Noto Sans KR",ui-sans-serif,sans-serif;
+  font-size:clamp(22px,2.5vw,30px);
+  font-weight:850;letter-spacing:-.005em;
+  margin:0;line-height:1.2;
+}
+h2 em{font-style:normal;font-weight:850;color:var(--c-value)}
+.s-lede{
+  font-size:14.5px;color:var(--ink-soft);max-width:880px;
+  margin:8px 0 22px;line-height:1.7;
+}
+.s-lede strong{color:var(--ink)}
+
+/* ============== INTRO 4-card ============== */
+.intro-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;margin-bottom:6px;
+}
+@media(max-width:1100px){.intro-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.intro-grid{grid-template-columns:1fr}}
+.intro-card{
+  border:1px solid var(--line);border-radius:10px;background:#fff;
+  padding:18px 16px;display:flex;flex-direction:column;gap:8px;
+  position:relative;overflow:hidden;
+}
+.intro-card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--accent,var(--c-intro));
+}
+.intro-card .ic-num{
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;
+}
+.intro-card .ic-title{font-size:15px;font-weight:800;letter-spacing:-.005em;margin-top:2px}
+.intro-card .ic-body{font-size:13px;color:var(--ink-soft);line-height:1.6}
+.intro-card .ic-body code{font-size:11.5px}
+.intro-card .ic-eq{
+  font-family:ui-monospace,'JetBrains Mono',monospace;font-size:11.5px;
+  background:var(--soft);padding:7px 9px;border-radius:6px;
+  color:var(--ink);margin-top:auto;line-height:1.5;
+}
+
+/* ============== ENDEMIC 3-card ============== */
+.endemic-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  margin-bottom:8px;
+}
+@media(max-width:880px){.endemic-grid{grid-template-columns:1fr}}
+.endemic-card{
+  border:1px solid var(--line);border-radius:10px;background:#fff;
+  padding:18px;
+}
+.endemic-card .e-tag{
+  display:inline-block;font-size:11px;letter-spacing:.06em;
+  text-transform:uppercase;color:#fff;background:var(--c-warn);
+  padding:3px 8px;border-radius:999px;font-weight:700;margin-bottom:9px;
+}
+.endemic-card h3{font-size:17px;font-weight:800;margin:0 0 6px;letter-spacing:-.005em}
+.endemic-card .e-body{font-size:13px;color:var(--ink-soft);line-height:1.65}
+.endemic-card .e-fix{
+  margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);
+  font-size:12.5px;
+}
+.endemic-card .e-fix strong{color:var(--c-rank);font-weight:700}
+
+/* ============== TIMELINE ============== */
+.timeline-frame{
+  border:1px solid var(--line);border-radius:10px;background:#fff;
+  padding:18px 18px 14px;margin-bottom:6px;
+}
+.tl-controls{
+  display:flex;align-items:center;gap:14px;margin-bottom:14px;
+  flex-wrap:wrap;
+}
+.tl-controls label{
+  font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.tl-slider{
+  flex:1;min-width:240px;max-width:520px;
+  -webkit-appearance:none;appearance:none;height:4px;background:var(--soft2);
+  border-radius:999px;outline:none;
+}
+.tl-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:18px;height:18px;
+  border-radius:50%;background:var(--c-pert);border:2px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer;
+}
+.tl-slider::-moz-range-thumb{
+  width:18px;height:18px;border-radius:50%;background:var(--c-pert);
+  border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer;
+}
+.tl-year-display{
+  font-family:ui-monospace,'JetBrains Mono',monospace;font-size:24px;
+  font-weight:800;color:var(--ink);letter-spacing:-.01em;min-width:80px;
+}
+.tl-stat{font-size:12px;color:var(--muted)}
+.tl-stat b{color:var(--ink);font-weight:800;font-size:14px}
+.tl-track{
+  position:relative;height:200px;border-top:1px dashed var(--line-soft);
+  border-bottom:1px dashed var(--line-soft);margin:8px 0 4px;
+}
+.tl-axis{
+  position:absolute;bottom:0;left:0;right:0;height:24px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;color:var(--muted);font-family:ui-monospace,monospace;
+  border-top:1px solid var(--line-soft);
+}
+.tl-axis span{padding:0 6px}
+.tl-node{
+  position:absolute;transform:translate(-50%,0);
+  cursor:pointer;transition:opacity .25s ease, transform .15s ease;
+}
+.tl-node:hover{transform:translate(-50%,-2px)}
+.tl-node.dim{opacity:.18}
+.tl-node-dot{
+  width:14px;height:14px;border-radius:50%;background:var(--node-color,var(--c-rank));
+  border:2px solid #fff;box-shadow:0 0 0 1px var(--node-color,var(--c-rank));
+  margin:0 auto;
+}
+.tl-node-label{
+  font-size:11px;font-weight:700;color:var(--ink);
+  margin-top:4px;text-align:center;line-height:1.2;
+  white-space:nowrap;background:rgba(255,255,255,.85);padding:1px 4px;border-radius:3px;
+}
+.tl-node-meta{
+  font-size:9.5px;color:var(--muted);text-align:center;font-family:ui-monospace,monospace;
+  margin-top:1px;
+}
+.tl-detail{
+  margin-top:14px;padding:14px;background:var(--soft);border-radius:8px;
+  font-size:13px;color:var(--ink-soft);line-height:1.65;min-height:64px;
+}
+.tl-detail strong{color:var(--ink);font-weight:800}
+.tl-legend{
+  display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:12px;
+  font-size:11.5px;color:var(--muted);
+}
+.tl-legend span{display:inline-flex;align-items:center;gap:5px}
+.tl-legend i{width:8px;height:8px;border-radius:50%;display:inline-block}
+
+/* ============== STRATEGY filter ============== */
+.strat-bar{
+  display:grid;grid-template-columns:repeat(8,minmax(110px,1fr));gap:7px;
+  margin:6px 0 16px;
+}
+@media(max-width:1100px){.strat-bar{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:560px){.strat-bar{grid-template-columns:repeat(2,1fr)}}
+.strat-btn{
+  border:1px solid var(--line);background:#fff;color:var(--ink);
+  border-radius:8px;padding:10px 8px;min-height:62px;
+  cursor:pointer;text-align:left;
+  transition:transform .15s ease, border-color .15s ease, background .15s ease;
+}
+.strat-btn:hover{transform:translateY(-1px);border-color:var(--btn-color,#9aa7b8)}
+.strat-btn.active{
+  border-color:var(--btn-color);
+  background:color-mix(in srgb,var(--btn-color) 10%,#fff);
+}
+.strat-btn .sb-num{
+  display:block;font-size:10px;letter-spacing:.06em;color:var(--muted);
+  text-transform:uppercase;font-weight:700;
+}
+.strat-btn.active .sb-num{color:var(--btn-color)}
+.strat-btn .sb-name{
+  display:block;font-size:12.5px;font-weight:800;margin-top:3px;letter-spacing:-.005em;
+  line-height:1.2;
+}
+.strat-btn .sb-count{
+  display:block;font-size:10px;color:var(--muted);margin-top:3px;font-family:ui-monospace,monospace;
+}
+
+.strat-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:14px;
+  margin-bottom:6px;
+}
+.strat-card{
+  border:1px solid var(--line);border-radius:10px;background:#fff;
+  padding:18px 16px 14px;position:relative;overflow:hidden;
+  transition:opacity .25s ease, transform .15s ease;
+}
+.strat-card.dim{opacity:.28}
+.strat-card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--card-color);
+}
+.strat-card .sc-tag{
+  font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--card-color);font-weight:800;margin-bottom:5px;
+}
+.strat-card h3{
+  font-size:16px;font-weight:800;margin:0 0 7px;letter-spacing:-.005em;line-height:1.25;
+}
+.strat-card .sc-blurb{font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin-bottom:12px}
+.strat-card .sc-models{display:flex;flex-direction:column;gap:6px}
+.strat-card .sc-model{
+  display:flex;justify-content:space-between;gap:10px;align-items:baseline;
+  padding:6px 8px;background:var(--soft);border-radius:6px;
+  text-decoration:none;color:var(--ink);
+  border:1px solid transparent;transition:border-color .15s ease, background .15s ease;
+}
+.strat-card .sc-model:hover{border-color:var(--card-color);background:#fff}
+.strat-card .sc-model b{font-size:12.5px;font-weight:800;letter-spacing:-.005em}
+.strat-card .sc-model em{
+  font-style:normal;font-size:10.5px;color:var(--muted);
+  font-family:ui-monospace,monospace;text-align:right;
+}
+
+/* ============== MODEL TABLE ============== */
+.tbl-controls{
+  display:flex;justify-content:space-between;gap:12px;margin-bottom:10px;
+  flex-wrap:wrap;align-items:center;
+}
+.tbl-search{
+  border:1px solid var(--line);border-radius:6px;
+  padding:7px 10px;font-size:13px;min-width:200px;
+}
+.tbl-search:focus{outline:none;border-color:var(--c-base)}
+.tbl-info{font-size:12px;color:var(--muted)}
+.tbl-info b{color:var(--ink);font-weight:800}
+.tbl-wrap{
+  border:1px solid var(--line);border-radius:10px;background:#fff;
+  overflow:auto;max-height:560px;
+}
+table.cmp{
+  width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;
+}
+table.cmp thead th{
+  position:sticky;top:0;background:var(--soft);z-index:2;
+  text-align:left;font-weight:800;
+  padding:9px 10px;border-bottom:1px solid var(--line);
+  font-size:11px;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink-soft);white-space:nowrap;
+  cursor:pointer;user-select:none;
+}
+table.cmp thead th:hover{background:var(--soft2)}
+table.cmp thead th.sorted-asc::after{content:" ▲";color:var(--c-pert);font-size:9px}
+table.cmp thead th.sorted-desc::after{content:" ▼";color:var(--c-pert);font-size:9px}
+table.cmp tbody td{
+  padding:9px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top;
+}
+table.cmp tbody tr:hover{background:var(--soft)}
+table.cmp tbody tr.dim{opacity:.25}
+table.cmp .m-name{font-weight:800;letter-spacing:-.005em;font-size:13.5px}
+table.cmp .m-author{font-size:11px;color:var(--muted);margin-top:2px;font-family:ui-monospace,monospace}
+table.cmp .strat-pill{
+  display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;
+  font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  color:#fff;
+}
+table.cmp .nums{font-family:ui-monospace,monospace;font-size:12px;white-space:nowrap}
+table.cmp .lic{font-size:10.5px;font-family:ui-monospace,monospace;color:var(--muted)}
+table.cmp .lic.open{color:var(--c-rank)}
+table.cmp .lic.gem{color:var(--c-pert)}
+table.cmp a.code{
+  font-size:11px;font-family:ui-monospace,monospace;color:var(--c-base);
+  text-decoration:none;
+}
+table.cmp a.code:hover{text-decoration:underline}
+
+/* ============== TOKENIZER 3-axis ============== */
+.tok-frame{
+  border:1px solid var(--line);border-radius:10px;background:#fff;
+  padding:18px;margin-bottom:6px;
+}
+.tok-axes{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  margin-bottom:18px;
+}
+@media(max-width:880px){.tok-axes{grid-template-columns:1fr}}
+.tok-axis{
+  border:1px solid var(--line);border-radius:8px;background:var(--soft);
+  padding:12px;
+}
+.tok-axis-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  margin-bottom:8px;
+}
+.tok-axis-head b{font-size:13px;font-weight:800;letter-spacing:-.005em}
+.tok-axis-head span{font-size:10.5px;color:var(--muted);font-family:ui-monospace,monospace}
+.tok-axis-desc{font-size:12px;color:var(--ink-soft);margin-bottom:10px;line-height:1.5}
+.tok-opts{display:flex;flex-wrap:wrap;gap:5px}
+.tok-opt{
+  border:1px solid var(--line);background:#fff;color:var(--ink);
+  padding:5px 9px;font-size:11.5px;border-radius:6px;cursor:pointer;
+  font-family:ui-monospace,monospace;font-weight:600;
+  transition:all .15s ease;
+}
+.tok-opt:hover{border-color:var(--c-base)}
+.tok-opt.active{
+  background:var(--c-base);color:#fff;border-color:var(--c-base);
+}
+.tok-table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table.tok-tbl{
+  width:100%;border-collapse:separate;border-spacing:0;font-size:12px;
+  background:#fff;
+}
+table.tok-tbl thead th{
+  text-align:left;font-weight:800;padding:8px 10px;
+  border-bottom:1px solid var(--line);background:var(--soft);
+  font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);
+  white-space:nowrap;
+}
+table.tok-tbl tbody td{padding:8px 10px;border-bottom:1px solid var(--line-soft)}
+table.tok-tbl tbody tr.match{background:#fffbe6}
+table.tok-tbl tbody tr.match td:first-child{box-shadow:inset 3px 0 0 var(--c-pert)}
+table.tok-tbl .m{font-weight:800;font-size:12.5px}
+table.tok-tbl .chip{
+  display:inline-block;padding:2px 7px;border-radius:5px;
+  font-family:ui-monospace,monospace;font-size:10.5px;
+  background:var(--soft);color:var(--ink-soft);
+}
+.tok-conclusion{
+  margin-top:14px;padding:14px;background:#fffbe6;border-left:3px solid var(--c-pert);
+  border-radius:0 6px 6px 0;font-size:13px;color:var(--ink);line-height:1.65;
+}
+.tok-conclusion strong{color:var(--c-pert);font-weight:800}
+
+/* ============== TASKS 6-card ============== */
+.task-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:6px;
+}
+@media(max-width:880px){.task-grid{grid-template-columns:1fr}}
+.task-card{
+  border:1px solid var(--line);border-radius:10px;background:#fff;
+  padding:16px 14px;
+}
+.task-card .t-num{
+  font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.06em;
+  color:var(--muted);font-weight:700;
+}
+.task-card .t-name{
+  font-size:15px;font-weight:800;letter-spacing:-.005em;margin:3px 0 6px;
+  line-height:1.25;
+}
+.task-card .t-emb{
+  display:inline-block;font-size:10px;padding:2px 7px;border-radius:999px;
+  background:var(--c-cross-bg);color:var(--c-cross);font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px;
+}
+.task-card .t-emb.gene{background:var(--c-rank-bg);color:var(--c-rank)}
+.task-card .t-body{font-size:12.5px;color:var(--ink-soft);line-height:1.6}
+.task-card .t-body strong{color:var(--ink)}
+.task-card .t-rivals{
+  margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);
+  font-size:11.5px;color:var(--muted);font-family:ui-monospace,monospace;
+}
+
+/* ============== REALITY tabs ============== */
+.rc-frame{
+  border:1px solid var(--line);border-radius:10px;background:#fff;
+  padding:0;overflow:hidden;
+}
+.rc-tabs{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+  border-bottom:1px solid var(--line);
+}
+@media(max-width:760px){.rc-tabs{grid-template-columns:repeat(2,1fr)}}
+.rc-tab{
+  background:var(--soft);border:0;border-right:1px solid var(--line);
+  padding:14px 12px;text-align:left;cursor:pointer;
+  transition:background .15s ease;
+}
+.rc-tab:last-child{border-right:0}
+.rc-tab:hover{background:var(--soft2)}
+.rc-tab.active{background:#fff;box-shadow:inset 0 -3px 0 var(--c-warn)}
+.rc-tab .rc-yr{
+  font-size:10.5px;letter-spacing:.06em;color:var(--muted);font-weight:700;
+  text-transform:uppercase;
+}
+.rc-tab .rc-name{font-size:14px;font-weight:800;margin-top:2px;letter-spacing:-.005em}
+.rc-tab .rc-tag{font-size:11.5px;color:var(--ink-soft);margin-top:4px;line-height:1.4}
+.rc-body{padding:22px 22px 18px;display:none;background:#fff}
+.rc-body.show{display:block}
+.rc-body h4{font-size:18px;font-weight:800;margin:0 0 4px;letter-spacing:-.005em}
+.rc-body .rc-cite{
+  font-size:11.5px;color:var(--muted);font-family:ui-monospace,monospace;
+  margin-bottom:14px;
+}
+.rc-body .rc-cite a{color:var(--c-base);text-decoration:none}
+.rc-body .rc-cite a:hover{text-decoration:underline}
+.rc-body .rc-tldr{
+  background:#fff5f3;border-left:3px solid var(--c-warn);
+  padding:12px 14px;border-radius:0 6px 6px 0;margin-bottom:16px;
+  font-size:13.5px;line-height:1.65;
+}
+.rc-body .rc-tldr strong{color:var(--c-warn);font-weight:800}
+.rc-body ul{margin:0;padding-left:18px}
+.rc-body li{font-size:13px;color:var(--ink-soft);line-height:1.7;margin-bottom:5px}
+.rc-body li b{color:var(--ink);font-weight:800}
+.rc-body .rc-take{
+  margin-top:14px;padding:12px 14px;background:var(--soft);border-radius:6px;
+  font-size:13px;color:var(--ink);line-height:1.6;
+}
+.rc-body .rc-take strong{color:var(--c-rank);font-weight:800}
+
+/* ============== VIRTUAL CELL 3-col ============== */
+.vc-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:6px;
+}
+@media(max-width:980px){.vc-grid{grid-template-columns:1fr}}
+.vc-col{
+  border:1px solid var(--line);border-radius:10px;background:#fff;
+  padding:18px 16px;position:relative;
+}
+.vc-col::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--vc-color);border-radius:10px 10px 0 0;
+}
+.vc-col .vc-gen{
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--vc-color);font-weight:800;
+}
+.vc-col h3{
+  font-size:16px;font-weight:800;letter-spacing:-.005em;margin:4px 0 6px;
+}
+.vc-col .vc-yr{font-size:11px;color:var(--muted);font-family:ui-monospace,monospace;margin-bottom:10px}
+.vc-col .vc-body{font-size:13px;color:var(--ink-soft);line-height:1.65}
+.vc-col .vc-body strong{color:var(--ink)}
+.vc-col .vc-arr{
+  margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);
+  font-size:12px;
+}
+.vc-col .vc-arr b{font-weight:800;color:var(--vc-color)}
+.vc-col ul{margin:8px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-soft);line-height:1.7}
+.vc-col li{margin-bottom:3px}
+
+.vc-bunne{
+  margin-top:14px;border:1px solid var(--line);border-radius:10px;
+  padding:18px;background:linear-gradient(135deg,#f8f6ff 0%,#fff 100%);
+}
+.vc-bunne h4{
+  font-size:15px;font-weight:800;margin:0 0 8px;letter-spacing:-.005em;
+}
+.vc-bunne h4 em{font-style:normal;color:var(--c-vision)}
+.vc-bunne .vc-bunne-body{font-size:13px;color:var(--ink-soft);line-height:1.7}
+.vc-bunne .vc-uv{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;
+}
+@media(max-width:680px){.vc-bunne .vc-uv{grid-template-columns:1fr}}
+.vc-bunne .vc-uv-card{
+  background:#fff;border:1px solid var(--line);border-radius:8px;padding:11px 13px;
+}
+.vc-bunne .vc-uv-card b{display:block;font-size:13px;font-weight:800;color:var(--c-vision);margin-bottom:3px}
+.vc-bunne .vc-uv-card span{font-size:12px;color:var(--ink-soft);line-height:1.55}
+
+.vc-warn{
+  margin-top:14px;padding:14px 16px;border:1px dashed var(--c-warn);
+  border-radius:8px;background:#fff5f3;
+}
+.vc-warn b{color:var(--c-warn);font-weight:800;font-size:13.5px}
+.vc-warn p{font-size:13px;color:var(--ink-soft);line-height:1.65;margin:6px 0 0}
+
+/* ============== RESOURCES ============== */
+.res-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:12px;margin-bottom:18px;
+}
+.res-card{
+  border:1px solid var(--line);border-radius:10px;background:#fff;
+  padding:14px;text-decoration:none;color:var(--ink);
+  display:block;transition:transform .15s ease, border-color .15s ease;
+  position:relative;overflow:hidden;
+}
+.res-card:hover{transform:translateY(-1px);border-color:var(--res-color,var(--c-base))}
+.res-card::before{
+  content:"";position:absolute;top:0;left:0;width:3px;height:100%;
+  background:var(--res-color,var(--c-base));
+}
+.res-card .r-host{
+  font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;font-family:ui-monospace,monospace;
+}
+.res-card .r-name{font-size:14px;font-weight:800;margin:3px 0 5px;letter-spacing:-.005em}
+.res-card .r-desc{font-size:12px;color:var(--ink-soft);line-height:1.55}
+
+.cite-block{
+  margin-top:12px;padding:14px 16px;background:var(--soft);border-radius:8px;
+  border:1px solid var(--line-soft);
+}
+.cite-block h4{font-size:13px;font-weight:800;margin:0 0 9px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.cite-block ul{margin:0;padding:0;list-style:none;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:5px 14px;
+}
+@media(max-width:760px){.cite-block ul{grid-template-columns:1fr}}
+.cite-block li{font-size:12px;line-height:1.5}
+.cite-block li a{
+  color:var(--ink-soft);text-decoration:none;
+  display:inline-block;padding:2px 0;
+}
+.cite-block li a:hover{color:var(--c-base);text-decoration:underline}
+.cite-block li code{font-size:10.5px;color:var(--muted);background:transparent;padding:0;margin-left:4px}
+
+/* ============== FOOTER ============== */
+.foot{
+  margin-top:34px;padding-top:18px;border-top:1px solid var(--line);
+  font-size:12px;color:var(--muted);line-height:1.7;
+}
+.foot a{color:var(--muted);text-decoration:underline}
+.foot a:hover{color:var(--c-base)}
+.foot strong{color:var(--ink-soft);font-weight:700}
+
+/* ============== UTIL ============== */
+.hidden{display:none !important}
+::selection{background:#fff5cc;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ============== TOP NAV ============== -->
+<nav class="topnav">
+  <span class="crumb"><a href="../index.html">Audodidactic</a></span>
+  <span class="sep">/</span>
+  <span class="now">단세포 Foundation Model — 55편의 풍경</span>
+</nav>
+
+<!-- ============== MASTHEAD ============== -->
+<header class="mast">
+  <div>
+    <div class="eyebrow">Single-cell Foundation Models · 한글 인터랙티브 해설</div>
+    <h1>scBERT부터 <em>Tahoe-x1·scPRINT-2</em>까지, 4년의 가속을 한 페이지에</h1>
+    <p class="dek">
+      2022년 scBERT가 BERT를 단세포에 처음 끼워 넣은 뒤, <strong>4년 만에 학습 corpus는 수백만 → 3억 5천만 cells</strong>로,
+      파라미터는 <strong>10M → 27B</strong>로 커졌다. 본 페이지는 lab 위키의 single-cell-foundation 정리본 <strong>55편</strong>을
+      8가지 토큰화 전략 / 16개 핵심 모델 / 4편의 비판적 벤치마크 / Virtual Cell 비전으로 풀어 둔 onboarding 자료다.
+      처음 보는 사람을 위해 scRNA-seq · transformer · 토큰화 · foundation model의 <strong>기초 4가지</strong>도 위에 따로 정리했다.
+    </p>
+  </div>
+  <div class="mast-stats">
+    <div class="stat"><b>55<em> 편</em></b><span>wiki/single-cell-foundation 정리본</span></div>
+    <div class="stat"><b>16<em> 모델</em></b><span>비교 테이블 핵심 라인업</span></div>
+    <div class="stat"><b>350<em>M cells</em></b><span>최대 학습 corpus (scPRINT-2)</span></div>
+    <div class="stat"><b>27<em>B params</em></b><span>최대 모델 (C2S-Scale)</span></div>
+  </div>
+</header>
+
+<!-- ============== 00 INTRO ============== -->
+<section id="intro">
+  <div class="s-head">
+    <span class="s-num">00</span>
+    <h2>이 페이지를 읽기 전 — <em>4가지 기초</em></h2>
+  </div>
+  <p class="s-lede">
+    scRNA-seq, transformer, 토큰화, foundation model — 이 네 가지를 모르면 본문이 잘 읽히지 않는다.
+    각각 한 카드로 압축. 아는 부분은 빠르게 넘기고, 모르는 부분만 보고 넘어가도 된다.
+  </p>
+  <div class="intro-grid">
+    <article class="intro-card" style="--accent:var(--c-rank)">
+      <span class="ic-num">① biology · scRNA-seq</span>
+      <div class="ic-title">단세포 RNA-seq 한 장 요약</div>
+      <div class="ic-body">
+        세포 한 개씩 mRNA를 sequencing해서 만든 <strong>cells × genes 행렬</strong> (보통 ~20,000 유전자).
+        한 셀 안에서 <strong>70-90%가 0</strong>(드롭아웃·낮은 발현)이라 매우 sparse하고, 유전자에는 자연스러운 순서가 없다 — DNA처럼 5'→3' 같은 위치가 없다.
+        고전 파이프라인은 normalize → HVG (highly variable genes) → PCA → UMAP → Leiden clustering → marker gene으로 cell type 라벨링.
+      </div>
+      <div class="ic-eq">cell<sub>i</sub> = (g<sub>1</sub>, g<sub>2</sub>, …, g<sub>20K</sub>) ∈ ℕ<sup>20K</sup></div>
+    </article>
+
+    <article class="intro-card" style="--accent:var(--c-base)">
+      <span class="ic-num">② model · transformer</span>
+      <div class="ic-title">Attention과 MLM 두 줄 요약</div>
+      <div class="ic-body">
+        Transformer는 입력을 <strong>토큰 시퀀스</strong>로 받아 각 토큰이 다른 모든 토큰을 "쳐다보며"(self-attention) 표현을 만든다.
+        <strong>BERT</strong>는 일부 토큰을 <code>[MASK]</code>로 가리고 맞히게 학습(MLM = masked language modeling).
+        <strong>GPT</strong>는 다음 토큰을 자동회귀적으로 생성(CLM). 이 모든 게 단세포에 그대로 옮겨오는 게 본 페이지의 주제다.
+      </div>
+      <div class="ic-eq">Attention(Q,K,V) = softmax(QK<sup>⊤</sup>/√d) · V</div>
+    </article>
+
+    <article class="intro-card" style="--accent:var(--c-binned)">
+      <span class="ic-num">③ design · tokenization</span>
+      <div class="ic-title">유전자를 토큰으로 만드는 법</div>
+      <div class="ic-body">
+        NLP에선 단어가 토큰이지만, 단세포에선 <strong>토큰을 어떻게 정의할지</strong>가 곧 모델 디자인이다.
+        ① <strong>FG (gene identity)</strong> — gene ID 자체를 어떻게 임베딩할지(random / gene2vec / ESM2 단백질 / GPT 텍스트).
+        ② <strong>FE (expression)</strong> — 발현값을 어떻게 표현할지(continuous / binning / no-op).
+        ③ <strong>ORDER</strong> — 어떤 순서로 줄세울지(random / 발현 순위 / 염색체).
+        다섯 가지 대표 모델이 이 3축에서 어떻게 다른지는 §05에서 분해한다.
+      </div>
+      <div class="ic-eq">token = (FG_emb, FE_emb, ORDER_pos)</div>
+    </article>
+
+    <article class="intro-card" style="--accent:var(--c-vision)">
+      <span class="ic-num">④ paradigm · foundation model</span>
+      <div class="ic-title">Foundation model이란</div>
+      <div class="ic-body">
+        라벨 없는 큰 데이터로 <strong>자기지도학습 (SSL)</strong>을 한 번만 시켜 두면, 다양한 다운스트림 태스크에 이 가중치를 가져다 쓰는 패러다임.
+        <strong>NLP의 BERT/GPT, 비전의 CLIP/DINO</strong>의 생물학판이다. 단세포에선 cell type annotation, perturbation 예측, batch correction, GRN 추론, expression 복원, drug response 예측 등 6가지 태스크가 표준.
+        한계는 §07 — "후속 벤치마크에서는 SOTA가 아닐 수 있다"는 비판이 누적되고 있다.
+      </div>
+      <div class="ic-eq">pretrain (SSL on M cells) → fine-tune (k labels) → predict</div>
+    </article>
+  </div>
+</section>
+
+<!-- ============== 01 ENDEMIC ============== -->
+<section id="endemic">
+  <div class="s-head">
+    <span class="s-num">01</span>
+    <h2>scRNA-seq의 <em>세 가지 풍토병</em> — 왜 일반 transformer로는 안 되는가</h2>
+  </div>
+  <p class="s-lede">
+    일반 transformer를 단세포에 그대로 들이대면 셋 다 무너진다. 모든 단세포 foundation model은 이 셋 중 하나 이상을 어떻게 다룰지에 대한 <strong>설계적 선택</strong>이다.
+  </p>
+  <div class="endemic-grid">
+    <article class="endemic-card">
+      <span class="e-tag">① 길이 폭발</span>
+      <h3>20,000 유전자 = 20,000 토큰</h3>
+      <div class="e-body">
+        BERT 한 문장은 보통 512 토큰. 한 셀의 발현 벡터는 ~20,000 차원.
+        표준 self-attention은 <code>O(L²)</code> 복잡도라 그대로 쓸 수 없다.
+      </div>
+      <div class="e-fix">
+        <strong>해법:</strong> Performer 근사(scBERT) · top-k expressed (Geneformer 2,048) · gene patching (CellPatch 10-100배 단축) · 단백질 임베딩(UCE).
+      </div>
+    </article>
+    <article class="endemic-card">
+      <span class="e-tag">② 무순서</span>
+      <h3>유전자에는 자연 순서가 없다</h3>
+      <div class="e-body">
+        DNA는 5'→3'로 위치가 정해져 있고 단어는 어순이 있지만, 발현 벡터의 유전자 ID는 임의 순서.
+        Position embedding이 의미 있게 안 박힌다.
+      </div>
+      <div class="e-fix">
+        <strong>해법:</strong> 발현 순위로 정렬(Geneformer rank-ordering) · attention masking으로 순서 무시(scGPT) · 염색체 좌표 사용(UCE chromosome ORDER).
+      </div>
+    </article>
+    <article class="endemic-card">
+      <span class="e-tag">③ 70-90% sparse + batch</span>
+      <h3>대부분 0, 그리고 lab마다 다르다</h3>
+      <div class="e-body">
+        한 셀에서 detect되는 유전자는 보통 1,000-3,000개뿐. 나머지 90%는 0(true zero인지 dropout인지 알기 어려움).
+        게다가 lab/protocol/시퀀서마다 분포가 다른 batch effect까지.
+      </div>
+      <div class="e-fix">
+        <strong>해법:</strong> 발현된 유전자만 마스크(scFoundation RDA) · batch token 명시 입력(scGPT condition tokens) · 다중 study 스트래티파이드 샘플링.
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============== 02 TIMELINE ============== -->
+<section id="timeline">
+  <div class="s-head">
+    <span class="s-num">02</span>
+    <h2>2022→2026 타임라인 — <em>4년의 가속</em></h2>
+  </div>
+  <p class="s-lede">
+    슬라이더를 움직이면 그 시점에 발표된 모델이 강조되고, 누적 학습 cell 수와 최대 파라미터가 갱신된다.
+    노드 색은 토큰화 전략(§03)을 나타낸다 — 클릭하면 아래에 한 줄 요약이 뜬다.
+  </p>
+  <div class="timeline-frame">
+    <div class="tl-controls">
+      <label for="tlSlider">YEAR</label>
+      <input id="tlSlider" class="tl-slider" type="range" min="2022" max="2026" value="2026" step="1">
+      <div class="tl-year-display" id="tlYear">2026</div>
+      <div class="tl-stat">누적 cells: <b id="tlCells">—</b></div>
+      <div class="tl-stat">최대 params: <b id="tlParams">—</b></div>
+      <div class="tl-stat">활성 모델: <b id="tlActive">—</b></div>
+    </div>
+    <div class="tl-track" id="tlTrack">
+      <!-- nodes injected by JS -->
+      <div class="tl-axis" id="tlAxis"></div>
+    </div>
+    <div class="tl-detail" id="tlDetail">노드를 클릭해 모델 한 줄 요약을 보세요. 슬라이더로 연도를 바꿀 수 있습니다.</div>
+    <div class="tl-legend" id="tlLegend"></div>
+  </div>
+</section>
+
+<!-- ============== 03 STRATEGIES ============== -->
+<section id="strategies">
+  <div class="s-head">
+    <span class="s-num">03</span>
+    <h2>8가지 전략 풍경 — <em>같은 문제, 8가지 답</em></h2>
+  </div>
+  <p class="s-lede">
+    "유전자를 어떻게 토큰화할까"에 대한 8가지 답이 8개의 모델 가족을 만들었다. 버튼을 누르면 해당 전략 카드만 강조되고 나머지는 옅어진다.
+    각 카드의 모델은 <strong>§04 비교 테이블</strong>에서 정확한 파라미터로 다시 만난다.
+  </p>
+  <div class="strat-bar" id="stratBar">
+    <button class="strat-btn active" data-strat="all" style="--btn-color:var(--ink)">
+      <span class="sb-num">all</span><span class="sb-name">전체 보기</span><span class="sb-count">8 strategies</span>
+    </button>
+    <button class="strat-btn" data-strat="rank" style="--btn-color:var(--c-rank)">
+      <span class="sb-num">01 · rank-based</span><span class="sb-name">발현 순위</span><span class="sb-count">3 models</span>
+    </button>
+    <button class="strat-btn" data-strat="value" style="--btn-color:var(--c-value)">
+      <span class="sb-num">02 · value-projection</span><span class="sb-name">발현값 직접</span><span class="sb-count">2 models</span>
+    </button>
+    <button class="strat-btn" data-strat="binned" style="--btn-color:var(--c-binned)">
+      <span class="sb-num">03 · binned generative</span><span class="sb-name">vocab으로 이산화</span><span class="sb-count">3 models</span>
+    </button>
+    <button class="strat-btn" data-strat="llm" style="--btn-color:var(--c-llm)">
+      <span class="sb-num">04 · llm-derived</span><span class="sb-name">텍스트 임베딩</span><span class="sb-count">3 models</span>
+    </button>
+    <button class="strat-btn" data-strat="cross" style="--btn-color:var(--c-cross)">
+      <span class="sb-num">05 · cross-species</span><span class="sb-name">단백질 서열</span><span class="sb-count">1 model</span>
+    </button>
+    <button class="strat-btn" data-strat="base" style="--btn-color:var(--c-base)">
+      <span class="sb-num">06 · llm-as-base</span><span class="sb-name">셀 = 문장</span><span class="sb-count">2 models</span>
+    </button>
+    <button class="strat-btn" data-strat="pert" style="--btn-color:var(--c-pert)">
+      <span class="sb-num">07 · perturbation-aware</span><span class="sb-name">약물·KO 토큰</span><span class="sb-count">2 models</span>
+    </button>
+    <button class="strat-btn" data-strat="spatial" style="--btn-color:var(--c-spatial)">
+      <span class="sb-num">08 · spatial / epi</span><span class="sb-name">위치·chromatin</span><span class="sb-count">3 models</span>
+    </button>
+  </div>
+
+  <div class="strat-grid" id="stratGrid">
+    <!-- 8 cards -->
+    <article class="strat-card" data-strat="rank" style="--card-color:var(--c-rank)">
+      <span class="sc-tag">strategy 01 · rank-based</span>
+      <h3>발현 순위만 쓴다</h3>
+      <p class="sc-blurb">셀 안에서 유전자를 발현 크기 순으로 정렬해 토큰 시퀀스로 만든다. 정확한 count는 버리고 read depth invariance를 토크나이즈로 흡수.</p>
+      <div class="sc-models">
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=Geneformer+Theodoris+2023+transfer+learning+network+biology" target="_blank" rel="noopener">
+          <b>Geneformer</b><em>2023 · 30M cells · 10M</em></a>
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=scEMB+Hsieh+2024+context+representation" target="_blank" rel="noopener">
+          <b>scEMB</b><em>2024 · 30M cells · rank-binned</em></a>
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=Geneformer+v2+Chen+2026+scaling+quantization" target="_blank" rel="noopener">
+          <b>Geneformer V2</b><em>2026 · 104M cells · 316M / QLoRA</em></a>
+      </div>
+    </article>
+
+    <article class="strat-card" data-strat="value" style="--card-color:var(--c-value)">
+      <span class="sc-tag">strategy 02 · value-projection</span>
+      <h3>발현값을 그대로 임베딩</h3>
+      <p class="sc-blurb">scalar expression을 binning 없이 vector로 직접 projection. Quantization loss는 없지만 batch effect에 더 민감.</p>
+      <div class="sc-models">
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=scFoundation+xTrimoGene+Hao+2024+Nature+Methods" target="_blank" rel="noopener">
+          <b>scFoundation</b><em>2024 · 50M cells · 100M / xTrimoGene</em></a>
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=CellFM+2025+RetNet+single+cell+foundation" target="_blank" rel="noopener">
+          <b>CellFM</b><em>2025 · 102M cells · 800M / RetNet</em></a>
+      </div>
+    </article>
+
+    <article class="strat-card" data-strat="binned" style="--card-color:var(--c-binned)">
+      <span class="sc-tag">strategy 03 · binned generative</span>
+      <h3>발현값을 vocab 토큰으로</h3>
+      <p class="sc-blurb">발현값을 0–50 같은 정수 bin으로 이산화해 LM 어휘에 편입. GPT-style generative pretraining에 자연스럽게 어울린다.</p>
+      <div class="sc-models">
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=scGPT+Cui+2024+Nature+Methods+foundation+model" target="_blank" rel="noopener">
+          <b>scGPT</b><em>2024 · 33M cells · multitask</em></a>
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=CellPLM+Wen+2023+pre-training+cell+language+model" target="_blank" rel="noopener">
+          <b>CellPLM</b><em>2023 · 11M cells · cell-as-token</em></a>
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=scBERT+Yang+2022+Nature+Machine+Intelligence" target="_blank" rel="noopener">
+          <b>scBERT</b><em>2022 · millions · BERT + Performer</em></a>
+      </div>
+    </article>
+
+    <article class="strat-card" data-strat="llm" style="--card-color:var(--c-llm)">
+      <span class="sc-tag">strategy 04 · llm-derived</span>
+      <h3>LLM이 유전자를 설명한다</h3>
+      <p class="sc-blurb">발현 데이터가 아니라 GPT가 생성한 유전자 functional description의 임베딩을 그대로 쓴다. 학습 안 한 유전자도 사용 가능.</p>
+      <div class="sc-models">
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=scELMo+2023+single+cell+GPT+functional+description" target="_blank" rel="noopener">
+          <b>scELMo</b><em>2023 · GPT-3.5 · 1,536-d</em></a>
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=GenePT+Chen+2024+simple+effective+embedding" target="_blank" rel="noopener">
+          <b>GenePT</b><em>2024 · NCBI summaries via GPT-3.5</em></a>
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=scLAMBDA+Wang+2024+modeling+predicting+single+cell" target="_blank" rel="noopener">
+          <b>scLAMBDA</b><em>2024 · GenePT + disentangled VAE</em></a>
+      </div>
+    </article>
+
+    <article class="strat-card" data-strat="cross" style="--card-color:var(--c-cross)">
+      <span class="sc-tag">strategy 05 · cross-species</span>
+      <h3>단백질 임베딩으로 뼈대를</h3>
+      <p class="sc-blurb">유전자 ID 대신 단백질 서열(ESM2) 임베딩을 사용. 진화적으로 보존된 서열을 공유 어휘로 삼아 zero-shot 종간 전이가 가능해진다.</p>
+      <div class="sc-models">
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=Universal+Cell+Embeddings+UCE+Rosen+2023+foundation" target="_blank" rel="noopener">
+          <b>UCE</b><em>2023 · 8 species · 36M cells / ESM2</em></a>
+      </div>
+    </article>
+
+    <article class="strat-card" data-strat="base" style="--card-color:var(--c-base)">
+      <span class="sc-tag">strategy 06 · llm-as-base</span>
+      <h3>셀을 문장으로, LLM을 그대로</h3>
+      <p class="sc-blurb">scRNA-seq을 "cell sentence"로 바꿔 일반 LLM(Gemma-2, Pythia, GPT-2)을 그대로 학습. 117M부터 27B까지 단세포 scaling law 입증.</p>
+      <div class="sc-models">
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=Cell2Sentence+Levine+2024+teaching+large+language+models+biology" target="_blank" rel="noopener">
+          <b>Cell2Sentence</b><em>2024 · GPT-2 117M/345M</em></a>
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=C2S-Scale+Rizvi+2025+scaling+LLMs+single+cell" target="_blank" rel="noopener">
+          <b>C2S-Scale</b><em>2025 · 410M~27B · GRPO</em></a>
+      </div>
+    </article>
+
+    <article class="strat-card" data-strat="pert" style="--card-color:var(--c-pert)">
+      <span class="sc-tag">strategy 07 · perturbation-aware</span>
+      <h3>약물 / 노크아웃을 토큰으로</h3>
+      <p class="sc-blurb">관찰만 학습하는 모델로는 인과를 못 잡는다. drug/CRISPR 토큰을 입력에 직접 넣어 cause-effect 구조를 학습.</p>
+      <div class="sc-models">
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=Tahoe-x1+Gandhi+2025+scaling+perturbation+trained+single+cell" target="_blank" rel="noopener">
+          <b>Tahoe-x1</b><em>2025 · 3B · 100M perturbed cells</em></a>
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=Pershad+2025+closing+loop+single+cell+foundation+model" target="_blank" rel="noopener">
+          <b>Pershad 2025</b><em>closed-loop scFM</em></a>
+      </div>
+    </article>
+
+    <article class="strat-card" data-strat="spatial" style="--card-color:var(--c-spatial)">
+      <span class="sc-tag">strategy 08 · spatial / epigenomic</span>
+      <h3>RNA 너머 — 위치와 chromatin</h3>
+      <p class="sc-blurb">dissociated scRNA-seq만으로는 부족하다. 공간 좌표(MERFISH/Xenium)나 epigenome(scATAC-seq)을 토큰화해 다른 modality를 함께 학습.</p>
+      <div class="sc-models">
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=Nicheformer+Schaar+2024+foundation+model+spatial" target="_blank" rel="noopener">
+          <b>Nicheformer</b><em>2024 · 110M cells · spatial</em></a>
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=EpiAgent+Chen+2024+foundation+model+scATAC" target="_blank" rel="noopener">
+          <b>EpiAgent</b><em>2024 · scATAC · 1.4B</em></a>
+        <a class="sc-model" href="https://scholar.google.com/scholar?q=DoFormer+Karbalayghareh+2026+causal+transformer+gene" target="_blank" rel="noopener">
+          <b>DoFormer</b><em>2026 · causal transformer</em></a>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============== 04 COMPARISON TABLE ============== -->
+<section id="compare">
+  <div class="s-head">
+    <span class="s-num">04</span>
+    <h2>16개 핵심 모델 — <em>파라미터·corpus·태스크</em> 비교</h2>
+  </div>
+  <p class="s-lede">
+    헤더 클릭으로 정렬, 검색창에서 키워드 필터. <strong>L</strong> 컬럼은 license — <code>open</code>은 코드+가중치 공개,
+    <code>weights</code>는 가중치만(코드 부분 공개), <code>gemma</code>는 Gemma 라이선스 종속, <code>—</code>는 미확인. 모든 수치는 lab wiki의 정리본 + 원 논문 기준.
+  </p>
+  <div class="tbl-controls">
+    <input id="tblSearch" class="tbl-search" type="search" placeholder="모델명·저자·태스크로 검색…" aria-label="모델 검색">
+    <div class="tbl-info">표시 <b id="tblCount">16</b> / 총 <b>16</b></div>
+  </div>
+  <div class="tbl-wrap">
+    <table class="cmp" id="cmpTable">
+      <thead>
+        <tr>
+          <th data-sort="year" data-num="1">Year</th>
+          <th data-sort="name">Model · 저자</th>
+          <th data-sort="strategy">Strategy</th>
+          <th data-sort="arch">Architecture</th>
+          <th data-sort="params" data-num="1">Params</th>
+          <th data-sort="cells" data-num="1">Cells (training)</th>
+          <th data-sort="org">Organisms</th>
+          <th data-sort="ctx">Context</th>
+          <th data-sort="obj">Objective</th>
+          <th data-sort="task">Best task</th>
+          <th data-sort="lic">L</th>
+          <th>Code</th>
+        </tr>
+      </thead>
+      <tbody id="cmpBody"><!-- injected --></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============== 05 TOKENIZER 3-axis ============== -->
+<section id="tokenizer">
+  <div class="s-head">
+    <span class="s-num">05</span>
+    <h2>토크나이저 디자인 스페이스 — <em>FG × FE × ORDER</em></h2>
+  </div>
+  <p class="s-lede">
+    Haber et al. (HEIMDALL, 2026)은 단세포 transformer의 토크나이저를 세 모듈로 분해해 비교했다.
+    아래 세 축을 토글하면 그 조합과 일치하는 모델이 매트릭스에서 노란색으로 강조된다.
+    가장 영향이 큰 모듈은 <strong>FG (gene identity)</strong>, 그 다음이 <strong>ORDER</strong>, 그 다음이 <strong>FE (expression)</strong>이며,
+    분포 이동(cross-tissue, cross-species)에서만 차이가 드러난다.
+  </p>
+  <div class="tok-frame">
+    <div class="tok-axes">
+      <div class="tok-axis">
+        <div class="tok-axis-head"><b>FG · gene identity</b><span>"무엇"</span></div>
+        <div class="tok-axis-desc">유전자 ID를 어떤 임베딩으로 표현할까. random 초기화 / 공발현 (gene2vec) / 단백질 서열 (ESM2) / GPT 텍스트 / random 중에서.</div>
+        <div class="tok-opts" data-axis="fg">
+          <button class="tok-opt active" data-val="any">any</button>
+          <button class="tok-opt" data-val="random">random</button>
+          <button class="tok-opt" data-val="gene2vec">gene2vec</button>
+          <button class="tok-opt" data-val="ESM2">ESM2</button>
+        </div>
+      </div>
+      <div class="tok-axis">
+        <div class="tok-axis-head"><b>FE · expression</b><span>"얼마나"</span></div>
+        <div class="tok-axis-desc">발현값을 어떻게 표현할까. continuous projection / integer binning / quantile / no-op (rank만 쓰기).</div>
+        <div class="tok-opts" data-axis="fe">
+          <button class="tok-opt active" data-val="any">any</button>
+          <button class="tok-opt" data-val="continuous">continuous</button>
+          <button class="tok-opt" data-val="binning">integer binning</button>
+          <button class="tok-opt" data-val="no-op">no-op</button>
+        </div>
+      </div>
+      <div class="tok-axis">
+        <div class="tok-axis-head"><b>ORDER · sequence</b><span>"어떤 순서"</span></div>
+        <div class="tok-axis-desc">유전자를 어떤 순서로 줄세울까. random / 발현 순위(expression-sorted) / 염색체 좌표.</div>
+        <div class="tok-opts" data-axis="order">
+          <button class="tok-opt active" data-val="any">any</button>
+          <button class="tok-opt" data-val="random">random</button>
+          <button class="tok-opt" data-val="expression-sorted">expression-sorted</button>
+          <button class="tok-opt" data-val="chromosome">chromosome</button>
+        </div>
+      </div>
+    </div>
+    <div class="tok-table-wrap">
+      <table class="tok-tbl" id="tokTable">
+        <thead><tr><th>모델</th><th>FG</th><th>FE</th><th>ORDER</th><th>요약 (HEIMDALL 평가)</th></tr></thead>
+        <tbody>
+          <tr data-fg="gene2vec" data-fe="binning" data-order="random">
+            <td class="m" style="color:var(--c-binned)">scBERT</td>
+            <td><span class="chip">gene2vec</span></td>
+            <td><span class="chip">integer binning</span></td>
+            <td><span class="chip">random</span></td>
+            <td>분포 이동에 가장 강했다 — co-expression prior가 안정성을 준다.</td>
+          </tr>
+          <tr data-fg="random" data-fe="no-op" data-order="expression-sorted">
+            <td class="m" style="color:var(--c-rank)">Geneformer</td>
+            <td><span class="chip">random</span></td>
+            <td><span class="chip">no-op</span></td>
+            <td><span class="chip">expression-sorted</span></td>
+            <td>Rank-value encoding. Read depth normalization을 토크나이즈로 흡수.</td>
+          </tr>
+          <tr data-fg="random" data-fe="binning" data-order="expression-sorted">
+            <td class="m" style="color:var(--c-binned)">scGPT</td>
+            <td><span class="chip">random</span></td>
+            <td><span class="chip">value binning</span></td>
+            <td><span class="chip">expression-sorted</span></td>
+            <td>Continuous expression을 vocab 토큰으로 변환해 LM 아키텍처에 그대로 얹기 좋다.</td>
+          </tr>
+          <tr data-fg="random" data-fe="continuous" data-order="expression-sorted">
+            <td class="m" style="color:var(--c-value)">scFoundation</td>
+            <td><span class="chip">random</span></td>
+            <td><span class="chip">continuous</span></td>
+            <td><span class="chip">expression-sorted</span></td>
+            <td>Scalar→vector 직접 projection. Discretization loss 없음. Asymmetric encoder가 이를 활용.</td>
+          </tr>
+          <tr data-fg="ESM2" data-fe="no-op" data-order="chromosome">
+            <td class="m" style="color:var(--c-cross)">UCE</td>
+            <td><span class="chip">ESM2</span></td>
+            <td><span class="chip">no-op</span></td>
+            <td><span class="chip">chromosome</span></td>
+            <td>Perturbation reverse task에서 가장 약했다 (MCC 0.17). FE가 빠진 것이 결정적.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tok-conclusion">
+      <strong>HEIMDALL 결론:</strong> in-distribution에서는 토크나이저가 별 차이 없지만, cross-tissue/cross-species shift에서
+      <code>scBERT-tok ≈ Geneformer-tok &gt; scGPT-tok &gt; scFoundation-tok ≫ UCE-tok</code> 순으로 격차가 생긴다.
+      모듈을 섞은 <em>하이브리드</em> (Gene2vec FG + integer FE + expression-sorted ORDER)가 가장 좋았다 — 어떤 단일 모델 토크나이저도 최적이 아니다.
+    </div>
+  </div>
+</section>
+
+<!-- ============== 06 TASKS ============== -->
+<section id="tasks">
+  <div class="s-head">
+    <span class="s-num">06</span>
+    <h2>다운스트림 6 태스크 — <em>cell 임베딩 vs gene 임베딩</em></h2>
+  </div>
+  <p class="s-lede">
+    foundation model의 가치는 결국 다운스트림 성능. cell-level 임베딩이 잘 되는 태스크 3개와, gene-level 임베딩이 잘 되는 태스크 3개로 나뉜다.
+    "공식 발표 SOTA"와 "후속 벤치마크"의 결과가 다른 경우를 함께 표기 — 자세한 비판은 §07.
+  </p>
+  <div class="task-grid">
+    <article class="task-card">
+      <div class="t-num">task 01</div>
+      <span class="t-emb">cell embedding</span>
+      <div class="t-name">Cell type annotation</div>
+      <div class="t-body">
+        Reference로 fine-tune된 분류기. <strong>scGPT, CellFM, Geneformer가 자체 벤치마크에서 우위.</strong> 그러나 zero-shot 평가에선 HVG·scVI·Harmony에 밀린다 (Kedzierska 2025).
+      </div>
+      <div class="t-rivals">vs · Seurat · SingleR · ACTINN · scVI</div>
+    </article>
+    <article class="task-card">
+      <div class="t-num">task 02</div>
+      <span class="t-emb">cell embedding</span>
+      <div class="t-name">Batch correction · integration</div>
+      <div class="t-body">
+        다른 lab/protocol 데이터를 같은 latent space에 정렬. <strong>scGPT가 복잡한 데이터셋에서 우위, Geneformer는 batch에 지배되는 경우가 잦다.</strong>
+      </div>
+      <div class="t-rivals">vs · Harmony · scVI · Scanorama</div>
+    </article>
+    <article class="task-card">
+      <div class="t-num">task 03</div>
+      <span class="t-emb">cell embedding</span>
+      <div class="t-name">Drug response · IC50</div>
+      <div class="t-body">
+        bulk RNA-seq 임베딩 → 약물 IC50 회귀. <strong>scFoundation이 GDSC 벤치마크 SOTA</strong>.
+        Tahoe-x1은 100M perturbed cell 학습으로 cancer hallmarks·gene essentiality에서 SOTA.
+      </div>
+      <div class="t-rivals">vs · DeepCDR · CDPMF</div>
+    </article>
+    <article class="task-card">
+      <div class="t-num">task 04</div>
+      <span class="t-emb gene">gene embedding</span>
+      <div class="t-name">Perturbation prediction</div>
+      <div class="t-body">
+        gene KO/OE/drug 후 transcriptome 예측. <strong>scGPT, GEARS+scFoundation embedding이 자체 발표 SOTA.</strong>
+        그러나 <em>train-mean baseline</em>이 일부 셋팅에서 foundation model을 이긴다 (Csendes 2025, Wei 2025).
+      </div>
+      <div class="t-rivals">vs · GEARS · CPA · train-mean</div>
+    </article>
+    <article class="task-card">
+      <div class="t-num">task 05</div>
+      <span class="t-emb gene">gene embedding</span>
+      <div class="t-name">GRN · gene module inference</div>
+      <div class="t-body">
+        attention 가중치 또는 gene embedding 유사도로 regulatory network 추론.
+        <strong>scGPT의 attention-GRN, scPRINT-2의 graph-based가 알려진 interaction에 enrichment.</strong> 메커니즘 검증은 후속 연구 몫.
+      </div>
+      <div class="t-rivals">vs · GENIE3 · ARACNE · SCENIC</div>
+    </article>
+    <article class="task-card">
+      <div class="t-num">task 06</div>
+      <span class="t-emb gene">gene embedding</span>
+      <div class="t-name">Imputation · denoising</div>
+      <div class="t-body">
+        sparse matrix의 0을 복원. <strong>scFoundation의 Read-Depth-Aware (RDA)가 expression enhancement SOTA</strong>,
+        scPRINT-2 XPressor가 imputation SOTA. 단, T/S=1(no enhancement)에선 SAVER에 진다.
+      </div>
+      <div class="t-rivals">vs · SAVER · MAGIC · scImpute · scVI</div>
+    </article>
+  </div>
+</section>
+
+<!-- ============== 07 REALITY CHECK ============== -->
+<section id="reality">
+  <div class="s-head">
+    <span class="s-num">07</span>
+    <h2>Reality Check — <em>자체 SOTA</em> vs <em>후속 벤치마크</em></h2>
+  </div>
+  <p class="s-lede">
+    같은 모델, 다른 평가. 4편의 비판 논문이 같은 구조의 메시지를 보낸다 — <strong>fine-tune 데이터가 작거나 평가 지표가 task-specific일수록 foundation model의 우위가 사라진다.</strong>
+    탭을 클릭해 4편의 핵심 발견을 비교해 보세요.
+  </p>
+  <div class="rc-frame">
+    <div class="rc-tabs" role="tablist">
+      <button class="rc-tab active" data-rc="0" aria-pressed="true">
+        <div class="rc-yr">2025 · Genome Biology</div>
+        <div class="rc-name">Kedzierska et al.</div>
+        <div class="rc-tag">zero-shot에서 HVG·scVI에 진다</div>
+      </button>
+      <button class="rc-tab" data-rc="1">
+        <div class="rc-yr">2025 · bioRxiv</div>
+        <div class="rc-name">Csendes et al.</div>
+        <div class="rc-tag">train-mean baseline ≥ scFoundation</div>
+      </button>
+      <button class="rc-tab" data-rc="2">
+        <div class="rc-yr">2025 · Nature Methods</div>
+        <div class="rc-name">Wei et al.</div>
+        <div class="rc-tag">27개 방법 광폭 벤치마크</div>
+      </button>
+      <button class="rc-tab" data-rc="3">
+        <div class="rc-yr">2026 · bioRxiv</div>
+        <div class="rc-name">Bereket &amp; Leskovec</div>
+        <div class="rc-tag">Claude Opus 4.6 = PRESAGE</div>
+      </button>
+    </div>
+    <div class="rc-body show" id="rc-0">
+      <h4>Kedzierska, Crawford, Amini, Lu (2025)</h4>
+      <div class="rc-cite"><a href="https://scholar.google.com/scholar?q=Kedzierska+2025+zero-shot+evaluation+single+cell+foundation" target="_blank" rel="noopener">Zero-shot evaluation reveals limitations of single-cell foundation models · Genome Biology</a></div>
+      <div class="rc-tldr"><strong>TL;DR.</strong> Geneformer와 scGPT를 fine-tune 없이 그대로 쓰면, <strong>HVG (highly variable genes)</strong>라는 가장 단순한 baseline에도 cell type clustering에서 진다. scVI·Harmony도 마찬가지. fine-tune 성공 ≠ zero-shot 효용.</div>
+      <ul>
+        <li><b>5개 데이터셋</b> (Pancreas, PBMC 12k, Tabula Sapiens, Immune…) 에서 <b>HVG &gt; Geneformer &gt; scGPT</b> 순. AvgBio·ASW 두 metric 모두.</li>
+        <li>scGPT를 random init과 비교했을 때 pretrain은 효과는 있다 — 단, <b>data scale이 항상 도움이 되진 않음</b> (human 33M이 blood 10M보다 약간 낮음).</li>
+        <li>Pretrain corpus와 evaluation set이 겹쳐도 (Tabula Sapiens) 성능 향상이 <b>일관되지 않음</b>.</li>
+        <li>Batch integration: Geneformer 임베딩이 batch 구조에 지배됨 — 같은 기술로 찍은 experiment조차 잘 못 합침.</li>
+      </ul>
+      <div class="rc-take"><strong>시사점:</strong> 새 데이터에 foundation model을 갖다 쓰기 전에 HVG → scVI 같은 1시간 baseline을 반드시 먼저 돌려보자. 이기지 못하면 fine-tune 비용을 들일 이유가 없다.</div>
+    </div>
+    <div class="rc-body" id="rc-1">
+      <h4>Csendes, Bondi-Kelly et al. (2025)</h4>
+      <div class="rc-cite"><a href="https://scholar.google.com/scholar?q=Csendes+2025+benchmarking+foundation+cell+models+perturbation" target="_blank" rel="noopener">Benchmarking foundation cell models for post-perturbation prediction · bioRxiv</a></div>
+      <div class="rc-tldr"><strong>TL;DR.</strong> scFoundation/Geneformer/scGPT의 임베딩을 GEARS에 feature로 넣어도, 일부 셋팅에서 <strong>그냥 train set의 평균을 예측하는 trivial baseline</strong>을 못 이긴다. 임베딩의 가치가 모델 전체 성능에 dominate하지 않는다.</div>
+      <ul>
+        <li>perturbation prediction 벤치마크 (Norman·Adamson·Replogle…) 에서 foundation model embedding 추가의 효과가 <b>일관되지 않거나 음수</b>인 케이스가 많다.</li>
+        <li>scELMo · GenePT 같은 LLM-derived embedding도 비슷한 패턴 — 어떤 셋팅에서 도움 되고 어떤 셋팅에선 baseline 미만.</li>
+        <li>핵심 인사이트: <b>"fine-tune 데이터셋이 충분히 클 때만"</b> foundation model이 baseline을 넘어선다.</li>
+      </ul>
+      <div class="rc-take"><strong>시사점:</strong> perturbation prediction에서 foundation model 임베딩을 자랑하기 전에 train-mean baseline 점수부터 보고하자. 이걸 보고 안 하는 논문은 일단 의심.</div>
+    </div>
+    <div class="rc-body" id="rc-2">
+      <h4>Wei, Yang et al. (2025)</h4>
+      <div class="rc-cite"><a href="https://scholar.google.com/scholar?q=Wei+2025+benchmarking+algorithms+generalizable+single+cell+perturbation" target="_blank" rel="noopener">Benchmarking algorithms for generalizable single-cell perturbation prediction · Nature Methods</a></div>
+      <div class="rc-tldr"><strong>TL;DR.</strong> 27개 perturbation prediction 방법을 같은 평가 파이프라인에서 비교. Foundation model (scGPT, scFoundation, GeneCompass, scELMo)은 fine-tune 데이터가 충분할 때만 baseline을 넘는다. <strong>"Cellular context embedding"</strong>이 unseen context로의 generalization을 결정한다.</div>
+      <ul>
+        <li>27 method × 다중 perturbation type × 평가 metric = 가장 광폭의 비교.</li>
+        <li>"단일 임베딩 전략이 모든 metric에서 dominant하지 않음" — task·dataset에 따라 winner가 갈린다.</li>
+        <li>cellular context를 명시적으로 임베딩하는 방법이 unseen cellular context 일반화에 결정적.</li>
+        <li>perturbation 정보를 학습에 직접 넣은 모델 (Tahoe-x1)이 perturbation prediction에 유리한 구조적 이유를 정량화.</li>
+      </ul>
+      <div class="rc-take"><strong>시사점:</strong> "어떤 임베딩이 최고냐"가 아니라 "내 dataset 크기와 task에 어떤 임베딩이 맞냐"가 옳은 질문. 모든 셋팅의 silver bullet은 없다.</div>
+    </div>
+    <div class="rc-body" id="rc-3">
+      <h4>Bereket &amp; Leskovec (2026)</h4>
+      <div class="rc-cite"><a href="https://scholar.google.com/scholar?q=Bereket+Leskovec+2026+AI+virtual+cell+models+useful" target="_blank" rel="noopener">Are current AI Virtual Cell models useful for scientific discovery? · bioRxiv</a></div>
+      <div class="rc-tldr"><strong>TL;DR.</strong> AI Virtual Cell의 표준 평가 지표 (MAE, MSE, Pearson r)가 <strong>실제 과학적 유용성을 측정하지 못한다</strong>. 4개 CRISPRi Perturb-seq screen 중 3개에서 <em>"all-zero predictions"</em>가 experimental replicates를 MAE에서 이긴다. 그리고 <strong>Claude Opus 4.6를 in-context ranker로 쓰면 PRESAGE (특화 모델) 와 같은 성능</strong>이 나온다 — fine-tune 없이.</div>
+      <ul>
+        <li><b>PerturbHD framework</b>: hit-discovery ranking 문제로 재구성. recall@5% budget (prioritization), recall@20% FDR (simulation) 두 개의 운영적 metric.</li>
+        <li>Claude Opus 4.6에 training perturbation/effect/hit triple을 CSV로 prompt → test perturbation을 0-100으로 점수 → <b>K562/HepG2/Jurkat에서 PRESAGE와 동등 (recall@5% ~0.35-0.5)</b>.</li>
+        <li>Vanilla MAE의 PerturbHD 상관 ρ = 0.03 (uncorrelated). Vanilla MSE의 ρ = -0.23 (anti-correlated). <b>Systema correlation</b>과 <b>MAE-top-100</b>은 ρ ≥ 0.85.</li>
+        <li>현재 Virtual Cell 모델은 <b>"triage tool"로 쓸 만하지만 "experiment 대체"는 못 한다</b> — prioritization → simulation으로 가면 utility가 3-10배 떨어진다.</li>
+      </ul>
+      <div class="rc-take"><strong>시사점:</strong> perturbation prediction 모델을 만들고 있다면 (1) MAE/Pearson 말고 hit recall로 평가, (2) frontier LLM in-context baseline을 반드시 먼저 돌려보기. 못 이기면 fine-tune은 무의미.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== 08 VIRTUAL CELL ============== -->
+<section id="virtual">
+  <div class="s-head">
+    <span class="s-num">08</span>
+    <h2>Virtual Cell 비전 — <em>3세대의 패러다임 이동</em></h2>
+  </div>
+  <p class="s-lede">
+    "세포의 행동을 컴퓨터에서 그대로 재현한다"는 비전은 20여 년에 걸쳐 세 번 패러다임이 바뀌었다.
+    <strong>1세대 (mechanistic) → 2세대 (data atlas) → 3세대 (AI Virtual Cell, AIVC)</strong>.
+    Foundation model은 3세대의 핵심 building block이지만, Bereket 2026의 결론을 잊지 말 것 — 현재는 아직 triage tool 단계다.
+  </p>
+  <div class="vc-grid">
+    <article class="vc-col" style="--vc-color:var(--c-warn)">
+      <div class="vc-gen">1st generation</div>
+      <h3>Mechanistic simulation</h3>
+      <div class="vc-yr">2003 — 2012</div>
+      <div class="vc-body">
+        반응-확산 방정식, ODE/PDE, Gibson-Bruck stochastic simulation으로 세포의 부분 시스템을 시뮬레이션.
+        <strong>VCell (Slepchenko 2003-)</strong>이 BioModel→MathModel→Simulation 통합. <strong>Karr 2012</strong>의
+        <em>Mycoplasma genitalium</em> 525-gene whole-cell model이 정점.
+      </div>
+      <div class="vc-arr">
+        <b>한계:</b> 알려진 메커니즘과 측정된 파라미터에 전적으로 의존. 진핵세포 확장에 조합 폭발.
+      </div>
+    </article>
+
+    <article class="vc-col" style="--vc-color:var(--c-cross)">
+      <div class="vc-gen">2nd generation</div>
+      <h3>Large-scale data atlas</h3>
+      <div class="vc-yr">2017 — 2024</div>
+      <div class="vc-body">
+        측정 인프라가 폭발적으로 커지며 atlas 시대가 열림. <strong>HCA (Regev 2017-)</strong> · <strong>HuBMAP (NIH 2019-)</strong>·
+        <strong>GTEx v8 (2020)</strong> · <strong>Tabula Sapiens (2022)</strong>가 cell type/state 공간을 공유 좌표계로.
+        <strong>CELLxGENE</strong> Discover 가 33M-350M cells의 de facto 표준.
+      </div>
+      <div class="vc-arr">
+        <b>전환:</b> 측정 ≠ 예측. Atlas 위에 학습할 모델이 필요해짐 → 3세대로.
+      </div>
+    </article>
+
+    <article class="vc-col" style="--vc-color:var(--c-vision)">
+      <div class="vc-gen">3rd generation</div>
+      <h3>AI Virtual Cell (AIVC)</h3>
+      <div class="vc-yr">2023 — </div>
+      <div class="vc-body">
+        Foundation model + generative AI로 데이터에서 직접 cell behavior를 학습.
+        <strong>Bunne 2024 (Cell)</strong>의 AIVC 로드맵이 분야의 새 framework. Diffusion · flow matching · autoregressive transformer가
+        dynamics 모델링의 후보.
+      </div>
+      <div class="vc-arr">
+        <b>현재:</b> Bereket 2026 — "triage tool로는 OK, experiment 대체는 아직."
+      </div>
+    </article>
+  </div>
+
+  <div class="vc-bunne">
+    <h4>Bunne et al. (2024) — AIVC의 두 핵심 추상화: <em>UR + VI</em></h4>
+    <div class="vc-bunne-body">
+      AI Virtual Cell의 두 building block을 정의. 이 framework가 이후 모든 AIVC 논문의 공통 어휘가 됨.
+    </div>
+    <div class="vc-uv">
+      <div class="vc-uv-card">
+        <b>UR · Universal Representation</b>
+        <span>분자 / 셀 / 조직 모두를 하나의 공유 latent 공간에 매핑. DNA, RNA, 단백질, cell state, tissue structure가 같은 표현 공간을 공유.</span>
+      </div>
+      <div class="vc-uv-card">
+        <b>VI · Virtual Instrument</b>
+        <span>UR 위에서 동작하는 도구. Decoder VI는 해석 가능한 출력 복원, Manipulator VI는 "현재 UR + 섭동 prompt → 새 UR" 매핑을 학습.</span>
+      </div>
+    </div>
+    <div class="vc-bunne-body" style="margin-top:12px">
+      Multiscale 설계: <strong>분자 (Transformer/LLM) → 세포 (Autoencoder/ViT) → 다세포 (GNN/ENN/ViT)</strong>.
+      각 층은 아래 층을 aggregate해서 위 층을 만든다. 이 페이지에서 다룬 scFM 대부분은 "세포 스케일 UR" 의 구현체.
+    </div>
+  </div>
+
+  <div class="vc-warn">
+    <b>오해 주의 — "현재 AIVC는 어디까지 왔는가?"</b>
+    <p>
+      Bereket &amp; Leskovec 2026은 4개 CRISPRi Perturb-seq screen에서 PRESAGE·GEARS·linear regression 모두 <strong>recall@20% FDR이 4-12%</strong>에 그친다고 보고.
+      Replicate ceiling이 20-40%이니 모델은 ceiling의 절반도 못 미친다.
+      반면 prioritization (recall@5% budget)은 모델이 0.35-0.5로 의미 있다 — <strong>"실험 대체"는 아직, "실험 우선순위 매기기"는 OK.</strong>
+      더 놀라운 건, 일반 frontier LLM (Claude Opus 4.6) 을 prompt해서 ranker로 쓰면 특화 모델 PRESAGE와 같은 성능이 나온다는 점. AIVC의 정의 자체를 다시 묻게 한다.
+    </p>
+  </div>
+</section>
+
+<!-- ============== 09 RESOURCES ============== -->
+<section id="resources">
+  <div class="s-head">
+    <span class="s-num">09</span>
+    <h2>리소스 — <em>모델 코드</em>와 <em>출처</em></h2>
+  </div>
+  <p class="s-lede">
+    바로 받아 쓸 수 있는 6개 핵심 모델의 공식 GitHub/HuggingFace, 그리고 본 페이지가 인용한 wiki 정리본 25편의 Google Scholar 검색 링크.
+  </p>
+  <div class="res-grid">
+    <a class="res-card" href="https://huggingface.co/ctheodoris/Geneformer" target="_blank" rel="noopener" style="--res-color:var(--c-rank)">
+      <div class="r-host">huggingface · primary</div>
+      <div class="r-name">ctheodoris / Geneformer</div>
+      <div class="r-desc">Theodoris lab 공식 가중치. Geneformer V1/V2 (104M cells, 316M params, QLoRA quantization) 동일 repo.</div>
+    </a>
+    <a class="res-card" href="https://github.com/bowang-lab/scGPT" target="_blank" rel="noopener" style="--res-color:var(--c-binned)">
+      <div class="r-host">github · primary</div>
+      <div class="r-name">bowang-lab / scGPT</div>
+      <div class="r-desc">Cui et al. Nat Methods 2024 공식 레포. CELLxGENE 33M cells 학습. fine-tune 노트북 포함.</div>
+    </a>
+    <a class="res-card" href="https://github.com/biomap-research/scFoundation" target="_blank" rel="noopener" style="--res-color:var(--c-value)">
+      <div class="r-host">github · primary</div>
+      <div class="r-name">biomap-research / scFoundation</div>
+      <div class="r-desc">Hao et al. Nat Methods 2024. xTrimoGene asymmetric encoder, RDA. 가중치는 HF <code>genbio-ai/scFoundation</code>.</div>
+    </a>
+    <a class="res-card" href="https://github.com/snap-stanford/UCE" target="_blank" rel="noopener" style="--res-color:var(--c-cross)">
+      <div class="r-host">github · primary</div>
+      <div class="r-name">snap-stanford / UCE</div>
+      <div class="r-desc">Rosen 2023 Universal Cell Embeddings. 8 species, ESM2 단백질 임베딩 기반 cross-species 전이.</div>
+    </a>
+    <a class="res-card" href="https://github.com/vandijklab/cell2sentence-ft" target="_blank" rel="noopener" style="--res-color:var(--c-base)">
+      <div class="r-host">github · primary</div>
+      <div class="r-name">vandijklab / cell2sentence-ft</div>
+      <div class="r-desc">Levine 2024. GPT-2를 cell sentence로 fine-tune. C2S-Scale (Pythia/Gemma) 후속 코드 별도.</div>
+    </a>
+    <a class="res-card" href="https://github.com/wujialu/scFM-Bench" target="_blank" rel="noopener" style="--res-color:var(--c-warn)">
+      <div class="r-host">github · benchmark</div>
+      <div class="r-name">scFM-Bench (third-party)</div>
+      <div class="r-desc">scFoundation/Geneformer/scGPT/scBERT를 동일 평가 파이프라인에서 비교. Reality Check 재현용.</div>
+    </a>
+  </div>
+
+  <div class="cite-block">
+    <h4>인용 — wiki/single-cell-foundation 정리본 (25편 / 55편 중)</h4>
+    <ul id="citeList"><!-- injected --></ul>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<div class="foot">
+  <strong>audodidactic / single-cell-foundation-models</strong> · 2026-05-09 · joonan-lab onboarding 자료실<br>
+  자료 출처: lab 위키의 <code>wiki/single-cell-foundation/</code> 정리본 55편 + <code>wiki/overviews/</code> 9편 (single-cell-foundation-models-timeline,
+  foundation-models-biology-review, foundation-model-corpus-comparison, embedding-strategies-biological-foundation-models, virtual-cell-evolution 등).
+  모든 인용은 Google Scholar 검색 링크로 변환됨 — 외부 자원 의존도 0.<br>
+  본 페이지는 lab 내부의 작업 중인 manuscripts를 의도적으로 제외하고, 외부에 공개된 모델·논문만 다룸.<br>
+  <a href="../index.html">← Audodidactic 인덱스로</a> · <a href="https://github.com/joonan-lab/audodidactic" target="_blank" rel="noopener">github.com/joonan-lab/audodidactic</a>
+</div>
+
+</div><!-- /.page -->
+
+<script>
+/* ====================================================
+   MODEL DATA — single source of truth for all sections
+   ==================================================== */
+const STRAT = {
+  rank:     {label:"rank-based",          color:"var(--c-rank)",     bg:"var(--c-rank-bg)"},
+  value:    {label:"value-projection",    color:"var(--c-value)",    bg:"var(--c-value-bg)"},
+  binned:   {label:"binned generative",   color:"var(--c-binned)",   bg:"var(--c-binned-bg)"},
+  llm:      {label:"llm-derived",         color:"var(--c-llm)",      bg:"var(--c-llm-bg)"},
+  cross:    {label:"cross-species",       color:"var(--c-cross)",    bg:"var(--c-cross-bg)"},
+  base:     {label:"llm-as-base",         color:"var(--c-base)",     bg:"var(--c-base-bg)"},
+  pert:     {label:"perturbation-aware",  color:"var(--c-pert)",     bg:"var(--c-pert-bg)"},
+  spatial:  {label:"spatial / epi",       color:"var(--c-spatial)",  bg:"var(--c-spatial-bg)"},
+};
+
+const MODELS = [
+  {id:"scbert", name:"scBERT", year:2022, strategy:"binned",
+   author:"Yang et al. · Nat Mach Intell",
+   arch:"BERT + Performer", params:"~10M", paramsN:10,
+   cells:"millions (PanglaoDB)", cellsN:3,
+   org:"human", ctx:">16K genes",
+   token:"gene2vec FG · binning FE · random ORDER",
+   obj:"masked gene MLM",
+   bestTask:"cell type annotation",
+   lic:"open", licClass:"open",
+   code:"github · TencentAILabHealthcare", codeUrl:"https://github.com/TencentAILabHealthcare/scBERT",
+   scholar:"scBERT cell type annotation Yang 2022 Nature Machine Intelligence",
+   blurb:"BERT를 단세포에 처음 적용. Performer 어텐션으로 16K 유전자 모두 입력. HEIMDALL 평가에서 분포 이동에 가장 강함."},
+  {id:"geneformer", name:"Geneformer", year:2023, strategy:"rank",
+   author:"Theodoris et al. · Nature",
+   arch:"BERT encoder", params:"10.3M", paramsN:10.3,
+   cells:"30M (Genecorpus-30M)", cellsN:30,
+   org:"human", ctx:"2,048 ranked",
+   token:"random FG · no-op FE · expression-sorted ORDER",
+   obj:"masked gene prediction",
+   bestTask:"network biology · in-silico KO",
+   lic:"open", licClass:"open",
+   code:"HF · ctheodoris", codeUrl:"https://huggingface.co/ctheodoris/Geneformer",
+   scholar:"Geneformer Theodoris 2023 transfer learning network biology Nature",
+   blurb:"Rank-ordered gene tokenization으로 read depth normalize. In-silico KO로 dilated cardiomyopathy 표적 후보 도출."},
+  {id:"uce", name:"UCE", year:2023, strategy:"cross",
+   author:"Rosen et al. · Stanford",
+   arch:"Transformer + ESM2 protein embed", params:"~33M", paramsN:33,
+   cells:"36M (IMA, 8 species)", cellsN:36,
+   org:"8 species", ctx:"chromosome-ordered",
+   token:"ESM2 FG · no-op FE · chromosome ORDER",
+   obj:"MLM",
+   bestTask:"cross-species transfer · zero-shot annotation",
+   lic:"open", licClass:"open",
+   code:"github · snap-stanford", codeUrl:"https://github.com/snap-stanford/UCE",
+   scholar:"Universal Cell Embeddings UCE Rosen 2023 foundation",
+   blurb:"단백질 서열 임베딩 (ESM2)으로 유전자 ID를 대체 → 학습 안 한 종에도 zero-shot. HEIMDALL에선 perturbation reverse에 약함."},
+  {id:"cellplm", name:"CellPLM", year:2023, strategy:"binned",
+   author:"Wen et al.",
+   arch:"Cell-as-token transformer + 2D sinusoidal", params:"80M+", paramsN:80,
+   cells:"11M (9M scRNA + 2M spatial)", cellsN:11,
+   org:"human", ctx:"cell-level",
+   token:"binned FE · cell-as-token",
+   obj:"cell-level MLM + VAE",
+   bestTask:"integration · cell-level pretraining",
+   lic:"open", licClass:"open",
+   code:"github · OmicsML", codeUrl:"https://github.com/OmicsML/CellPLM",
+   scholar:"CellPLM Wen 2023 pre-training cell language model spatial",
+   blurb:"한 셀을 토큰 1개로 압축한 cell-level pretraining. Spatial 좌표를 위치 임베딩으로 통합."},
+  {id:"scelmo", name:"scELMo", year:2023, strategy:"llm",
+   author:"Liu et al.",
+   arch:"GPT-3.5 1536-d embedding", params:"lightweight", paramsN:0,
+   cells:"no cell pretrain", cellsN:0,
+   org:"multi", ctx:"per-gene",
+   token:"GPT functional description embed",
+   obj:"zero-shot",
+   bestTask:"zero-shot annotation · perturbation feature",
+   lic:"open", licClass:"open",
+   code:"github · HelloWorldLTY", codeUrl:"https://github.com/HelloWorldLTY/scELMo",
+   scholar:"scELMo 2023 single cell GPT functional description embedding",
+   blurb:"GPT-3.5에게 \"이 유전자는 무엇\"이라 묻고 답변을 그대로 임베딩으로 사용. 학습 안 한 유전자도 사용 가능."},
+  {id:"scgpt", name:"scGPT", year:2024, strategy:"binned",
+   author:"Cui et al. · Nat Methods",
+   arch:"GPT decoder-style + attention masking", params:"~70M", paramsN:70,
+   cells:"33M (CELLxGENE, 51 organs, 441 studies)", cellsN:33,
+   org:"human", ctx:"unordered set",
+   token:"random FG · binning FE · expression-sorted ORDER",
+   obj:"generative MLM",
+   bestTask:"5-task generalist",
+   lic:"open", licClass:"open",
+   code:"github · bowang-lab", codeUrl:"https://github.com/bowang-lab/scGPT",
+   scholar:"scGPT Cui 2024 Nature Methods foundation model single cell",
+   blurb:"GPT-style 생성형 pretraining + attention masking. Annotation/perturbation/integration/correction/GRN 5태스크 모두 강함."},
+  {id:"scfoundation", name:"scFoundation", year:2024, strategy:"value",
+   author:"Hao et al. · Nat Methods",
+   arch:"xTrimoGene asymmetric encoder/decoder", params:"100M", paramsN:100,
+   cells:"50M+ (GEO+HCA+EMBL+hECA+DISCO)", cellsN:50,
+   org:"human", ctx:"~20K genes",
+   token:"random FG · continuous projection FE · expression-sorted ORDER",
+   obj:"Read-Depth-Aware (RDA) MAE",
+   bestTask:"expression enhancement · drug response (SOTA)",
+   lic:"weights", licClass:"open",
+   code:"HF · genbio-ai", codeUrl:"https://huggingface.co/genbio-ai/scFoundation",
+   scholar:"scFoundation Hao 2024 large scale foundation model Nature Methods xTrimoGene",
+   blurb:"Asymmetric encoder/decoder + RDA로 sparsity와 read depth 동시 처리. GDSC drug response SOTA, expression enhancement SOTA."},
+  {id:"scemb", name:"scEMB", year:2024, strategy:"rank",
+   author:"Hsieh et al.",
+   arch:"12-layer encoder", params:"—", paramsN:0,
+   cells:"30M+ (CELLxGENE)", cellsN:30,
+   org:"human", ctx:"rank-binned",
+   token:"rank-binned",
+   obj:"masked gene",
+   bestTask:"cross-platform annotation",
+   lic:"open", licClass:"open",
+   code:"github · paper", codeUrl:"https://scholar.google.com/scholar?q=scEMB+Hsieh+2024+context+representation",
+   scholar:"scEMB Hsieh 2024 context representation single cell rank binned",
+   blurb:"Rank를 bin으로 묶어 cross-platform robustness 향상. Geneformer 후속 계열 중 가장 batch-robust."},
+  {id:"nicheformer", name:"Nicheformer", year:2024, strategy:"spatial",
+   author:"Schaar et al.",
+   arch:"12-layer transformer", params:"49.3M", paramsN:49.3,
+   cells:"110M (SpatialCorpus, 57M dissociated + 53.8M spatial)", cellsN:110,
+   org:"human + mouse", ctx:"512-dim cell embed",
+   token:"rank + modality + organism + assay tokens",
+   obj:"masked gene",
+   bestTask:"spatial cell context · niche prediction",
+   lic:"open", licClass:"open",
+   code:"github · theislab", codeUrl:"https://scholar.google.com/scholar?q=Nicheformer+Schaar+2024+foundation+model+spatial",
+   scholar:"Nicheformer Schaar 2024 foundation model spatial single cell",
+   blurb:"Dissociated + spatial 4개 기술 (MERFISH/Xenium/CosMx) joint pretraining. Modality·organism·assay 모두 토큰으로 입력."},
+  {id:"epiagent", name:"EpiAgent", year:2024, strategy:"spatial",
+   author:"Chen et al.",
+   arch:"Transformer (cCRE tokens)", params:"~1.4B", paramsN:1400,
+   cells:"5M (Human-scATAC-Corpus, 31 tissues)", cellsN:5,
+   org:"human", ctx:"35B tokens",
+   token:"cCRE TF-IDF rank",
+   obj:"cell-cCRE alignment + signal recon",
+   bestTask:"scATAC annotation · cCRE perturbation",
+   lic:"open", licClass:"open",
+   code:"github · paper", codeUrl:"https://scholar.google.com/scholar?q=EpiAgent+Chen+2024+foundation+model+scATAC",
+   scholar:"EpiAgent Chen 2024 foundation model scATAC chromatin",
+   blurb:"scATAC-seq을 cCRE 토큰으로 다룬 첫 1.4B 파라미터 foundation model. Zero-shot annotation + in-silico cCRE KO."},
+  {id:"cell2sentence", name:"Cell2Sentence", year:2024, strategy:"base",
+   author:"Levine et al.",
+   arch:"GPT-2 small (117M) / medium (345M)", params:"117–345M", paramsN:117,
+   cells:"35-celltype immune (van Dijk lab)", cellsN:1,
+   org:"human", ctx:"top-100 genes / ~233 tokens",
+   token:"gene names as text (rank-ordered)",
+   obj:"causal LM",
+   bestTask:"cell generation + classification",
+   lic:"open", licClass:"open",
+   code:"github · vandijklab", codeUrl:"https://github.com/vandijklab/cell2sentence-ft",
+   scholar:"Cell2Sentence Levine 2024 teaching large language models biology",
+   blurb:"\"발현 순위 = 단어 순서\"로 셀을 한 문장으로 만들어 GPT-2를 그대로 fine-tune. NL pretrain → C2S가 C2S-only보다 높은 valid rate."},
+  {id:"cellfm", name:"CellFM", year:2025, strategy:"value",
+   author:"Zeng et al. · Nat Comm",
+   arch:"RetNet (Retentive Network)", params:"800M", paramsN:800,
+   cells:"102.3M (GEO+ENA+GSA+ImmPort, 19,914 samples)", cellsN:102,
+   org:"human", ctx:"all genes",
+   token:"value-projection (continuous)",
+   obj:"masked gene",
+   bestTask:"4-category generalist (annotation·perturb·function·gene-gene)",
+   lic:"open", licClass:"open",
+   code:"github · paper", codeUrl:"https://scholar.google.com/scholar?q=CellFM+2025+RetNet+single+cell+foundation",
+   scholar:"CellFM 2025 RetNet 800M cell foundation model 100M cells",
+   blurb:"100M+ cells × 800M params. RetNet으로 학습/추론 모두 효율적. 4 task 카테고리 모두에서 scGPT/Geneformer 능가."},
+  {id:"tahoe", name:"Tahoe-x1", year:2025, strategy:"pert",
+   author:"Gandhi et al. · Vevo Therapeutics",
+   arch:"Transformer + drug token + flash attn", params:"up to 3B", paramsN:3000,
+   cells:"100M (Tahoe-100M, 50 cell lines × 1,100+ drugs)", cellsN:100,
+   org:"human (cancer)", ctx:"masked gene + drug",
+   token:"masked gene + drug tokens",
+   obj:"perturbation-aware MLM",
+   bestTask:"gene essentiality · cancer hallmarks · drug response",
+   lic:"weights", licClass:"open",
+   code:"github · vevotx", codeUrl:"https://scholar.google.com/scholar?q=Tahoe-x1+Gandhi+2025+scaling+perturbation+trained",
+   scholar:"Tahoe-x1 Gandhi 2025 scaling perturbation trained 3B parameters",
+   blurb:"100M perturbed cells × 3B params. Drug 토큰을 직접 입력 → compound-aware cell representation. 4 disease benchmark SOTA."},
+  {id:"scprint2", name:"scPRINT-2", year:2025, strategy:"rank",
+   author:"Kalfon et al.",
+   arch:"XPressor + graph encoder", params:"—", paramsN:0,
+   cells:"350M (CELLxGENE-beyond)", cellsN:350,
+   org:"16 organisms", ctx:"graph-based",
+   token:"graph + XPressor",
+   obj:"multi (denoise + AE + label)",
+   bestTask:"expression imputation · GRN · multi-organism",
+   lic:"open", licClass:"open",
+   code:"github · paper", codeUrl:"https://scholar.google.com/scholar?q=scPRINT-2+Kalfon+2025+next+generation+single+cell",
+   scholar:"scPRINT-2 Kalfon 2025 next generation single cell foundation 350M",
+   blurb:"350M cells × 16 organisms = 최대 규모 corpus. 42-config additive benchmark로 design choice의 효과 정량화."},
+  {id:"genev2", name:"Geneformer V2", year:2026, strategy:"rank",
+   author:"Chen et al.",
+   arch:"BERT encoder (scaled)", params:"38M–316M", paramsN:316,
+   cells:"104M (Genecorpus-104M, 55 organs)", cellsN:104,
+   org:"human", ctx:"4,096 ranked",
+   token:"random FG · no-op FE · expression-sorted ORDER",
+   obj:"masked gene",
+   bestTask:"network biology (scaled) + QLoRA fine-tune",
+   lic:"open", licClass:"open",
+   code:"HF · ctheodoris", codeUrl:"https://huggingface.co/ctheodoris/Geneformer",
+   scholar:"Geneformer V2 Chen 2026 scaling quantization 316M parameters",
+   blurb:"V1을 30M → 104M cells, 10M → 316M params로 확장. QLoRA로 메모리 1/4. Context 2K → 4K."},
+  {id:"c2sscale", name:"C2S-Scale", year:2025, strategy:"base",
+   author:"Rizvi et al.",
+   arch:"Pythia / Gemma-2 backbone + GRPO", params:"410M – 27B", paramsN:27000,
+   cells:"50M+ (CELLxGENE) + 1B-token text", cellsN:50,
+   org:"human + mouse", ctx:"standard LM",
+   token:"gene names as text (rank-ordered)",
+   obj:"causal LM + RL",
+   bestTask:"scaling laws for sc · multimodal QA",
+   lic:"gemma", licClass:"gem",
+   code:"github · vandijklab", codeUrl:"https://scholar.google.com/scholar?q=C2S-Scale+Rizvi+2025+scaling+LLMs+single+cell",
+   scholar:"C2S-Scale Rizvi 2025 scaling LLMs single cell analysis 27B",
+   blurb:"Cell2Sentence를 27B Gemma까지 scale. 단세포 분야 첫 scaling law 입증. Gemma 라이선스에 종속."},
+];
+
+/* ====================================================
+   00 — done in static HTML
+   ==================================================== */
+
+/* ====================================================
+   02 — TIMELINE
+   ==================================================== */
+function buildTimeline(){
+  const track = document.getElementById("tlTrack");
+  const axis = document.getElementById("tlAxis");
+  const slider = document.getElementById("tlSlider");
+  const yrEl = document.getElementById("tlYear");
+  const cellsEl = document.getElementById("tlCells");
+  const paramsEl = document.getElementById("tlParams");
+  const activeEl = document.getElementById("tlActive");
+  const detail = document.getElementById("tlDetail");
+  const legend = document.getElementById("tlLegend");
+
+  const yrMin = 2022, yrMax = 2026;
+  // axis labels
+  axis.innerHTML = "";
+  for(let y=yrMin; y<=yrMax; y++){
+    const sp = document.createElement("span");
+    sp.textContent = y;
+    axis.appendChild(sp);
+  }
+
+  // legend
+  legend.innerHTML = "";
+  Object.entries(STRAT).forEach(([k,v])=>{
+    const el = document.createElement("span");
+    el.innerHTML = `<i style="background:${v.color}"></i>${v.label}`;
+    legend.appendChild(el);
+  });
+
+  // group multiple models in same year vertically
+  const yrCounts = {};
+  MODELS.forEach(m => { yrCounts[m.year] = (yrCounts[m.year]||0); });
+
+  const yrIndex = {};
+  MODELS.forEach(m => {
+    yrIndex[m.year] = (yrIndex[m.year]||0) + 1;
+  });
+
+  // Place nodes
+  const yrPos = {};
+  MODELS.forEach(m => {
+    if(!yrPos[m.year]) yrPos[m.year] = 0;
+  });
+
+  // Sort by year then by paramsN for deterministic stacking
+  const sorted = [...MODELS].sort((a,b)=> a.year-b.year || a.paramsN-b.paramsN);
+  const yrSlot = {};
+
+  sorted.forEach(m => {
+    yrSlot[m.year] = (yrSlot[m.year]||0);
+    const slot = yrSlot[m.year];
+    yrSlot[m.year]++;
+
+    const xPct = ((m.year - yrMin) / (yrMax - yrMin)) * 92 + 4; // 4-96%
+    const yPct = 8 + slot * 28;
+
+    const node = document.createElement("div");
+    node.className = "tl-node";
+    node.dataset.id = m.id;
+    node.dataset.year = m.year;
+    node.style.left = xPct + "%";
+    node.style.top = yPct + "px";
+    node.style.setProperty("--node-color", STRAT[m.strategy].color);
+    node.innerHTML = `
+      <div class="tl-node-dot"></div>
+      <div class="tl-node-label">${m.name}</div>
+      <div class="tl-node-meta">${m.params}</div>
+    `;
+    node.addEventListener("click", () => showTLDetail(m));
+    track.insertBefore(node, axis);
+  });
+
+  function update(yr){
+    yrEl.textContent = yr;
+    const cumCells = MODELS.filter(m=>m.year<=yr).reduce((s,m)=>s+m.cellsN,0);
+    const maxParams = Math.max(...MODELS.filter(m=>m.year<=yr).map(m=>m.paramsN));
+    const activeCount = MODELS.filter(m=>m.year<=yr).length;
+    cellsEl.textContent = (cumCells>=1000? (cumCells/1000).toFixed(1)+"B" : cumCells+"M");
+    paramsEl.textContent = (maxParams>=1000? (maxParams/1000).toFixed(1)+"B" : maxParams.toFixed(0)+"M");
+    activeEl.textContent = activeCount + " 모델";
+    document.querySelectorAll(".tl-node").forEach(n => {
+      const ny = parseInt(n.dataset.year);
+      n.classList.toggle("dim", ny > yr);
+    });
+  }
+
+  slider.addEventListener("input", e => update(parseInt(e.target.value)));
+  update(yrMax);
+}
+
+function showTLDetail(m){
+  const detail = document.getElementById("tlDetail");
+  const s = STRAT[m.strategy];
+  detail.innerHTML = `
+    <strong style="color:${s.color}">${m.name}</strong> · ${m.year} · ${m.author}<br>
+    <span style="color:var(--muted);font-size:12px">arch: ${m.arch} · params: ${m.params} · cells: ${m.cells} · ctx: ${m.ctx}</span><br>
+    ${m.blurb}<br>
+    <span style="color:var(--muted);font-size:12px">best task: ${m.bestTask} · objective: ${m.obj}</span>
+  `;
+}
+
+/* ====================================================
+   03 — STRATEGY filter
+   ==================================================== */
+function buildStratFilter(){
+  const bar = document.getElementById("stratBar");
+  const cards = document.querySelectorAll(".strat-card");
+  bar.querySelectorAll(".strat-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      bar.querySelectorAll(".strat-btn").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      const s = btn.dataset.strat;
+      cards.forEach(c => {
+        if(s==="all") c.classList.remove("dim");
+        else c.classList.toggle("dim", c.dataset.strat !== s);
+      });
+    });
+  });
+}
+
+/* ====================================================
+   04 — COMPARISON TABLE
+   ==================================================== */
+function buildCmpTable(){
+  const body = document.getElementById("cmpBody");
+  const search = document.getElementById("tblSearch");
+  const countEl = document.getElementById("tblCount");
+  let sortKey = "year", sortDir = -1;
+
+  function render(){
+    const q = search.value.trim().toLowerCase();
+    let rows = MODELS.filter(m => {
+      if(!q) return true;
+      const blob = `${m.name} ${m.author} ${m.arch} ${m.bestTask} ${m.token} ${m.obj} ${m.strategy}`.toLowerCase();
+      return blob.includes(q);
+    });
+    rows.sort((a,b) => {
+      let av, bv;
+      switch(sortKey){
+        case "year":     av=a.year; bv=b.year; break;
+        case "name":     av=a.name; bv=b.name; break;
+        case "strategy": av=a.strategy; bv=b.strategy; break;
+        case "arch":     av=a.arch; bv=b.arch; break;
+        case "params":   av=a.paramsN; bv=b.paramsN; break;
+        case "cells":    av=a.cellsN; bv=b.cellsN; break;
+        case "org":      av=a.org; bv=b.org; break;
+        case "ctx":      av=a.ctx; bv=b.ctx; break;
+        case "obj":      av=a.obj; bv=b.obj; break;
+        case "task":     av=a.bestTask; bv=b.bestTask; break;
+        case "lic":      av=a.lic; bv=b.lic; break;
+        default:         av=a.year; bv=b.year;
+      }
+      if(typeof av === "string"){
+        return av.localeCompare(bv) * sortDir;
+      }
+      return (av-bv) * sortDir;
+    });
+    countEl.textContent = rows.length;
+    body.innerHTML = rows.map(m => {
+      const s = STRAT[m.strategy];
+      return `
+        <tr data-id="${m.id}">
+          <td class="nums">${m.year}</td>
+          <td>
+            <div class="m-name">${m.name}</div>
+            <div class="m-author">${m.author}</div>
+          </td>
+          <td><span class="strat-pill" style="background:${s.color}">${s.label}</span></td>
+          <td>${m.arch}</td>
+          <td class="nums">${m.params}</td>
+          <td>${m.cells}</td>
+          <td>${m.org}</td>
+          <td class="nums">${m.ctx}</td>
+          <td>${m.obj}</td>
+          <td>${m.bestTask}</td>
+          <td><span class="lic ${m.licClass}">${m.lic}</span></td>
+          <td><a class="code" href="${m.codeUrl}" target="_blank" rel="noopener">${m.code}</a></td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  document.querySelectorAll("table.cmp thead th[data-sort]").forEach(th => {
+    th.addEventListener("click", () => {
+      const k = th.dataset.sort;
+      if(sortKey === k) sortDir = -sortDir;
+      else { sortKey = k; sortDir = (th.dataset.num) ? -1 : 1; }
+      document.querySelectorAll("table.cmp thead th").forEach(t => t.classList.remove("sorted-asc","sorted-desc"));
+      th.classList.add(sortDir>0 ? "sorted-asc" : "sorted-desc");
+      render();
+    });
+  });
+
+  search.addEventListener("input", render);
+
+  // initial sort
+  document.querySelector('table.cmp thead th[data-sort="year"]').classList.add("sorted-desc");
+  render();
+}
+
+/* ====================================================
+   05 — TOKENIZER 3-axis matrix
+   ==================================================== */
+function buildTokenizer(){
+  const state = {fg:"any", fe:"any", order:"any"};
+  const opts = document.querySelectorAll(".tok-opts");
+  opts.forEach(group => {
+    const ax = group.dataset.axis;
+    group.querySelectorAll(".tok-opt").forEach(btn => {
+      btn.addEventListener("click", () => {
+        group.querySelectorAll(".tok-opt").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        state[ax] = btn.dataset.val;
+        update();
+      });
+    });
+  });
+  function update(){
+    document.querySelectorAll("#tokTable tbody tr").forEach(tr => {
+      const fg = tr.dataset.fg, fe = tr.dataset.fe, order = tr.dataset.order;
+      const match =
+        (state.fg==="any" || state.fg===fg) &&
+        (state.fe==="any" || state.fe===fe) &&
+        (state.order==="any" || state.order===order);
+      tr.classList.toggle("match", match && !(state.fg==="any" && state.fe==="any" && state.order==="any"));
+    });
+  }
+}
+
+/* ====================================================
+   07 — REALITY CHECK tabs
+   ==================================================== */
+function buildRC(){
+  const tabs = document.querySelectorAll(".rc-tab");
+  const bodies = document.querySelectorAll(".rc-body");
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => { t.classList.remove("active"); t.setAttribute("aria-pressed","false"); });
+      bodies.forEach(b => b.classList.remove("show"));
+      tab.classList.add("active");
+      tab.setAttribute("aria-pressed","true");
+      document.getElementById("rc-"+tab.dataset.rc).classList.add("show");
+    });
+  });
+}
+
+/* ====================================================
+   09 — CITATION list (Google Scholar)
+   ==================================================== */
+const CITES = [
+  ["scBERT (Yang 2022)", "scBERT cell type annotation Yang 2022 Nature Machine Intelligence"],
+  ["Geneformer (Theodoris 2023)", "Geneformer Theodoris 2023 transfer learning network biology Nature"],
+  ["UCE (Rosen 2023)", "Universal Cell Embeddings UCE Rosen 2023 foundation"],
+  ["CellPLM (Wen 2023)", "CellPLM Wen 2023 pre-training cell language model spatial"],
+  ["scELMo (Liu 2023)", "scELMo 2023 single cell GPT functional description embedding"],
+  ["scGPT (Cui 2024)", "scGPT Cui 2024 Nature Methods foundation model single cell"],
+  ["scFoundation (Hao 2024)", "scFoundation Hao 2024 large scale foundation model Nature Methods"],
+  ["scEMB (Hsieh 2024)", "scEMB Hsieh 2024 context representation single cell"],
+  ["GenePT (Chen 2024)", "GenePT Chen 2024 simple effective embedding gene"],
+  ["scLAMBDA (Wang 2024)", "scLAMBDA Wang 2024 modeling predicting single cell"],
+  ["Nicheformer (Schaar 2024)", "Nicheformer Schaar 2024 foundation model spatial"],
+  ["EpiAgent (Chen 2024)", "EpiAgent Chen 2024 foundation model scATAC"],
+  ["Cell2Sentence (Levine 2024)", "Cell2Sentence Levine 2024 teaching language models biology"],
+  ["CellPatch (Zhu 2024)", "CellPatch Zhu 2024 foundation model transcriptomics patching"],
+  ["CellFM (Zeng 2025)", "CellFM 2025 RetNet single cell foundation 800M"],
+  ["Tahoe-x1 (Gandhi 2025)", "Tahoe-x1 Gandhi 2025 scaling perturbation trained"],
+  ["scPRINT-2 (Kalfon 2025)", "scPRINT-2 Kalfon 2025 next generation single cell foundation"],
+  ["C2S-Scale (Rizvi 2025)", "C2S-Scale Rizvi 2025 scaling LLMs single cell"],
+  ["Geneformer V2 (Chen 2026)", "Geneformer V2 Chen 2026 scaling quantization"],
+  ["DoFormer (Karbalayghareh 2026)", "DoFormer Karbalayghareh 2026 causal transformer gene"],
+  ["HEIMDALL (Haber 2026)", "HEIMDALL Haber 2026 disentangling tokenizer single cell"],
+  ["Bunne 2024 — AIVC vision", "Bunne 2024 how to build virtual cell artificial intelligence"],
+  ["Kedzierska 2025 — zero-shot critique", "Kedzierska 2025 zero-shot evaluation single cell foundation"],
+  ["Csendes 2025 — perturbation benchmark", "Csendes 2025 benchmarking foundation cell models perturbation"],
+  ["Wei 2025 — 27 method benchmark", "Wei 2025 benchmarking algorithms generalizable single cell perturbation"],
+  ["Bereket & Leskovec 2026 — PerturbHD", "Bereket Leskovec 2026 AI virtual cell models useful"],
+  ["HCA (Regev 2017)", "Human Cell Atlas Regev 2017"],
+  ["Tabula Sapiens (2022)", "Tabula Sapiens consortium 2022 multiple organ"],
+];
+function buildCites(){
+  const list = document.getElementById("citeList");
+  list.innerHTML = CITES.map(([name, q]) => {
+    const url = "https://scholar.google.com/scholar?q=" + encodeURIComponent(q);
+    return `<li><a href="${url}" target="_blank" rel="noopener">${name}<code>↗</code></a></li>`;
+  }).join("");
+}
+
+/* ====================================================
+   INIT
+   ==================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  buildTimeline();
+  buildStratFilter();
+  buildCmpTable();
+  buildTokenizer();
+  buildRC();
+  buildCites();
+});
+</script>
+</body>
+</html>

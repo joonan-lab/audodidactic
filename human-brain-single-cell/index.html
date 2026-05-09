@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>인간 뇌 단일세포 시퀀싱 연구 지도</title>
-<meta name="description" content="2011-2026 인간 뇌 single-cell/single-nucleus sequencing 연구의 발견, 셀타입, 의미를 연대별로 학습하는 인터랙티브 시각화">
+<meta name="description" content="2011-2026 인간 뇌 single-cell/single-nucleus sequencing 연구의 발견, 하위 셀타입, regional-specific cell type 의미를 학습하는 인터랙티브 시각화">
 <style>
 *{box-sizing:border-box}
 :root{
@@ -360,6 +360,96 @@ canvas{display:block;width:100%}
 }
 .meaning-item b{font-size:12px;color:var(--ink-2)}
 .meaning-item span{font-size:13px;color:var(--muted)}
+.subtype-region-grid{
+  display:grid;
+  grid-template-columns:minmax(520px,1fr) minmax(560px,1fr);
+  gap:16px;
+  align-items:start;
+  margin-top:16px;
+}
+.subtype-board{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.subtype-card,.region-card{
+  border:1px solid var(--line-soft);
+  border-radius:8px;
+  background:#fff;
+  padding:12px;
+}
+.subtype-kicker,.region-kicker{
+  font-size:11px;
+  color:var(--muted);
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.subtype-card h4,.region-card h4{
+  margin:5px 0 8px;
+  font-size:15px;
+  line-height:1.35;
+  color:var(--ink);
+}
+.subtype-card p,.region-card p{
+  margin:8px 0 0;
+  color:#3b485a;
+  font-size:13px;
+  line-height:1.65;
+}
+.marker-row{
+  display:grid;
+  grid-template-columns:78px minmax(0,1fr);
+  gap:8px;
+  padding-top:7px;
+  margin-top:7px;
+  border-top:1px solid var(--line-soft);
+  font-size:12px;
+}
+.marker-row b{color:var(--ink-2)}
+.marker-row span{color:var(--muted)}
+.region-tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:12px;
+}
+.region-btn{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink-2);
+  border-radius:8px;
+  padding:7px 9px;
+  cursor:pointer;
+  font-size:12px;
+  transition:border-color .16s ease,background .16s ease,transform .16s ease;
+}
+.region-btn:hover{transform:translateY(-1px);border-color:#9aa8ba}
+.region-btn.active{border-color:#16202c;background:#16202c;color:#fff}
+.region-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.region-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-top:8px;
+}
+.region-tag{
+  border:1px solid var(--line-soft);
+  background:#f8fafc;
+  color:#3b485a;
+  border-radius:6px;
+  padding:4px 6px;
+  font-size:11px;
+  line-height:1.1;
+}
+.region-study{
+  color:var(--blue);
+  font-weight:700;
+}
 .ladder{
   display:grid;
   grid-template-columns:repeat(5,1fr);
@@ -440,7 +530,7 @@ td .small{font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px}
 }
 .footer a{color:#64748b}
 @media (max-width:1100px){
-  .mast,.main-grid,.meaning-grid{grid-template-columns:1fr}
+  .mast,.main-grid,.meaning-grid,.subtype-region-grid{grid-template-columns:1fr}
   .phase-strip{grid-template-columns:repeat(3,1fr)}
   .cell-strip{grid-template-columns:repeat(4,1fr)}
   .ladder{grid-template-columns:repeat(2,1fr)}
@@ -454,6 +544,9 @@ td .small{font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px}
   .dek{font-size:14px}
   .mast-grid{grid-template-columns:repeat(2,1fr)}
   .phase-strip,.cell-strip,.ladder,.table-tools{grid-template-columns:1fr}
+  .subtype-board,.region-grid{grid-template-columns:1fr}
+  .panel-head{flex-direction:column;gap:4px}
+  .panel-note{text-align:left;max-width:none}
   .mini-grid{grid-template-columns:1fr}
   #timelineCanvas{height:430px}
   #atlasCanvas{height:320px}
@@ -477,9 +570,9 @@ td .small{font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px}
         “어떤 셀타입이, 언제, 왜 중요해졌는가”입니다.
       </p>
       <div class="mast-grid" aria-label="page statistics">
-        <div class="stat"><b id="statPapers">28</b><span>선별 논문·리소스</span></div>
+        <div class="stat"><b id="statPapers">35</b><span>선별 논문·리소스</span></div>
         <div class="stat"><b>2011-2026</b><span>벌크 지도에서 multiome까지</span></div>
-        <div class="stat"><b>8</b><span>학습용 셀타입 축</span></div>
+        <div class="stat"><b>50+</b><span>하위 셀타입·지역특이 축</span></div>
         <div class="stat"><b>5</b><span>발견의 시대 구분</span></div>
       </div>
     </div>
@@ -536,6 +629,27 @@ td .small{font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px}
       </div>
       <div class="meaning-panel" id="cellMeaning"></div>
     </div>
+    <div class="subtype-region-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title" id="subtypeBoardTitle">하위 셀타입 quick map</div>
+          <div class="panel-note">선택한 셀 계열에서 실제로 읽어야 할 subtype 이름</div>
+        </div>
+        <div class="panel-body">
+          <div class="subtype-board" id="subtypeBoard"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Regional-specific 발견 매트릭스</div>
+          <div class="panel-note">뇌 영역별로 특이 subtype을 잡은 연구들</div>
+        </div>
+        <div class="panel-body">
+          <div class="region-tabs" id="regionTabs"></div>
+          <div class="region-grid" id="regionGrid"></div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section>
@@ -573,8 +687,8 @@ td .small{font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px}
   </section>
 
   <footer class="footer">
-    자료 출처: `/Users/joonan/Dropbox/References/llm-wiki`의 `wiki/brain-atlas`, `wiki/brain-development`,
-    `wiki/single-cell-dl`, `wiki/overviews` 문서와 기존 `interactives/postmortem-brain-atlas` 데이터를 함께 읽어 구성했습니다.
+    자료 출처: 랩 내부 위키(llm-wiki)의 <code>brain-atlas</code>, <code>brain-development</code>,
+    <code>single-cell-dl</code>, <code>overviews</code> 문서와 기존 <code>interactives/postmortem-brain-atlas</code> 데이터를 함께 읽어 구성했습니다.
     인용 링크는 Google Scholar 검색으로 연결됩니다.
   </footer>
 </div>
@@ -700,6 +814,105 @@ const cellTypes = [
   }
 ];
 
+const subtypeGroups = {
+  all:[
+    {axis:"Cortical excitatory",name:"L2/3 IT neuron",markers:"SLC17A7, CUX2",region:"neocortex upper layers",studies:"Jorstad 2023 · Velmeshev 2019 · Palmer 2026",meaning:"ASD 변화, 성인 피질 regionality, IT-neuron regulatory program이 반복해서 만나는 대표 하위타입입니다."},
+    {axis:"Cortical excitatory",name:"L4 IT / V1-expanded IT",markers:"RORB, IT identity",region:"primary visual cortex",studies:"Jorstad 2023 · Palmer 2026",meaning:"V1에서 layer 4와 E:I 비율이 크게 달라지며, 감각 피질 특이 cytoarchitecture의 핵심이 됩니다."},
+    {axis:"Cortical inhibitory",name:"PVALB / SST / VIP / LAMP5",markers:"PVALB, SST, VIP, LAMP5, SNCG",region:"neocortex",studies:"Jorstad 2023 · Mathys 2023 · Chien 2024",meaning:"회로 균형, 인지 회복력, 노화에 따른 SST/VIP 감소를 해석하는 기본 inhibitory subtype 세트입니다."},
+    {axis:"Thalamus",name:"Primary-to-tertiary thalamic relay",markers:"PVALB/KCNC1/KCNC3 ↔ CALB1",region:"LGd/VB/MGv to CM/PF/MD",studies:"Phillips 2019 · Kim 2023 · Liu 2025",meaning:"시상은 layer가 아니라 핵과 mediolateral gradient로 subtype이 정렬됩니다."},
+    {axis:"Striatum",name:"D1/D2 MSN plus patch/matrix dSPN",markers:"DRD1/TAC1/PDYN, DRD2/PENK, Kremen1, Calb1",region:"caudate/putamen",studies:"Garma 2024 · Dong 2025",meaning:"직접/간접 경로만으로 부족하고, patch와 matrix가 운동 시작/종료와 도파민 회로를 다르게 만집니다."},
+    {axis:"Cerebellum",name:"Granule cell and Purkinje subtype axes",markers:"ATOH1/PAX6/NEUROD1/ZP2, CALB1/PVALB/FOXP1",region:"cerebellar cortex",studies:"Kim 2025 · Khouri-Farah 2025 · Yang 2024",meaning:"인간 소뇌 특이성은 Purkinje만이 아니라 granule-cell ZP2와 FOXP-defined Purkinje geography에서 보입니다."},
+    {axis:"Glia",name:"OPC1/OPC2 and region-specific astrocytes",markers:"PDGFRA, OLIG1/2, OPALIN, RBFOX1, LGR6",region:"telencephalic vs non-telencephalic",studies:"Siletti 2023 · Braun 2023 · Serrano-Pozo 2024",meaning:"뉴런보다 덜 화려해 보여도 OPC와 astrocyte는 발달 구획과 질병 취약성을 오래 보존합니다."},
+    {axis:"Brainstem",name:"Splatter neurons and monoamine subtypes",markers:"TH, FEV, SLC6A4, PHOX2B, LMX1B",region:"midbrain/pons/medulla",studies:"Siletti 2023 · Nolbrant 2024",meaning:"뇌간은 excitatory/inhibitory 이분법이 깨지고, DA/5-HT/dual-transmitter 조합이 taxonomy를 주도합니다."}
+  ],
+  rg:[
+    {axis:"Cortical progenitor",name:"vRG / apical radial glia",markers:"PAX6, HES1, VIM",region:"ventricular zone",studies:"Miller 2014 · Nowakowski 2017",meaning:"피질 계보의 시작점이며 fetal cortical zone과 disease-risk timing을 읽는 기준점입니다."},
+    {axis:"Cortical progenitor",name:"oRG / outer radial glia",markers:"HOPX, PTPRZ1, mTOR-enriched state",region:"outer SVZ",studies:"Nowakowski 2017 · Bhaduri 2021",meaning:"인간 피질 확장과 arealization이 progenitor 단계에서 시작된다는 근거를 줍니다."},
+    {axis:"Cortical progenitor",name:"tRG / truncated radial glia",markers:"PAX6, EOMES-adjacent trajectories",region:"fetal cortex",studies:"Nowakowski 2017",meaning:"apical-to-basal lineage의 중간 상태를 세분해 발달 시간축을 더 촘촘하게 만듭니다."},
+    {axis:"Thalamic progenitor",name:"OLIG3+ thalamic radial glia",markers:"OLIG3, TCF7L2 context",region:"developing thalamus",studies:"Kim 2023 · Braun 2023",meaning:"피질에서는 OPC 쪽으로 읽히는 OLIG 계열 신호가 시상에서는 thalamic progenitor identity가 됩니다."},
+    {axis:"Hypothalamus",name:"tRGC / qRGC / cRGC",markers:"VIM/HMGA2/COL2A1, SOX2/HES1/FABP7, MKI67/TOP2A",region:"developing hypothalamus",studies:"Herb 2023",meaning:"시상하부는 대사·호르몬 기능을 만드는 nucleus별 발달 궤적을 radial glia 상태에서부터 분리합니다."},
+    {axis:"Cerebellum",name:"Rhombic lip progenitor",markers:"ATOH1, PAX6, ARHGAP11B",region:"upper rhombic lip",studies:"Zhong 2023 · Yang 2024",meaning:"granule cell과 brainstem nuclei까지 이어지는, 피질 VZ와 다른 소뇌 고유 발달 원천입니다."}
+  ],
+  ipc:[
+    {axis:"Cortical transition",name:"EOMES+ intermediate progenitor",markers:"EOMES/TBR2, NHLH1",region:"SVZ",studies:"Camp 2015 · Nowakowski 2017",meaning:"radial glia에서 excitatory neuron으로 넘어가는 병목 상태입니다."},
+    {axis:"Hypothalamus",name:"ASCL1/EGFR/OLIG1/OLIG2+ non-neuronal IPC",markers:"ASCL1, EGFR, OLIG1, OLIG2",region:"developing hypothalamus",studies:"Herb 2023",meaning:"hypothalamus에서는 IPC가 neuroendocrine neuron과 glial fate를 나누는 별도 궤적을 갖습니다."},
+    {axis:"Hypothalamus",name:"NEUROG2/NEUROD1/NHLH2+ neuronal IPC",markers:"NEUROG2, NEUROD1, NHLH2",region:"developing hypothalamus",studies:"Herb 2023",meaning:"neuropeptide-defined hypothalamic neuron subtype으로 넘어가는 중간 프로그램입니다."},
+    {axis:"Neocortex multiome",name:"Tri-IPC",markers:"Tri-IPC state, GABAergic/OPC/astrocyte fate",region:"developing neocortex",studies:"Wang 2025",meaning:"GABAergic neuron, OPC, astrocyte로 갈 수 있는 삼분화 전환 상태로, gliogenesis와 neurogenesis를 연결합니다."},
+    {axis:"Thalamus glial transition",name:"PDGFRA-negative multipotent glial progenitor",markers:"EGFR, ASCL1, OLIG1, OLIG2, PDGFRA-",region:"second-trimester thalamus",studies:"Kim 2023",meaning:"canonical OPC가 아닌 상태에서 astrocyte와 oligodendrocyte를 모두 만들 수 있는 시상 특이 전환점입니다."}
+  ],
+  ex:[
+    {axis:"Upper-layer IT",name:"L2/3 IT",markers:"SLC17A7, CUX2",region:"neocortex",studies:"Jorstad 2023 · Velmeshev 2019",meaning:"ASD 조직에서 변화가 두드러지고, association cortex regional program과도 맞물립니다."},
+    {axis:"Granular IT",name:"L4 IT",markers:"RORB, IT identity",region:"V1 and granular cortex",studies:"Jorstad 2023",meaning:"V1의 expanded layer 4와 sublaminar organization을 설명하는 중심 subtype입니다."},
+    {axis:"Deep-layer projection",name:"L5 ET / L5 IT / L5-6 NP",markers:"BCL11B/CTIP2, FEZF2, NP markers",region:"deep cortical layers",studies:"Jorstad 2023 · Palmer 2026",meaning:"피질 출력과 regional DEG가 강하게 걸리는 deep-layer excitatory 축입니다."},
+    {axis:"Corticothalamic",name:"L6 CT / L6b",markers:"FOXP2, TLE4, CCN2/CTGF",region:"layer 6",studies:"Jorstad 2023 · Palmer 2026",meaning:"시상과 피질의 reciprocal loop를 만드는 subtype이며, FOXP2 맥락이 시상 EN2와도 비교됩니다."},
+    {axis:"Thalamus",name:"PVALB primary relay neuron",markers:"PVALB, KCNC1, KCNC3, SCN8A",region:"LGd, VB, MGv",studies:"Phillips 2019",meaning:"빠른 sensory relay에 맞춘 primary-profile thalamic subtype입니다."},
+    {axis:"Thalamus",name:"CALB1 tertiary / PVT excitatory neuron",markers:"CALB1, CALB2, DRD2, SNCA, PRKN",region:"CM/PF/MD and PVT",studies:"Phillips 2019 · Nishioka 2026",meaning:"감각 relay보다 limbic, arousal, mood integration에 가까운 medial thalamic subtype입니다."},
+    {axis:"Cerebellum",name:"Granule cell",markers:"ATOH1, PAX6, NEUROD1, ZP2",region:"cerebellar granular layer",studies:"Kim 2025 · Yang 2024",meaning:"인간 소뇌에서 가장 강한 human-specific divergence가 관찰된 excitatory subtype입니다."}
+  ],
+  in:[
+    {axis:"Cortical inhibitory",name:"PVALB interneuron",markers:"PVALB, KCNC1/KCNC3",region:"neocortex",studies:"Jorstad 2023 · Chien 2024",meaning:"빠른 perisomatic inhibition으로 E/I balance를 조절하는 기본 축입니다."},
+    {axis:"Cortical inhibitory",name:"SST interneuron",markers:"SST, NPY",region:"neocortex",studies:"Mathys 2023 · Chien 2024",meaning:"AD vulnerability와 aging abundance decline이 반복해서 보이는 회로 조절 subtype입니다."},
+    {axis:"Cortical inhibitory",name:"VIP / LAMP5 / SNCG / Chandelier",markers:"VIP, LAMP5, SNCG, chandelier subclass",region:"neocortex",studies:"Jorstad 2023 · Velmeshev 2019",meaning:"VIP 변화는 ASD에서, LAMP5/Chandelier는 primate cortical inhibitory diversity에서 중요합니다."},
+    {axis:"Thalamus",name:"CRABP1+ migrating GABAergic neuron",markers:"CRABP1, PVALB fate",region:"MGE to thalamus",studies:"Braun 2023 · Kim 2023",meaning:"인간 시상에서 확장된 MGE-derived inhibitory migration으로 regional GABA repertoire를 만듭니다."},
+    {axis:"Thalamus",name:"SOX14+ midbrain-derived inhibitory neuron",markers:"SOX14, NKX2.2 context",region:"midbrain to thalamus/pons",studies:"Siletti 2023 · Kim 2023",meaning:"성인 위치는 시상이지만 transcriptome은 발달 기원인 midbrain에 더 가깝습니다."},
+    {axis:"Striatum",name:"TAC3 / PTHLH / CHAT / SST / CCK interneuron classes",markers:"TAC3, PTHLH, CHAT, SST, CCK, VIP",region:"dorsal striatum",studies:"Garma 2024 · Krienen 2023",meaning:"피질 inhibitory taxonomy와 다른, primate-specific TAC3와 cholinergic TAN까지 포함한 striatal subtype 체계입니다."}
+  ],
+  micro:[
+    {axis:"Homeostatic",name:"Surveyed cortical microglia",markers:"CX3CR1, P2RY12, TMEM119",region:"adult cortex",studies:"Darmanis 2015 · Johansen 2023",meaning:"개인 간 abundance/expression 변이가 크기 때문에 disease signal의 baseline으로 중요합니다."},
+    {axis:"AD regulome",name:"SPI1/PU.1-centered AD-risk microglia",markers:"SPI1, TREM2, TYROBP",region:"aging cortex",studies:"Kosoy 2022 · Mathys 2023",meaning:"AD GWAS variant가 microglia regulatory element에 모이는 대표 사례입니다."},
+    {axis:"Multiregion AD",name:"Microglia enhancer-gene rewiring",markers:"disease-linked cCREs, MEF2C context",region:"AD cortex and thalamus-linked regions",studies:"Liu 2025",meaning:"single-nucleus multiome에서 glial regulation과 neuron-glia communication disruption이 보입니다."},
+    {axis:"PVT disease circuit",name:"PVT-neuron-linked microglia program",markers:"SYNDIG1, CYFIP1, TIAM1",region:"medial thalamus",studies:"Nishioka 2026",meaning:"PVT excitatory neuron loss와 microglia interaction program downregulation이 mood disorder 해석으로 이어집니다."}
+  ],
+  astro:[
+    {axis:"Developmental regionality",name:"FOXG1+ forebrain glioblast to astrocyte",markers:"FOXG1, astrocyte maturation genes",region:"telencephalon",studies:"Braun 2023 · Siletti 2023",meaning:"adult telencephalic astrocyte identity가 prenatal glioblast geography에서 시작됨을 보여줍니다."},
+    {axis:"Hypothalamus",name:"SIX3/SIX6+ hypothalamic glial lineage",markers:"SIX3, SIX6",region:"hypothalamus",studies:"Braun 2023 · Herb 2023",meaning:"시상과 가까운 diencephalon 안에서도 hypothalamus glia가 별도 regional program을 갖습니다."},
+    {axis:"Thalamus",name:"LGR6+ thalamic astrocyte / AC1",markers:"LGR6, AC1",region:"thalamus",studies:"Kim 2023 · Liu 2025",meaning:"시상은 glial/vascular fraction이 높고 LGR6+ astrocyte identity가 특징으로 정리됩니다."},
+    {axis:"Cerebellum",name:"Bergmann glia and cerebellar astrocyte subtypes",markers:"BG_arch, BG_Mybpc1, WMA_Pgm5, CNA_Gpc5",region:"cerebellum",studies:"Cerrato 2025",meaning:"소뇌 astrocyte는 layer와 nuclei별로 Bergmann/non-Bergmann/hybrid subtype이 나뉩니다."},
+    {axis:"White matter",name:"Cortical WM proliferative astrocyte",markers:"SOX4, SOX11, ASCL1, HES6, FABP7",region:"corpus callosum/cortical WM",studies:"Bocchi 2025",meaning:"cortical WM에는 adult astrogenesis-like cluster가 있지만 cerebellar WM에는 없다는 지역 차이를 보여줍니다."},
+    {axis:"AD spatial axis",name:"astHome / astReact / astTF",markers:"APOE, AQP4, CLU, GFAP, FGF2, VEGFA",region:"EC to V1 vulnerability axis",studies:"Serrano-Pozo 2024",meaning:"AD astrocyte 변화는 pathology 시간축과 뇌 영역 vulnerability 축이 서로 다른 프로그램으로 나타납니다."}
+  ],
+  oligo:[
+    {axis:"Telencephalic OPC",name:"OPC1",markers:"PDGFRA, OLIG1/2, FOXG1/PRRX1 context",region:"cortex/telencephalon",studies:"Siletti 2023 · Braun 2023",meaning:"forebrain patterning을 보존하는 telencephalic OPC class입니다."},
+    {axis:"Non-telencephalic OPC",name:"OPC2",markers:"PDGFRA, OLIG1/2, non-telencephalic TF context",region:"thalamus, cerebellum, brainstem",studies:"Siletti 2023 · Braun 2023",meaning:"시상 OPC는 cortical OPC1과 분리되는 non-telencephalic class로 정리됩니다."},
+    {axis:"Mature oligodendrocyte",name:"Oligo1 / Oligo2",markers:"OPALIN, RBFOX1, MBP",region:"brain-wide with regional ratio shift",studies:"Siletti 2023 · Liu 2025",meaning:"성숙 OL은 brain-wide type이 공유되지만 지역별 비율과 질병 취약성이 달라집니다."},
+    {axis:"Thalamus",name:"PDGFRA-negative glial progenitor",markers:"EGFR, ASCL1, OLIG1, OLIG2, PDGFRA-",region:"second-trimester thalamus",studies:"Kim 2023",meaning:"canonical OPC commitment 이전의 multipotent glial state로, 시상 gliogenesis의 특이점입니다."},
+    {axis:"Cerebellum evolution",name:"Prolonged OPC-rich state",markers:"OPC proportion, immature OL",region:"human cerebellum",studies:"Kim 2025",meaning:"인간 소뇌는 OPC 비율이 높고 mature OL 비율이 낮아 장기 성숙/가소성 가설과 연결됩니다."}
+  ],
+  vascular:[
+    {axis:"Endothelial",name:"Endothelial cell",markers:"PECAM1, VWF",region:"brain-wide vascular niche",studies:"Darmanis 2015 · Siletti 2023",meaning:"혈관 축은 spatial atlas에서 neuron-glia proximity와 BBB context를 해석하는 기준입니다."},
+    {axis:"Mural cell",name:"Pericyte",markers:"PDGFRB, CSPG4 context",region:"capillary wall",studies:"Darmanis 2015 · Fang 2022",meaning:"혈관 안정성과 neurovascular unit을 single-cell table에 분리된 class로 올립니다."},
+    {axis:"Meningeal/vascular",name:"VLMC",markers:"vascular leptomeningeal cell markers",region:"surface and perivascular spaces",studies:"Siletti 2023",meaning:"해부학적 위치가 identity를 강하게 좌우하는 비뉴런성 regional niche입니다."},
+    {axis:"Disease niche",name:"Glia-vascular enriched thalamic context",markers:"high glial/vascular fraction",region:"thalamus",studies:"Liu 2025",meaning:"시상은 neuronal fraction이 낮고 glia/vascular fraction이 높아 AD multiome vulnerability 해석에서 배경이 달라집니다."}
+  ]
+};
+
+const regionTabs = [
+  {id:"all",label:"전체"},
+  {id:"cortex",label:"피질"},
+  {id:"thalamus",label:"시상"},
+  {id:"hypothalamus",label:"시상하부"},
+  {id:"striatum",label:"선조체"},
+  {id:"cerebellum",label:"소뇌"},
+  {id:"brainstem",label:"뇌간/중뇌"},
+  {id:"glia",label:"지역성 glia"}
+];
+
+const regionalFindings = [
+  {regions:["cortex"],cells:["ex","in"],title:"V1은 expanded layer 4와 독특한 E:I 비율을 가진다",studies:["Jorstad 2023","Palmer 2026"],subtypes:["L4 IT","V1-specific excitatory","V1 SST inhibitory"],finding:"8개 neocortical area 비교에서 24 shared subclasses는 공통으로 보이지만 V1은 layer 4 expansion, V1-specific excitatory types, SST-rich inhibitory specialization이 두드러집니다.",meaning:"피질 regionality는 새 셀타입이 완전히 따로 생기는 문제라기보다, 공통 subtype blueprint 위에서 abundance와 regulatory program이 달라지는 문제입니다."},
+  {regions:["cortex"],cells:["ex","in"],title:"성인 피질 regionality는 IT/deep-layer excitatory에서 가장 강하다",studies:["Palmer 2026"],subtypes:["IT neurons","deep-layer excitatory","PVALB/SST"],finding:"9개 피질 영역 multiome에서 IT와 deep-layer excitatory neurons가 가장 강한 regional DEG와 regulatory signature를 보였고 ACC와 V1C가 특히 강했습니다.",meaning:"성인 피질 차이를 cell abundance만으로 설명하지 않고, subtype-specific cCRE/TF program으로 해석하게 만듭니다."},
+  {regions:["cortex","glia"],cells:["astro","oligo"],title:"발달 중 cortical area identity는 progenitor와 glia에서 이미 시작된다",studies:["Bhaduri 2021","Velmeshev 2023","Braun 2023"],subtypes:["oRG","area-biased RG","forebrain glioblast","OPC1"],finding:"cortical arealization signal은 radial glia에서 시작해 excitatory differentiation 중 선명해지고, forebrain glial lineage도 telencephalic identity를 보존합니다.",meaning:"성인 영역 차이는 late neuron만의 산물이 아니라 fetal progenitor와 glial patterning의 누적 결과입니다."},
+  {regions:["thalamus"],cells:["ex","in"],title:"시상은 primary-secondary-tertiary molecular gradient로 정렬된다",studies:["Phillips 2019","Kim 2023","Liu 2025"],subtypes:["PVALB primary","secondary matrix-like","CALB1 tertiary","PVT excitatory"],finding:"LGd/VB/MGv의 PVALB/KCNC1/KCNC3 primary profile에서 CM/PF/MD의 CALB1 tertiary profile까지 mediolateral continuum이 반복됩니다.",meaning:"시상 regional subtype은 피질 layer가 아니라 thalamic nucleus와 relay/integrative function의 gradient로 읽어야 합니다."},
+  {regions:["thalamus","glia"],cells:["rg","ipc","in","astro","oligo"],title:"인간 시상에는 특이한 GABA migration과 glial progenitor가 있다",studies:["Braun 2023","Kim 2023","Siletti 2023"],subtypes:["CRABP1+ GABA","SOX14+ inhibitory","LGR6+ astrocyte","OPC2","EGFR/ASCL1/OLIG1/2+ PDGFRA- progenitor"],finding:"MGE에서 CRABP1+ cells가 시상으로 이동하고, midbrain-derived SOX14+ inhibitory neurons와 non-telencephalic OPC2, LGR6+ astrocyte가 함께 지역성을 만듭니다.",meaning:"시상은 cortical interneuron migration의 부속물이 아니라 독립적인 inhibitory/glial developmental solution을 갖습니다."},
+  {regions:["hypothalamus"],cells:["rg","ipc","ex","in","astro"],title:"시상하부는 neuropeptide와 nucleus logic으로 108 neuronal subtypes가 나뉜다",studies:["Herb 2023"],subtypes:["tRGC/qRGC/cRGC","ASCL1/EGFR/OLIG IPC","NEUROG2/NEUROD1 IPC","tanycytes","neuropeptide neurons"],finding:"hypothalamus atlas는 cortical layer 대신 feeding, circadian, temperature, stress 같은 homeostatic nucleus와 neuropeptide 조합을 subtype 분류의 중심으로 둡니다.",meaning:"비피질 영역에서는 excitatory/inhibitory보다 기능적 neuroendocrine output이 더 중요한 분류축이 됩니다."},
+  {regions:["striatum"],cells:["in","ex"],title:"선조체는 MSN compartment와 interneuron class가 함께 지역성을 만든다",studies:["Garma 2024","Krienen 2023","Dong 2025"],subtypes:["D1/D2 MSN","patch Kremen1+ dSPN","matrix Calb1+ dSPN","TAC3","PTHLH","CHAT","PVALB","SST/NPY","CCK/VIP"],finding:"human dorsal striatum에서는 8 interneuron classes와 14 subclasses가 정리되고, patch/matrix dSPN은 운동 시작과 종료를 반대 방향으로 조절합니다.",meaning:"선조체는 피질 layer가 아니라 patch/matrix compartment, caudate-putamen gradient, dopamine-loop input/output으로 subtype 의미가 정해집니다."},
+  {regions:["cerebellum"],cells:["rg","ex","in","astro","oligo"],title:"소뇌는 rhombic lip/VZ dual-origin과 human-specific granule-cell divergence가 핵심이다",studies:["Kim 2025","Yang 2024","Zhong 2023"],subtypes:["granule cell","Purkinje cell","basket/stellate","Golgi","UBC","DCN","Bergmann glia"],finding:"granule cells는 인간 소뇌에서 가장 강한 divergence를 보이고 ZP2가 pontocerebellar glomerular synapse maturation을 늦추는 brake처럼 작동합니다.",meaning:"소뇌 regionality는 Purkinje 중심만으로 부족하고, granule cell, rhombic lip lineage, glia maturation까지 함께 봐야 합니다."},
+  {regions:["cerebellum"],cells:["in"],title:"FOXP 조합은 Purkinje cell subtype과 hemisphere expansion을 설명한다",studies:["Khouri-Farah 2025"],subtypes:["PC1 FOXP1+","PC7 PCDH10/LMO4+","PC11 low FOXP2","11 PC subtypes"],finding:"FOXP1/2/4 조합으로 11 embryonic Purkinje cell subtypes가 나뉘고, FOXP1+ PC1은 lateral hemisphere formation과 cross-species expansion에 연결됩니다.",meaning:"소뇌 구조의 진화적 확장은 특정 Purkinje subtype geography와 연결되는 방식으로 읽힙니다."},
+  {regions:["brainstem"],cells:["ex","in"],title:"뇌간의 splatter neuron은 excitatory/inhibitory 분류를 깨뜨린다",studies:["Siletti 2023"],subtypes:["splatter neurons","A9 DA","A10 DA","FEV/SLC6A4 serotonergic","parabrachial PHOX2B/FOXP2/LMX1B"],finding:"brainstem/midbrain은 DA, 5-HT, glutamatergic, GABAergic, neuropeptide 조합이 섞여 있고 parabrachial nuclei만 147+ subclusters가 보고됩니다.",meaning:"비피질 atlas를 피질 분류법으로 읽으면 중요한 subtype diversity가 사라집니다."},
+  {regions:["glia","cerebellum"],cells:["astro"],title:"astrocyte regionality는 cortex WM과 cerebellum WM에서도 다르다",studies:["Bocchi 2025","Cerrato 2025"],subtypes:["cortical WM proliferative astrocyte","Bergmann glia","GLA/WMA/CNA astrocytes","hybrid BG-WMA"],finding:"cortical white matter에는 SOX4/SOX11/ASCL1/HES6/FABP7+ proliferative astrocyte cluster가 있지만 cerebellar WM에는 보이지 않고, 소뇌 astrocyte는 9개 subtype으로 나뉩니다.",meaning:"astrocyte identity는 회색질/백질 차이만이 아니라 뇌 영역별 발달원천과 local circuit architecture에 묶입니다."},
+  {regions:["glia","cortex"],cells:["astro","micro"],title:"AD astrocyte 변화는 뇌 영역 vulnerability axis를 따라 달라진다",studies:["Serrano-Pozo 2024","Mathys 2023"],subtypes:["astHome","astReact","astTF","microglia AD regulome"],finding:"5개 뇌 영역 AD 자료에서 astrocyte transcriptome은 EC > ITG > PFC > V2 > V1 취약성 계층과 temporal pathology response를 분리해서 보입니다.",meaning:"질병 subtype은 단일 disease signature가 아니라, 어느 영역의 어떤 glia 상태인지까지 지정해야 해석됩니다."},
+  {regions:["glia","thalamus"],cells:["oligo","astro"],title:"OPC/oligo도 telencephalic vs non-telencephalic 지역 정보를 보존한다",studies:["Siletti 2023","Braun 2023","Liu 2025"],subtypes:["OPC1","OPC2","Oligo1 OPALIN+","Oligo2 RBFOX1+","thalamic PDGFRA- glial progenitor"],finding:"OPC1은 telencephalic, OPC2는 non-telencephalic class로 분리되고 mature OL은 brain-wide type이 공유되지만 지역별 비율과 AD 취약성이 달라집니다.",meaning:"myelination 계열은 subtype 이름보다 regional proportion, developmental origin, disease regulatory loss를 함께 읽어야 합니다."}
+];
+
 const papers = [
   {id:"kang2011",year:2011,phase:"foundation",study:"Kang et al. BrainSpan",title:"Spatio-temporal transcriptome of the human brain",scale:"16 regions · bulk exon array",cells:0,method:"Bulk transcriptome",cell:["all","rg","ex"],discovery:"86% of genes expressed; 90% spatio-temporally regulated; prenatal windows dominate.",meaning:"발달 시간과 뇌 영역의 기준 좌표를 만들고 ASD/NDD 위험의 prenatal window를 열었습니다."},
   {id:"miller2014",year:2014,phase:"foundation",study:"Miller et al.",title:"Transcriptional landscape of the prenatal human brain",scale:"~300 LMD regions/specimen",cells:0,method:"LMD microarray + ISH",cell:["rg","ex"],discovery:"Nine fetal cortical zones and ~2,000 layer-enriched genes; human PAX6 extends into SVZ.",meaning:"fetal cortical layer/zone을 셀타입 이전의 공간 좌표로 정리했습니다."},
@@ -709,14 +922,18 @@ const papers = [
   {id:"lake2018",year:2018,phase:"taxonomy",study:"Lake et al.",title:"Integrative single-cell analysis of transcriptional and epigenetic states in the human adult brain",scale:">60,000 cells/nuclei",cells:60000,method:"snDrop-seq + scTHS-seq",cell:["ex","in","micro","oligo"],discovery:"Integrated RNA and chromatin accessibility; AD variants enriched in microglia chromatin, SCZ in excitatory regions.",meaning:"질병 유전학을 cell-type-specific regulome으로 읽는 프레임을 만들었습니다."},
   {id:"kanton2019",year:2019,phase:"disease",study:"Kanton et al.",title:"Organoid single-cell genomic atlas uncovers human-specific features of brain development",scale:"129K+ organoid/adult cells",cells:129535,method:"scRNA-seq + ATAC",cell:["rg","ipc","ex"],discovery:"Human cortical neurons mature slower than chimp/macaque in organoids; human-specific regulatory peaks are cell-state restricted.",meaning:"인간 특이적 발달 프로그램을 organoid와 adult PFC까지 연결했습니다."},
   {id:"velmeshev2019",year:2019,phase:"disease",study:"Velmeshev et al. ASD",title:"Single-cell genomics identifies cell type-specific molecular changes in autism",scale:"104,559 nuclei · 31 donors",cells:104559,method:"snRNA-seq",cell:["ex","in","micro","astro"],discovery:"L2/3 excitatory neurons, VIP interneurons, astrocytes, and microglia show ASD-specific changes.",meaning:"질병 조직에서 어떤 셀타입이 실제로 바뀌는지 보여준 대표 사례입니다."},
+  {id:"phillips2019",year:2019,phase:"taxonomy",study:"Phillips et al.",title:"A repeated molecular architecture across thalamic pathways",scale:"22 thalamic nuclei · 8 projection systems",cells:null,method:"projection labeling + RNA-seq",cell:["ex"],discovery:"Thalamic projection neurons follow a primary-secondary-tertiary molecular continuum from PVALB/KCNC fast relay to CALB1 neuromodulatory profiles.",meaning:"시상 regional subtype은 피질 layer가 아니라 nucleus와 mediolateral functional gradient로 읽어야 함을 보여줬습니다."},
   {id:"bhaduri2021",year:2021,phase:"disease",study:"Bhaduri et al.",title:"Cortical arealization atlas identifies dynamic molecular signatures",scale:"698,820 cells",cells:698820,method:"scRNA-seq + smFISH",cell:["rg","ipc","ex","astro"],discovery:"Cortical area identity is detectable in radial glia and sharpens along excitatory differentiation.",meaning:"피질 영역성은 late neuron만의 문제가 아니라 progenitor부터 시작됩니다."},
   {id:"fang2022",year:2022,phase:"disease",study:"Fang et al.",title:"Conservation and divergence of cortical cell organization in human and mouse revealed by MERFISH",scale:"4,000-gene MERFISH · 125 populations",cells:null,method:"Spatial MERFISH",cell:["ex","in","astro","micro","oligo","vascular"],discovery:"Human temporal cortex has conserved laminae but higher glia:neuron ratio and stronger neuron-non-neuron proximity.",meaning:"단일세포 atlas에 위치 정보를 붙여 인간 피질의 공간적 셀 조합을 보여줬습니다."},
   {id:"luo2022",year:2022,phase:"disease",study:"Luo et al.",title:"Single-nucleus multi-omics identifies human cortical cell populations",scale:"~5,000 nuclei · 63 populations",cells:5000,method:"snmCAT-seq",cell:["ex","in","micro","astro","oligo"],discovery:"Joint methylation, ATAC, and RNA from the same nuclei maps regulatory genome diversity.",meaning:"같은 핵에서 여러 omics를 읽어 cell identity와 regulation을 직접 연결했습니다."},
   {id:"kosoy2022",year:2022,phase:"disease",study:"Kosoy et al.",title:"Genetics of the human microglia regulome refines Alzheimer's disease risk",scale:"150 donors",cells:0,method:"microglia ATAC/RNA QTL",cell:["micro"],discovery:"Microglia eQTL/caQTL maps refine AD risk variants and SPI1/PU.1-centered networks.",meaning:"AD GWAS를 microglia-specific regulatory elements로 해석하는 강한 증거입니다."},
   {id:"braun2023",year:2023,phase:"million",study:"Braun et al.",title:"Comprehensive cell atlas of the first-trimester developing human brain",scale:"1,665,937 cells · 26 brains",cells:1665937,method:"scRNA-seq + spatial",cell:["rg","ipc","ex","in","astro","oligo"],discovery:"616 clusters across 12 major classes from 5-14 pcw; CRABP+ GABAergic migration and region-specific glioblasts.",meaning:"초기 인간 뇌 전체의 first-trimester developmental blueprint입니다."},
+  {id:"kimthalamus2023",year:2023,phase:"million",study:"Kim et al. thalamus",title:"Spatiotemporal molecular dynamics of the developing human thalamus",scale:"developing human thalamus",cells:null,method:"scRNA-seq + spatial profiling",cell:["rg","ipc","ex","in","astro","oligo"],discovery:"Defines thalamic identity programs including TCF7L2/GBX2/LHX9, EN1/EN2 glutamatergic neurons, GABAergic origins, LGR6+ astrocytes, and PDGFRA-negative glial progenitors.",meaning:"시상을 cortical relay 부속물이 아니라 고유한 developmental and regional cell-type system으로 정리했습니다."},
+  {id:"herb2023",year:2023,phase:"million",study:"Herb et al.",title:"Single-cell genomics reveals region-specific developmental programs in the human hypothalamus",scale:"human hypothalamus · 108 neuronal subtypes",cells:null,method:"single-cell genomics",cell:["rg","ipc","ex","in","astro"],discovery:"Maps hypothalamic tRGC/qRGC/cRGC states, IPC trajectories, tanycytes, and neuropeptide/nucleus-defined neuronal subtypes.",meaning:"시상하부는 피질 layer가 아니라 homeostatic nuclei와 neuroendocrine output으로 셀타입을 읽어야 함을 보여줬습니다."},
   {id:"velmeshev2023",year:2023,phase:"million",study:"Velmeshev et al. development",title:"Single-cell analysis of prenatal and postnatal human cortical development",scale:">700,000 profiles · 106 donors",cells:700000,method:"snRNA-seq + snATAC-seq",cell:["rg","ex","in","astro","oligo","vascular"],discovery:"Lineage, sex, and region-specific cortical developmental programs; female-enriched programs overlap ASD risk.",meaning:"성차와 발달 계열을 single-cell 수준에서 질병 위험과 연결했습니다."},
   {id:"jorstad2023",year:2023,phase:"million",study:"Jorstad et al.",title:"Transcriptomic cytoarchitecture reveals principles of human neocortex organization",scale:">1.1M nuclei · 8 cortical areas",cells:1100000,method:"snRNA-seq + spatial",cell:["ex","in","astro","oligo"],discovery:"24 shared cortical subclasses; excitatory neurons vary by area, V1 has distinct expanded L4 and E:I ratio.",meaning:"인간 neocortex의 공통 blueprint와 영역별 specialization을 동시에 보여줬습니다."},
   {id:"siletti2023",year:2023,phase:"million",study:"Siletti et al.",title:"Transcriptomic diversity of cell types across the adult human brain",scale:">3M nuclei · ~100 regions",cells:3000000,method:"brain-wide snRNA-seq",cell:["ex","in","micro","astro","oligo","vascular"],discovery:"31 superclusters, 461 clusters, 3,313 subclusters across the adult human brain.",meaning:"성인 인간 뇌 전체를 계층적 transcriptomic taxonomy로 정리한 기준 atlas입니다."},
+  {id:"krienen2023",year:2023,phase:"million",study:"Krienen et al.",title:"A marmoset brain cell census reveals conserved and primate-specific cellular features",scale:"marmoset brain census",cells:null,method:"snRNA-seq + comparative atlas",cell:["ex","in"],discovery:"Highlights primate-specific TAC3+ striatal interneurons and VIP/LAMP5 enrichment in prefrontal cortical circuits.",meaning:"인간/영장류 regional subtype 해석에서 어떤 interneuron 축이 primate-specific하게 확장되는지 비교 기준을 제공합니다."},
   {id:"tian2023",year:2023,phase:"million",study:"Tian et al.",title:"Single-cell DNA methylation and 3D genome architecture in the human brain",scale:"517,000 cells · 46 regions",cells:517000,method:"snmC-seq3 + snm3C-seq",cell:["ex","in","micro","astro","oligo"],discovery:"188 epigenome-defined cell types; methylation, accessibility, 3D genome, expression are cell-type concordant.",meaning:"methylation barcode와 3D genome으로 셀타입을 읽는 길을 열었습니다."},
   {id:"li2023",year:2023,phase:"million",study:"Li et al.",title:"A comparative atlas of single-cell chromatin accessibility in the human brain",scale:"1.1M cells · 42 regions",cells:1100000,method:"snATAC-seq",cell:["ex","in","micro","astro","oligo"],discovery:"107 cell types and 544,735 cCREs linked to targets and 19 neuropsychiatric traits.",meaning:"비암호화 질병 variant를 cell-type-specific enhancer map 위에 올렸습니다."},
   {id:"zhu2023",year:2023,phase:"million",study:"Zhu et al.",title:"Multi-omic profiling of the developing human cerebral cortex at the single-cell level",scale:"45,549 nuclei · fetal-adult",cells:45549,method:"paired snRNA/snATAC",cell:["rg","ipc","ex","in","oligo"],discovery:"Chromatin accessibility often precedes transcription; NEUROD1-CUX2 relationship validated.",meaning:"발달에서 chromatin priming이 transcription보다 앞선다는 기전적 단서를 줬습니다."},
@@ -724,10 +941,13 @@ const papers = [
   {id:"johansen2023",year:2023,phase:"million",study:"Johansen et al.",title:"Interindividual variation in human cortical cell type abundance and expression",scale:"~400,000 nuclei · 75 donors",cells:400000,method:"snRNA-seq + WGS",cell:["ex","in","micro","oligo"],discovery:"125 MTG cell types are conserved, but deep glutamatergic neurons and microglia vary most between individuals.",meaning:"사람 간 변이를 무시하면 셀타입 질병 신호를 잘못 해석할 수 있음을 보여줬습니다."},
   {id:"chien2024",year:2024,phase:"mechanism",study:"Chien et al.",title:"Cell-type-specific effects of age and sex on human cortical neurons",scale:"55,447 nuclei · DLPFC",cells:55447,method:"snmCT-seq",cell:["ex","in"],discovery:"Aging effects strongest in excitatory neurons; SST/VIP interneuron abundance declines; subtelomeric genes up with age.",meaning:"발달·ASD에서 보던 excitatory vulnerability가 노화 multiome에서도 반복됩니다."},
   {id:"kim2024",year:2024,phase:"mechanism",study:"Kim et al. BTS",title:"Integrative single-cell atlas for cellular and temporal specificity of neurological disorder genes",scale:"393,060 cells · 80 donors",cells:393060,method:"integrated sc/snRNA-seq",cell:["rg","ex","in","astro","oligo","micro"],discovery:"Unified 8 datasets across 7 GW-90 years and maps disorder genes to temporal cell states.",meaning:"여러 공개 dataset을 하나의 수명 발달 좌표로 통합해 위험 유전자 시간성을 읽었습니다."},
+  {id:"garma2024",year:2024,phase:"mechanism",study:"Garma et al.",title:"Interneuron diversity in the human dorsal striatum",scale:"human dorsal striatum · 8 classes/14 subclasses",cells:null,method:"single-cell taxonomy",cell:["in"],discovery:"Defines PTHLH, TAC3, CHAT, PVALB, SST/NPY, SST/GRIK3, CCK/VIP, and CCK interneuron classes with caudate-putamen and gradient structure.",meaning:"선조체 regional subtype은 피질 inhibitory nomenclature와 다른 compartmental and neuromodulatory logic을 따릅니다."},
+  {id:"serrano2024",year:2024,phase:"mechanism",study:"Serrano-Pozo et al.",title:"Astrocyte transcriptomic changes along the spatial vulnerability axis in Alzheimer's disease",scale:"628,943 nuclei · 5 brain regions",cells:628943,method:"snRNA-seq",cell:["astro","micro","ex"],discovery:"Identifies regional astrocyte programs and 9 astrocyte subclusters across EC, ITG, PFC, V2, and V1 in AD.",meaning:"AD glial subtype은 disease stage뿐 아니라 뇌 영역 vulnerability hierarchy에 따라 달라집니다."},
   {id:"heffel2024",year:2024,phase:"mechanism",study:"Heffel et al.",title:"Temporally distinct 3D multi-omic dynamics in the developing human brain",scale:">53,000 nuclei · PFC/HIP",cells:53063,method:"snm3C-seq3",cell:["ex","in","micro","astro","oligo"],discovery:"DNA methylation and 3D genome follow distinct timelines; SCZ variants overlap loop-linked regulatory elements.",meaning:"3D chromatin을 통해 noncoding risk variant와 target gene/cell type을 잇습니다."},
   {id:"wang2025",year:2025,phase:"mechanism",study:"Wang et al.",title:"Molecular and cellular dynamics of the developing human neocortex",scale:"243,535 multiome + 404,030 MERFISH",cells:647565,method:"snMultiome + MERFISH",cell:["rg","ipc","ex","in","astro","oligo"],discovery:"Tri-IPCs generate GABAergic neurons, OPCs, and astrocytes; ASD risk enriched in second-trimester IT neurons.",meaning:"neurogenesis와 gliogenesis의 연결 지점이 질병·종양 가설의 새 노드가 됩니다."},
   {id:"franklin2025",year:2025,phase:"mechanism",study:"Franklin et al.",title:"Cell-type-specific DNA methylation dynamics in prenatal and postnatal human cortex",scale:"91 fetal donors · 807,806 CpGs",cells:0,method:"EPIC methylation + FANS",cell:["ex","rg"],discovery:"50,913 fetal dDMPs; prenatal methylation remodeling enriched near ASD and schizophrenia genes.",meaning:"초기/중기 태아 피질은 후성유전체 가소성이 가장 큰 질병 위험 창입니다."},
   {id:"liu2025",year:2025,phase:"mechanism",study:"Liu et al.",title:"Single-nucleus multiomics reveals disrupted regulatory programs in early-onset Alzheimer's disease",scale:"76,173 nuclei · 3 regions",cells:76173,method:"snRNA/snATAC multiome",cell:["micro","astro","ex","oligo"],discovery:"sEOAD disrupts glial regulatory programs, enhancer-gene wiring, and astrocyte-neuron communication.",meaning:"AD를 neuron loss가 아니라 glial regulatory and communication disorder로도 보게 만듭니다."},
+  {id:"kimcerebellum2025",year:2025,phase:"mechanism",study:"Kim et al. cerebellum",title:"Human-specific features of the cerebellum revealed by a primate single-cell multiome atlas",scale:"69,302 nuclei · 4 primate species",cells:69302,method:"snRNA/snATAC multiome",cell:["ex","oligo"],discovery:"Granule cells are the most human-divergent cerebellar cell type; ZP2 regulates pontocerebellar glomerular synapse maturation and humans show prolonged OPC-rich maturation.",meaning:"소뇌의 인간 특이성은 Purkinje-only narrative가 아니라 granule cell and oligodendrocyte maturation까지 포함해야 설명됩니다."},
   {id:"palmer2026",year:2026,phase:"mechanism",study:"Palmer et al.",title:"Single-cell multiomic human brain atlas reveals regulatory drivers of cortical regionality",scale:">1.7M high-quality nuclei · 9 regions",cells:1700000,method:"SNARE-seq2 + spatial",cell:["ex","in","astro","oligo"],discovery:"IT and deep-layer excitatory neurons carry strongest cortical regional expression and regulatory signatures.",meaning:"성인 피질 regionality는 단순 cell abundance가 아니라 cell-type-specific regulatory programs로 설명됩니다."}
 ];
 
@@ -743,7 +963,8 @@ const state = {
   phase:"all",
   cell:"all",
   selected:"siletti2023",
-  search:""
+  search:"",
+  region:"all"
 };
 
 const phaseById = Object.fromEntries(phases.map(p => [p.id,p]));
@@ -853,6 +1074,61 @@ function renderCellMeaning(){
       <div class="meaning-item"><b>대표 근거</b><span>${c.examples.join(" · ")}</span></div>
     </div>
   `;
+}
+
+function renderSubtypeBoard(){
+  const c = cellById[state.cell] || cellById.all;
+  const cards = subtypeGroups[state.cell] || subtypeGroups.all;
+  document.getElementById("subtypeBoardTitle").textContent = `${c.label} 하위 셀타입 quick map`;
+  document.getElementById("subtypeBoard").innerHTML = cards.map(card => `
+    <article class="subtype-card">
+      <div class="subtype-kicker">${card.axis}</div>
+      <h4>${card.name}</h4>
+      <div class="marker-row"><b>Markers</b><span>${card.markers}</span></div>
+      <div class="marker-row"><b>Region</b><span>${card.region}</span></div>
+      <div class="marker-row"><b>Studies</b><span>${card.studies}</span></div>
+      <p>${card.meaning}</p>
+    </article>
+  `).join("");
+}
+
+function renderRegionTabs(){
+  const tabs = document.getElementById("regionTabs");
+  tabs.innerHTML = regionTabs.map(tab => {
+    const count = tab.id === "all" ? regionalFindings.length : regionalFindings.filter(item => item.regions.includes(tab.id)).length;
+    return `<button class="region-btn ${state.region===tab.id?"active":""}" data-region="${tab.id}">${tab.label} · ${count}</button>`;
+  }).join("");
+  tabs.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.region = btn.dataset.region;
+      renderRegionTabs();
+      renderRegionGrid();
+    });
+  });
+}
+
+function renderRegionGrid(){
+  const grid = document.getElementById("regionGrid");
+  const selectedCell = state.cell;
+  const matchesCell = item => selectedCell === "all" || item.cells.includes(selectedCell);
+  const rows = regionalFindings
+    .filter(item => state.region === "all" || item.regions.includes(state.region))
+    .slice()
+    .sort((a,b) => Number(matchesCell(b)) - Number(matchesCell(a)));
+
+  grid.innerHTML = rows.map(item => {
+    const subtypes = item.subtypes.map(s => `<span class="region-tag">${s}</span>`).join("");
+    const studies = item.studies.map(s => `<span class="region-study">${s}</span>`).join(" · ");
+    const cellLabels = item.cells.map(id => cellById[id]?.label || id).join(" · ");
+    return `<article class="region-card">
+      <div class="region-kicker">${item.regions.map(id => regionTabs.find(t => t.id === id)?.label || id).join(" / ")} · ${cellLabels}</div>
+      <h4>${item.title}</h4>
+      <p>${item.finding}</p>
+      <div class="region-tags">${subtypes}</div>
+      <div class="marker-row"><b>Studies</b><span>${studies}</span></div>
+      <p>${item.meaning}</p>
+    </article>`;
+  }).join("");
 }
 
 function renderLadder(){
@@ -1102,6 +1378,9 @@ function renderAll(redrawControls=true){
   renderPhaseDetail();
   renderPaperDetail();
   renderCellMeaning();
+  renderSubtypeBoard();
+  renderRegionTabs();
+  renderRegionGrid();
   renderLadder();
   renderCatalog();
   renderLegend();

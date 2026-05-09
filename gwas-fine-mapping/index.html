@@ -518,6 +518,103 @@ canvas{display:block;width:100%;height:496px}
   border-bottom:1px solid #b8cce3;
 }
 .paper a:hover{color:#163e6c}
+.case-intro{
+  display:grid;
+  grid-template-columns:minmax(260px,.72fr) minmax(420px,1.28fr);
+  gap:16px;
+  align-items:end;
+  margin-bottom:12px;
+}
+.case-intro h2{
+  margin:0;
+  font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  font-size:clamp(28px,3vw,44px);
+  line-height:1.04;
+  letter-spacing:0;
+}
+.case-intro p{
+  margin:0;
+  color:#3f4b5d;
+  font-size:14px;
+  line-height:1.7;
+  text-wrap:pretty;
+}
+.case-grid{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(220px,1fr));
+  gap:10px;
+}
+.case-card{
+  --case-color:#255c99;
+  position:relative;
+  display:grid;
+  gap:11px;
+  align-content:start;
+  min-height:470px;
+  border:1px solid rgba(217,222,231,.96);
+  border-radius:8px;
+  background:linear-gradient(180deg,#fff,#fbfcff);
+  box-shadow:0 10px 28px rgba(15,23,42,.042);
+  padding:14px;
+  overflow:hidden;
+}
+.case-card::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:4px;
+  background:var(--case-color);
+}
+.case-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.case-meta span{
+  border:1px solid color-mix(in srgb,var(--case-color) 42%,#fff);
+  background:color-mix(in srgb,var(--case-color) 9%,#fff);
+  border-radius:999px;
+  padding:4px 7px;
+  color:#263244;
+  font-size:10px;
+  white-space:nowrap;
+}
+.case-card h3{
+  margin:0;
+  font-size:17px;
+  line-height:1.25;
+  text-wrap:pretty;
+}
+.case-thesis{
+  margin:0;
+  color:#3f4b5d;
+  font-size:12px;
+  line-height:1.58;
+}
+.case-flow{
+  display:grid;
+  gap:8px;
+  margin:0;
+}
+.case-flow div{
+  border-top:1px solid #e6ebf2;
+  padding-top:8px;
+}
+.case-flow dt{
+  color:var(--case-color);
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:0;
+}
+.case-flow dd{
+  margin:4px 0 0;
+  color:#4b586b;
+  font-size:12px;
+  line-height:1.55;
+}
 .matrix{
   width:100%;
   border-collapse:collapse;
@@ -548,7 +645,8 @@ canvas{display:block;width:100%;height:496px}
   line-height:1.6;
 }
 @media (max-width:1180px){
-  .workbench,.reading-layout,.mast{grid-template-columns:1fr}
+  .workbench,.reading-layout,.mast,.case-intro{grid-template-columns:1fr}
+  .case-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .hero-copy{min-height:auto}
   .hero-visual{min-height:380px}
   .panel-note{text-align:left}
@@ -560,7 +658,7 @@ canvas{display:block;width:100%;height:496px}
   .build-note{white-space:normal}
   .hero-visual{min-height:340px}
   .visual-caption{grid-template-columns:1fr}
-  .scenario-strip,.mast-stats,.metrics,.legend,.variant-grid,.stage-controls,.map-grid,.paper-list{grid-template-columns:1fr}
+  .scenario-strip,.mast-stats,.metrics,.legend,.variant-grid,.stage-controls,.map-grid,.paper-list,.case-grid{grid-template-columns:1fr}
   .panel-head{display:block}
   .panel-title{min-width:0}
   .panel-note{max-width:330px;margin-top:6px}
@@ -755,6 +853,69 @@ canvas{display:block;width:100%;height:496px}
   </section>
 
   <section class="wide">
+    <div class="case-intro">
+      <h2>출간 논문에서 본 다섯 가지 전개 방식</h2>
+      <p>원문 PDF를 다시 확인해, 각 사례를 “처음 어떤 신호를 발견했는가”, “그 신호를 어떻게 좁히고 분석했는가”, “그 뒤 생물학적 주장으로 어떻게 전개했는가”의 흐름으로 정리했습니다. 좋은 fine-mapping 논문은 PIP 하나로 끝나지 않고, LD, ancestry, eQTL, reporter assay, CRISPR 같은 서로 다른 증거층을 이어 붙입니다.</p>
+    </div>
+    <div class="case-grid">
+      <article class="case-card" style="--case-color:#b43c4a">
+        <div class="case-meta"><span>Nature 2010</span><span>LDL-C / SORT1</span></div>
+        <h3>1p13 locus: association peak에서 rs12740374 기능 변이로</h3>
+        <p class="case-thesis">Musunuru et al.은 LDL-C와 MI에 강하게 연관된 1p13 신호를 “가장 작은 P값”이 아니라 regulatory mechanism으로 풀어낸 고전적 사례입니다.</p>
+        <dl class="case-flow">
+          <div><dt>찾은 출발점</dt><dd>유럽계 대규모 GWAS에서 1p13이 LDL-C 최강 locus였고, 여러 SNP가 긴 LD 안에서 비슷하게 유의했습니다.</dd></div>
+          <div><dt>분석</dt><dd>아프리카계 약 9,000명에서 LD가 깨지는 점을 이용해 rs12740374를 가장 강한 후보로 좁혔고, 간 eQTL, luciferase single-SNP switching, EMSA/ChIP로 minor allele이 C/EBP 결합 부위를 만든다는 것을 확인했습니다.</dd></div>
+          <div><dt>전개</dt><dd>“비코딩 SNP가 SORT1 간 발현을 바꾼다”에서 멈추지 않고, AAV8 Sort1 과발현과 siRNA knockdown으로 VLDL secretion과 LDL-C 변화를 보여 주며 variant → TF binding → gene expression → lipid phenotype의 사슬을 만들었습니다.</dd></div>
+        </dl>
+      </article>
+
+      <article class="case-card" style="--case-color:#6250a4">
+        <div class="case-meta"><span>Nature 2016</span><span>SCZ / C4</span></div>
+        <h3>MHC locus: SNP fine-mapping으로 안 보이던 C4 구조변이</h3>
+        <p class="case-thesis">Sekar et al.은 조현병 MHC 신호가 단순 SNP나 HLA allele이 아니라 C4 structural haplotype과 C4A brain expression으로 설명된다는 방향으로 분석을 뒤집었습니다.</p>
+        <dl class="case-flow">
+          <div><dt>찾은 출발점</dt><dd>PGC 조현병 GWAS에서 MHC가 가장 강했지만, 수백 개 유전자와 복잡한 LD 때문에 표준 SNP 해석으로는 원인을 고르기 어려웠습니다.</dd></div>
+          <div><dt>분석</dt><dd>ddPCR와 trio phasing으로 C4AL/C4AS/C4BL/C4BS 구조 haplotype reference를 만들고, 이를 28,799 cases / 35,986 controls에 impute했습니다. 예측 C4A expression이 p=3.6e-24로 연관됐고, C4 구조 allelic series가 risk ordering을 설명했습니다.</dd></div>
+          <div><dt>전개</dt><dd>이후 postmortem brain에서 C4A가 조현병에서 높고, C4 단백질이 synapse에 위치하며, C4 결핍 마우스에서 retinogeniculate pruning이 흐트러지는 것을 보여 “과도한 complement-mediated pruning”이라는 병리 모델로 확장했습니다.</dd></div>
+        </dl>
+      </article>
+
+      <article class="case-card" style="--case-color:#19735d">
+        <div class="case-meta"><span>Transl Psychiatry 2020</span><span>ASD / DDHD2</span></div>
+        <h3>SPARK ASD: lead SNP가 아니라 rs7001340이 regulatory 후보</h3>
+        <p class="case-thesis">Matoba et al.은 family-based GWAS와 MPRA를 연결해, 새로운 chr8 ASD locus의 기능 후보와 target gene을 분리했습니다.</p>
+        <dl class="case-flow">
+          <div><dt>찾은 출발점</dt><dd>SPARK 6,222 case-pseudocontrol pairs에서 rs60527016 chr8 locus가 genome-wide significant였고, iPSYCH-PGC meta-analysis로 ASD common-variant 신호를 확장했습니다.</dd></div>
+          <div><dt>분석</dt><dd>chr8 300 kb LD block의 98 credible SNP를 MPRA로 테스트했습니다. 가장 강한 allelic regulatory effect는 index SNP가 아니라 37 kb 떨어진 rs7001340이었고, risk allele T가 reporter expression을 낮췄습니다.</dd></div>
+          <div><dt>전개</dt><dd>fetal/adult brain eQTL에서 rs7001340 risk allele이 DDHD2 expression 감소와 같은 방향을 보였고, postmortem ASD cortex에서도 DDHD2 downregulation이 확인되어 distal regulatory variant → DDHD2 misregulation이라는 해석으로 발전했습니다.</dd></div>
+        </dl>
+      </article>
+
+      <article class="case-card" style="--case-color:#a66b13">
+        <div class="case-meta"><span>Nat Genet 2024</span><span>MDD / ancestry</span></div>
+        <h3>Major depression: ancestry LD diversity가 credible set을 줄임</h3>
+        <p class="case-thesis">Meng et al.은 특정 한 변이의 실험 검증보다, 다중 ancestry GWAS가 fine-mapping 해상도 자체를 어떻게 바꾸는지 보여 줍니다.</p>
+        <dl class="case-flow">
+          <div><dt>찾은 출발점</dt><dd>기존 MDD GWAS가 유럽계에 치우쳐 있었기 때문에, 21개 diverse cohort와 유럽계 자료를 합쳐 345,389 cases / 1,469,702 controls 규모의 meta-analysis를 만들었습니다.</dd></div>
+          <div><dt>분석</dt><dd>22,941,580 SNP를 분석해 169 loci와 53 novel associations를 찾고, 155 significant loci에 multi-ancestry Bayesian fine-mapping을 수행했습니다. 99% credible set median은 유럽계 단독 65.5 variants에서 multi-ancestry 30 variants로 줄었습니다.</dd></div>
+          <div><dt>전개</dt><dd>저자들은 “더 큰 N”만이 아니라 “다른 LD 구조”가 proxy를 분리한다는 점을 강조했고, TWAS, FUMA, MAGMA, HiC-MAGMA, eQTL/pQTL colocalization으로 PCDH9, TMEM106B 등 gene prioritization까지 이어 갔습니다.</dd></div>
+        </dl>
+      </article>
+
+      <article class="case-card" style="--case-color:#147a83">
+        <div class="case-meta"><span>Cell 2025</span><span>MPRA / psychiatric</span></div>
+        <h3>Cross-disorder MPRA: fine-mapping과 실험 신호의 불일치</h3>
+        <p class="case-thesis">Lee et al.은 psychiatric GWAS loci에서 통계적 credible set과 MPRA emVar가 겹치지만 완전히 같지는 않다는 점을 대규모로 보여 줍니다.</p>
+        <dl class="case-flow">
+          <div><dt>찾은 출발점</dt><dd>PGC cross-disorder GWAS의 136 loci에서 p&lt;1e-5 변이 17,841개를 골라 human neural progenitors MPRA에 넣었습니다.</dd></div>
+          <div><dt>분석</dt><dd>13,311 QC-passing variants 중 683 emVars를 찾았고, FINEMAP/SuSiE/CAVIAR credible set과 비교했습니다. 6,805 credible-set variants는 emVar가 아니었고, 반대로 438 emVars는 세 fine-mapping 결과 어디에도 없었습니다.</dd></div>
+          <div><dt>전개</dt><dd>RERE rs301804와 DCC rs4513167/rs4614799는 eQTL/ABC/chromatin-contact로 target을 예측한 뒤 hiPSC-neuron CROP-seq로 검증했습니다. 결론은 “fine-mapping은 기능 검증 후보를 줄여 주지만, regulatory readout은 독립 증거층”이라는 쪽입니다.</dd></div>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section class="wide">
     <div class="panel">
       <div class="panel-head">
         <div class="panel-title">방법 선택 매트릭스</div>
@@ -829,7 +990,7 @@ const papers = [
   {stage:"functional",year:"2022",title:"Li et al. — MACIE multidimensional scoring",take:"coding/noncoding functional variant scoring을 확장해 prior 후보군을 더 정교하게 만드는 방향입니다.",query:"Li 2022 MACIE multi-dimensional integrative scoring functional variants"},
   {stage:"functional",year:"2023",title:"Benegas et al. — DNA language models as variant effect predictors",take:"sequence model 기반 variant effect score가 fine-mapping prior 후보로 들어오는 흐름을 보여줍니다.",query:"Benegas 2023 DNA language models variant effects"},
   {stage:"functional",year:"2026",title:"SCADS — single-cell chromatin accessibility disease score",take:"scATAC topic enrichment를 cell-level disease relevance로 바꾸고 fine-mapping prior로 연결합니다.",query:"SCADS single-cell ATAC disease score fine mapping"},
-  {stage:"ancestry",year:"2024",title:"Meng et al. — Multi-ancestry GWAS of major depression",take:"ancestral diversity로 median credible-set size가 65.6에서 35로 줄고 32 loci가 <=10 SNP로 좁혀졌습니다.",query:"Meng 2024 multi-ancestry GWAS major depression fine mapping credible set"},
+  {stage:"ancestry",year:"2024",title:"Meng et al. — Multi-ancestry GWAS of major depression",take:"ancestral diversity로 99% credible-set median이 유럽계 단독 65.5 variants에서 multi-ancestry 30 variants로 줄었습니다.",query:"Meng 2024 multi-ancestry GWAS major depression fine mapping credible set"},
   {stage:"ancestry",year:"2026",title:"Sakaue et al. — Multi-ancestral RA GWAS in MVP",take:"152 non-MHC RA loci 중 60개가 <10-variant 95% CS, 10개는 single-variant CS로 좁혀졌습니다.",query:"Sakaue 2026 multi-ancestral GWAS rheumatoid arthritis fine mapping credible sets"},
   {stage:"ancestry",year:"2022",title:"QT interval multi-ancestry GWAS",take:"multi-ancestry meta-analysis가 locus discovery와 fine-mapping 해상도를 함께 높이는 사례입니다.",query:"2022 multi-ancestry GWAS QT interval fine mapping"},
   {stage:"ancestry",year:"2026",title:"Gasperi et al. — Multi-ancestry migraine GWAS",take:"veteran cohort 기반 multi-ancestry GWAS가 phenotype overlap과 locus interpretation을 함께 다룹니다.",query:"Gasperi 2026 multi-ancestry migraine GWAS fine mapping"},

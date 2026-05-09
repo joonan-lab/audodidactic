@@ -76,6 +76,23 @@ h1 .line{display:block}
   line-height:1.75;
   overflow-wrap:anywhere;
 }
+.dek,
+.profile h2,
+.profile p,
+.section-title p,
+.concept h3,
+.concept p,
+.concept li,
+.lab-card h3,
+.lab-card p,
+.ladder-card h3,
+.ladder-card p,
+.benchmark-row p,
+.source p,
+.step span{
+  word-break:keep-all;
+  overflow-wrap:anywhere;
+}
 .mast-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -401,6 +418,182 @@ h1 .line{display:block}
   left:0;
   top:.58em;
 }
+.token-lab{
+  display:grid;
+  grid-template-columns:minmax(430px,.95fr) minmax(520px,1.05fr);
+  gap:14px;
+  align-items:start;
+}
+.token-lab>*,
+.token-samples>*,
+.lab-grid>*,
+.interpretation-ladder>*,
+.benchmark-row>*{min-width:0}
+.token-samples{
+  display:grid;
+  gap:10px;
+}
+.token-sample{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  padding:12px;
+}
+.sample-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:baseline;
+  margin-bottom:9px;
+}
+.sample-head b{font-size:13px}
+.sample-head span{color:var(--muted);font-size:11px;text-align:right}
+.token-strip{
+  display:flex;
+  gap:4px;
+  min-height:38px;
+  align-items:center;
+  overflow:hidden;
+}
+.tok{
+  min-width:0;
+  height:32px;
+  border:1px solid #cdd5df;
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 7px;
+  color:#253246;
+  background:#fff;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:11px;
+  font-weight:850;
+  white-space:nowrap;
+}
+.tok.base{width:27px;padding:0}
+.tok.kmer{width:72px}
+.tok.bpe{width:58px;background:#f7fbfc}
+.tok.chunk{background:#fff8eb}
+.tok.motif{border-color:var(--gold);background:#fff7e8;color:#7c4e0d}
+.tok.variant{border-color:var(--red);background:#fff0f3;color:#8e2435}
+.tok.repeat{border-color:var(--violet);background:#f4f1ff;color:#4f3d8a}
+.token-sample p{margin:9px 0 0;color:#475467;font-size:12px;line-height:1.5}
+.lab-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.lab-card{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  padding:13px;
+  min-height:150px;
+}
+.lab-card h3{margin:0;font-size:15px;line-height:1.2}
+.lab-card p{margin:8px 0 0;color:#344053;font-size:12px;line-height:1.55}
+.lab-card .metric{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.metric span{
+  border:1px solid var(--line);
+  border-radius:7px;
+  background:var(--soft);
+  padding:8px;
+  color:#475467;
+  font-size:11px;
+  line-height:1.35;
+}
+.metric b{display:block;color:var(--ink);font-size:14px;line-height:1.1;margin-bottom:3px}
+.interpretation-ladder{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:10px;
+  counter-reset:ladder;
+}
+.ladder-card{
+  position:relative;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  padding:13px;
+  min-height:240px;
+}
+.ladder-card::before{
+  counter-increment:ladder;
+  content:counter(ladder);
+  width:28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:7px;
+  border:1px solid color-mix(in srgb,var(--accent) 38%,#fff);
+  background:color-mix(in srgb,var(--accent) 10%,#fff);
+  color:var(--accent);
+  font-weight:900;
+  font-size:12px;
+  margin-bottom:11px;
+}
+.ladder-card h3{margin:0;font-size:15px;line-height:1.22}
+.ladder-card p{margin:8px 0 0;color:#344053;font-size:12px;line-height:1.5}
+.ladder-card dl{margin:10px 0 0;display:grid;gap:6px}
+.ladder-card dt{
+  color:var(--muted);
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+.ladder-card dd{margin:0;color:#344053;font-size:11px;line-height:1.42}
+.ladder-note{
+  margin-top:10px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--soft);
+  padding:12px;
+  color:#344053;
+  font-size:13px;
+  line-height:1.6;
+}
+.benchmark-table{
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+  background:#fff;
+}
+.benchmark-row{
+  display:grid;
+  grid-template-columns:150px 1fr 1fr 1.05fr;
+  min-height:86px;
+  border-bottom:1px solid var(--line);
+}
+.benchmark-row:last-child{border-bottom:none}
+.benchmark-row.header{
+  min-height:auto;
+  background:var(--soft2);
+  color:#475467;
+  font-size:11px;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.benchmark-row>div{
+  padding:12px;
+  border-right:1px solid var(--line);
+}
+.benchmark-row>div:last-child{border-right:none}
+.benchmark-row b{display:block;font-size:13px;line-height:1.25}
+.benchmark-row span{display:block;margin-top:5px;color:var(--muted);font-size:11px;line-height:1.35}
+.benchmark-row p{margin:0;color:#344053;font-size:12px;line-height:1.5}
+.benchmark-row .takeaway{
+  color:#233044;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 9%,#fff),#fff);
+}
 .model-map{
   border:1px solid var(--line);
   border-radius:8px;
@@ -509,7 +702,8 @@ h1 .line{display:block}
   .mast,.workspace,.quiz-grid{grid-template-columns:1fr}
   .mast-grid{max-width:720px}
   .scenario-strip{grid-template-columns:repeat(3,1fr)}
-  .concept-grid,.sources{grid-template-columns:repeat(2,1fr)}
+  .concept-grid,.sources,.interpretation-ladder{grid-template-columns:repeat(2,1fr)}
+  .token-lab{grid-template-columns:1fr}
   .section-title{align-items:flex-start;flex-direction:column}
   .section-title p{text-align:left}
 }
@@ -519,13 +713,14 @@ h1 .line{display:block}
   .panel-head{flex-direction:column;align-items:flex-start;gap:5px}
   .panel-note{text-align:left;max-width:none}
   .profile h2{font-size:22px}
-  .mast-grid,.scenario-strip,.concept-grid,.sources,.readout-grid,.matrix-wrap{grid-template-columns:1fr}
+  .mast-grid,.scenario-strip,.concept-grid,.sources,.readout-grid,.matrix-wrap,.lab-grid,.interpretation-ladder{grid-template-columns:1fr}
   .segmented{grid-template-columns:1fr}
   .model-list{grid-template-columns:1fr}
-  .model-row{grid-template-columns:1fr}
-  .model-row>div{border-right:none;border-bottom:1px solid var(--line)}
-  .model-row>div:last-child{border-bottom:none}
+  .model-row,.benchmark-row{grid-template-columns:1fr}
+  .model-row>div,.benchmark-row>div{border-right:none;border-bottom:1px solid var(--line)}
+  .model-row>div:last-child,.benchmark-row>div:last-child{border-bottom:none}
   .token-rail{grid-template-columns:repeat(auto-fit,minmax(34px,1fr))}
+  .token-strip{overflow-x:auto;padding-bottom:3px}
   #heatmapCanvas{height:360px}
 }
 @media(prefers-reduced-motion:reduce){
@@ -544,7 +739,7 @@ h1 .line{display:block}
     <div class="mast-grid" aria-label="summary stats">
       <div class="stat"><b>187</b><span>llm-wiki genomic-dl notes scanned</span></div>
       <div class="stat"><b>6</b><span>attention and dependency scenarios</span></div>
-      <div class="stat"><b>14</b><span>wiki notes and PDFs folded in</span></div>
+      <div class="stat"><b>18</b><span>source cards and PDFs folded in</span></div>
     </div>
   </header>
 
@@ -648,6 +843,152 @@ h1 .line{display:block}
 
   <section>
     <div class="section-title">
+      <h2>Tokenization Lab</h2>
+      <p>PDF들을 다시 읽어보면 “attention이 어디를 보나”보다 먼저 “무엇을 한 칸으로 세나”가 갈립니다. 토큰화가 달라지면 행렬의 행과 열, pair 수, variant 해석 위험이 같이 바뀝니다.</p>
+    </div>
+    <div class="token-lab">
+      <div class="token-samples" aria-label="tokenization examples">
+        <article class="token-sample">
+          <div class="sample-head"><b>1-mer / nucleotide-level</b><span>염기 해상도 보존, pair 수는 큼</span></div>
+          <div class="token-strip" aria-label="one nucleotide tokens">
+            <span class="tok base">C</span><span class="tok base">C</span><span class="tok base">G</span><span class="tok base">A</span><span class="tok base">T</span><span class="tok base">G</span><span class="tok base">C</span><span class="tok base">T</span><span class="tok base motif">T</span><span class="tok base motif">A</span><span class="tok base motif">T</span><span class="tok base motif">A</span><span class="tok base motif">A</span><span class="tok base motif">A</span><span class="tok base">G</span><span class="tok base">G</span><span class="tok base">C</span><span class="tok base">C</span><span class="tok base variant">A</span><span class="tok base">C</span><span class="tok base">G</span><span class="tok base">T</span>
+          </div>
+          <p>Splice site, SNV, TF motif 같은 짧은 신호는 염기 단위가 가장 직관적입니다. HyenaDNA와 Caduceus류가 긴 context에서도 single-nucleotide resolution을 지키려는 이유입니다.</p>
+        </article>
+
+        <article class="token-sample">
+          <div class="sample-head"><b>Overlapping 6-mer</b><span>DNABERT식 motif 단어, mask leakage 주의</span></div>
+          <div class="token-strip" aria-label="overlapping k-mer tokens">
+            <span class="tok kmer">CCGATG</span><span class="tok kmer">CGATGC</span><span class="tok kmer">GATGCT</span><span class="tok kmer motif">ATGCTA</span><span class="tok kmer motif">TGCTAT</span><span class="tok kmer motif">GCTATA</span><span class="tok kmer motif">CTATAA</span>
+          </div>
+          <p>Motif를 “단어”처럼 만들지만, 겹치는 토큰이 masked token의 대부분을 이미 포함할 수 있습니다. DNABERT-2 PDF가 지적한 핵심 leakage 이슈입니다.</p>
+        </article>
+
+        <article class="token-sample">
+          <div class="sample-head"><b>BPE / variable vocabulary</b><span>sequence length 약 5배 감소 가능, boundary가 변수</span></div>
+          <div class="token-strip" aria-label="BPE tokens">
+            <span class="tok bpe">CCG</span><span class="tok bpe">ATGC</span><span class="tok bpe motif">TATAAA</span><span class="tok bpe">GGCC</span><span class="tok bpe">ACGT</span><span class="tok bpe">GACC</span><span class="tok bpe">TGA</span>
+          </div>
+          <p>DNABERT-2와 GROVER의 장점은 attention pair를 크게 줄이는 것입니다. 다만 very short core-promoter처럼 작은 motif task에서는 압축이 신호를 흐릴 수 있습니다.</p>
+        </article>
+
+        <article class="token-sample">
+          <div class="sample-head"><b>Learned chunking / sparse function context</b><span>MxDNA, MergeDNA, DNAChunker, GENERATOR-v2 계열</span></div>
+          <div class="token-strip" aria-label="learned chunks">
+            <span class="tok chunk motif">TATAAA</span><span class="tok chunk">GGCC</span><span class="tok chunk variant">A&gt;G</span><span class="tok chunk repeat">ACTACTACT</span><span class="tok chunk">enhancer-bin</span><span class="tok chunk">promoter-bin</span>
+          </div>
+          <p>최근 노트들은 고정 k-mer보다 task-adaptive chunking으로 가고 있습니다. GENERATOR-v2는 FNS로 nucleotide supervision을 보존하고, GCP로 기능 region만 남겨 긴 context를 압축합니다.</p>
+        </article>
+      </div>
+
+      <div class="lab-grid" aria-label="tokenization takeaways">
+        <article class="lab-card">
+          <h3>Overlapping k-mer는 예쁘지만 누수가 있습니다</h3>
+          <p>6-mer들이 한 칸씩 겹치면 masked token 주변 토큰 안에 정답 염기들이 남습니다. motif block이 밝아 보여도, 그것이 진짜 생물학 문법인지 토큰 설계의 shortcut인지 분리해야 합니다.</p>
+          <div class="metric"><span><b>높음</b>motif readability</span><span><b>주의</b>mask identity leakage</span></div>
+        </article>
+        <article class="lab-card">
+          <h3>BPE는 attention 예산을 사는 방법입니다</h3>
+          <p>DNABERT-2는 BPE, ALiBi, FlashAttention으로 full attention의 비용 압박을 낮춥니다. PDF ablation에서는 BPE가 다수 task에서 k-mer보다 강했지만, 작은 motif task는 예외가 될 수 있습니다.</p>
+          <div class="metric"><span><b>작음</b>token count</span><span><b>변수</b>motif boundary</span></div>
+        </article>
+        <article class="lab-card">
+          <h3>Learned tokenization은 “어디를 자를지”도 학습합니다</h3>
+          <p>MxDNA, MergeDNA, DNAChunker는 motif, repeat, functional fragment를 같은 길이로 자르지 않습니다. attention map은 더 작아지지만, 한 토큰 안에 들어간 염기 기여를 다시 풀어 읽는 장치가 필요합니다.</p>
+          <div class="metric"><span><b>강점</b>adaptive context</span><span><b>위험</b>hidden intra-token signal</span></div>
+        </article>
+        <article class="lab-card">
+          <h3>GENERATOR-v2의 핵심은 context와 resolution의 화해입니다</h3>
+          <p>FNS는 coarse k-mer prediction을 nucleotide marginal로 내려오게 하고, GCP는 기능 region을 sparsify한 뒤 남은 token끼리는 dense attention을 하게 합니다.</p>
+          <div class="metric"><span><b>98kb</b>reported context</span><span><b>dense</b>retained-token attention</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <h2>Interpretation Ladder</h2>
+      <p>attention map은 출발점입니다. 원문 PDF들을 따라가면 “예쁜 heatmap”에서 “염기를 바꿨을 때 기능 예측이 실제로 흔들리는가”로 점점 더 강한 질문을 던지게 됩니다.</p>
+    </div>
+    <div class="interpretation-ladder" aria-label="interpretability ladder">
+      <article class="ladder-card">
+        <h3>Attention weight</h3>
+        <p>query token이 어떤 key token에 weight를 주는지 봅니다.</p>
+        <dl><dt>Output</dt><dd>token x token heatmap, head별 arc</dd><dt>Caveat</dt><dd>높은 attention은 causal importance와 같지 않습니다.</dd></dl>
+      </article>
+      <article class="ladder-card">
+        <h3>Attribution</h3>
+        <p>gradient x input이나 saliency로 출력이 입력 염기에 얼마나 민감한지 봅니다.</p>
+        <dl><dt>Output</dt><dd>염기별 contribution track</dd><dt>Caveat</dt><dd>track-specific이지만 saturation과 gradient noise가 있습니다.</dd></dl>
+      </article>
+      <article class="ladder-card">
+        <h3>In silico mutagenesis</h3>
+        <p>염기 하나를 바꾸고 모델 출력 차이를 직접 계산합니다.</p>
+        <dl><dt>Output</dt><dd>variant effect, motif disruption score</dd><dt>Caveat</dt><dd>계산량이 크고 model calibration에 민감합니다.</dd></dl>
+      </article>
+      <article class="ladder-card">
+        <h3>Nucleotide dependency</h3>
+        <p>query 염기 치환이 target 위치 예측 분포를 얼마나 바꾸는지 봅니다.</p>
+        <dl><dt>Output</dt><dd>pairwise dependency block, off-diagonal interaction</dd><dt>Caveat</dt><dd>일부 모델에서는 토큰화 artefact block이 생길 수 있습니다.</dd></dl>
+      </article>
+      <article class="ladder-card">
+        <h3>Functional validation</h3>
+        <p>MPRA, eQTL, chromatin tracks, saturation mutagenesis와 맞춥니다.</p>
+        <dl><dt>Output</dt><dd>생물학적 effect와의 외부 정합성</dd><dt>Caveat</dt><dd>cell type, assay noise, training leakage를 분리해야 합니다.</dd></dl>
+      </article>
+    </div>
+    <div class="ladder-note">Enformer PDF의 enhancer prioritization도 이 사다리와 닮아 있습니다. attention matrix는 내부 공유 신호이고, gradient/ISM은 특정 output track에 붙은 신호입니다. 그래서 “모델이 봤다”와 “그 track 예측에 중요했다”를 같은 말로 쓰면 안 됩니다.</div>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <h2>Benchmark Reality Check</h2>
+      <p>최신 위키 노트들의 공통 메시지는 꽤 차갑습니다. 범용 gLM이 모든 regulatory task를 이기지는 않으며, tokenization과 long-context 설계보다 task/output alignment가 더 큰 차이를 만들 때가 많습니다.</p>
+    </div>
+    <div class="benchmark-table" aria-label="benchmark reality check">
+      <div class="benchmark-row header"><div>Paper / benchmark</div><div>무엇을 봤나</div><div>관찰된 패턴</div><div>이 페이지에 반영한 교훈</div></div>
+      <div class="benchmark-row">
+        <div><b>DART-Eval</b><span>Patel 2024</span></div>
+        <div><p>regulatory element, variant effect, motif-sensitive genomic tasks를 넓게 비교합니다.</p></div>
+        <div><p>쉬운 cCRE류 task는 잘 맞지만 VEP와 fine-grained regulatory prediction은 여전히 어렵고, ChromBPNet 같은 supervised expert가 강한 영역이 남습니다.</p></div>
+        <div class="takeaway"><p>attention 시각화만으로 “범용 DNA 이해”를 주장하지 않고, function-specific readout을 같이 둡니다.</p></div>
+      </div>
+      <div class="benchmark-row">
+        <div><b>DNALONGBENCH</b><span>Cheng 2025</span></div>
+        <div><p>최대 1Mb sequence context에서 promoter, enhancer, variant effect 같은 long-range task를 평가합니다.</p></div>
+        <div><p>quadratic self-attention 모델은 긴 입력에서 제외되거나 제한되고, expert long-context 모델들이 더 현실적인 비교점이 됩니다.</p></div>
+        <div class="takeaway"><p>Long context 시나리오에 HyenaDNA, Caduceus, sparse/compressed context를 attention의 대안으로 명시했습니다.</p></div>
+      </div>
+      <div class="benchmark-row">
+        <div><b>LingoDNABench</b><span>Liang 2026</span></div>
+        <div><p>sequence-only self-supervised pretraining이 dynamic gene regulation을 얼마나 담는지 봅니다.</p></div>
+        <div><p>conservation-like signal은 잡지만, cell-state-dependent regulation과 causal mechanism은 pretraining objective와 어긋날 수 있습니다. RandomWeight baseline까지 비교됩니다.</p></div>
+        <div class="takeaway"><p>“MLM이 attention했다”를 “regulation을 이해했다”로 바로 올리지 않도록 해석 사다리를 추가했습니다.</p></div>
+      </div>
+      <div class="benchmark-row">
+        <div><b>Representation probes</b><span>Tang 2025</span></div>
+        <div><p>DNA LM representation이 regulatory prediction에서 one-hot이나 supervised-from-scratch 대비 얼마나 더 나은지 묻습니다.</p></div>
+        <div><p>많은 gLM embedding이 실제로는 local composition과 one-hot 정보에 가까울 수 있고, supervised task model이 강한 경우가 보고됩니다.</p></div>
+        <div class="takeaway"><p>matrix의 패턴을 biological grammar로 읽기 전에 baseline과 attribution 검증을 요구합니다.</p></div>
+      </div>
+      <div class="benchmark-row">
+        <div><b>AlphaGenome</b><span>Avsec 2026</span></div>
+        <div><p>sequence-to-function 모델로 expression, splicing, chromatin-like output을 함께 예측합니다.</p></div>
+        <div><p>순수 language model이라기보다 기능 예측에 맞춘 통합 모델입니다. attention보다 output alignment와 variant-effect interface가 중심입니다.</p></div>
+        <div class="takeaway"><p>gLM attention 자료 안에서도 마지막 검증층은 functional prediction으로 닫히게 구성했습니다.</p></div>
+      </div>
+      <div class="benchmark-row">
+        <div><b>GENERATOR-v2</b><span>Qin 2026</span></div>
+        <div><p>coarse 6-mer token, nucleotide-level supervision, long-range functional context를 함께 다룹니다.</p></div>
+        <div><p>FNS와 GCP는 long context, nucleotide resolution, efficiency 사이의 긴장을 직접 설계 대상으로 삼습니다.</p></div>
+        <div class="takeaway"><p>Tokenization Lab에 “한 칸의 크기”와 “남긴 token끼리 dense attention”이라는 두 축을 넣었습니다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">
       <h2>모델별로 “attention한다”의 의미</h2>
       <p>같은 gLM이라도 attention 기반 Transformer, convolution-hybrid, SSM 계열은 문맥을 섞는 방식이 다릅니다.</p>
     </div>
@@ -685,7 +1026,7 @@ h1 .line{display:block}
   </section>
 
   <div class="footer">
-    Built from `/Users/joonan/Dropbox/References/llm-wiki/wiki/genomic-dl` and `/Users/joonan/Dropbox/References/llm-wiki/interactives/glm/glm-landscape.html`. GPT Image 2 prompt saved at `garden-gpt-image-2/prompt/glm-attention-educational-diagram-20260509.md`.
+    랩 내부 위키(llm-wiki)의 <code>genomic-dl</code> 정리 노트와 기존 <code>interactives/glm</code> 자료를 토대로 구성. GPT Image 2 프롬프트는 <code>garden-gpt-image-2/prompt/glm-attention-educational-diagram-20260509.md</code>에 보관.
   </div>
 </main>
 
@@ -893,9 +1234,14 @@ const modelRows = [
   ["Nucleotide Transformer","2025","Scaled Transformer attention","6-kb sequences, 50M to 2.5B parameters, attention and embeddings used for interpretability and transfer."],
   ["GROVER","2024","BPE BERT attention","Human-specific BPE vocabulary aligns with regulatory motifs, but attention interpretation remains approximate."],
   ["Enformer","2021","CNN plus global attention","Convolutions extract local features, transformer blocks integrate distal regulatory context across about 200 kb input."],
+  ["MxDNA","2024","Query-aware attention","Model Decides how to Tokenize uses learned tokenization so the unit being attended can adapt to the sequence."],
+  ["MergeDNA","2025","Context-aware tokenization","Adjacent bases can be merged into larger context-aware DNA units, reducing sequence length without committing to fixed k-mers."],
+  ["DNAChunker","2026","Learned chunking","A learnable tokenizer treats chunk boundaries as part of the modeling problem, not a fixed preprocessing choice."],
+  ["GENERATOR-v2","2026","Dense attention on retained tokens","FNS maps coarse k-mer predictions to nucleotide marginals; GCP keeps functional regions for long-range dense attention."],
   ["HyenaDNA","2023","No full attention","Long convolution gives global receptive field at single-nucleotide resolution up to 1M tokens."],
   ["Caduceus","2024","No full attention","BiMamba and MambaDNA add bidirectionality and reverse-complement equivariance for DNA."],
-  ["ARSENAL","2026","Short-context masked LM","A 350 bp regulatory DNALM uses motif-discovery regularization and dependency-style analyses."]
+  ["ARSENAL","2026","Short-context masked LM","A 350 bp regulatory DNALM uses motif-discovery regularization and dependency-style analyses."],
+  ["AlphaGenome","2026","Function-oriented sequence model","Not a pure language model; useful as the practical endpoint where sequence context becomes track-level function prediction."]
 ];
 
 const sourceCards = [
@@ -906,7 +1252,17 @@ const sourceCards = [
   ["Sanabria et al. 2024","GROVER","BPE tokens capture human regulatory grammar; attention interpretation remains approximate.","DNA language model GROVER learns sequence context in the human genome"],
   ["Schiff et al. 2024","Caduceus","BiMamba and reverse-complement equivariance provide DNA-specific long-range inductive bias.","Caduceus Bi-Directional Equivariant Long-Range DNA Sequence Modeling"],
   ["Silva et al. 2025","Dependency analysis","Systematic nucleotide substitution maps functional dependencies more directly than attention alone.","Nucleotide dependency analysis of genomic language models detects functional elements"],
-  ["Patel and Kundaje 2026","ARSENAL","Short-context regulatory DNALM with motif-discovery regularization emphasizes motif-scale interpretability.","Short-Context Regulatory DNA Language Models with Motif-Discovery Regularization"]
+  ["Patel and Kundaje 2026","ARSENAL","Short-context regulatory DNALM with motif-discovery regularization emphasizes motif-scale interpretability.","Short-Context Regulatory DNA Language Models with Motif-Discovery Regularization"],
+  ["Qiao et al. 2024","MxDNA","Query-aware tokenization frames DNA chunk boundaries as a learned decision rather than a fixed k-mer rule.","Model Decides How to Tokenize MxDNA DNA language model"],
+  ["Li et al. 2025","MergeDNA","Context-aware DNA tokenization merges nearby nucleotides into variable units for more efficient genomic modeling.","MergeDNA Context-aware DNA model tokenization"],
+  ["Kim et al. 2026","DNAChunker","Learnable DNA tokenization explores adaptive chunks that preserve functional sequence structure.","DNAChunker learnable tokenization DNA language model"],
+  ["Qin et al. 2026","GENERATOR-v2","FNS and GCP explicitly balance long-range context, nucleotide resolution, and computational efficiency.","GENERATOR-v2 reconciling coarse tokenization long-range context nucleotide resolution"],
+  ["Cheng et al. 2025","DNALONGBENCH","Long-context benchmark highlights where quadratic attention becomes impractical and expert long-range models matter.","DNALONGBENCH benchmark suite long-range DNA language models"],
+  ["Patel et al. 2024","DART-Eval","Comprehensive regulatory DNA benchmark cautions that generic gLMs do not automatically dominate expert supervised models.","DART-Eval comprehensive DNA regulatory benchmark"],
+  ["Liang et al. 2026","LingoDNABench","Sequence-only self-supervised pretraining captures conservation-like structure but can miss dynamic regulatory function.","LingoDNABench canonical self-supervised pretraining constrains genomic language models"],
+  ["Tang et al. 2025","Representation probes","Probing work asks whether DNA LM embeddings add regulatory signal beyond one-hot and supervised baselines.","Representational power of DNA language models regulatory prediction Tang 2025"],
+  ["Avsec et al. 2026","AlphaGenome","Function-oriented sequence model connects sequence context to multimodal genomic output and variant-effect prediction.","AlphaGenome regulatory variant effect prediction sequence model"],
+  ["Liu et al. 2026","TFBindFormer","Cross-attention design points toward task-specific protein-DNA interaction modeling rather than generic sequence-only attention.","TFBindFormer cross-attention transformer transcription factor binding"]
 ];
 
 const quizzes = [
