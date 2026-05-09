@@ -557,7 +557,7 @@ td .small{font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px}
 <div class="page">
   <header class="topbar">
     <a class="crumb" href="../index.html">Audodidactic / 학습 시각화</a>
-    <div class="source-pill">llm-wiki 기반 · human brain single-cell sequencing</div>
+    <div class="source-pill">정리 노트 기반 · human brain single-cell sequencing</div>
   </header>
 
   <section class="mast">
@@ -566,7 +566,7 @@ td .small{font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px}
       <h1>인간 뇌 단일세포 시퀀싱 연구 지도</h1>
       <p class="dek">
         2011년 BrainSpan의 벌크 발달 지도에서 2026년 피질 multiome regionality까지,
-        연구가 어떤 질문을 해결해 왔는지 연대별로 정리했습니다. 핵심은 단순한 기술 발전이 아니라
+        연구가 어떤 질문을 해결해 왔는지 연대별로 살펴봅니다. 핵심은 단순한 기술 발전이 아니라
         “어떤 셀타입이, 언제, 왜 중요해졌는가”입니다.
       </p>
       <div class="mast-grid" aria-label="page statistics">
@@ -662,7 +662,7 @@ td .small{font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px}
   <section>
     <div class="section-title">
       <h2>4. 논문 카탈로그</h2>
-      <p>검색어, 시대, 셀타입 축으로 llm-wiki에서 읽은 핵심 논문을 다시 훑을 수 있습니다.</p>
+      <p>검색어, 시대, 셀타입 축으로 핵심 논문을 다시 훑을 수 있습니다.</p>
     </div>
     <div class="table-tools">
       <input id="searchInput" type="search" placeholder="논문, 셀타입, 발견 검색">
@@ -686,8 +686,7 @@ td .small{font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px}
   </section>
 
   <footer class="footer">
-    자료 출처: 랩 내부 위키(llm-wiki)의 <code>brain-atlas</code>, <code>brain-development</code>,
-    <code>single-cell-dl</code>, <code>overviews</code> 문서와 기존 <code>interactives/postmortem-brain-atlas</code> 데이터를 함께 읽어 구성했습니다.
+    참고 축: brain atlas, brain development, single-cell deep learning, postmortem brain atlas.
     인용 링크는 Google Scholar 검색으로 연결됩니다.
   </footer>
 </div>
@@ -699,7 +698,7 @@ const phases = [
     thesis:"전체 연구 흐름은 벌크 발달 지도에서 셀타입 분해, 공간/후성유전체, 질병 유전학, 수명·perturbation 해석으로 이동합니다.",
     question:"지금까지 무엇을 알게 되었나",
     cells:"radial glia, excitatory neurons, interneurons, microglia, astrocytes, OPC/oligodendrocytes",
-    meaning:"단일세포 기술은 뇌를 평균 조직이 아니라 발달 시간과 세포 계열이 교차하는 지도처럼 보게 만들었습니다."
+    meaning:"단일세포 기술은 뇌를 평균 조직 대신 발달 시간과 세포 계열이 교차하는 지도처럼 보게 해 줍니다."
   },
   {
     id:"foundation", years:"2011-2015", name:"발달 좌표 만들기", color:"#14746f", soft:"#e8f5f3",
@@ -741,7 +740,7 @@ const phases = [
 const cellTypes = [
   {
     id:"all", label:"전체", color:"#4d5c6f", short:"모든 축",
-    thesis:"인간 뇌 단일세포 연구는 셀타입, 발달 시간, 뇌 영역, 조절유전체를 동시에 맞추는 지도 제작입니다.",
+    thesis:"인간 뇌 단일세포 연구는 셀타입, 발달 시간, 뇌 영역, 조절유전체를 동시에 맞추는 지도화입니다.",
     markers:"multi-axis",
     discovered:"bulk 시공간 지도에서 백만 단위 multiome atlas까지 해상도가 계속 올라갔습니다.",
     meaning:"한 연구만으로 결론을 내기보다, transcriptome, chromatin, methylation, spatial, disease genetics가 같은 셀타입을 가리키는지 보는 것이 핵심입니다.",
@@ -792,7 +791,7 @@ const cellTypes = [
     thesis:"astrocyte는 발달 지역성, 성숙, 질병 신호전달을 이어주는 지원세포 이상의 조절 축입니다.",
     markers:"GFAP, TNC, BCAN, RFX4",
     discovered:"Braun은 region-specific glioblast→astrocyte 프로그램을, Liu 2025는 AD에서 astrocyte-to-neuron communication 저하와 RFX4를 제시했습니다.",
-    meaning:"성인 뇌 영역 차이와 질병 회로 변화는 뉴런만의 문제가 아니라 astrocyte 계열의 지역 조절 프로그램과 연결됩니다.",
+    meaning:"성인 뇌 영역 차이와 질병 회로 변화는 뉴런만으로 설명되지 않으며, astrocyte 계열의 지역 조절 프로그램과도 연결됩니다.",
     examples:["Braun 2023","Siletti 2023","Liu 2025"]
   },
   {
@@ -913,21 +912,21 @@ const regionalFindings = [
 ];
 
 const papers = [
-  {id:"kang2011",year:2011,phase:"foundation",study:"Kang et al. BrainSpan",title:"Spatio-temporal transcriptome of the human brain",scale:"16 regions · bulk exon array",cells:0,method:"Bulk transcriptome",cell:["all","rg","ex"],discovery:"86% of genes expressed; 90% spatio-temporally regulated; prenatal windows dominate.",meaning:"발달 시간과 뇌 영역의 기준 좌표를 만들고 ASD/NDD 위험의 prenatal window를 열었습니다."},
-  {id:"miller2014",year:2014,phase:"foundation",study:"Miller et al.",title:"Transcriptional landscape of the prenatal human brain",scale:"~300 LMD regions/specimen",cells:0,method:"LMD microarray + ISH",cell:["rg","ex"],discovery:"Nine fetal cortical zones and ~2,000 layer-enriched genes; human PAX6 extends into SVZ.",meaning:"fetal cortical layer/zone을 셀타입 이전의 공간 좌표로 정리했습니다."},
+  {id:"kang2011",year:2011,phase:"foundation",study:"Kang et al. BrainSpan",title:"Spatio-temporal transcriptome of the human brain",scale:"16 regions · bulk exon array",cells:0,method:"Bulk transcriptome",cell:["all","rg","ex"],discovery:"86% of genes expressed; 90% spatio-temporally regulated; prenatal windows dominate.",meaning:"발달 시간과 뇌 영역의 기준 좌표를 제시하고 ASD/NDD 위험의 prenatal window를 열었습니다."},
+  {id:"miller2014",year:2014,phase:"foundation",study:"Miller et al.",title:"Transcriptional landscape of the prenatal human brain",scale:"~300 LMD regions/specimen",cells:0,method:"LMD microarray + ISH",cell:["rg","ex"],discovery:"Nine fetal cortical zones and ~2,000 layer-enriched genes; human PAX6 extends into SVZ.",meaning:"fetal cortical layer/zone을 셀타입 이전의 공간 좌표로 보여 줍니다."},
   {id:"camp2015",year:2015,phase:"foundation",study:"Camp et al.",title:"Human cerebral organoids recapitulate gene expression programs of fetal neocortex development",scale:"226 fetal + 508 organoid cells",cells:734,method:"scRNA-seq",cell:["rg","ipc","ex"],discovery:"Organoids reproduce many fetal cortex AP/BP/neuron programs but show composition and stress deviations.",meaning:"인간 fetal cortex와 organoid를 single-cell 수준에서 직접 비교하는 길을 열었습니다."},
   {id:"darmanis2015",year:2015,phase:"foundation",study:"Darmanis et al.",title:"A survey of human brain transcriptome diversity at the single cell level",scale:"466 cells",cells:466,method:"whole-cell scRNA-seq",cell:["ex","in","micro","astro","oligo","vascular"],discovery:"Classified adult/fetal human cortical cells into neuronal, glial, immune, and vascular classes.",meaning:"인간 뇌에서 whole-transcriptome single-cell atlas가 가능하다는 초기 증거입니다."},
   {id:"nowakowski2017",year:2017,phase:"taxonomy",study:"Nowakowski et al.",title:"Spatiotemporal gene expression trajectories reveal developmental hierarchies of the human cortex",scale:"PFC/V1/MGE fetal samples",cells:null,method:"scRNA-seq",cell:["rg","ipc","ex","in"],discovery:"vRG/oRG/tRG axes, oRG mTOR enrichment, PFC-V1 maturation offset, areal protomap cascade.",meaning:"radial glia의 위치·시간·영역성이 maturing neuron 차이로 증폭된다는 관점을 세웠습니다."},
-  {id:"lake2018",year:2018,phase:"taxonomy",study:"Lake et al.",title:"Integrative single-cell analysis of transcriptional and epigenetic states in the human adult brain",scale:">60,000 cells/nuclei",cells:60000,method:"snDrop-seq + scTHS-seq",cell:["ex","in","micro","oligo"],discovery:"Integrated RNA and chromatin accessibility; AD variants enriched in microglia chromatin, SCZ in excitatory regions.",meaning:"질병 유전학을 cell-type-specific regulome으로 읽는 프레임을 만들었습니다."},
+  {id:"lake2018",year:2018,phase:"taxonomy",study:"Lake et al.",title:"Integrative single-cell analysis of transcriptional and epigenetic states in the human adult brain",scale:">60,000 cells/nuclei",cells:60000,method:"snDrop-seq + scTHS-seq",cell:["ex","in","micro","oligo"],discovery:"Integrated RNA and chromatin accessibility; AD variants enriched in microglia chromatin, SCZ in excitatory regions.",meaning:"질병 유전학을 cell-type-specific regulome으로 읽는 프레임을 제시했습니다."},
   {id:"kanton2019",year:2019,phase:"disease",study:"Kanton et al.",title:"Organoid single-cell genomic atlas uncovers human-specific features of brain development",scale:"129K+ organoid/adult cells",cells:129535,method:"scRNA-seq + ATAC",cell:["rg","ipc","ex"],discovery:"Human cortical neurons mature slower than chimp/macaque in organoids; human-specific regulatory peaks are cell-state restricted.",meaning:"인간 특이적 발달 프로그램을 organoid와 adult PFC까지 연결했습니다."},
   {id:"velmeshev2019",year:2019,phase:"disease",study:"Velmeshev et al. ASD",title:"Single-cell genomics identifies cell type-specific molecular changes in autism",scale:"104,559 nuclei · 31 donors",cells:104559,method:"snRNA-seq",cell:["ex","in","micro","astro"],discovery:"L2/3 excitatory neurons, VIP interneurons, astrocytes, and microglia show ASD-specific changes.",meaning:"질병 조직에서 어떤 셀타입이 실제로 바뀌는지 보여준 대표 사례입니다."},
   {id:"phillips2019",year:2019,phase:"taxonomy",study:"Phillips et al.",title:"A repeated molecular architecture across thalamic pathways",scale:"22 thalamic nuclei · 8 projection systems",cells:null,method:"projection labeling + RNA-seq",cell:["ex"],discovery:"Thalamic projection neurons follow a primary-secondary-tertiary molecular continuum from PVALB/KCNC fast relay to CALB1 neuromodulatory profiles.",meaning:"시상 regional subtype은 피질 layer가 아니라 nucleus와 mediolateral functional gradient로 읽어야 함을 보여줬습니다."},
-  {id:"bhaduri2021",year:2021,phase:"disease",study:"Bhaduri et al.",title:"Cortical arealization atlas identifies dynamic molecular signatures",scale:"698,820 cells",cells:698820,method:"scRNA-seq + smFISH",cell:["rg","ipc","ex","astro"],discovery:"Cortical area identity is detectable in radial glia and sharpens along excitatory differentiation.",meaning:"피질 영역성은 late neuron만의 문제가 아니라 progenitor부터 시작됩니다."},
+  {id:"bhaduri2021",year:2021,phase:"disease",study:"Bhaduri et al.",title:"Cortical arealization atlas identifies dynamic molecular signatures",scale:"698,820 cells",cells:698820,method:"scRNA-seq + smFISH",cell:["rg","ipc","ex","astro"],discovery:"Cortical area identity is detectable in radial glia and sharpens along excitatory differentiation.",meaning:"피질 영역성은 late neuron 단계에 국한되지 않고 progenitor부터 시작됩니다."},
   {id:"fang2022",year:2022,phase:"disease",study:"Fang et al.",title:"Conservation and divergence of cortical cell organization in human and mouse revealed by MERFISH",scale:"4,000-gene MERFISH · 125 populations",cells:null,method:"Spatial MERFISH",cell:["ex","in","astro","micro","oligo","vascular"],discovery:"Human temporal cortex has conserved laminae but higher glia:neuron ratio and stronger neuron-non-neuron proximity.",meaning:"단일세포 atlas에 위치 정보를 붙여 인간 피질의 공간적 셀 조합을 보여줬습니다."},
   {id:"luo2022",year:2022,phase:"disease",study:"Luo et al.",title:"Single-nucleus multi-omics identifies human cortical cell populations",scale:"~5,000 nuclei · 63 populations",cells:5000,method:"snmCAT-seq",cell:["ex","in","micro","astro","oligo"],discovery:"Joint methylation, ATAC, and RNA from the same nuclei maps regulatory genome diversity.",meaning:"같은 핵에서 여러 omics를 읽어 cell identity와 regulation을 직접 연결했습니다."},
   {id:"kosoy2022",year:2022,phase:"disease",study:"Kosoy et al.",title:"Genetics of the human microglia regulome refines Alzheimer's disease risk",scale:"150 donors",cells:0,method:"microglia ATAC/RNA QTL",cell:["micro"],discovery:"Microglia eQTL/caQTL maps refine AD risk variants and SPI1/PU.1-centered networks.",meaning:"AD GWAS를 microglia-specific regulatory elements로 해석하는 강한 증거입니다."},
   {id:"braun2023",year:2023,phase:"million",study:"Braun et al.",title:"Comprehensive cell atlas of the first-trimester developing human brain",scale:"1,665,937 cells · 26 brains",cells:1665937,method:"scRNA-seq + spatial",cell:["rg","ipc","ex","in","astro","oligo"],discovery:"616 clusters across 12 major classes from 5-14 pcw; CRABP+ GABAergic migration and region-specific glioblasts.",meaning:"초기 인간 뇌 전체의 first-trimester developmental blueprint입니다."},
-  {id:"kimthalamus2023",year:2023,phase:"million",study:"Kim et al. thalamus",title:"Spatiotemporal molecular dynamics of the developing human thalamus",scale:"developing human thalamus",cells:null,method:"scRNA-seq + spatial profiling",cell:["rg","ipc","ex","in","astro","oligo"],discovery:"Defines thalamic identity programs including TCF7L2/GBX2/LHX9, EN1/EN2 glutamatergic neurons, GABAergic origins, LGR6+ astrocytes, and PDGFRA-negative glial progenitors.",meaning:"시상을 cortical relay 부속물이 아니라 고유한 developmental and regional cell-type system으로 정리했습니다."},
+  {id:"kimthalamus2023",year:2023,phase:"million",study:"Kim et al. thalamus",title:"Spatiotemporal molecular dynamics of the developing human thalamus",scale:"developing human thalamus",cells:null,method:"scRNA-seq + spatial profiling",cell:["rg","ipc","ex","in","astro","oligo"],discovery:"Defines thalamic identity programs including TCF7L2/GBX2/LHX9, EN1/EN2 glutamatergic neurons, GABAergic origins, LGR6+ astrocytes, and PDGFRA-negative glial progenitors.",meaning:"시상을 cortical relay 부속물이 아니라 고유한 developmental and regional cell-type system으로 읽게 합니다."},
   {id:"herb2023",year:2023,phase:"million",study:"Herb et al.",title:"Single-cell genomics reveals region-specific developmental programs in the human hypothalamus",scale:"human hypothalamus · 108 neuronal subtypes",cells:null,method:"single-cell genomics",cell:["rg","ipc","ex","in","astro"],discovery:"Maps hypothalamic tRGC/qRGC/cRGC states, IPC trajectories, tanycytes, and neuropeptide/nucleus-defined neuronal subtypes.",meaning:"시상하부는 피질 layer가 아니라 homeostatic nuclei와 neuroendocrine output으로 셀타입을 읽어야 함을 보여줬습니다."},
   {id:"velmeshev2023",year:2023,phase:"million",study:"Velmeshev et al. development",title:"Single-cell analysis of prenatal and postnatal human cortical development",scale:">700,000 profiles · 106 donors",cells:700000,method:"snRNA-seq + snATAC-seq",cell:["rg","ex","in","astro","oligo","vascular"],discovery:"Lineage, sex, and region-specific cortical developmental programs; female-enriched programs overlap ASD risk.",meaning:"성차와 발달 계열을 single-cell 수준에서 질병 위험과 연결했습니다."},
   {id:"jorstad2023",year:2023,phase:"million",study:"Jorstad et al.",title:"Transcriptomic cytoarchitecture reveals principles of human neocortex organization",scale:">1.1M nuclei · 8 cortical areas",cells:1100000,method:"snRNA-seq + spatial",cell:["ex","in","astro","oligo"],discovery:"24 shared cortical subclasses; excitatory neurons vary by area, V1 has distinct expanded L4 and E:I ratio.",meaning:"인간 neocortex의 공통 blueprint와 영역별 specialization을 동시에 보여줬습니다."},

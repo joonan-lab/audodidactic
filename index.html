@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Audodidactic — joonan-lab onboarding 시각화</title>
-<meta name="description" content="joonan-lab의 새 주제 온보딩용 인터랙티브 시각화 자료실. 통계 유전학, 단세포 생물학, DNA 언어 모델 세 트랙에 걸친 5개 한글 인터랙티브.">
+<title>Audodidactic — joonan-lab 학습 시각화</title>
+<meta name="description" content="joonan-lab의 새 주제 학습용 인터랙티브 자료. 통계 유전학, 단세포 생물학, DNA 언어 모델, 질환 모델 트랙에 걸친 8개 한글 인터랙티브.">
 <style>
 :root{
   /* surfaces */
@@ -20,7 +20,7 @@
   --line: oklch(0.91 0.005 250);
   --line-soft: oklch(0.94 0.004 250);
 
-  /* track palette — soft, distinct, no AI cliché purple-pink */
+  /* track palette — soft, distinct, and readable */
   --t-stat: oklch(0.5 0.12 220);          /* deep teal-blue · statistical genetics */
   --t-stat-glow: oklch(0.78 0.13 220);
   --t-stat-tint: oklch(0.96 0.02 220);
@@ -32,6 +32,10 @@
   --t-dna: oklch(0.5 0.1 160);            /* moss green · DNA language models */
   --t-dna-glow: oklch(0.76 0.13 160);
   --t-dna-tint: oklch(0.96 0.02 160);
+
+  --t-model: oklch(0.5 0.12 8);           /* deep rose · disease and tissue models */
+  --t-model-glow: oklch(0.78 0.11 8);
+  --t-model-tint: oklch(0.97 0.02 8);
 
   /* shadow — layered low-opacity */
   --shadow-1: 0 1px 2px oklch(0.2 0.02 250 / 0.04), 0 2px 6px oklch(0.2 0.02 250 / 0.04);
@@ -226,6 +230,7 @@ body::after {
 }
 .track[data-track="cell"]  { --tc: var(--t-cell); --tc-glow: var(--t-cell-glow); --tc-tint: var(--t-cell-tint); }
 .track[data-track="dna"]   { --tc: var(--t-dna);  --tc-glow: var(--t-dna-glow);  --tc-tint: var(--t-dna-tint);  }
+.track[data-track="model"] { --tc: var(--t-model); --tc-glow: var(--t-model-glow); --tc-tint: var(--t-model-tint); }
 
 .track-head {
   display: flex;
@@ -544,15 +549,15 @@ body::after {
 <header class="hero">
   <div class="brand">
     <span class="brand-mark" aria-hidden="true"></span>
-    <span><strong>audodidactic</strong> · joonan-lab onboarding</span>
+    <span><strong>audodidactic</strong> · joonan-lab learning guide</span>
   </div>
   <h1>새 주제를 한 페이지로<br><span class="accent">스스로 익힌다</span></h1>
   <p class="lede">
-    랩원이 GWAS·단세포·foundation model 같은 주제에 처음 들어갈 때 텍스트만으로 잘 잡히지 않는 직관을, 한 페이지짜리 인터랙티브로 풀어둔 자료실. 모든 페이지는 lab 위키의 정리 노트와 원 논문에서 출발하고, 인용은 Google Scholar로 연결됩니다.
+    학생이 GWAS·RNA-seq DEG·단세포·foundation model·ASD cohort·organoid 같은 주제에 처음 들어갈 때 텍스트만으로 잘 잡히지 않는 직관을, 한 페이지짜리 인터랙티브로 익히는 학습 자료입니다. 모든 페이지는 연구 정리 노트와 원 논문에서 출발하고, 인용은 Google Scholar로 연결됩니다.
   </p>
   <div class="hero-meta">
-    <span class="chip"><b>5</b> 인터랙티브</span>
-    <span class="chip"><b>3</b> 연구 트랙</span>
+    <span class="chip"><b>8</b> 인터랙티브</span>
+    <span class="chip"><b>4</b> 연구 트랙</span>
     <span class="chip"><b>한글</b> 학습 자료</span>
   </div>
 </header>
@@ -567,20 +572,20 @@ body::after {
         <span class="track-num">track 01</span>
         <h2 class="track-title" id="t01">통계 유전학</h2>
       </div>
-      <span class="track-sub">GWAS · Fine-mapping · Burden</span>
+      <span class="track-sub">GWAS · CWAS · Fine-mapping · RNA-seq DEG</span>
     </header>
     <p class="track-blurb">
-      Common SNP에서 rare variant까지, 그리고 GWAS peak를 causal variant로 좁히는 fine-mapping까지. 통계 모델이 어디서 신호를 잡고 어디서 막히는지를 조작해보며 익힙니다.
+      Common SNP에서 rare variant까지, GWAS peak를 causal variant로 좁히는 fine-mapping, RNA-seq count에서 DEG를 찾는 negative-binomial 모델까지. 통계 모델이 어디서 신호를 잡고 어디서 막히는지를 조작해보며 익힙니다.
     </p>
     <div class="cards split">
       <a class="card" href="genetic-association-methods/index.html">
         <span class="card-tag">methodology · 방법론</span>
-        <h3 class="card-title">유전 연관분석 방법 — GWAS, TADA, Burden, SKAT</h3>
+        <h3 class="card-title">유전 연관분석 방법 — GWAS, TADA, Burden, SKAT, CWAS</h3>
         <p class="card-desc">
-          Common SNP, de novo variant, rare coding burden, SKAT/SKAT-O, GLMM/REGENIE, LDSC/S-LDSC, MAGMA, PRS가 각각 어떤 신호를 포착하는지 설명하는 한글 인터랙티브. 대립유전자 빈도 / 효과 크기 지형도, 방법 선택기, GWAS·희귀변이·TADA 직관 콘솔, 분석 워크플로우, 핵심·예시 출처 링크를 포함합니다.
+          Common SNP, de novo variant, rare coding burden, rare noncoding CWAS, SKAT/SKAT-O, GLMM/REGENIE, LDSC/S-LDSC, MAGMA, PRS가 각각 어떤 신호를 포착하는지 설명하는 한글 인터랙티브. 대립유전자 빈도 / 효과 크기 지형도, 방법 선택기, GWAS·희귀변이·TADA 직관 콘솔, 분석 워크플로우, 핵심·예시 출처 링크를 포함합니다.
         </p>
         <div class="card-meta">
-          <span>8 methods</span><span>3 simulators</span><span>2026.05.09</span>
+          <span>9 methods</span><span>4 simulators</span><span>2026.05.09</span>
         </div>
         <div class="card-cta">
           <span class="card-cta-text">페이지로 들어가기</span>
@@ -599,6 +604,24 @@ body::after {
         </p>
         <div class="card-meta">
           <span>5 scenarios</span><span>26 paper atlas</span><span>2026.05.09</span>
+        </div>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+      <a class="card" href="rna-seq-deg/index.html">
+        <span class="card-tag">RNA-seq · DEG · pseudobulk</span>
+        <h3 class="card-title">RNA-seq DEG와 Pseudobulk 분석 — count에서 조건 효과까지</h3>
+        <p class="card-desc">
+          RNA-seq differential expression의 원리를 초보자용 수식과 시뮬레이터로 익히는 한글 인터랙티브. count matrix, size factor, negative binomial dispersion, log2FC, Wald test, FDR, DESeq2/edgeR/MAST, single-cell pseudo-replication, donor 단위 pseudobulk, batch/confounder 체크리스트와 40편 문헌 지도를 함께 봅니다.
+        </p>
+        <div class="card-meta">
+          <span>2 simulators</span><span>40 paper atlas</span><span>pseudobulk primer</span>
         </div>
         <div class="card-cta">
           <span class="card-cta-text">페이지로 들어가기</span>
@@ -698,6 +721,58 @@ body::after {
     </div>
   </section>
 
+  <!-- TRACK 04 — DISEASE AND TISSUE MODELS -->
+  <section class="track" data-track="model" aria-labelledby="t04">
+    <header class="track-head">
+      <div class="track-title-group">
+        <span class="track-num">track 04</span>
+        <h2 class="track-title" id="t04">질환 유전학과 인간 조직 모델</h2>
+      </div>
+      <span class="track-sub">ASD Cohorts · Organoids</span>
+    </header>
+    <p class="track-blurb">
+      자폐 유전체 연구의 코호트, 표현형, 유전적 조성을 먼저 정리하고, 이어서 오가노이드가 어떤 세포원과 배양 로직으로 인간 조직 모델을 만드는지 연결해서 읽습니다.
+    </p>
+    <div class="cards split">
+      <a class="card" href="asd-cohorts/index.html">
+        <span class="card-tag">cohort atlas · ASD genetics</span>
+        <h3 class="card-title">자폐 유전체 코호트 아틀라스</h3>
+        <p class="card-desc">
+          AGRE, SSC, SPARK, ASC, iPSYCH/PGC, MSSNG, K-ARC, GALA 등 대표 ASD 코호트를 유전체 증거 레이어별로 탐색합니다. 앞부분에서 simplex/multiplex 코호트 구조, ADOS·ADI-R·SRS·Vineland·IQ 같은 표현형 측정, common SNP/PRS·de novo coding·CNV/SV·STR·noncoding WGS·sex/ancestry 효과의 의미와 대략적 기여도를 먼저 잡습니다.
+        </p>
+        <div class="card-meta">
+          <span>60 studies</span><span>12 cohorts</span><span>phenotype primer</span>
+        </div>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+      <a class="card" href="organoids/index.html">
+        <span class="card-tag">database · organoid methods</span>
+        <h3 class="card-title">오가노이드 연구 지도</h3>
+        <p class="card-desc">
+          뇌, 신장, 간, 폐/기도, 장, 망막, 심장, NAM/방법론 연구를 논문 단위 데이터베이스로 탐색합니다. 입문 섹션에서 오가노이드의 정의, adult stem cell vs hESC/hiPSC vs patient iPSC, Matrigel/BME·suspension·ALI·assembloid·organ-on-chip 배양 방식, identity·maturity·function·reproducibility 평가 기준을 먼저 확인합니다.
+        </p>
+        <div class="card-meta">
+          <span>80 studies</span><span>8 systems</span><span>culture primer</span>
+        </div>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+    </div>
+  </section>
+
 </main>
 
 <!-- ================ COMING SOON ================ -->
@@ -707,11 +782,11 @@ body::after {
     <span class="badge">coming soon</span>
   </div>
   <ul class="upcoming-list">
-    <li>ASD 유전학·모델</li>
-    <li>Organoid protocols</li>
     <li>Perturbation atlas</li>
     <li>Spatial transcriptomics</li>
     <li>뇌질환 연구 지도</li>
+    <li>Cell perturbation methods</li>
+    <li>Multi-modal clinical genomics</li>
   </ul>
 </section>
 
@@ -719,8 +794,8 @@ body::after {
 <footer class="foot">
   <div class="foot-row">
     <div>
-      <strong>joonan-lab</strong> · audodidactic onboarding 자료실<br>
-      랩 내부 위키(llm-wiki)의 정리 노트를 토대로 제작 · 인용은 Google Scholar로 연결
+      <strong>joonan-lab</strong> · audodidactic 학생용 학습 지도<br>
+      연구 정리 노트 기반 · 인용은 Google Scholar로 연결
     </div>
     <div class="right">
       <a href="https://github.com/joonan-lab/audodidactic" target="_blank" rel="noopener">github.com/joonan-lab/audodidactic</a>

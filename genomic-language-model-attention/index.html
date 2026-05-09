@@ -737,7 +737,7 @@ h1 .line{display:block}
       <p class="dek">Transformer 계열 gLM은 nucleotide token 사이의 문맥 의존성을 attention matrix로 계산합니다. motif, splice boundary, enhancer-promoter bridge, reverse-complement symmetry처럼 DNA에서 중요한 “관계”가 모델 내부에서 어떤 모양으로 잡히는지를 시각적으로 풀어둔 한글 자료입니다.</p>
     </div>
     <div class="mast-grid" aria-label="summary stats">
-      <div class="stat"><b>187</b><span>llm-wiki genomic-dl notes scanned</span></div>
+      <div class="stat"><b>187</b><span>genomic-dl source notes reviewed</span></div>
       <div class="stat"><b>6</b><span>attention and dependency scenarios</span></div>
       <div class="stat"><b>18</b><span>source cards and PDFs folded in</span></div>
     </div>
@@ -944,10 +944,10 @@ h1 .line{display:block}
   <section>
     <div class="section-title">
       <h2>Benchmark Reality Check</h2>
-      <p>최신 위키 노트들의 공통 메시지는 꽤 차갑습니다. 범용 gLM이 모든 regulatory task를 이기지는 않으며, tokenization과 long-context 설계보다 task/output alignment가 더 큰 차이를 만들 때가 많습니다.</p>
+      <p>최근 연구들의 공통 메시지는 꽤 차갑습니다. 범용 gLM이 모든 regulatory task를 이기지는 않으며, tokenization과 long-context 설계보다 task와 출력 형식의 맞춤이 더 큰 차이를 만들 때가 많습니다.</p>
     </div>
     <div class="benchmark-table" aria-label="benchmark reality check">
-      <div class="benchmark-row header"><div>Paper / benchmark</div><div>무엇을 봤나</div><div>관찰된 패턴</div><div>이 페이지에 반영한 교훈</div></div>
+      <div class="benchmark-row header"><div>Paper / benchmark</div><div>무엇을 봤나</div><div>관찰된 패턴</div><div>읽을 때의 교훈</div></div>
       <div class="benchmark-row">
         <div><b>DART-Eval</b><span>Patel 2024</span></div>
         <div><p>regulatory element, variant effect, motif-sensitive genomic tasks를 넓게 비교합니다.</p></div>
@@ -962,7 +962,7 @@ h1 .line{display:block}
       </div>
       <div class="benchmark-row">
         <div><b>LingoDNABench</b><span>Liang 2026</span></div>
-        <div><p>sequence-only self-supervised pretraining이 dynamic gene regulation을 얼마나 담는지 봅니다.</p></div>
+        <div><p>sequence-only self-supervised pretraining이 시간에 따라 바뀌는 gene regulation을 얼마나 담는지 봅니다.</p></div>
         <div><p>conservation-like signal은 잡지만, cell-state-dependent regulation과 causal mechanism은 pretraining objective와 어긋날 수 있습니다. RandomWeight baseline까지 비교됩니다.</p></div>
         <div class="takeaway"><p>“MLM이 attention했다”를 “regulation을 이해했다”로 바로 올리지 않도록 해석 사다리를 추가했습니다.</p></div>
       </div>
@@ -975,8 +975,8 @@ h1 .line{display:block}
       <div class="benchmark-row">
         <div><b>AlphaGenome</b><span>Avsec 2026</span></div>
         <div><p>sequence-to-function 모델로 expression, splicing, chromatin-like output을 함께 예측합니다.</p></div>
-        <div><p>순수 language model이라기보다 기능 예측에 맞춘 통합 모델입니다. attention보다 output alignment와 variant-effect interface가 중심입니다.</p></div>
-        <div class="takeaway"><p>gLM attention 자료 안에서도 마지막 검증층은 functional prediction으로 닫히게 구성했습니다.</p></div>
+        <div><p>순수 language model이라기보다 기능 예측에 맞춘 통합 모델입니다. attention보다 출력 형식과 variant-effect interface가 중심입니다.</p></div>
+        <div class="takeaway"><p>gLM attention을 해석할 때도 마지막 검증층은 functional prediction이어야 합니다.</p></div>
       </div>
       <div class="benchmark-row">
         <div><b>GENERATOR-v2</b><span>Qin 2026</span></div>
@@ -1007,11 +1007,11 @@ h1 .line{display:block}
         <div class="quiz-result" id="quizResult">선택지를 고르면 해설이 표시됩니다.</div>
       </div>
       <div class="quiz-card">
-        <h3>Brainstorm에서 남긴 제작 원칙</h3>
+        <h3>읽을 때의 원칙</h3>
         <div class="steps" style="margin-top:12px">
-          <div class="step"><b>비교보다 메커니즘</b><span>기존 glm-landscape는 모델 지형도입니다. 여기서는 attention/dependency의 형태를 학습하는 쪽으로 역할을 분리했습니다.</span></div>
+          <div class="step"><b>비교보다 메커니즘</b><span>모델 목록보다 attention/dependency가 어떤 형태로 생기는지 먼저 봅니다.</span></div>
           <div class="step"><b>attention과 대안을 같이 배치</b><span>HyenaDNA와 Caduceus를 포함해 “왜 full attention만으로는 긴 genome을 다루기 어렵나”라는 질문도 함께 다룹니다.</span></div>
-          <div class="step"><b>해석 caveat 유지</b><span>attention heatmap은 hypothesis generator이고, dependency map과 in silico mutagenesis가 더 직접적인 검증 렌즈라는 점을 페이지 안에 고정했습니다.</span></div>
+          <div class="step"><b>해석 caveat 유지</b><span>attention heatmap은 hypothesis generator이고, dependency map과 in silico mutagenesis가 더 직접적인 검증 렌즈입니다.</span></div>
         </div>
       </div>
     </div>
@@ -1019,14 +1019,14 @@ h1 .line{display:block}
 
   <section>
     <div class="section-title">
-      <h2>사용한 llm-wiki 노트</h2>
-      <p>링크는 Google Scholar 검색으로 연결됩니다. 원문 PDF 경로는 llm-wiki 노트 frontmatter에 들어 있습니다.</p>
+      <h2>사용한 정리 노트</h2>
+      <p>링크는 Google Scholar 검색으로 연결됩니다.</p>
     </div>
     <div class="sources" id="sources"></div>
   </section>
 
   <div class="footer">
-    랩 내부 위키(llm-wiki)의 <code>genomic-dl</code> 정리 노트와 기존 <code>interactives/glm</code> 자료를 토대로 구성. 인용은 Google Scholar 검색으로 연결됩니다.
+    인용은 Google Scholar 검색으로 연결됩니다.
   </div>
 </main>
 
@@ -1259,7 +1259,7 @@ const sourceCards = [
   ["Qin et al. 2026","GENERATOR-v2","FNS and GCP explicitly balance long-range context, nucleotide resolution, and computational efficiency.","GENERATOR-v2 reconciling coarse tokenization long-range context nucleotide resolution"],
   ["Cheng et al. 2025","DNALONGBENCH","Long-context benchmark highlights where quadratic attention becomes impractical and expert long-range models matter.","DNALONGBENCH benchmark suite long-range DNA language models"],
   ["Patel et al. 2024","DART-Eval","Comprehensive regulatory DNA benchmark cautions that generic gLMs do not automatically dominate expert supervised models.","DART-Eval comprehensive DNA regulatory benchmark"],
-  ["Liang et al. 2026","LingoDNABench","Sequence-only self-supervised pretraining captures conservation-like structure but can miss dynamic regulatory function.","LingoDNABench canonical self-supervised pretraining constrains genomic language models"],
+  ["Liang et al. 2026","LingoDNABench","Sequence-only self-supervised pretraining captures conservation-like structure but can miss time-varying regulatory function.","LingoDNABench canonical self-supervised pretraining constrains genomic language models"],
   ["Tang et al. 2025","Representation probes","Probing work asks whether DNA LM embeddings add regulatory signal beyond one-hot and supervised baselines.","Representational power of DNA language models regulatory prediction Tang 2025"],
   ["Avsec et al. 2026","AlphaGenome","Function-oriented sequence model connects sequence context to multimodal genomic output and variant-effect prediction.","AlphaGenome regulatory variant effect prediction sequence model"],
   ["Liu et al. 2026","TFBindFormer","Cross-attention design points toward task-specific protein-DNA interaction modeling rather than generic sequence-only attention.","TFBindFormer cross-attention transformer transcription factor binding"]

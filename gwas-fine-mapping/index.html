@@ -670,7 +670,7 @@ canvas{display:block;width:100%;height:496px}
 <main class="page">
   <div class="topbar">
     <a class="crumb" href="../index.html">Audodidactic / 방법론 해설</a>
-    <div class="build-note">local llm-wiki scan: 56 fine-mapping / PIP / credible-set 관련 페이지</div>
+    <div class="build-note">source-note scan: 56 fine-mapping / PIP / credible-set 관련 페이지</div>
   </div>
 
   <header class="mast">
@@ -826,7 +826,7 @@ canvas{display:block;width:100%;height:496px}
       <aside class="panel">
         <div class="panel-head">
           <div class="panel-title">문헌 지형</div>
-          <div class="panel-note">llm-wiki에서 추린 핵심 축입니다.</div>
+          <div class="panel-note">정리 노트에서 추린 핵심 축입니다.</div>
         </div>
         <div class="panel-body">
           <div class="stage-controls" id="stageControls"></div>
@@ -855,7 +855,7 @@ canvas{display:block;width:100%;height:496px}
   <section class="wide">
     <div class="case-intro">
       <h2>출간 논문에서 본 다섯 가지 전개 방식</h2>
-      <p>원문 PDF를 다시 확인해, 각 사례를 “처음 어떤 신호를 발견했는가”, “그 신호를 어떻게 좁히고 분석했는가”, “그 뒤 생물학적 주장으로 어떻게 전개했는가”의 흐름으로 정리했습니다. 좋은 fine-mapping 논문은 PIP 하나로 끝나지 않고, LD, ancestry, eQTL, reporter assay, CRISPR 같은 서로 다른 증거층을 이어 붙입니다.</p>
+      <p>아래 사례는 “처음 어떤 신호를 발견했는가”, “그 신호를 어떻게 좁히고 분석했는가”, “그 뒤 생물학적 주장으로 어떻게 전개했는가”의 흐름으로 읽습니다. 좋은 fine-mapping 논문은 PIP 하나로 끝나지 않고, LD, ancestry, eQTL, reporter assay, CRISPR 같은 서로 다른 증거층을 이어 붙입니다.</p>
     </div>
     <div class="case-grid">
       <article class="case-card" style="--case-color:#b43c4a">
@@ -865,7 +865,7 @@ canvas{display:block;width:100%;height:496px}
         <dl class="case-flow">
           <div><dt>찾은 출발점</dt><dd>유럽계 대규모 GWAS에서 1p13이 LDL-C 최강 locus였고, 여러 SNP가 긴 LD 안에서 비슷하게 유의했습니다.</dd></div>
           <div><dt>분석</dt><dd>아프리카계 약 9,000명에서 LD가 깨지는 점을 이용해 rs12740374를 가장 강한 후보로 좁혔고, 간 eQTL, luciferase single-SNP switching, EMSA/ChIP로 minor allele이 C/EBP 결합 부위를 만든다는 것을 확인했습니다.</dd></div>
-          <div><dt>전개</dt><dd>“비코딩 SNP가 SORT1 간 발현을 바꾼다”에서 멈추지 않고, AAV8 Sort1 과발현과 siRNA knockdown으로 VLDL secretion과 LDL-C 변화를 보여 주며 variant → TF binding → gene expression → lipid phenotype의 사슬을 만들었습니다.</dd></div>
+          <div><dt>전개</dt><dd>“비코딩 SNP가 SORT1 간 발현을 바꾼다”에서 멈추지 않고, AAV8 Sort1 과발현과 siRNA knockdown으로 VLDL secretion과 LDL-C 변화를 보여 주며 variant → TF binding → gene expression → lipid phenotype의 사슬을 제시했습니다.</dd></div>
         </dl>
       </article>
 
@@ -875,7 +875,7 @@ canvas{display:block;width:100%;height:496px}
         <p class="case-thesis">Sekar et al.은 조현병 MHC 신호가 단순 SNP나 HLA allele이 아니라 C4 structural haplotype과 C4A brain expression으로 설명된다는 방향으로 분석을 뒤집었습니다.</p>
         <dl class="case-flow">
           <div><dt>찾은 출발점</dt><dd>PGC 조현병 GWAS에서 MHC가 가장 강했지만, 수백 개 유전자와 복잡한 LD 때문에 표준 SNP 해석으로는 원인을 고르기 어려웠습니다.</dd></div>
-          <div><dt>분석</dt><dd>ddPCR와 trio phasing으로 C4AL/C4AS/C4BL/C4BS 구조 haplotype reference를 만들고, 이를 28,799 cases / 35,986 controls에 impute했습니다. 예측 C4A expression이 p=3.6e-24로 연관됐고, C4 구조 allelic series가 risk ordering을 설명했습니다.</dd></div>
+          <div><dt>분석</dt><dd>ddPCR와 trio phasing으로 C4AL/C4AS/C4BL/C4BS 구조 haplotype reference를 구축하고, 이를 28,799 cases / 35,986 controls에 impute했습니다. 예측 C4A expression이 p=3.6e-24로 연관됐고, C4 구조 allelic series가 risk ordering을 설명했습니다.</dd></div>
           <div><dt>전개</dt><dd>이후 postmortem brain에서 C4A가 조현병에서 높고, C4 단백질이 synapse에 위치하며, C4 결핍 마우스에서 retinogeniculate pruning이 흐트러지는 것을 보여 “과도한 complement-mediated pruning”이라는 병리 모델로 확장했습니다.</dd></div>
         </dl>
       </article>
@@ -896,7 +896,7 @@ canvas{display:block;width:100%;height:496px}
         <h3>Major depression: ancestry LD diversity가 credible set을 줄임</h3>
         <p class="case-thesis">Meng et al.은 특정 한 변이의 실험 검증 대신, 다중 ancestry GWAS가 fine-mapping 해상도 자체를 어떻게 바꾸는지에 초점을 맞췄습니다.</p>
         <dl class="case-flow">
-          <div><dt>찾은 출발점</dt><dd>기존 MDD GWAS가 유럽계에 치우쳐 있었기 때문에, 21개 diverse cohort와 유럽계 자료를 합쳐 345,389 cases / 1,469,702 controls 규모의 meta-analysis를 만들었습니다.</dd></div>
+          <div><dt>찾은 출발점</dt><dd>기존 MDD GWAS가 유럽계에 치우쳐 있었기 때문에, 21개 diverse cohort와 유럽계 자료를 합쳐 345,389 cases / 1,469,702 controls 규모의 meta-analysis를 수행했습니다.</dd></div>
           <div><dt>분석</dt><dd>22,941,580 SNP를 분석해 169 loci와 53 novel associations를 찾고, 155 significant loci에 multi-ancestry Bayesian fine-mapping을 수행했습니다. 99% credible set median은 유럽계 단독 65.5 variants에서 multi-ancestry 30 variants로 줄었습니다.</dd></div>
           <div><dt>전개</dt><dd>저자들은 “더 큰 N”만이 아니라 “다른 LD 구조”가 proxy를 분리한다는 점을 강조했고, TWAS, FUMA, MAGMA, HiC-MAGMA, eQTL/pQTL colocalization으로 PCDH9, TMEM106B 등 gene prioritization까지 이어 갔습니다.</dd></div>
         </dl>
@@ -905,7 +905,7 @@ canvas{display:block;width:100%;height:496px}
       <article class="case-card" style="--case-color:#147a83">
         <div class="case-meta"><span>Cell 2025</span><span>MPRA / psychiatric</span></div>
         <h3>Cross-disorder MPRA: fine-mapping과 실험 신호의 불일치</h3>
-        <p class="case-thesis">Lee et al.은 psychiatric GWAS loci에서 통계적 credible set과 MPRA emVar가 겹치지만 완전히 같지는 않다는 점을 대규모로 정리했습니다.</p>
+        <p class="case-thesis">Lee et al.은 psychiatric GWAS loci에서 통계적 credible set과 MPRA emVar가 겹치지만 완전히 같지는 않다는 점을 대규모로 보여 줍니다.</p>
         <dl class="case-flow">
           <div><dt>찾은 출발점</dt><dd>PGC cross-disorder GWAS의 136 loci에서 p&lt;1e-5 변이 17,841개를 골라 human neural progenitors MPRA에 넣었습니다.</dd></div>
           <div><dt>분석</dt><dd>13,311 QC-passing variants 중 683 emVars를 찾았고, FINEMAP/SuSiE/CAVIAR credible set과 비교했습니다. 6,805 credible-set variants는 emVar가 아니었고, 반대로 438 emVars는 세 fine-mapping 결과 어디에도 없었습니다.</dd></div>
@@ -934,7 +934,7 @@ canvas{display:block;width:100%;height:496px}
             <tr><td><b>mechanism까지 주장</b></td><td>MPRA, allele editing, CRISPR perturbation, animal/cellular phenotype</td><td>통계적 fine-mapping만으로 causal mechanism을 확정하는 주장</td></tr>
           </tbody>
         </table>
-        <div class="footer-note">이 페이지의 locus와 수치는 교육용 합성 예시입니다. 근거는 local llm-wiki의 fine-mapping overview, concept pages, GWAS 문헌 요약에서 정리했습니다.</div>
+        <div class="footer-note">아래 locus와 수치는 교육용 합성 예시입니다. fine-mapping overview, concept pages, GWAS 문헌 요약을 함께 읽는 연습용입니다.</div>
       </div>
     </div>
   </section>
@@ -978,13 +978,13 @@ const stageMeta = {
 const papers = [
   {stage:"foundation",year:"2005",title:"Hirschhorn & Daly — Genome-wide association studies for common diseases and complex traits",take:"tag SNP와 LD 기반 GWAS 설계의 초기 논리를 정리해 fine-mapping 이전 단계를 잡아줍니다.",query:"Hirschhorn Daly 2005 genome-wide association studies common diseases complex traits"},
   {stage:"foundation",year:"2021",title:"Uffelmann et al. — Genome-wide association studies",take:"GWAS design, QC, imputation, downstream fine-mapping과 PRS까지 한 번에 묶은 Methods Primer입니다.",query:"Uffelmann 2021 genome-wide association studies Methods Primer"},
-  {stage:"foundation",year:"2026",title:"Statistical Fine-Mapping of GWAS Signals",take:"llm-wiki overview: ABF, FINEMAP, SuSiE, PolyFun, CAVIAR, cross-ancestry fine-mapping을 연결합니다.",query:"statistical fine-mapping GWAS signals SuSiE FINEMAP PolyFun CAVIAR"},
+  {stage:"foundation",year:"2026",title:"Statistical Fine-Mapping of GWAS Signals",take:"ABF, FINEMAP, SuSiE, PolyFun, CAVIAR, cross-ancestry fine-mapping을 한 흐름으로 연결합니다.",query:"statistical fine-mapping GWAS signals SuSiE FINEMAP PolyFun CAVIAR"},
   {stage:"foundation",year:"2026",title:"Linkage Disequilibrium concept page",take:"r², LD block, tag SNP, population LD differences가 왜 causal variant 식별을 어렵게 하는지 설명합니다.",query:"linkage disequilibrium r2 GWAS fine mapping"},
   {stage:"statistical",year:"2017",title:"Pasaniuc & Price — Summary Association Statistics",take:"z-score가 LD matrix를 공분산으로 갖는다는 관점이 summary-stat fine-mapping의 수학적 기반입니다.",query:"Pasaniuc Price 2017 summary association statistics fine mapping"},
   {stage:"statistical",year:"2016",title:"FINEMAP — Bayesian fine-mapping with stochastic search",take:"여러 causal configuration을 탐색해 variant별 PIP와 credible set을 산출하는 대표 방법입니다.",query:"Benner FINEMAP 2016 Bayesian fine-mapping stochastic search"},
   {stage:"statistical",year:"2020",title:"SuSiE — Sum of Single Effects",take:"single-effect를 합쳐 여러 독립 signal별 credible set을 만드는 현재 핵심 방법론입니다.",query:"Wang 2020 SuSiE sum of single effects fine mapping"},
   {stage:"statistical",year:"2014",title:"CAVIAR / eCAVIAR lineage",take:"causal variant posterior와 PIP 기반 colocalization으로 이어지는 Bayesian fine-mapping 계열입니다.",query:"CAVIAR eCAVIAR causal variants fine mapping colocalization"},
-  {stage:"functional",year:"2016",title:"Ionita-Laza et al. — Eigen score",take:"보존성, chromatin, TF binding 등을 통합한 functional score를 fine-mapping prior로 쓰는 접근을 처음 정리했습니다.",query:"Ionita-Laza 2016 Eigen score functional genomic annotations fine mapping"},
+  {stage:"functional",year:"2016",title:"Ionita-Laza et al. — Eigen score",take:"보존성, chromatin, TF binding 등을 통합한 functional score를 fine-mapping prior로 쓰는 초기 접근입니다.",query:"Ionita-Laza 2016 Eigen score functional genomic annotations fine mapping"},
   {stage:"functional",year:"2020",title:"PolyFun — Functionally informed fine-mapping",take:"S-LDSC 기반 per-SNP heritability prior를 SuSiE fine-mapping에 연결하는 흐름의 대표입니다.",query:"PolyFun 2020 functionally informed fine-mapping"},
   {stage:"functional",year:"2021",title:"Wang et al. — EMS for cis-eQTL fine-mapping",take:"GTEx fine-mapped eQTL과 6,121개 feature로 EMS를 학습해 eQTL PIP와 colocalization을 강화합니다.",query:"Wang 2021 expression modifier score cis-eQTL fine-mapping"},
   {stage:"functional",year:"2022",title:"Li et al. — MACIE multidimensional scoring",take:"coding/noncoding functional variant scoring을 확장해 prior 후보군을 더 정교하게 만드는 방향입니다.",query:"Li 2022 MACIE multi-dimensional integrative scoring functional variants"},

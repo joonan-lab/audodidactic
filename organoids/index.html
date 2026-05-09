@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오가노이드 연구 지도 - Audodidactic</title>
+<style>
+:root{
+  --bg:#fff;
+  --ink:#151821;
+  --muted:#667085;
+  --line:#d9dee8;
+  --soft:#f5f7fa;
+  --soft2:#eef2f6;
+  --brain:#5b5bd6;
+  --kidney:#0f8a7a;
+  --liver:#b36b00;
+  --lung:#087aa2;
+  --gut:#3f8f46;
+  --retina:#7c4cc2;
+  --heart:#c43d53;
+  --model:#5e6a75;
+  --shadow:0 10px 30px rgba(18,24,40,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.5;
+}
+a{color:inherit}
+.shell{max-width:1500px;margin:0 auto;padding:24px}
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:16px;
+}
+.brand h1{font-size:24px;margin:0 0 3px;font-weight:760;letter-spacing:0}
+.brand p{margin:0;color:var(--muted);font-size:13px}
+.legacy{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  justify-content:flex-end;
+}
+.legacy a{
+  text-decoration:none;
+  color:#364152;
+  font-size:12px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:6px 9px;
+  background:#fff;
+}
+.legacy a:hover{border-color:#98a2b3;background:var(--soft)}
+.hero{
+  display:grid;
+  grid-template-columns:minmax(320px,1fr) minmax(360px,520px);
+  gap:24px;
+  padding:28px 0 20px;
+}
+.hero h2{font-size:40px;line-height:1.05;margin:0 0 14px;letter-spacing:0;font-weight:780;max-width:820px}
+.hero .lead{color:#465160;font-size:16px;max-width:820px;margin:0}
+.statgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--soft);
+  padding:14px;
+  min-height:88px;
+}
+.stat .num{font-size:28px;font-weight:780;line-height:1}
+.stat .label{font-size:12px;color:var(--muted);margin-top:8px}
+.primer{
+  display:grid;
+  gap:18px;
+  margin:8px 0 22px;
+}
+.primer-section{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.primer-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:18px;
+  padding:16px 18px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,#fff,#fbfcff);
+}
+.primer-head h3{
+  margin:0;
+  font-size:18px;
+  line-height:1.22;
+}
+.primer-head p{
+  margin:6px 0 0;
+  color:#465160;
+  font-size:13px;
+  max-width:960px;
+}
+.primer-badge{
+  flex:0 0 auto;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:5px 9px;
+  color:#344054;
+  font-size:11px;
+  font-weight:760;
+  background:#fff;
+}
+.basic-grid,.method-grid,.qc-grid{
+  display:grid;
+  gap:10px;
+  padding:14px;
+}
+.basic-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.method-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.qc-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.basic-card,.method-card,.qc-card,.workflow-step{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--soft);
+  padding:13px;
+}
+.basic-card h4,.method-card h4,.qc-card h4{
+  margin:0 0 7px;
+  font-size:14px;
+}
+.basic-card p,.method-card p,.qc-card p,.workflow-step p{
+  margin:0;
+  color:#465160;
+  font-size:12.5px;
+}
+.workflow{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;
+  padding:0 14px 14px;
+}
+.workflow-step{
+  background:#fff;
+  min-height:104px;
+}
+.workflow-step b{
+  display:block;
+  color:#344054;
+  font-size:12px;
+  margin-bottom:5px;
+}
+.term-table{
+  overflow:auto;
+  padding:14px;
+}
+.term-table table{min-width:760px}
+.term-table td:first-child{font-weight:760;color:#202938;white-space:nowrap}
+.primer-note{
+  margin:0 14px 14px;
+  border:1px solid #c7d2fe;
+  border-radius:8px;
+  background:#eef2ff;
+  color:#344054;
+  padding:12px 13px;
+  font-size:12.5px;
+}
+.layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:20px;align-items:start}
+.layout > *, main, .panel, .filters{min-width:0}
+.filters{
+  position:sticky;
+  top:16px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:14px;
+  background:#fff;
+}
+.filters h3{font-size:13px;margin:0 0 12px;text-transform:uppercase;letter-spacing:.08em;color:#4b5565}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12px;color:#4b5565;margin-bottom:5px;font-weight:650}
+input,select{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:9px 10px;
+  font:inherit;
+  font-size:13px;
+  background:#fff;
+  color:var(--ink);
+}
+.filterchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:8px;
+  padding:5px 8px;
+  font-size:12px;
+  cursor:pointer;
+}
+.chip.active{border-color:#344054;background:#344054;color:#fff}
+.panel{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  box-shadow:var(--shadow);
+  margin-bottom:18px;
+}
+.panel-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
+  align-items:center;
+}
+.panel-head h3{margin:0;font-size:15px}
+.panel-head p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.countline{font-size:12px;color:var(--muted)}
+.organ-body{
+  display:grid;
+  grid-template-columns:minmax(320px,.82fr) minmax(360px,1.18fr);
+  gap:16px;
+  padding:16px;
+}
+.body-viz{
+  position:relative;
+  min-height:520px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:linear-gradient(180deg,#fff,#f8fafc);
+  overflow:hidden;
+}
+.body-svg{
+  position:absolute;
+  inset:20px 28px;
+  width:calc(100% - 56px);
+  height:calc(100% - 40px);
+}
+.organ-node{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  border:2px solid #fff;
+  color:#fff;
+  border-radius:999px;
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  font-size:11px;
+  font-weight:800;
+  box-shadow:0 0 0 1px rgba(0,0,0,.16),0 8px 18px rgba(16,24,40,.18);
+  cursor:pointer;
+  transition:transform .14s ease, box-shadow .14s ease, opacity .14s ease;
+}
+.organ-node:hover,.organ-node.active{
+  transform:translate(-50%,-50%) scale(1.14);
+  box-shadow:0 0 0 2px #101828,0 12px 26px rgba(16,24,40,.22);
+}
+.organ-node.dim{opacity:.34}
+.body-side{
+  display:grid;
+  gap:12px;
+}
+.organ-summary{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--soft);
+  padding:14px;
+}
+.organ-summary h4{margin:0 0 6px;font-size:18px}
+.organ-summary p{margin:0;color:#465160;font-size:13px}
+.organ-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.organ-stat{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  padding:12px;
+  min-height:96px;
+}
+.organ-stat .label{font-size:11px;color:#667085;text-transform:uppercase;letter-spacing:.06em;font-weight:760}
+.organ-stat .value{font-size:13px;color:#202938;margin-top:6px}
+.organ-bars{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px;
+  background:#fff;
+}
+.organ-bar{
+  display:grid;
+  grid-template-columns:92px minmax(0,1fr) 28px;
+  gap:8px;
+  align-items:center;
+  margin:7px 0;
+  font-size:11px;
+  color:#4b5565;
+}
+.organ-bar-track{height:8px;border-radius:999px;background:#edf0f5;overflow:hidden}
+.organ-bar-fill{height:100%;border-radius:999px}
+.main-grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px;padding:14px}
+.card{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px;
+  background:#fff;
+  min-height:188px;
+  cursor:pointer;
+  transition:border .12s ease, transform .12s ease, box-shadow .12s ease;
+}
+.card:hover,.card.active{border-color:#344054;box-shadow:0 8px 18px rgba(16,24,40,.08);transform:translateY(-1px)}
+.card-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px}
+.pill{display:inline-flex;align-items:center;border-radius:8px;padding:3px 7px;font-size:11px;font-weight:650;background:var(--soft2);color:#344054}
+.year{font-size:12px;color:#667085;font-weight:700}
+.card h4{margin:0 0 7px;font-size:14px;line-height:1.25}
+.card .meta{font-size:12px;color:#667085;margin-bottom:7px}
+.card p{font-size:12px;color:#465160;margin:0}
+.detail{
+  position:sticky;
+  top:16px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:16px;
+  background:#fff;
+  box-shadow:var(--shadow);
+}
+.detail .organ{height:4px;border-radius:8px;margin:-16px -16px 14px}
+.detail h3{margin:0 0 8px;font-size:18px;line-height:1.25}
+.detail .small{font-size:12px;color:var(--muted);margin-bottom:12px}
+.detail dl{display:grid;grid-template-columns:92px 1fr;gap:8px 10px;margin:0}
+.detail dt{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#667085;font-weight:760}
+.detail dd{font-size:13px;margin:0;color:#2f3947}
+.detail a{display:inline-block;margin-top:14px;font-size:13px;font-weight:700;text-decoration:none;border-bottom:1px solid currentColor}
+.matrix{overflow:auto;padding:0 0 8px}
+.culture-tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  padding:12px 14px 10px;
+  border-bottom:1px solid var(--line);
+}
+.culture-tab{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  color:#344054;
+  padding:7px 10px;
+  font-size:12px;
+  font-weight:720;
+  cursor:pointer;
+}
+.culture-tab.active{background:#344054;color:#fff;border-color:#344054}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#4b5565;background:var(--soft);position:sticky;top:0}
+td:first-child{font-weight:730;color:#202938;white-space:nowrap}
+.synthesis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:14px}
+.note{border:1px solid var(--line);border-radius:8px;padding:14px;background:var(--soft);min-height:160px}
+.note h4{margin:0 0 8px;font-size:14px}
+.note p{margin:0;color:#465160;font-size:13px}
+.deep-sections{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  padding:14px;
+}
+.deep-section{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  padding:15px;
+  min-height:260px;
+}
+.deep-section h4{margin:0 0 8px;font-size:16px}
+.deep-section p{margin:0 0 10px;color:#465160;font-size:13px}
+.deep-list{display:grid;gap:8px;margin-top:10px}
+.deep-item{
+  border:1px solid #e8edf4;
+  border-radius:8px;
+  background:var(--soft);
+  padding:9px 10px;
+  font-size:12.5px;
+  color:#344054;
+}
+.deep-item b{display:block;color:#202938;margin-bottom:3px}
+.source-line{display:block;margin-top:10px;color:#667085;font-size:11.5px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 14px}
+.legend span{font-size:11px;color:#4b5565;display:inline-flex;align-items:center;gap:5px}
+.swatch{width:10px;height:10px;border-radius:3px;display:inline-block}
+@media (max-width:1120px){
+  .hero,.layout,.main-grid,.basic-grid,.method-grid,.qc-grid,.workflow,.organ-body,.deep-sections{grid-template-columns:1fr}
+  .filters,.detail{position:static}
+}
+@media (max-width:680px){
+  .shell{padding:16px}
+  .topbar{display:block}
+  .legacy{justify-content:flex-start;margin-top:12px}
+  .hero h2{font-size:31px}
+  .statgrid,.synthesis{grid-template-columns:1fr}
+  .panel-head{display:block}
+  .cards{grid-template-columns:1fr}
+  .body-viz{min-height:440px}
+  .organ-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <h1>오가노이드 연구 지도</h1>
+      <p>audodidactic study map - protocols, fidelity, disease models, and applications</p>
+    </div>
+    <nav class="legacy" aria-label="Page sections">
+      <a href="../index.html">Home</a>
+      <a href="#primer">개념</a>
+      <a href="#database">데이터베이스</a>
+      <a href="#culture">배양 로직</a>
+      <a href="#themes">심화 개념</a>
+      <a href="#synthesis">해석</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h2>오가노이드: 배양 레시피에서 측정 가능한 인간 조직 모델로.</h2>
+      <p class="lead">오가노이드는 “작은 장기”라기보다 특정 조직의 발생, 세포 조성, 기능 일부를 3차원 배양에서 재현하는 모델입니다. 세포원, 배양 방식, 품질 평가, 한계를 먼저 잡고 나면 논문 단위 데이터베이스가 훨씬 잘 읽힙니다.</p>
+    </div>
+    <div class="statgrid" id="stats"></div>
+  </section>
+
+  <section class="primer" id="primer" aria-label="Organoid basics">
+    <section class="primer-section">
+      <div class="primer-head">
+        <div>
+          <h3>오가노이드는 무엇인가</h3>
+          <p>오가노이드는 stem cell 또는 조직 유래 세포가 3D 환경에서 스스로 배열하면서 기관의 일부 구조와 기능을 흉내 내는 in vitro 모델입니다. 완전한 장기가 아니라 질문에 맞춰 만든 “부분적이고 측정 가능한 모델”로 이해하는 편이 좋습니다.</p>
+        </div>
+        <span class="primer-badge">definition</span>
+      </div>
+      <div class="basic-grid">
+        <article class="basic-card"><h4>3D self-organization</h4><p>세포가 평평한 2D plate가 아니라 ECM gel, suspension, transwell, chip 같은 환경에서 서로 위치를 잡고 lineage를 나눕니다.</p></article>
+        <article class="basic-card"><h4>발생 신호를 빌린 배양</h4><p>WNT, BMP, SHH, FGF, RA, EGF, R-spondin 같은 신호를 시간별로 주어 배아 발생의 방향성을 흉내 냅니다.</p></article>
+        <article class="basic-card"><h4>세포원이 질문을 바꿈</h4><p>adult stem cell organoid는 성체 조직 기능을 보기 좋고, hESC/hiPSC organoid는 발생 과정과 환자 유전 배경을 다루기 좋습니다.</p></article>
+        <article class="basic-card"><h4>검증은 항상 필요함</h4><p>모양만 비슷해서는 부족합니다. 세포 조성, 전사체, 기능, 성숙도, off-target cell, stress program을 함께 확인해야 합니다.</p></article>
+      </div>
+      <div class="workflow">
+        <div class="workflow-step"><b>1. 세포원 선택</b><p>adult tissue, hESC, hiPSC, patient iPSC, CRISPR isogenic line 중 질문에 맞는 출발점을 고릅니다.</p></div>
+        <div class="workflow-step"><b>2. 패터닝</b><p>초기 fate를 정하는 morphogen과 small molecule을 시간표대로 넣습니다.</p></div>
+        <div class="workflow-step"><b>3. 3D 형성</b><p>Matrigel/BME embedding, spheroid aggregation, spinner, transwell, ALI 등으로 구조를 만듭니다.</p></div>
+        <div class="workflow-step"><b>4. 성숙/조립</b><p>장기별 niche factor, co-culture, vascular/immune/stromal addition, assembloid fusion을 더합니다.</p></div>
+        <div class="workflow-step"><b>5. readout</b><p>scRNA-seq, imaging, electrophysiology, calcium, contraction, toxicity, infection, rescue assay로 검증합니다.</p></div>
+      </div>
+    </section>
+
+    <section class="primer-section">
+      <div class="primer-head">
+        <div>
+          <h3>배양 방법과 세포주를 어떻게 고르는가</h3>
+          <p>좋은 오가노이드란 보편적으로 “복잡한 것”이 아니라, 연구 질문과 세포원, 배양 방식, readout이 맞아떨어지는 모델입니다.</p>
+        </div>
+        <span class="primer-badge">culture methods</span>
+      </div>
+      <div class="method-grid">
+        <article class="method-card"><h4>adult stem-cell organoid</h4><p>장, 간, 폐 같은 epithelial organoid에 잘 맞습니다. EGF/R-spondin/Noggin 등 niche factor로 장기간 유지하면서 환자별 기능 검사를 합니다.</p></article>
+        <article class="method-card"><h4>PSC-derived organoid</h4><p>hESC/hiPSC를 germ layer와 organ lineage로 유도합니다. 뇌, 신장, 심장, 망막처럼 발생 단계와 질환 유전 배경을 함께 보고 싶을 때 중요합니다.</p></article>
+        <article class="method-card"><h4>patient iPSC / isogenic line</h4><p>환자 유전 배경을 가진 iPSC와 CRISPR로 만든 교정/돌연변이 대조군을 비교해 genotype-phenotype 관계를 봅니다.</p></article>
+        <article class="method-card"><h4>embedded gel culture</h4><p>Matrigel 또는 BME droplet 안에서 epithelial cyst, crypt, duct, airway 구조를 만들기 쉽지만 ECM batch 차이를 조심해야 합니다.</p></article>
+        <article class="method-card"><h4>suspension / spinner / ALI</h4><p>brain organoid처럼 큰 3D 조직은 suspension, spinning bioreactor, air-liquid interface로 산소와 장기 배양 문제를 다룹니다.</p></article>
+        <article class="method-card"><h4>assembloid / co-culture</h4><p>서로 다른 region organoid나 immune, vascular, stromal cell을 합쳐 migration, projection, inflammation, niche interaction을 봅니다.</p></article>
+      </div>
+      <div class="term-table">
+        <table>
+          <thead><tr><th>용어</th><th>뜻</th><th>처음 읽을 때의 포인트</th></tr></thead>
+          <tbody>
+            <tr><td>Spheroid</td><td>세포가 둥글게 뭉친 3D 구조</td><td>항상 organ identity가 있는 것은 아닙니다.</td></tr>
+            <tr><td>Organoid</td><td>조직 특이 lineage와 일부 구조/기능을 재현하는 3D 모델</td><td>어떤 기관의 어떤 부분을 재현했는지 봐야 합니다.</td></tr>
+            <tr><td>Assembloid</td><td>여러 organoid 또는 cell type을 조립한 모델</td><td>추가한 상호작용이 무엇인지가 핵심입니다.</td></tr>
+            <tr><td>Organ-on-chip</td><td>미세유체, 흐름, 기계적 힘을 넣은 장기 모델</td><td>구조보다 생리적 환경과 readout이 장점입니다.</td></tr>
+            <tr><td>NAM / MPS</td><td>동물실험을 보완하거나 대체하려는 새 접근법과 microphysiological system</td><td>규제, 약물개발, 예측력 평가와 연결됩니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="primer-section">
+      <div class="primer-head">
+        <div>
+          <h3>품질 평가는 무엇을 보는가</h3>
+          <p>오가노이드 논문을 읽을 때는 “만드는 법”만 보지 말고, 실제로 어떤 세포가 생겼는지, 얼마나 성숙했는지, 기능이 있는지, 재현성이 있는지를 나눠 보세요.</p>
+        </div>
+        <span class="primer-badge">quality control</span>
+      </div>
+      <div class="qc-grid">
+        <article class="qc-card"><h4>identity</h4><p>marker, scRNA-seq, scATAC/multiome으로 목표 조직과 cell type이 맞는지 봅니다.</p></article>
+        <article class="qc-card"><h4>maturity</h4><p>PSC-derived organoid는 대개 fetal-like합니다. 발생 연구에는 장점, 성체 독성/퇴행 연구에는 한계입니다.</p></article>
+        <article class="qc-card"><h4>function</h4><p>뇌 전기활동, 심장 수축/칼슘, 신장 독성, 간 CYP/albumin, 폐 감염, 장 barrier처럼 장기별 기능 readout을 봅니다.</p></article>
+        <article class="qc-card"><h4>reproducibility</h4><p>cell line effect, batch effect, off-target cell, stress program, ECM lot 차이를 분리해야 합니다.</p></article>
+      </div>
+      <p class="primer-note">핵심 해석법: broad cerebral organoid가 guided cortical organoid보다 “나쁜” 것이 아니라 답하는 질문이 다릅니다. 데이터베이스의 각 카드는 source, method, finding, application을 함께 읽도록 설계되어 있습니다.</p>
+    </section>
+  </section>
+
+  <div class="layout" id="database">
+    <aside class="filters">
+      <h3>데이터 필터</h3>
+      <div class="field">
+        <label for="search">검색</label>
+        <input id="search" type="search" placeholder="gene, organ, method, disease">
+      </div>
+      <div class="field">
+        <label for="organFilter">기관/시스템</label>
+        <select id="organFilter"></select>
+      </div>
+      <div class="field">
+        <label for="typeFilter">증거 유형</label>
+        <select id="typeFilter"></select>
+      </div>
+      <div class="field">
+        <label for="sortOrder">정렬</label>
+        <select id="sortOrder">
+          <option value="year-desc">최신순</option>
+          <option value="year-asc">오래된 순</option>
+          <option value="organ">기관/시스템</option>
+          <option value="type">증거 유형</option>
+        </select>
+      </div>
+      <div class="filterchips" id="quickChips"></div>
+    </aside>
+
+    <main>
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>인체 장기 지도</h3>
+            <p>오가노이드 연구 항목을 장기 위치, 세포원, 모델의 목적, readout 기준으로 탐색합니다.</p>
+          </div>
+          <div class="countline" id="bodyCount"></div>
+        </div>
+        <div class="organ-body" id="organBody"></div>
+        <div class="legend" id="legend"></div>
+      </section>
+
+      <div class="main-grid">
+        <section class="panel">
+          <div class="panel-head">
+          <div>
+              <h3>논문 카드</h3>
+              <p>Protocol, method, disease, atlas, application 항목을 카드로 탐색합니다.</p>
+            </div>
+            <div class="countline" id="cardCount"></div>
+          </div>
+          <div class="cards" id="cards"></div>
+        </section>
+        <aside class="detail" id="detail"></aside>
+      </div>
+
+      <section class="panel" id="culture">
+        <div class="panel-head">
+          <div>
+            <h3>배양 로직 매트릭스</h3>
+            <p>기관별 요약뿐 아니라 패터닝 신호, 배양 형식, niche 설계, QC/readout, 질환·약물 관점으로 나눠 읽습니다.</p>
+          </div>
+        </div>
+        <div class="culture-tabs" id="cultureTabs" aria-label="Culture matrix tabs"></div>
+        <div class="matrix">
+          <table>
+            <thead id="matrixHead"></thead>
+            <tbody id="matrixRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" id="themes">
+        <div class="panel-head">
+          <div>
+            <h3>네 가지 심화 관점</h3>
+            <p>오가노이드를 처음 배우는 학생이 데이터베이스를 읽기 전에 잡아야 할 큰 축입니다.</p>
+          </div>
+        </div>
+        <div class="deep-sections">
+          <article class="deep-section">
+            <h4>Assembloid는 한 가지가 아닙니다</h4>
+            <p>Assembloid는 “두 덩어리를 붙였다”는 형식보다, 어떤 빠진 상호작용을 다시 넣었는지가 중요합니다. 같은 단어를 쓰더라도 신경 회로, 면역 niche, 혈관 niche, stromal niche, 스크리닝 플랫폼은 서로 다른 질문에 답합니다.</p>
+            <div class="deep-list">
+              <div class="deep-item"><b>Region-to-region circuit</b>Thalamic-cortical, cortico-striatal, ascending sensory pathway처럼 서로 다른 신경 영역을 붙여 projection, synchrony, calcium propagation을 관찰합니다.</div>
+              <div class="deep-item"><b>Cell-type complementation</b>Microglia, macrophage, endothelial cell, mesenchyme를 넣어 organoid가 원래 빠뜨리던 niche를 보완합니다.</div>
+              <div class="deep-item"><b>Perturbation screen</b>Meng 2023처럼 dorsal-ventral forebrain assembloid에서 interneuron 생성과 이동을 서로 다른 readout으로 분리합니다.</div>
+            </div>
+            <span class="source-line">주요 예: Xiang 2019, Meng 2023, Kim 2025 sensory assembloid, Kang 2025 alveolar, Yuan 2026 liver</span>
+          </article>
+
+          <article class="deep-section">
+            <h4>발생 모델이 중심입니다</h4>
+            <p>PSC 유래 오가노이드의 강점은 성체 장기를 완성하는 데보다, 접근하기 어려운 인간 발생 과정을 조작 가능한 시간표로 재현하는 데 있습니다. 그래서 morphogen을 언제 넣었는지와 fetal atlas 매핑이 논문 해석의 중심입니다.</p>
+            <div class="deep-list">
+              <div class="deep-item"><b>패터닝은 시간표입니다</b>WNT, BMP/TGF-beta, SHH, FGF, RA는 “넣었는가”보다 언제, 얼마나, 다음 신호와 어떤 순서로 들어갔는지가 중요합니다.</div>
+              <div class="deep-item"><b>Fetal-like는 실패가 아닙니다</b>ASD/NDD, nephrogenesis, retinal lineage, early cardiogenesis처럼 발생 질문에는 fetal-like state가 오히려 모델의 핵심입니다.</div>
+              <div class="deep-item"><b>Atlas가 기준선입니다</b>HNOCA, HROCA, endoderm atlas, OrganoMetrics는 organoid가 몇 주차, 어떤 cell type, 어떤 divergence program에 놓이는지 정량화합니다.</div>
+            </div>
+            <span class="source-line">주요 예: Lancaster 2013, Camp 2015, Takasato 2015, Drakhlis 2021, He 2024 HNOCA, Lee 2025 OrganoMetrics</span>
+          </article>
+
+          <article class="deep-section">
+            <h4>질환 모델은 cohort-scale로 이동 중입니다</h4>
+            <p>초기 질환 organoid는 한 유전자 또는 한 환자 line을 깊게 보는 방식이 많았습니다. 최근에는 환자 iPSC cohort, pooled CRISPR, organoid atlas, in silico perturbation을 합쳐 “변이가 어떤 세포 상태와 경로로 수렴하는가”를 묻습니다.</p>
+            <div class="deep-list">
+              <div class="deep-item"><b>Patient-derived cohort</b>Gordon 2026은 QC를 통과한 hiPSC line 70개와 ASD mutation 8종을 days 25-100 동안 비교해 SWI-SNF 중심 convergence를 찾았습니다.</div>
+              <div class="deep-item"><b>Pooled organoid screen</b>Li 2023 CHOOSE는 cerebral organoid에서 ASD gene 36개를, Meng 2023은 forebrain assembloid에서 NDD gene 425개를 병렬로 테스트했습니다.</div>
+              <div class="deep-item"><b>Atlas-to-model</b>NOCAP/Telen-NOCAP처럼 수백만 세포 atlas에서 perturbation response를 예측하고, 유전학 cohort와 다시 연결하는 구조가 등장했습니다.</div>
+            </div>
+            <span class="source-line">주요 예: Li 2023, Meng 2023, Koh 2025, Gordon 2026, Harder 2023</span>
+          </article>
+
+          <article class="deep-section">
+            <h4>약물개발은 기능 readout이 필요합니다</h4>
+            <p>약물개발용 organoid는 marker가 맞는지만으로 부족합니다. 약물 후보가 실제 조직 기능을 바꾸는지, 질환 phenotype을 rescue하는지, 독성 또는 감염 반응을 예측하는지 보여야 합니다.</p>
+            <div class="deep-list">
+              <div class="deep-item"><b>전기·수축·칼슘</b>Pocock 2025 cardiac organoid는 force, calcium handling, Tr50, CiPA drug-risk discrimination 같은 기능 readout으로 성숙과 약물 반응을 판단합니다.</div>
+              <div class="deep-item"><b>상피 기능과 감염</b>Airway/lung organoid는 CFTR swelling, RSV/SARS-CoV-2/TB infection, macrophage-mediated senescence, THBS1 blockade 같은 readout을 씁니다.</div>
+              <div class="deep-item"><b>독성·rescue assay</b>Kidney nephrotoxicity, liver CYP/albumin/injury state, ASD organoid의 PI3K 또는 ASO rescue처럼 질환과 기능을 함께 볼 때 임상 번역 주장이 강해집니다.</div>
+            </div>
+            <span class="source-line">주요 예: Sachs 2019, Higgins 2018, Kang 2021, Han 2025, Pocock 2025, Liu 2026 NAM</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="synthesis">
+        <div class="panel-head">
+          <div>
+            <h3>해석 노트</h3>
+            <p>오가노이드 문헌을 읽을 때 반복해서 돌아와야 하는 기준들입니다.</p>
+          </div>
+        </div>
+        <div class="synthesis">
+          <div class="note"><h4>품질은 질문에 따라 달라집니다</h4><p>넓은 cerebral organoid가 guided cortical organoid보다 낮은 등급이라는 뜻은 아닙니다. 어떤 생물학적 주장을 하려는지에 맞춰 protocol scope와 fidelity 축을 따로 봐야 합니다.</p></div>
+          <div class="note"><h4>Assembloid는 한 가지가 아닙니다</h4><p>신경 assembloid는 migration과 projection을, 폐와 간 assembloid는 immune, vascular, stromal crosstalk를 봅니다. 핵심은 “무슨 상호작용을 추가했는가”입니다.</p></div>
+          <div class="note"><h4>단일세포 atlas가 기준선을 바꿨습니다</h4><p>marker panel만으로는 부족합니다. HNOCA, HROCA, endoderm atlas, kidney atlas, OrganoMetrics 덕분에 off-target state, fetal timing, stress program, reproducibility를 더 구체적으로 볼 수 있습니다.</p></div>
+          <div class="note"><h4>발생 모델이 중심입니다</h4><p>대부분의 PSC-derived organoid는 fetal-like합니다. 이는 발생생물학과 ASD/NDD 모델에는 장점이지만, 성체 독성/퇴행/약리에는 maturation engineering이 필요합니다.</p></div>
+          <div class="note"><h4>질환 모델은 cohort-scale로 이동 중입니다</h4><p>한 유전자 organoid에서 patient-derived cohort, pooled CRISPR screen, organoid atlas 기반 in silico perturbation 모델로 확장되고 있습니다.</p></div>
+          <div class="note"><h4>약물개발은 기능 readout이 필요합니다</h4><p>임상 번역 가능성이 높은 연구는 CFTR swelling, cardiac force/calcium, kidney nephrotoxicity, liver injury state, infection response, rescue assay처럼 identity와 기능을 함께 보여줍니다.</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+const organColors = {
+  "Brain": "var(--brain)",
+  "Kidney": "var(--kidney)",
+  "Liver": "var(--liver)",
+  "Lung/Airway": "var(--lung)",
+  "Gut/Colon": "var(--gut)",
+  "Retina": "var(--retina)",
+  "Heart": "var(--heart)",
+  "Methods/NAM": "var(--model)"
+};
+
+const studies = [
+  {id:"sato-2009",year:2009,organ:"Gut/Colon",type:"Foundational protocol",source:"Adult Lgr5+ intestinal stem cells",title:"Single Lgr5 stem cells build crypt-villus structures in vitro without a mesenchymal niche",short:"Sato",method:"Matrigel plus EGF, R-spondin 1, Noggin; Y-27632 supports single-cell plating.",finding:"A single Lgr5+ stem cell can clonally generate long-term crypt-villus organoids with major intestinal epithelial lineages.",application:"Foundational adult stem-cell niche logic for epithelial organoids."},
+  {id:"lancaster-2013",year:2013,organ:"Brain",type:"Foundational protocol",source:"hESC/hiPSC",title:"Cerebral organoids model human brain development and microcephaly",short:"Lancaster",method:"Embryoid body, Matrigel embedding, spinning bioreactor; largely unguided self-organization.",finding:"Self-organized cerebral tissue with cortical progenitors, neurons, oRG-like cells, and microcephaly disease modeling.",application:"Opened human brain organoid modeling for early neurodevelopment."},
+  {id:"xie-2013",year:2013,organ:"Methods/NAM",type:"Reference method",source:"hESC multilineage differentiation",title:"Epigenomic analysis of multilineage differentiation of human embryonic stem cells",short:"Xie",method:"Epigenomic profiling across hESC differentiation lineages.",finding:"Provides early stem-cell differentiation regulatory context used by later engineered-cell identity work.",application:"Reference layer for cell-state and differentiation assessment."},
+  {id:"cahan-2014",year:2014,organ:"Methods/NAM",type:"Reference method",source:"Bulk expression compendium",title:"CellNet: Network Biology Applied to Stem Cell Engineering",short:"Cahan",method:"Gene-regulatory-network scoring of engineered cell identity.",finding:"Quantifies target tissue identity and residual donor or aberrant programs.",application:"Pre-single-cell foundation for organoid fidelity assessment."},
+  {id:"forster-2014",year:2014,organ:"Gut/Colon",type:"Protocol",source:"hPSC-derived intestinal tissue",title:"Human intestinal tissue with adult stem cell properties derived from pluripotent stem cells",short:"Forster",method:"PSC-to-intestinal tissue differentiation toward adult stem-cell-like properties.",finding:"Bridges pluripotent stem-cell differentiation and adult intestinal organoid-like expansion.",application:"PSC route toward patient-specific intestinal tissue models."},
+  {id:"lancaster-2014",year:2014,organ:"Brain",type:"Protocol",source:"hESC/hiPSC",title:"Generation of cerebral organoids from human pluripotent stem cells",short:"Lancaster protocol",method:"Detailed workflow for unguided cerebral organoid production.",finding:"Standardized the practical recipe behind the 2013 cerebral organoid system.",application:"Manufacturing reference for early brain organoid work."},
+  {id:"roost-2015",year:2015,organ:"Methods/NAM",type:"Reference method",source:"Human fetal transcriptomic atlas",title:"KeyGenes, a Tool to Probe Tissue Differentiation Using a Human Fetal Transcriptional Atlas",short:"Roost",method:"LASSO classifier using a compact fetal gene barcode.",finding:"Classifies engineered cell/tissue identity and approximates developmental maturity.",application:"Fetal-reference logic for later organoid benchmarking."},
+  {id:"camp-2015",year:2015,organ:"Brain",type:"Atlas/benchmark",source:"iPSC cerebral organoids",title:"Human cerebral organoids recapitulate gene expression programs of fetal neocortex development",short:"Camp",method:"Single-cell RNA-seq of cerebral organoids and fetal neocortex comparison.",finding:"Early scRNA-seq evidence that organoids recapitulate fetal cortical programs while retaining in vitro differences.",application:"Atlas comparison for brain organoid validity."},
+  {id:"takasato-2015",year:2015,organ:"Kidney",type:"Protocol",source:"hESC/hiPSC",title:"Kidney organoids from human iPS cells contain multiple lineages and model human nephrogenesis",short:"Takasato",method:"Developmentally tuned CHIR, FGF9, and retinoic acid; monolayer to 3D pellet/transwell.",finding:"Generates segmented nephron-like structures with podocyte, tubule, stromal, and endothelial compartments.",application:"Kidney development, disease modeling, and nephrotoxicity platform."},
+  {id:"morizane-2015",year:2015,organ:"Kidney",type:"Protocol",source:"hPSC nephron progenitors",title:"Nephron organoids derived from human pluripotent stem cells model kidney development and injury",short:"Morizane",method:"Chemically defined posterior intermediate mesoderm induction; CHIR/FGF9 renal vesicle formation.",finding:"SIX2+SALL1+WT1+PAX2+ nephron progenitors form organized nephron-like organoids.",application:"Kidney development, injury, and toxicity modeling."},
+  {id:"freedman-2015",year:2015,organ:"Kidney",type:"Disease model",source:"CRISPR-mutant hPSC kidney organoids",title:"Modelling kidney disease with CRISPR-mutant kidney organoids derived from human pluripotent epiblast spheroids",short:"Freedman",method:"CRISPR-mutant kidney organoid disease modeling.",finding:"Uses engineered mutations to connect kidney organoid phenotypes with renal disease mechanisms.",application:"Genetic kidney disease modeling and validation."},
+  {id:"huch-2015",year:2015,organ:"Liver",type:"Protocol",source:"Adult human EpCAM+ ductal cells",title:"Long-Term Culture of Genome-Stable Bipotent Stem Cells from Adult Human Liver",short:"Huch",method:"WNT/R-spondin/cAMP/TGF-beta inhibition expansion of duct-derived organoids.",finding:"Long-term genome-stable bipotent liver organoids with hepatocyte differentiation and disease modeling.",application:"Patient-derived liver modeling, toxicology, regenerative workflows."},
+  {id:"horvath-2016",year:2016,organ:"Methods/NAM",type:"Translational frame",source:"Review/opinion",title:"Screening out irrelevant cell-based models of disease",short:"Horvath",method:"Review of physiologically relevant cell and tissue assays.",finding:"Argues that weak model relevance limits clinical translation.",application:"Conceptual basis for organoids and engineered tissues in drug discovery."},
+  {id:"takasato-2016",year:2016,organ:"Kidney",type:"Protocol",source:"hPSC kidney organoids",title:"Generation of kidney organoids from human pluripotent stem cells",short:"Takasato methods",method:"Detailed generation protocol for PSC kidney organoids.",finding:"Practical methods reference for repeatable nephron-like organoids.",application:"Kidney organoid manufacturing."},
+  {id:"sloan-2017",year:2017,organ:"Brain",type:"Maturation",source:"hPSC cortical spheroids",title:"Human Astrocyte Maturation Captured in 3D Cerebral Cortical Spheroids Derived from Pluripotent Stem Cells",short:"Sloan",method:"Long-term cortical spheroid culture up to many months.",finding:"Astrocytes mature progressively in extended 3D culture.",application:"Glial maturation and neuron-glia interaction modeling."},
+  {id:"quadrato-2017",year:2017,organ:"Brain",type:"Atlas/benchmark",source:"Long-term cerebral organoids",title:"Cell diversity and network dynamics in photosensitive human brain organoids",short:"Quadrato",method:"Long-term modified cerebral organoids with Drop-seq and functional assays.",finding:"Shows broad neural diversity, network activity, and photosensitive cell types in long-term cultures.",application:"Brain organoid diversity and maturation benchmark."},
+  {id:"birey-2017",year:2017,organ:"Brain",type:"Assembloid",source:"Human forebrain spheroids",title:"Assembly of functionally integrated human forebrain spheroids",short:"Birey",method:"Fusion of regionally patterned forebrain spheroids.",finding:"Models interneuron migration and functional integration across forebrain compartments.",application:"Template for later disease and migration assembloid screens."},
+  {id:"amiri-2018",year:2018,organ:"Brain",type:"Atlas/benchmark",source:"Dorsal forebrain organoids",title:"Transcriptome and epigenome landscape of human cortical development modeled in brain organoids",short:"Amiri",method:"RNA-seq, snRNA-seq, and histone-mark profiling of organoids and fetal cortex.",finding:"Maps organoid transcriptomic and enhancer programs to early fetal cortical development.",application:"PsychENCODE-style organoid-fetal regulatory comparison."},
+  {id:"wu-2018",year:2018,organ:"Kidney",type:"Atlas/benchmark",source:"hPSC kidney organoids",title:"Comparative Analysis and Refinement of Human PSC-Derived Kidney Organoid Differentiation with Single-Cell Transcriptomics",short:"Wu",method:"Single-cell comparison of major kidney organoid protocols.",finding:"Finds immature renal lineages plus off-target neuronal and other contaminants; BDNF/NTRK2 inhibition reduces neuronal off-target cells.",application:"Protocol refinement and off-target diagnostics."},
+  {id:"higgins-2018",year:2018,organ:"Kidney",type:"Screening platform",source:"Bioprinted hPSC kidney organoids",title:"Bioprinted pluripotent stem cell-derived kidney organoids provide opportunities for high content screening",short:"Higgins",method:"NovoGen MMX bioprinting from day-7 kidney progenitors in 96-well-compatible formats.",finding:"Bioprinting improves reproducibility and throughput; supports doxorubicin toxicity proof-of-concept.",application:"High-content kidney toxicity and compound screening."},
+  {id:"giandomenico-2019",year:2019,organ:"Brain",type:"Maturation",source:"Cerebral organoid slices",title:"Cerebral organoids at the air-liquid interface generate diverse nerve tracts with functional output",short:"Giandomenico",method:"Cerebral organoid sectioning and air-liquid interface culture.",finding:"Improves oxygenation and supports long-range axon tracts with functional output.",application:"Neural circuit maturation and output assays."},
+  {id:"xiang-2019",year:2019,organ:"Brain",type:"Assembloid",source:"hESC thalamic and cortical organoids",title:"hESC-derived thalamic organoids form reciprocal projections when fused with cortical organoids",short:"Xiang",method:"Guided thalamic patterning with reciprocal thalamocortical fusion.",finding:"Thalamic organoids project reciprocally with cortical organoids.",application:"Thalamocortical circuit development."},
+  {id:"marton-2019",year:2019,organ:"Brain",type:"Maturation",source:"Human 3D neural cultures",title:"Differentiation and Maturation of Oligodendrocytes in Human Three-Dimensional Neural Cultures",short:"Marton",method:"SHH/WNT-patterned neural spheroids with PDGF/HGF/IGF/NT3/BDNF and T3 maturation.",finding:"Produces OPCs and mature myelinating oligodendrocytes in 3D neural cultures.",application:"Myelination and oligodendrocyte biology."},
+  {id:"pollen-2019",year:2019,organ:"Brain",type:"Conceptual frame",source:"Review/synthesis",title:"Establishing Cerebral Organoids as Models of Human-Specific Brain Evolution",short:"Pollen",method:"Review of cerebral organoids for human-specific neurodevelopment.",finding:"Defines where brain organoids are strong or weak for species-specific questions.",application:"Human brain evolution and model design."},
+  {id:"kanton-2019",year:2019,organ:"Brain",type:"Atlas/benchmark",source:"Human, chimpanzee, macaque organoids",title:"Organoid single-cell genomic atlas uncovers human-specific features of brain development",short:"Kanton",method:"Comparative single-cell genomics across primate brain organoids.",finding:"Identifies human-specific developmental timing and gene-expression features.",application:"Brain evolution and comparative organoid modeling."},
+  {id:"subramanian-2019",year:2019,organ:"Kidney",type:"Atlas/benchmark",source:"4 iPSC lines, 2 kidney protocols",title:"Single cell census of human kidney organoids shows reproducibility and diminished off-target cells after transplantation",short:"Subramanian",method:"450K-cell atlas across protocols and lines plus transplantation comparison.",finding:"Most variability comes from off-target populations; kidney-capsule transplantation reduces off-target cells and improves maturation.",application:"Kidney organoid reproducibility and maturation diagnostics."},
+  {id:"clevers-2019",year:2019,organ:"Lung/Airway",type:"Disease model",source:"Adult airway epithelial cells",title:"Long-term expanding human airway organoids for disease modeling",short:"Sachs/Clevers",method:"Adult airway organoids in BME with R-spondin and FGF support.",finding:"Long-term stable airway organoids model cystic fibrosis, lung cancer, and RSV infection.",application:"Patient-specific airway disease and drug response."},
+  {id:"cowan-2020",year:2020,organ:"Retina",type:"Atlas/benchmark",source:"Human retina and retinal organoids",title:"Cell Types of the Human Retina and Its Organoids at Single-Cell Resolution",short:"Cowan",method:"Single-cell comparison of retina and retinal organoids.",finding:"Retinal organoids reproduce many retinal cell classes but retain developmental and regional differences.",application:"Retinal development and disease modeling benchmark."},
+  {id:"sridhar-2020",year:2020,organ:"Retina",type:"Atlas/benchmark",source:"Fetal retina, hPSC retinal organoids, long-term cultures",title:"Single-Cell Transcriptomic Comparison of Human Fetal Retina, hPSC-Derived Retinal Organoids, and Long-Term Retinal Cultures",short:"Sridhar",method:"scRNA-seq across fetal and in vitro retinal systems.",finding:"Maps matched and mismatched retinal developmental states between organoids and fetal retina.",application:"Retinal organoid protocol benchmarking."},
+  {id:"tanaka-2020",year:2020,organ:"Brain",type:"Atlas/benchmark",source:"Multiple brain organoids and fetal brain",title:"Synthetic Analyses of Single-Cell Transcriptomes from Multiple Brain Organoids and Fetal Brain",short:"Tanaka",method:"Meta-analysis of single-cell transcriptomes.",finding:"Compares cell-state coverage across brain organoid protocols and fetal references.",application:"Cross-protocol brain organoid benchmarking."},
+  {id:"bhaduri-2020",year:2020,organ:"Brain",type:"Atlas/benchmark",source:"Cortical organoids",title:"Cell Stress in Cortical Organoids Impairs Molecular Subtype Specification",short:"Bhaduri",method:"Single-cell comparison of organoids, fetal cortex, and transplantation.",finding:"Organoid neurons preserve broad classes but show ectopic stress programs and impaired subtype specification.",application:"Cautionary benchmark for brain organoid fidelity."},
+  {id:"miura-2020",year:2020,organ:"Brain",type:"Assembloid",source:"Human striatal and cortical organoids",title:"Generation of human striatal organoids and cortico-striatal assembloids from human pluripotent stem cells",short:"Miura",method:"LGE/striatal patterning with Activin A, WNT inhibition, RXR agonist, and maturation factors.",finding:"Produces medium spiny neuron-like cells and cortico-striatal assembloids.",application:"Basal ganglia development and cortico-striatal circuit modeling."},
+  {id:"andersen-2020",year:2020,organ:"Brain",type:"Assembloid",source:"Cortical, spinal, and muscle spheroids",title:"Generation of Functional Human 3D Cortico-Motor Assembloids",short:"Andersen",method:"Three-component fusion of cortical, hindbrain/spinal, and skeletal muscle spheroids.",finding:"Cortical activation can drive downstream muscle contraction through a reconstructed human motor circuit.",application:"Multi-synaptic circuit and motor-pathway modeling."},
+  {id:"uchimura-2020",year:2020,organ:"Kidney",type:"Protocol",source:"hPSC kidney organoids",title:"Human Pluripotent Stem Cell-Derived Kidney Organoids with Improved Collecting Duct Maturation and Injury Modeling",short:"Uchimura",method:"Separate induction of metanephric mesenchyme and ureteric bud-like progenitors, then recombination and hormone maturation.",finding:"Improves collecting duct lineage and injury-modeling readouts.",application:"Collecting duct biology and nephrotoxicity."},
+  {id:"drakhlis-2021",year:2021,organ:"Heart",type:"Protocol",source:"hPSC aggregates",title:"Human heart-forming organoids recapitulate early heart and foregut development",short:"Drakhlis",method:"Matrigel-embedded hPSC aggregates with biphasic WNT modulation.",finding:"Creates structured heart-forming organoids with myocardial, endocardial, vascular, and foregut-like compartments.",application:"Early cardiogenesis and congenital heart disease modeling."},
+  {id:"kang-2021",year:2021,organ:"Brain",type:"Disease model",source:"Fragile X forebrain organoids",title:"A human forebrain organoid model of fragile X syndrome exhibits altered neurogenesis and highlights new treatment strategies",short:"Kang FXS",method:"Patient/isogenic forebrain organoids with pharmacologic rescue testing.",finding:"FXS organoids show altered neurogenesis with treatment-relevant pathway changes.",application:"ASD/NDD drug screening in patient-derived organoids."},
+  {id:"fleck-2021",year:2021,organ:"Brain",type:"Atlas/benchmark",source:"Brain organoid scRNA-seq",title:"Resolving organoid brain region identities by mapping single-cell genomic data to reference atlases",short:"Fleck region",method:"Reference mapping of single-cell organoid data to brain region identities.",finding:"Clarifies regional identity and mixed-state interpretation in brain organoids.",application:"Quality control for brain organoid patterning."},
+  {id:"lee-2022",year:2022,organ:"Brain",type:"Protocol",source:"hPSC spinal-cord organoids",title:"Production of human spinal-cord organoids recapitulating neural-tube morphogenesis",short:"Lee spinal",method:"2D caudalization with CHIR and SB431542 followed by 3D folding and retinoic acid specification.",finding:"Recapitulates neural tube folding, zippering, motor neuron and glial differentiation.",application:"Spinal cord development and neural tube defect screening."},
+  {id:"rickner-2022",year:2022,organ:"Brain",type:"Disease model",source:"Neuron-astrocyte assembloid",title:"Single cell transcriptomic profiling of a neuron-astrocyte assembloid tauopathy model",short:"Rickner",method:"Self-aggregating neuron-astrocyte 3D co-culture with tau seeding.",finding:"Models rapid tau propagation and astrocyte-neuron vulnerability; HSP90 inhibition rescues.",application:"Tauopathy and glial disease modeling."},
+  {id:"anand-2022",year:2022,organ:"Brain",type:"Bioengineering",source:"Axial elongation organoids",title:"Controlling organoid symmetry breaking uncovers an excitable system underlying human axial elongation",short:"Anand",method:"Bioengineering and machine learning optimize organoid density and geometry.",finding:"Spatial coupling controls reproducible symmetry breaking and axial elongation.",application:"Design rules for reproducible self-organization."},
+  {id:"he-lung-2022",year:2022,organ:"Lung/Airway",type:"Reference atlas",source:"Human fetal lung",title:"A human fetal lung cell atlas uncovers proximal-distal gradients of differentiation and key regulators of epithelial fate",short:"He lung",method:"Single-cell, chromatin, spatial, and imaging atlas of fetal lung development.",finding:"Defines proximal-distal epithelial gradients and regulators used to interpret lung organoids.",application:"Developmental reference for lung organoid fidelity."},
+  {id:"villa-2022",year:2022,organ:"Brain",type:"Disease model",source:"CHD8 cerebral organoids",title:"CHD8 haploinsufficiency links autism to transient alterations in excitatory and inhibitory trajectories",short:"Villa",method:"CRISPR-engineered human cerebral organoids.",finding:"CHD8 haploinsufficiency disrupts excitatory and inhibitory neuron trajectories over development.",application:"Chromatin-regulator ASD organoid model."},
+  {id:"hess-2023",year:2023,organ:"Liver",type:"Disease model",source:"hPSC liver organoids",title:"Single-cell transcriptomics stratifies organoid models of metabolic dysfunction-associated steatotic liver disease",short:"Hess",method:"Single-cell profiling of fatty acid and fibrosis-like injury models.",finding:"Oleic acid, palmitic acid, and TGF-beta elicit distinct steatosis, inflammatory injury, and fibrosis-like states.",application:"MASLD/MASH organoid disease model selection."},
+  {id:"harder-2023",year:2023,organ:"Kidney",type:"Disease model",source:"Human kidney organoids",title:"An integrated organoid omics map extends modeling potential of kidney disease",short:"Harder",method:"Integrated organoid omics with culture-age and TNF-alpha perturbation analysis.",finding:"Culture age shifts stromal/ECM programs; TNF-alpha maps onto inflammatory kidney disease programs.",application:"Kidney disease and inflammatory injury modeling."},
+  {id:"munera-2023",year:2023,organ:"Gut/Colon",type:"Assembloid",source:"hPSC colonic organoids",title:"Development of functional resident macrophages in human pluripotent stem cell-derived colonic organoids and human fetal intestine",short:"Munera",method:"BMP-patterned hPSC colonic organoids with endogenous hemogenic endothelium and macrophages.",finding:"Colonic organoids autonomously generate fetal-like tissue-resident macrophages.",application:"Gut immune niche, infection, and inflammation modeling."},
+  {id:"hendriks-2023",year:2023,organ:"Brain",type:"Protocol",source:"Human fetal brain tissue",title:"Human fetal brain self-organizes into long-term expanding organoids",short:"Hendriks",method:"Fetal brain-derived long-term expanding organoids.",finding:"Primary fetal brain tissue can self-organize into expandable organoids.",application:"Alternative to PSC-derived neural organoids."},
+  {id:"fleck-2023",year:2023,organ:"Brain",type:"Perturbation screen",source:"Human brain organoids",title:"Inferring and perturbing cell fate regulomes in human brain organoids",short:"Fleck GRN",method:"Single-cell multiome, Pando GRN inference, and pooled CRISPR perturbation.",finding:"Links patterning-center and telencephalic cell fate regulomes to perturbation outcomes.",application:"Regulome-level brain organoid engineering."},
+  {id:"li-2023",year:2023,organ:"Brain",type:"Perturbation screen",source:"Cerebral organoid pooled CRISPR",title:"Single-cell brain organoid screening identifies developmental defects in autism",short:"Li CHOOSE",method:"CHOOSE platform, pooled CRISPR perturbation of high-risk ASD genes with scRNA-seq readout.",finding:"Identifies vulnerable progenitor and neuronal trajectories; ARID1B produces strong cell-composition phenotypes.",application:"High-throughput ASD gene functional screening."},
+  {id:"meng-2023",year:2023,organ:"Brain",type:"Perturbation screen",source:"Forebrain assembloid CRISPR",title:"Assembloid CRISPR screens reveal impact of disease genes in human neurodevelopment",short:"Meng",method:"Dorsal-ventral forebrain assembloid migration screen over hundreds of NDD genes.",finding:"Identifies genes affecting interneuron migration, including ER displacement mechanisms.",application:"Circuit-integration perturbation screening."},
+  {id:"pigoni-2023",year:2023,organ:"Brain",type:"Disease model",source:"PTEN-mutant cortical organoids",title:"Cell-type specific defects in PTEN-mutant cortical organoids converge on abnormal circuit activity",short:"Pigoni",method:"CRISPR-engineered cortical organoids in multiple donor backgrounds.",finding:"PTEN haploinsufficiency causes donor-aware progenitor and neuronal defects converging on abnormal circuit activity.",application:"ASD macrocephaly and mTOR/PI3K pathway modeling."},
+  {id:"sarieva-2023",year:2023,organ:"Brain",type:"Disease model",source:"Human brain organoids",title:"Human brain organoid model of maternal immune activation identifies radial glia cells as selectively vulnerable",short:"Sarieva",method:"Dorsal forebrain organoids treated with Hyper-IL-6.",finding:"IL-6 selectively perturbs radial glia and later lamination-related programs.",application:"Maternal immune activation and ASD risk modeling."},
+  {id:"sebastian-2023",year:2023,organ:"Brain",type:"Disease model",source:"NRXN1 forebrain organoids",title:"Schizophrenia-associated NRXN1 deletions induce developmental-timing- and cell-type-specific vulnerabilities in human brain organoids",short:"Sebastian",method:"Isogenic and patient iPSC forebrain organoids across development.",finding:"NRXN1 deletions perturb progenitor and neuronal trajectories in timing- and background-dependent ways.",application:"Neuropsychiatric CNV organoid modeling."},
+  {id:"bu-2023",year:2023,organ:"Brain",type:"Disease model",source:"NANS knockout cortical organoids",title:"Neurodevelopmental defects in human cortical organoids with N-acetylneuraminic acid synthase mutation",short:"Bu",method:"CRISPR-engineered NANS knockout iPSC cortical organoids.",finding:"Loss of endogenous sialic acid biosynthesis disrupts progenitor proliferation, neuronal migration, and neurite programs.",application:"Rare NDD metabolic-glycosylation mechanism."},
+  {id:"reza-2024",year:2024,organ:"Liver",type:"Protocol",source:"hiPSC liver organoids",title:"Self-Assembled Generation of Multi-zonal Liver Organoids from Human Pluripotent Stem Cells",short:"Reza",method:"Combines ascorbate-primed periportal-like and bilirubin-primed pericentral-like states.",finding:"Builds self-assembled multi-zonal liver organoids with zonation-like function.",application:"Human liver zonation, drug toxicity, and transplantation-oriented modeling."},
+  {id:"maggiore-2024",year:2024,organ:"Kidney",type:"Maturation",source:"Inducible ETV2 hiPSC kidney organoids",title:"A genetically inducible endothelial niche enables vascularization of human kidney organoids with multilineage maturation",short:"Maggiore",method:"Doxycycline-inducible ETV2 endothelial niche mixed into suspension kidney organoids.",finding:"Robust vascularization improves nephron maturation and enables renin-expressing cell emergence.",application:"Kidney vascular niche engineering."},
+  {id:"he-2024",year:2024,organ:"Brain",type:"Atlas/benchmark",source:"36 neural organoid datasets",title:"An integrated transcriptomic cell atlas of human neural organoids",short:"HNOCA",method:"1.77M-cell integrated atlas across 26 neural organoid protocols.",finding:"Maps neural organoids to first/second-trimester brain and quantifies stress, maturation, and protocol effects.",application:"Reference atlas for neural organoid benchmarking."},
+  {id:"gonzalez-2024",year:2024,organ:"Brain",type:"Protocol",source:"Adherent hPSC cultures",title:"Efficient generation of human cerebral organoids directly from adherent cultures of pluripotent stem cells",short:"Gonzalez-Sastre",method:"2D adherent neural induction followed by spontaneous 3D lift-off.",finding:"Simplifies cerebral organoid generation without a classic EB step and captures multiple neural and support-like compartments.",application:"Scalable protocol simplification."},
+  {id:"wu-2024",year:2024,organ:"Brain",type:"Disease model",source:"SCN2A cerebral organoids with microglia",title:"Microglial over-pruning of synapses during development in autism-associated SCN2A-deficient mice and human cerebral organoids",short:"Wu SCN2A",method:"Microglia-incorporated human cerebral organoids carrying an SCN2A truncating mutation.",finding:"Human microglia show increased elimination of postsynaptic material in SCN2A-mutant organoids.",application:"Neuroimmune ASD mechanism and complement/pruning axis."},
+  {id:"kelley-2024",year:2024,organ:"Brain",type:"Transplantation",source:"Human cortical organoids transplanted in rodents",title:"Host circuit engagement of human cortical organoids transplanted in rodents",short:"Kelley",method:"Human cortical organoid transplantation into rodent circuits.",finding:"Assesses host engagement and integration of transplanted human cortical organoids.",application:"Circuit integration and transplantation boundaries."},
+  {id:"pasca-2024",year:2024,organ:"Brain",type:"Ethics/governance",source:"Neural organoid and assembloid research",title:"The need for a global effort to attend to human neural organoid and assembloid research",short:"Pasca",method:"Field-level governance perspective.",finding:"Argues that neural organoid/assembloid complexity requires coordinated scientific and ethical governance.",application:"Responsible neural organoid research design."},
+  {id:"pocock-2025",year:2025,organ:"Heart",type:"Maturation",source:"Human cardiac organoids",title:"Maturation of human cardiac organoids enables complex disease modeling and drug discovery",short:"Pocock",method:"Transient AMPK activation and ERR agonism with metabolic and mechanical maturation readouts.",finding:"Improves cardiac organoid force, calcium handling, metabolism, and drug-risk discrimination.",application:"Arrhythmia, cardiomyopathy, and cardiotoxicity testing."},
+  {id:"metzlraz-2025",year:2025,organ:"Heart",type:"Atlas/benchmark",source:"Cardiac organoids and single-cell multiome",title:"Decoding Chromatin Dynamics in Cardiac Organoids Reveals Genetic Drivers of Human Heart Development and Disease",short:"Metzl-Raz",method:"Single-cell multiome profiling plus sequence-based chromatin modeling.",finding:"Links dynamic chromatin states in cardiac organoids to congenital heart disease regulatory genetics.",application:"Cardiac developmental genetics and variant interpretation."},
+  {id:"kriukov-2025",year:2025,organ:"Retina",type:"Atlas/benchmark",source:"Human retinal organoids",title:"Human retinal organoid single-cell atlas allows to reconstruct retinal development at high resolution",short:"HROCA",method:"Integrated retinal organoid single-cell atlas across protocols.",finding:"Reconstructs retinal development and reveals canonical lineages plus organoid-specific/transitional states.",application:"Retinal organoid fidelity and disease-gene context."},
+  {id:"han-2025",year:2025,organ:"Lung/Airway",type:"Assembloid",source:"hPSC immuno-lung organoids",title:"A Human Immuno-Lung Organoid Model to Study Macrophage-Mediated Lung Cell Senescence Upon SARS-CoV-2 Infection",short:"Han",method:"COVID-19 spatial transcriptomics plus hPSC immuno-alveolar and immuno-airway organoids.",finding:"Proinflammatory macrophages drive epithelial senescence through THBS1-integrin signaling.",application:"Viral injury, senescence, and immuno-lung modeling."},
+  {id:"kang-2025-lung",year:2025,organ:"Lung/Airway",type:"Assembloid",source:"hPSC alveolar organoids plus induced macrophages",title:"Generation of induced alveolar assembloids with functional alveolar-like macrophages",short:"Kang alveolar",method:"Alveolar epithelial organoids co-cultured with induced macrophages in Matrigel.",finding:"AT2-like epithelial GM-CSF drives macrophage-to-alveolar adaptation with injury and infection readouts.",application:"Alveolar macrophage niche, fibrosis, LPS, and TB modeling."},
+  {id:"kim-2025",year:2025,organ:"Brain",type:"Assembloid",source:"Four guided human neural organoids",title:"Human assembloid model of the ascending neural sensory pathway",short:"Kim sensory",method:"Sequential fusion of sensory, dorsal spinal, thalamic, and cortical organoids.",finding:"Models ascending somatosensory pathway propagation and SCN9A pain phenotypes.",application:"Human sensory circuit and pain modeling."},
+  {id:"xu-2025",year:2025,organ:"Methods/NAM",type:"Atlas/benchmark",source:"Endoderm-derived organoids",title:"An integrated transcriptomic cell atlas of human endoderm-derived organoids",short:"Xu HEOCA",method:"806,646 single-cell/nucleus profiles from 218 samples across 9 endoderm-derived organ systems.",finding:"Adult stem cell organoids are most adult-like; PSC organoids are more fetal-like and often lower on-target.",application:"Cross-organ endoderm organoid fidelity benchmarking."},
+  {id:"lee-2025-organometrics",year:2025,organ:"Methods/NAM",type:"Reference method",source:"111 organoid datasets across 8 organs",title:"OrganoMetrics: A unified toolkit for quantitative assessment of organoid developmental fidelity",short:"OrganoMetrics",method:"OrganoTime, transcriptomic fidelity, compositional fidelity, diversity, DevScore, and reference-free AIO.",finding:"Quantifies organoid fidelity across brain, lung, gut, kidney, heart, retina, spinal cord, and liver.",application:"Unified organoid QC and protocol comparison."},
+  {id:"koh-2025",year:2025,organ:"Brain",type:"In silico perturbation",source:"3.6M-cell brain organoid atlas",title:"AI-driven framework modelling perturbation in brain organoids reveals candidate genes for autism",short:"AIVC-ASD",method:"NOCAP atlas plus Telen-NOCAP perturbation model over 19,424 protein-coding genes.",finding:"Prioritizes ASD-relevant synaptic and ubiquitin/radial-glia perturbation clusters with genomic validation.",application:"Virtual-cell-to-organoid ASD candidate discovery."},
+  {id:"cao-2025",year:2025,organ:"Brain",type:"Disease model",source:"Human brain tissues and hiPSC organoids",title:"Cell-type-resolved NRXN1 isoforms across human brain tissues and hiPSC organoids",short:"Cao NRXN1",method:"Targeted long-read transcript enrichment plus single-cell transcriptomics.",finding:"Catalogs NRXN1 isoforms across fetal/adult brain and hiPSC-derived cortical organoids.",application:"Isoform-resolved neurodevelopmental disease interpretation."},
+  {id:"prasad-2025",year:2025,organ:"Brain",type:"Disease model",source:"Anterior neural organoids",title:"Characterization of Human Anterior Neural Organoids as a Model for Investigating Cohen Syndrome",short:"Prasad",method:"iPSC-derived anterior neural organoids for VPS13B/Cohen syndrome investigation.",finding:"Establishes organoids as a disease-model platform for Cohen syndrome-related neurodevelopment.",application:"Rare NDD organoid modeling."},
+  {id:"yuan-2026",year:2026,organ:"Liver",type:"Assembloid",source:"Adult hepatocyte, cholangiocyte, and portal mesenchyme organoids",title:"Human assembloids recapitulate periportal liver tissue in vitro",short:"Yuan",method:"Long-term adult hepatocyte organoids plus matched cholangiocyte organoids and portal mesenchyme.",finding:"Patient-specific periportal liver assembloids reproduce key structure, function, and niche interactions.",application:"Liver tissue architecture, disease modeling, and regenerative workflows."},
+  {id:"gordon-2026",year:2026,organ:"Brain",type:"Disease cohort",source:"70 ASD hiPSC cortical organoid lines",title:"Developmental convergence and divergence in human stem cell models of autism",short:"Gordon",method:"Patient-derived cortical organoids profiled across days 25-100 plus CRISPRi validation.",finding:"Diverse ASD mutations converge on chromatin/transcriptional dysregulation centered on SWI-SNF.",application:"Cohort-scale ASD organoid convergence."},
+  {id:"park-2026",year:2026,organ:"Brain",type:"Disease model",source:"USP15 isogenic cerebral organoids",title:"USP15 mutation associated with autism spectrum disorder alters progenitor fate and neuronal maturation",short:"Park USP15",method:"CRISPR isogenic USP15 heterozygous/homozygous cerebral organoids with day-107 scRNA-seq.",finding:"Allele-dose progenitor-centric corticogenesis defects and deep-layer projection neuron maturation changes.",application:"Korean ASD rare-variant functional validation."},
+  {id:"hasenpusch-2026",year:2026,organ:"Brain",type:"Disease model",source:"CEP41 cortical and ventral organoids",title:"ASD mutations in the ciliary gene CEP41 impact development of projection neurons and interneurons",short:"CEP41",method:"CRISPR HDR R242H iPSCs; dorsal cortical and ventral telencephalic organoids.",finding:"Shorter cilia and reduced tubulin polyglutamylation accompany projection neuron and interneuron fate shifts.",application:"Ciliary route to ASD E/I imbalance."},
+  {id:"yent-2026",year:2026,organ:"Brain",type:"Environmental model",source:"Dorsal forebrain organoids",title:"Multiomics analysis identifies VPA-induced changes in neural progenitor cells, ventricular-like regions, and cellular microenvironment",short:"Yent VPA",method:"VPA exposure from D21-D50 with bulk RNA-seq, scRNA-seq, secretome MS, imaging, and mechanics.",finding:"VPA disrupts VZ-like zones and alters ECM, integrin, PIEZO, and Hippo-YAP/TAZ pathways.",application:"Human teratogen and ASD environmental-risk modeling."},
+  {id:"kamzina-2026",year:2026,organ:"Brain",type:"Disease model",source:"TREM2-R47H forebrain organoids",title:"The TREM2-R47H Variant Drives Alzheimer's-Relevant Alterations in Forebrain Organoids Beyond Microglial Populations",short:"Kamzina",method:"iPSC-derived forebrain organoids with AD-risk TREM2 variant context.",finding:"TREM2-R47H affects broader neurocellular networks beyond microglial populations.",application:"Neurodegeneration-relevant organoid genetics."},
+  {id:"tisch-2026",year:2026,organ:"Brain",type:"Disease model",source:"CACNA1D patient iPSC model",title:"Aberrant calcium signaling and neuronal activity in the L271H CACNA1D iPSC model of neurodevelopmental disease",short:"Tisch",method:"Patient NPCs, midbrain neurons, and cortical organoids carrying CACNA1D L271H.",finding:"Enhanced calcium transients and altered network activity connect Cav1.3 variant biology to NDD phenotypes.",application:"Ion-channel NDD organoid electrophysiology."},
+  {id:"wu-2026-nam",year:2026,organ:"Methods/NAM",type:"Translational frame",source:"NAM review",title:"Reimagining human-centric drug development with new approach methodologies",short:"Wu NAM",method:"Review of organoids, organ-on-chip, hybrid MPS, AI, and clinical-trial-in-a-dish workflows.",finding:"Frames organoids as part of a human-centric preclinical stack with regulatory and AI integration.",application:"Drug development roadmap and regulatory context."},
+  {id:"liu-2026-nam",year:2026,organ:"Methods/NAM",type:"Translational frame",source:"NAM drug discovery review",title:"New Approach Methodologies for Drug Discovery",short:"Liu NAM",method:"Review of NAMs and organoid-relevant drug discovery platforms.",finding:"Positions organoids within next-generation human-relevant drug testing.",application:"Drug-discovery strategy."}
+];
+
+const cultureMatrices = {
+  systems:{
+    label:"기관별 요약",
+    columns:["System","Dominant cell source","Core control points","Common readouts","Main caveat"],
+    rows:[
+      ["Brain", "hESC/hiPSC, patient iPSC, fetal tissue-derived variants", "Dual-SMAD, WNT/SHH/BMP/RA regional patterning, EB vs adherent start, ALI or fusion for circuit maturation", "scRNA-seq, scATAC/multiome, immunostaining, electrophysiology, calcium, migration, projection", "Stress signatures, fetal-like timing, missing vascular/immune niches unless added"],
+      ["Kidney", "hESC/hiPSC intermediate mesoderm", "CHIR timing and dose, FGF9, RA, transwell/pellet/suspension, ETV2 vascular niche", "Nephron segment markers, scRNA-seq, toxicity, podocyte/endothelial maturation", "Immaturity and off-target cells, especially neuronal/mesenchymal contaminants"],
+      ["Liver", "Adult ductal/hepatocyte organoids and hPSC-derived liver organoids", "WNT/R-spondin/cAMP/TGF-beta inhibition, YAP/WNT hepatocyte expansion, zonation priming, portal mesenchyme assembly", "Albumin/CYP function, zonation markers, injury states, transplantation/function assays", "One liver organoid rarely captures ductal, hepatocyte, vascular, immune, and zonation biology together"],
+      ["Lung/Airway", "Adult airway epithelium; hPSC alveolar/airway plus macrophages", "BME/Matrigel, R-spondin/FGF, foregut-lung induction, macrophage-compatible co-culture, GM-CSF niche", "CFTR swelling, viral infection, senescence, macrophage adaptation, spatial transcriptomic anchoring", "Immune and vascular context must be engineered explicitly"],
+      ["Gut/Colon", "Adult Lgr5+ stem cells; hPSC colonic organoids", "EGF/R-spondin/Noggin adult niche, BMP-patterned colonic specification, dense 3D culture for endogenous macrophages", "Crypt-villus architecture, lineage markers, macrophage function, infection/inflammation response", "Epithelium-only systems are strong for stem-cell biology but limited for full mucosal immunity"],
+      ["Retina", "hPSC retinal organoids and primary retina references", "Self-patterning retinal differentiation, long culture, protocol-specific timing", "Photoreceptor and retinal class markers, scRNA-seq, light response, disease-gene specificity", "Incomplete maturation and timing mismatch relative to fetal/adult retina"],
+      ["Heart", "hPSC aggregates/organoids", "WNT activation then inhibition, Matrigel/collagen/PDMS mechanics, AMPK/ERR maturation, metabolic switching", "Contraction, calcium, force, OXPHOS, sarcomere structure, drug-risk discrimination", "Maturation remains partial and lineage-specific"],
+      ["Methods/NAM", "Cross-organ datasets and reviews", "Reference mapping, GRN scoring, fetal classifiers, OrganoMetrics, NAM/organ-on-chip integration", "Temporal fidelity, transcriptomic/compositional fidelity, diversity, DevScore, disease/drug concordance", "Reference availability and task-relative quality definitions govern interpretation"]
+    ]
+  },
+  patterning:{
+    label:"패터닝 신호",
+    columns:["Signal axis","Where it appears","What it does","Pitfall"],
+    rows:[
+      ["WNT / CHIR", "Kidney, heart, lung, colon, liver", "Primitive streak, mesoderm, endoderm, cardiac induction, regenerative expansion처럼 fate window를 엽니다.", "농도와 시간표가 바뀌면 같은 pathway가 전혀 다른 lineage를 만듭니다."],
+      ["WNT inhibition", "Heart, ventral/striatal neural protocols", "초기 WNT activation 뒤 inhibition으로 cardiomyocyte fate를 안정화하거나 neural regionalization을 조절합니다.", "activation과 inhibition의 순서를 따로 기록하지 않으면 protocol 비교가 거의 불가능합니다."],
+      ["BMP / TGF-beta", "Forebrain, colon, lung, liver", "Dual-SMAD inhibition은 neural induction, BMP2는 colonic specification, TGF-beta inhibition은 liver/lung expansion에 쓰입니다.", "같은 BMP/TGF-beta 축도 organ과 stage에 따라 억제 또는 활성화 방향이 달라집니다."],
+      ["SHH / RA / FGF", "Ventral forebrain, spinal cord, kidney, lung", "SHH는 ventral identity, RA는 caudalization/renal patterning, FGF9/FGF7/FGF10은 kidney/lung lineage 유지에 쓰입니다.", "단일 factor 이름보다 조합과 노출 기간을 봐야 합니다."],
+      ["Niche maintenance", "Adult gut, liver, airway", "EGF, R-spondin, Noggin, WNT surrogate, cAMP, YAP activation이 adult epithelial expansion을 유지합니다.", "발생 유도라기보다 성체 stem-cell niche를 실험실로 옮기는 전략입니다."]
+    ]
+  },
+  format:{
+    label:"배양 형식",
+    columns:["Format","Best fit","What it changes","Read carefully"],
+    rows:[
+      ["Matrigel / BME dome", "Gut, liver, airway, alveolar, early brain", "ECM polarity, cyst/duct/crypt 구조, epithelial branching을 지원합니다.", "lot variability와 ECM composition이 결과에 영향을 줄 수 있습니다."],
+      ["Transwell / pellet", "Kidney, ALI brain slices", "산소와 영양 확산, tissue surface exposure, nephron-like organization을 조절합니다.", "matrix-free인지, membrane support인지, medium interface가 어디인지 확인해야 합니다."],
+      ["Suspension / spinner / orbital shaker", "Brain, kidney, liver", "큰 3D 조직의 diffusion과 mechanical mixing, 장기 배양 survival을 바꿉니다.", "회전 조건은 단순 handling이 아니라 maturation/stress 변수입니다."],
+      ["Mechanical platform", "Heart-Dyno, PDMS/collagen heart models", "수축 force, stretch, relaxation kinetics를 직접 측정하게 해 drug discovery에 유리합니다.", "성숙도가 높아져도 adult myocardium과 완전히 같지는 않습니다."],
+      ["Bioprinting / organ-on-chip", "Kidney toxicity, NAM/MPS", "well-to-well 균일성, flow, mechanical force, throughput을 올립니다.", "구조적 복잡성보다 context of use와 assay reproducibility가 더 중요합니다."]
+    ]
+  },
+  niche:{
+    label:"Niche / Assembloid",
+    columns:["Added layer","Representative systems","Why add it","Readout"],
+    rows:[
+      ["Neural region fusion", "Forebrain, thalamocortical, cortico-striatal, sensory pathway", "Migration, reciprocal projection, synchrony, signal propagation처럼 단일 organoid가 못 보는 회로 현상을 봅니다.", "calcium, electrophysiology, rabies tracing, optogenetics, migration distance"],
+      ["Immune integration", "Alveolar macrophage, immuno-lung, colonic macrophage, microglia organoids", "염증, infection, pruning, tissue-resident adaptation을 넣습니다.", "cytokine, phagocytosis, lipid uptake, senescence, infection efficiency"],
+      ["Vascular/endothelial niche", "Kidney ETV2, heart vascular cells, liver periportal context", "maturation, perfusion-like signaling, stromal communication을 보완합니다.", "endothelial markers, basement membrane, renin/podocyte maturation, spatial organization"],
+      ["Stromal / mesenchyme", "Periportal liver, gut/colon, fibrosis models", "epithelium-only 모델이 놓치는 fibrosis, portal niche, mesenchymal signaling을 봅니다.", "ECM, collagen/fibrosis markers, cell-cell interaction, injury response"],
+      ["Screening assembloid", "Meng 2023 forebrain migration screen", "많은 disease gene을 한 번에 test하면서 cell generation과 migration을 분리합니다.", "guide enrichment, FACS, migration index, scRNA-seq"]
+    ]
+  },
+  readout:{
+    label:"QC / Readout",
+    columns:["Question","Useful readouts","What it tells you","Weak answer"],
+    rows:[
+      ["Identity가 맞는가", "marker, scRNA-seq, scATAC/multiome, reference mapping", "목표 organ과 cell type이 실제로 생겼는지 확인합니다.", "몇 개 marker image만으로 organ identity를 주장"],
+      ["발생 단계가 어디인가", "OrganoTime, fetal atlas mapping, pseudotime, lineage markers", "fetal-like인지, 어느 developmental window에 해당하는지 봅니다.", "성숙도를 culture duration으로만 추정"],
+      ["기능이 있는가", "calcium, electrophysiology, contraction, force, CFTR swelling, toxicity, secretion", "조직 모델이 실제 생리 기능을 수행하는지 판단합니다.", "전사체 유사성만으로 drug response를 주장"],
+      ["재현 가능한가", "multi-line, batch, donor, protocol comparison, CSRI/OrganoMetrics", "line effect와 batch effect를 biological effect에서 분리합니다.", "한 line, 한 batch, 한 organoid의 phenotype을 일반화"],
+      ["질환 효과인가", "isogenic rescue, patient cohort, perturbation screen, phenotype rescue", "culture artifact와 genotype/disease-specific effect를 구분합니다.", "baseline fidelity가 흔들린 상태에서 disease DEG만 해석"]
+    ]
+  },
+  diseaseDrug:{
+    label:"질환 / 약물",
+    columns:["Use case","Scale now emerging","Required readout","Examples"],
+    rows:[
+      ["Monogenic disease modeling", "patient iPSC + isogenic CRISPR", "cell-type phenotype, developmental timing, rescue", "FMR1, PTEN, NRXN1, SCN2A, USP15, CEP41"],
+      ["Cohort-scale disease modeling", "tens of iPSC lines, time-course profiling, mutation classes", "convergence/divergence, reproducibility, pathway-level signal", "Gordon 2026 ASD cortical organoid cohort"],
+      ["Pooled functional screens", "dozens to hundreds of genes in organoids/assembloids", "cell composition, migration, GRN, guide-linked scRNA-seq", "Li 2023 CHOOSE, Meng 2023 forebrain assembloid"],
+      ["Virtual perturbation", "atlas-trained model predicts thousands of gene effects", "biological coherence, genomic validation, follow-up experiments", "NOCAP/Telen-NOCAP, AIVC-ASD"],
+      ["Drug / NAM", "screenable human tissue models plus AI/clinical-trial-in-a-dish", "functional rescue, toxicity, infection response, context of use", "Pocock 2025 heart, Kang/Han lung, Liu 2026 NAM"]
+    ]
+  }
+};
+
+let cultureTab = "systems";
+
+const organProfiles = {
+  "Brain": {
+    model:"Cerebral, cortical, thalamic, striatal, spinal organoids and neural assembloids",
+    source:"hESC/hiPSC, patient iPSC, CRISPR isogenic lines, selected fetal tissue-derived systems",
+    logic:"Dual-SMAD neural induction plus region-specific WNT/SHH/BMP/RA tuning; fusion for migration and circuit questions",
+    readout:"scRNA-seq, scATAC/multiome, calcium, electrophysiology, migration, projection, perturbation response"
+  },
+  "Kidney": {
+    model:"Nephron-like kidney organoids, vascularized kidney organoids, toxicity platforms",
+    source:"hESC/hiPSC intermediate mesoderm and engineered endothelial support",
+    logic:"CHIR timing, FGF9, RA, transwell/pellet/suspension and vascular niche engineering",
+    readout:"nephron segment markers, podocyte/endothelial maturation, off-target detection, nephrotoxicity"
+  },
+  "Liver": {
+    model:"Adult hepatocyte/ductal organoids, multi-zonal organoids, periportal liver assembloids",
+    source:"adult tissue, primary hepatocytes/cholangiocytes, hPSC-derived liver lineage",
+    logic:"WNT/R-spondin, YAP activation, cAMP/TGF-beta inhibition, portal mesenchyme assembly",
+    readout:"albumin, CYP, bile canaliculus, zonation, fibrosis/injury state, transplantation/function assays"
+  },
+  "Lung/Airway": {
+    model:"Adult airway organoids, alveolar organoids, immuno-lung and macrophage assembloids",
+    source:"adult airway epithelium, hPSC alveolar/airway cells, induced macrophages",
+    logic:"foregut-lung induction, R-spondin/FGF niche, macrophage-compatible co-culture, GM-CSF adaptation",
+    readout:"CFTR swelling, viral/TB infection, macrophage state, senescence, surfactant programs"
+  },
+  "Gut/Colon": {
+    model:"Adult intestinal organoids and hPSC colonic organoids with macrophage development",
+    source:"adult Lgr5+ stem cells, hPSC endoderm/colonic lineage",
+    logic:"EGF/R-spondin/Noggin adult niche, BMP-patterned colon, dense 3D culture for resident macrophages",
+    readout:"crypt-villus structure, lineage markers, barrier/inflammation, macrophage function"
+  },
+  "Retina": {
+    model:"Self-patterned hPSC retinal organoids and retinal atlas benchmarks",
+    source:"hPSC retinal lineage with primary fetal/adult retina references",
+    logic:"long self-patterning culture and protocol-specific timing",
+    readout:"retinal class markers, photoreceptor programs, scRNA-seq, light-response and disease-gene context"
+  },
+  "Heart": {
+    model:"Heart-forming organoids and directed-maturation cardiac organoids",
+    source:"hPSC-derived mesoderm and precardiac aggregates",
+    logic:"WNT activation then inhibition, ECM/mechanical loading, AMPK/ERR maturation, metabolic switching",
+    readout:"contraction, force, calcium, Tr50, OXPHOS, sarcomere structure, drug-risk discrimination"
+  },
+  "Methods/NAM": {
+    model:"Cross-organ atlas, fidelity metrics, organ-on-chip, AI/NAM drug-discovery frameworks",
+    source:"multi-organ single-cell references, protocol meta-analyses, regulatory/translational reviews",
+    logic:"CellNet/KeyGenes, HNOCA/HROCA/HEOCA, OrganoMetrics, NAM context-of-use framing",
+    readout:"temporal fidelity, transcriptomic/compositional fidelity, diversity, DevScore, disease/drug concordance"
+  }
+};
+
+const organPositions = {
+  "Brain": {x:50,y:12,code:"Br"},
+  "Retina": {x:41,y:16,code:"Re"},
+  "Lung/Airway": {x:50,y:34,code:"Lu"},
+  "Heart": {x:57,y:40,code:"Ht"},
+  "Liver": {x:43,y:49,code:"Li"},
+  "Gut/Colon": {x:51,y:60,code:"Gu"},
+  "Kidney": {x:36,y:56,code:"Ki"},
+  "Methods/NAM": {x:69,y:72,code:"M"}
+};
+
+const organOrder = ["Brain","Kidney","Liver","Lung/Airway","Gut/Colon","Retina","Heart","Methods/NAM"];
+let state = {organ:"All", type:"All", query:"", sort:"year-desc", selected:null};
+
+function uniq(list){ return [...new Set(list)].sort(); }
+function colorFor(organ){ return organColors[organ] || "var(--model)"; }
+function textForSearch(s){ return [s.title,s.short,s.organ,s.type,s.source,s.method,s.finding,s.application].join(" ").toLowerCase(); }
+function filtered(){
+  let rows = studies.filter(s => {
+    const okOrgan = state.organ === "All" || s.organ === state.organ;
+    const okType = state.type === "All" || s.type === state.type;
+    const okQuery = !state.query || textForSearch(s).includes(state.query.toLowerCase());
+    return okOrgan && okType && okQuery;
+  });
+  rows.sort((a,b)=>{
+    if(state.sort === "year-asc") return a.year-b.year || a.short.localeCompare(b.short);
+    if(state.sort === "organ") return organOrder.indexOf(a.organ)-organOrder.indexOf(b.organ) || b.year-a.year;
+    if(state.sort === "type") return a.type.localeCompare(b.type) || b.year-a.year;
+    return b.year-a.year || a.short.localeCompare(b.short);
+  });
+  return rows;
+}
+
+function populateControls(){
+  const organSelect = document.getElementById("organFilter");
+  const typeSelect = document.getElementById("typeFilter");
+  organSelect.innerHTML = ["All", ...organOrder].map(v=>`<option>${v}</option>`).join("");
+  typeSelect.innerHTML = ["All", ...uniq(studies.map(s=>s.type))].map(v=>`<option>${v}</option>`).join("");
+  const quicks = ["Brain","Kidney","Liver","Lung/Airway","Disease model","Perturbation screen","Atlas/benchmark","Assembloid","Methods/NAM"];
+  document.getElementById("quickChips").innerHTML = quicks.map(v=>`<button class="chip" data-chip="${v}">${v}</button>`).join("");
+}
+
+function renderStats(){
+  const organCount = uniq(studies.map(s=>s.organ)).length;
+  const assembloidCount = studies.filter(s=>/assembloid/i.test(s.type)).length;
+  const diseaseCount = studies.filter(s=>/disease|environmental|cohort|perturbation|in silico/i.test(s.type)).length;
+  const assayCount = studies.filter(s=>/screen|maturation|translational|disease|assembloid/i.test(s.type)).length;
+  const stats = [
+    [studies.length, "논문 단위 큐레이션 항목"],
+    [organCount, "기관/시스템 트랙"],
+    [assembloidCount, "assembloid / co-culture 항목"],
+    [diseaseCount + assayCount, "질환, screen, drug-readout 항목"]
+  ];
+  document.getElementById("stats").innerHTML = stats.map(([n,l])=>`<div class="stat"><div class="num">${n}</div><div class="label">${l}</div></div>`).join("");
+}
+
+function renderLegend(){
+  document.getElementById("legend").innerHTML = organOrder.map(o=>`<span><i class="swatch" style="background:${colorFor(o)}"></i>${o}</span>`).join("");
+}
+
+function renderOrganBody(rows){
+  const holder = document.getElementById("organBody");
+  const counts = Object.fromEntries(organOrder.map(o=>[o, rows.filter(s=>s.organ===o).length]));
+  const globalCounts = Object.fromEntries(organOrder.map(o=>[o, studies.filter(s=>s.organ===o).length]));
+  const maxCount = Math.max(1, ...Object.values(globalCounts));
+  const activeOrgan = state.organ !== "All" ? state.organ : (studies.find(s=>s.id===state.selected)?.organ || "Brain");
+  const profile = organProfiles[activeOrgan] || organProfiles.Brain;
+  const activeRows = rows.filter(s=>s.organ===activeOrgan);
+  const topExamples = (activeRows.length ? activeRows : studies.filter(s=>s.organ===activeOrgan)).slice(0,4);
+  const nodes = organOrder.map(organ=>{
+    const pos = organPositions[organ];
+    const count = globalCounts[organ] || 0;
+    const visibleCount = counts[organ] || 0;
+    const size = 32 + Math.round((count/maxCount)*18);
+    const active = organ === activeOrgan ? " active" : "";
+    const dim = state.organ !== "All" && organ !== state.organ ? " dim" : "";
+    return `<button class="organ-node${active}${dim}" data-organ="${organ}" title="${organ}: ${visibleCount}/${count} shown" style="left:${pos.x}%;top:${pos.y}%;width:${size}px;height:${size}px;background:${colorFor(organ)}">${pos.code}</button>`;
+  }).join("");
+  const bars = organOrder.map(organ=>{
+    const pct = Math.max(3, (globalCounts[organ] || 0) / maxCount * 100);
+    return `<div class="organ-bar"><span>${organ}</span><div class="organ-bar-track"><div class="organ-bar-fill" style="width:${pct}%;background:${colorFor(organ)}"></div></div><b>${globalCounts[organ] || 0}</b></div>`;
+  }).join("");
+  holder.innerHTML = `
+    <div class="body-viz" aria-label="Human body organ map">
+      <svg class="body-svg" viewBox="0 0 180 360" role="img" aria-label="Schematic human body">
+        <path d="M90 18c20 0 34 15 34 34 0 16-9 28-22 33l8 29c26 6 44 30 44 62v63c0 26-17 50-41 58l-7 47H74l-7-47c-24-8-41-32-41-58v-63c0-32 18-56 44-62l8-29C65 80 56 68 56 52c0-19 14-34 34-34z" fill="#f7f9fc" stroke="#cfd6e2" stroke-width="2"/>
+        <path d="M61 137c19-20 39-22 58-1M54 193c23 14 49 14 73 0M69 250c15 8 29 8 43 0" fill="none" stroke="#d8dee8" stroke-width="2" stroke-linecap="round"/>
+        <ellipse cx="76" cy="135" rx="18" ry="31" fill="rgba(8,122,162,.08)" stroke="#b8c5d4"/>
+        <ellipse cx="105" cy="135" rx="18" ry="31" fill="rgba(8,122,162,.08)" stroke="#b8c5d4"/>
+        <path d="M74 173c20-12 44-10 55 4-8 17-34 22-59 13 0-6 1-11 4-17z" fill="rgba(179,107,0,.08)" stroke="#d6c1a0"/>
+        <rect x="68" y="202" width="45" height="42" rx="14" fill="rgba(63,143,70,.08)" stroke="#bad3bd"/>
+        <path d="M68 188c-10 9-20 7-24-5 3-12 13-17 24-10M112 188c10 9 20 7 24-5-3-12-13-17-24-10" fill="rgba(15,138,122,.08)" stroke="#9ecdc5"/>
+      </svg>
+      ${nodes}
+    </div>
+    <div class="body-side">
+      <article class="organ-summary">
+        <h4>${activeOrgan}</h4>
+        <p>${profile.model}</p>
+      </article>
+      <div class="organ-grid">
+        <div class="organ-stat"><div class="label">Cell source</div><div class="value">${profile.source}</div></div>
+        <div class="organ-stat"><div class="label">Culture logic</div><div class="value">${profile.logic}</div></div>
+        <div class="organ-stat"><div class="label">Main readout</div><div class="value">${profile.readout}</div></div>
+        <div class="organ-stat"><div class="label">Shown entries</div><div class="value">${activeRows.length} shown / ${globalCounts[activeOrgan] || 0} curated. ${topExamples.map(s=>s.short).join(", ")}</div></div>
+      </div>
+      <div class="organ-bars">${bars}</div>
+    </div>`;
+  document.getElementById("bodyCount").textContent = `${rows.length} shown`;
+}
+
+function renderCards(rows){
+  document.getElementById("cardCount").textContent = `${rows.length} entries`;
+  const cards = rows.map(s=>`
+    <article class="card ${s.id===state.selected?"active":""}" data-id="${s.id}">
+      <div class="card-top"><span class="pill" style="border-left:4px solid ${colorFor(s.organ)}">${s.organ}</span><span class="year">${s.year}</span></div>
+      <h4>${s.short}: ${s.title}</h4>
+      <div class="meta">${s.type} · ${s.source}</div>
+      <p>${s.finding}</p>
+    </article>`).join("");
+  document.getElementById("cards").innerHTML = cards || `<div style="padding:16px;color:#667085">No entries match the current filters.</div>`;
+}
+
+function scholarUrl(study){
+  return `https://scholar.google.com/scholar?q=${encodeURIComponent(study.title)}`;
+}
+
+function renderDetail(){
+  const s = studies.find(x=>x.id===state.selected) || filtered()[0] || studies[0];
+  if(!s) return;
+  state.selected = s.id;
+  document.getElementById("detail").innerHTML = `
+    <div class="organ" style="background:${colorFor(s.organ)}"></div>
+    <h3>${s.short}: ${s.title}</h3>
+    <div class="small">${s.year} · ${s.organ} · ${s.type}</div>
+    <dl>
+      <dt>Source</dt><dd>${s.source}</dd>
+      <dt>Method</dt><dd>${s.method}</dd>
+      <dt>Finding</dt><dd>${s.finding}</dd>
+      <dt>Use</dt><dd>${s.application}</dd>
+    </dl>
+    <a href="${scholarUrl(s)}" target="_blank" rel="noopener">Google Scholar에서 보기</a>`;
+}
+
+function renderCultureTabs(){
+  document.getElementById("cultureTabs").innerHTML = Object.entries(cultureMatrices).map(([key,val])=>
+    `<button class="culture-tab${key===cultureTab?" active":""}" data-culture-tab="${key}">${val.label}</button>`
+  ).join("");
+}
+
+function renderMatrix(){
+  const table = cultureMatrices[cultureTab] || cultureMatrices.systems;
+  document.getElementById("matrixHead").innerHTML = `<tr>${table.columns.map(c=>`<th>${c}</th>`).join("")}</tr>`;
+  document.getElementById("matrixRows").innerHTML = table.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("");
+}
+
+function render(){
+  const rows = filtered();
+  if(rows.length && (!state.selected || !rows.some(s=>s.id===state.selected))) state.selected = rows[0].id;
+  renderOrganBody(rows);
+  renderCards(rows);
+  renderDetail();
+  document.querySelectorAll(".chip").forEach(chip=>{
+    const value = chip.dataset.chip;
+    chip.classList.toggle("active", value === state.organ || value === state.type);
+  });
+}
+
+function bind(){
+  document.getElementById("search").addEventListener("input", e=>{ state.query=e.target.value.trim(); render(); });
+  document.getElementById("organFilter").addEventListener("change", e=>{ state.organ=e.target.value; render(); });
+  document.getElementById("typeFilter").addEventListener("change", e=>{ state.type=e.target.value; render(); });
+  document.getElementById("sortOrder").addEventListener("change", e=>{ state.sort=e.target.value; render(); });
+  document.addEventListener("click", e=>{
+    const tab = e.target.closest("[data-culture-tab]");
+    if(tab){
+      cultureTab = tab.dataset.cultureTab;
+      renderCultureTabs();
+      renderMatrix();
+      return;
+    }
+    const organButton = e.target.closest("[data-organ]");
+    if(organButton){
+      const organ = organButton.dataset.organ;
+      state.organ = state.organ === organ ? "All" : organ;
+      document.getElementById("organFilter").value = state.organ;
+      render();
+      return;
+    }
+    const card = e.target.closest("[data-id]");
+    if(card){ state.selected = card.dataset.id; render(); return; }
+    const chip = e.target.closest("[data-chip]");
+    if(chip){
+      const v = chip.dataset.chip;
+      if(organOrder.includes(v)){
+        state.organ = state.organ === v ? "All" : v;
+        document.getElementById("organFilter").value = state.organ;
+      } else if(v === "Methods/NAM") {
+        state.organ = state.organ === v ? "All" : v;
+        document.getElementById("organFilter").value = state.organ;
+      } else {
+        state.type = state.type === v ? "All" : v;
+        document.getElementById("typeFilter").value = state.type;
+      }
+      render();
+    }
+  });
+  window.addEventListener("resize", () => renderOrganBody(filtered()));
+}
+
+populateControls();
+renderStats();
+renderLegend();
+renderCultureTabs();
+renderMatrix();
+bind();
+render();
+</script>
+</body>
+</html>

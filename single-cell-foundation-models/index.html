@@ -640,8 +640,8 @@ table.tok-tbl .chip{
     <h1>scBERT부터 <em>Tahoe-x1·scPRINT-2</em>까지, 4년의 가속을 한 페이지에</h1>
     <p class="dek">
       2022년 scBERT가 BERT를 단세포에 처음 끼워 넣은 뒤, <strong>4년 만에 학습 corpus는 수백만 → 3억 5천만 cells</strong>로,
-      파라미터는 <strong>10M → 27B</strong>로 커졌다. 본 페이지는 lab 위키의 single-cell-foundation 정리본을
-      8가지 토큰화 전략 / 16개 핵심 모델 / 4편의 비판적 벤치마크 / Virtual Cell 비전으로 풀어 둔 onboarding 자료다.
+      파라미터는 <strong>10M → 27B</strong>로 커졌다. 핵심 흐름은
+      8가지 토큰화 전략 / 16개 핵심 모델 / 4편의 비판적 벤치마크 / Virtual Cell 비전으로 나뉜다.
       처음 보는 사람을 위해 scRNA-seq · transformer · 토큰화 · foundation model의 <strong>기초 4가지</strong>도 위에 따로 정리했다.
     </p>
   </div>
@@ -657,7 +657,7 @@ table.tok-tbl .chip{
 <section id="intro">
   <div class="s-head">
     <span class="s-num">00</span>
-    <h2>이 페이지를 읽기 전 — <em>4가지 기초</em></h2>
+    <h2>읽기 전 — <em>4가지 기초</em></h2>
   </div>
   <p class="s-lede">
     scRNA-seq, transformer, 토큰화, foundation model — 이 네 가지를 모르면 본문이 잘 읽히지 않는다.
@@ -681,7 +681,7 @@ table.tok-tbl .chip{
       <div class="ic-body">
         Transformer는 입력을 <strong>토큰 시퀀스</strong>로 받아 각 토큰이 다른 모든 토큰을 "쳐다보며"(self-attention) 표현을 만든다.
         <strong>BERT</strong>는 일부 토큰을 <code>[MASK]</code>로 가리고 맞히게 학습(MLM = masked language modeling).
-        <strong>GPT</strong>는 다음 토큰을 자동회귀적으로 생성(CLM). 이 모든 게 단세포에 그대로 옮겨오는 게 본 페이지의 주제다.
+        <strong>GPT</strong>는 다음 토큰을 자동회귀적으로 생성(CLM). 단세포 모델은 이런 언어모델 문법을 gene expression에 옮긴 시도다.
       </div>
       <div class="ic-eq">Attention(Q,K,V) = softmax(QK<sup>⊤</sup>/√d) · V</div>
     </article>
@@ -700,7 +700,7 @@ table.tok-tbl .chip{
     </article>
 
     <article class="intro-card" style="--accent:var(--c-vision)">
-      <span class="ic-num">④ paradigm · foundation model</span>
+      <span class="ic-num">④ foundation model 흐름</span>
       <div class="ic-title">Foundation model이란</div>
       <div class="ic-body">
         라벨 없는 큰 데이터로 <strong>자기지도학습 (SSL)</strong>을 한 번만 시켜 두면, 다양한 다운스트림 태스크에 이 가중치를 가져다 쓰는 패러다임.
@@ -940,7 +940,7 @@ table.tok-tbl .chip{
   </div>
   <p class="s-lede">
     헤더 클릭으로 정렬, 검색창에서 키워드 필터. <strong>L</strong> 컬럼은 license — <code>open</code>은 코드+가중치 공개,
-    <code>weights</code>는 가중치만(코드 부분 공개), <code>gemma</code>는 Gemma 라이선스 종속, <code>—</code>는 미확인. 모든 수치는 lab wiki의 정리본 + 원 논문 기준.
+    <code>weights</code>는 가중치만(코드 부분 공개), <code>gemma</code>는 Gemma 라이선스 종속, <code>—</code>는 미확인. 모든 수치는 정리 노트와 원 논문 기준.
   </p>
   <div class="tbl-controls">
     <input id="tblSearch" class="tbl-search" type="search" placeholder="모델명·저자·태스크로 검색…" aria-label="모델 검색">
@@ -1128,7 +1128,7 @@ table.tok-tbl .chip{
       <span class="t-emb gene">gene embedding</span>
       <div class="t-name">Imputation · denoising</div>
       <div class="t-body">
-        sparse matrix의 0을 복원. <strong>scFoundation의 Read-Depth-Aware (RDA)가 expression enhancement SOTA</strong>,
+        sparse matrix의 0을 복원. <strong>scFoundation의 Read-Depth-Aware (RDA)가 expression reconstruction SOTA</strong>,
         scPRINT-2 XPressor가 imputation SOTA. 단, T/S=1(no enhancement)에선 SAVER에 진다.
       </div>
       <div class="t-rivals">vs · SAVER · MAGIC · scImpute · scVI</div>
@@ -1266,7 +1266,7 @@ table.tok-tbl .chip{
       <div class="vc-body">
         Foundation model + generative AI로 데이터에서 직접 cell behavior를 학습.
         <strong>Bunne 2024 (Cell)</strong>의 AIVC 로드맵이 분야의 새 framework. Diffusion · flow matching · autoregressive transformer가
-        dynamics 모델링의 후보.
+        시간 변화 모델링의 후보.
       </div>
       <div class="vc-arr">
         <b>현재:</b> Bereket 2026 — "triage tool로는 OK, experiment 대체는 아직."
@@ -1291,7 +1291,7 @@ table.tok-tbl .chip{
     </div>
     <div class="vc-bunne-body" style="margin-top:12px">
       Multiscale 설계: <strong>분자 (Transformer/LLM) → 세포 (Autoencoder/ViT) → 다세포 (GNN/ENN/ViT)</strong>.
-      각 층은 아래 층을 aggregate해서 위 층을 만든다. 이 페이지에서 다룬 scFM 대부분은 "세포 스케일 UR" 의 구현체.
+      각 층은 아래 층을 aggregate해서 위 층을 만든다. 여기서 다루는 scFM 대부분은 "세포 스케일 UR" 의 구현체.
     </div>
   </div>
 
@@ -1313,7 +1313,7 @@ table.tok-tbl .chip{
     <h2>리소스 — <em>모델 코드</em>와 <em>출처</em></h2>
   </div>
   <p class="s-lede">
-    바로 받아 쓸 수 있는 6개 핵심 모델의 공식 GitHub/HuggingFace, 그리고 본 페이지가 인용한 wiki 정리본 25편의 Google Scholar 검색 링크.
+    바로 받아 쓸 수 있는 6개 핵심 모델의 공식 GitHub/HuggingFace, 그리고 참고 논문 25편의 Google Scholar 검색 링크.
   </p>
   <div class="res-grid">
     <a class="res-card" href="https://huggingface.co/ctheodoris/Geneformer" target="_blank" rel="noopener" style="--res-color:var(--c-rank)">
@@ -1349,18 +1349,16 @@ table.tok-tbl .chip{
   </div>
 
   <div class="cite-block">
-    <h4>인용 — wiki/single-cell-foundation 정리본</h4>
+    <h4>인용 — single-cell foundation 정리본</h4>
     <ul id="citeList"><!-- injected --></ul>
   </div>
 </section>
 
 <!-- ============== FOOTER ============== -->
 <div class="foot">
-  <strong>audodidactic / single-cell-foundation-models</strong> · 2026-05-09 · joonan-lab onboarding 자료실<br>
-  자료 출처: lab 위키의 <code>wiki/single-cell-foundation/</code> 정리본 + <code>wiki/overviews/</code> 문서 (single-cell-foundation-models-timeline,
-  foundation-models-biology-review, foundation-model-corpus-comparison, embedding-strategies-biological-foundation-models, virtual-cell-evolution 등).
-  모든 인용은 Google Scholar 검색 링크로 변환됨 — 외부 자원 의존도 0.<br>
-  본 페이지는 lab 내부의 작업 중인 manuscripts를 의도적으로 제외하고, 외부에 공개된 모델·논문만 다룸.<br>
+  <strong>audodidactic / single-cell-foundation-models</strong> · 2026-05-09 · 학생용 학습 자료<br>
+  참고 축: single-cell foundation timeline, biology review, corpus comparison, embedding strategies, virtual-cell evolution.
+  인용은 Google Scholar 검색 링크로 연결됩니다.<br>
   <a href="../index.html">← Audodidactic 인덱스로</a> · <a href="https://github.com/joonan-lab/audodidactic" target="_blank" rel="noopener">github.com/joonan-lab/audodidactic</a>
 </div>
 
@@ -1461,11 +1459,11 @@ const MODELS = [
    org:"human", ctx:"~20K genes",
    token:"random FG · continuous projection FE · expression-sorted ORDER",
    obj:"Read-Depth-Aware (RDA) MAE",
-   bestTask:"expression enhancement · drug response (SOTA)",
+   bestTask:"expression reconstruction · drug response (SOTA)",
    lic:"weights", licClass:"open",
    code:"HF · genbio-ai", codeUrl:"https://huggingface.co/genbio-ai/scFoundation",
    scholar:"scFoundation Hao 2024 large scale foundation model Nature Methods xTrimoGene",
-   blurb:"Asymmetric encoder/decoder + RDA로 sparsity와 read depth 동시 처리. GDSC drug response SOTA, expression enhancement SOTA."},
+   blurb:"Asymmetric encoder/decoder + RDA로 sparsity와 read depth 동시 처리. GDSC drug response SOTA, expression reconstruction SOTA."},
   {id:"scemb", name:"scEMB", year:2024, strategy:"rank",
    author:"Hsieh et al.",
    arch:"12-layer encoder", params:"—", paramsN:0,

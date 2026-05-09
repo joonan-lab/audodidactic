@@ -1,0 +1,1987 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자폐 유전체 코호트 아틀라스 - Audodidactic</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --ink: #111827;
+  --muted: #667085;
+  --quiet: #f6f7f9;
+  --line: #d9dee8;
+  --line-soft: #eceff4;
+  --indigo: #4f46e5;
+  --teal: #0f9488;
+  --amber: #d97706;
+  --rose: #e11d48;
+  --green: #15803d;
+  --blue: #2563eb;
+  --slate: #475569;
+  --violet: #7c3aed;
+  --cyan: #0891b2;
+  --shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Avenir Next", "Segoe UI", Arial, sans-serif;
+  line-height: 1.5;
+}
+
+a { color: inherit; }
+button, input, select { font: inherit; }
+
+.app {
+  width: min(1480px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0 48px;
+}
+
+.topnav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 0 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--line-soft);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.topnav a {
+  text-decoration: none;
+  font-weight: 760;
+}
+
+.topnav a:hover { color: var(--ink); }
+
+.topnav .sep { color: #cbd5e1; }
+
+.app-header {
+  display: grid;
+  grid-template-columns: minmax(0, 760px) minmax(280px, 360px);
+  gap: 20px;
+  align-items: start;
+  justify-content: space-between;
+  padding: 10px 0 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+  color: var(--indigo);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 4px 0 8px;
+  font-size: clamp(1.9rem, 3vw, 3.4rem);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.lead {
+  max-width: 980px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+.scope-card {
+  width: min(360px, 100%);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.scope-card strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+}
+
+.scope-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.primer {
+  display: grid;
+  gap: 18px;
+  margin: 20px 0 22px;
+}
+
+.primer-section {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.primer-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: end;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line-soft);
+  background: linear-gradient(180deg, #fff, #fbfcff);
+}
+
+.primer-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.25;
+}
+
+.primer-head p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  max-width: 920px;
+}
+
+.primer-badge {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: var(--indigo);
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: #fff;
+}
+
+.concept-grid,
+.architecture-grid {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.concept-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.architecture-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.concept-card,
+.architecture-card,
+.measure-card,
+.flow-step {
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  background: var(--quiet);
+  padding: 13px;
+}
+
+.concept-card .kicker,
+.architecture-card .kicker,
+.measure-card .kicker {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.concept-card h3,
+.architecture-card h3,
+.measure-card h3 {
+  margin: 5px 0 6px;
+  font-size: 0.96rem;
+  line-height: 1.28;
+}
+
+.concept-card p,
+.architecture-card p,
+.measure-card p {
+  margin: 0;
+  color: #465160;
+  font-size: 0.8rem;
+}
+
+.architecture-card {
+  background: #fff;
+  border-top: 3px solid var(--arch-color, var(--indigo));
+}
+
+.arch-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.arch-facts div {
+  min-height: 48px;
+  border: 1px solid var(--line-soft);
+  border-radius: 7px;
+  padding: 7px;
+  background: #fbfcff;
+}
+
+.arch-facts b {
+  display: block;
+  color: var(--ink);
+  font-size: 0.75rem;
+}
+
+.arch-facts span {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.measure-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 14px;
+}
+
+.flow-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 14px 14px;
+}
+
+.flow-step {
+  min-height: 88px;
+  background: #fff;
+}
+
+.flow-step b {
+  display: block;
+  color: var(--indigo);
+  font-size: 0.78rem;
+  margin-bottom: 5px;
+}
+
+.flow-step span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.learning-note {
+  margin: 0 14px 14px;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
+  padding: 12px 13px;
+  background: #eef2ff;
+  color: #344054;
+  font-size: 0.82rem;
+}
+
+.metric {
+  min-height: 98px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: var(--quiet);
+}
+
+.metric .value {
+  font-size: 1.8rem;
+  line-height: 1;
+  font-weight: 850;
+  color: var(--ink);
+}
+
+.metric .label {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.controls {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1.3fr repeat(4, minmax(150px, 1fr)) auto;
+  gap: 8px;
+  align-items: center;
+  margin: 18px 0 20px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.controls input,
+.controls select,
+.controls button {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+  padding: 0 10px;
+}
+
+.controls button {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--indigo);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(360px, 0.9fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.main-stack,
+.side-stack {
+  display: grid;
+  gap: 20px;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: baseline;
+  padding: 15px 16px;
+  border-bottom: 1px solid var(--line-soft);
+  background: #fff;
+}
+
+.panel-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.panel-sub {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.panel-body { padding: 16px; }
+
+.layer-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.layer-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 760;
+}
+
+.layer-chip.active {
+  border-color: var(--chip-color);
+  box-shadow: inset 0 0 0 1px var(--chip-color);
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 99px;
+  background: var(--chip-color);
+  flex: 0 0 auto;
+}
+
+.bars {
+  display: grid;
+  gap: 9px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) 38px;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.78rem;
+}
+
+.bar-label {
+  color: var(--muted);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bar-track {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--quiet);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  width: var(--w);
+  background: var(--c);
+}
+
+.bar-value {
+  text-align: right;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline {
+  display: grid;
+  gap: 14px;
+}
+
+.timeline-axis {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.year-axis {
+  position: relative;
+  height: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.year-tick {
+  position: absolute;
+  bottom: -1px;
+  transform: translateX(-50%);
+  height: 18px;
+  border-left: 1px solid var(--line);
+}
+
+.year-tick span {
+  position: absolute;
+  top: -2px;
+  left: 4px;
+}
+
+.timeline-row {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr);
+  gap: 0;
+  min-height: 42px;
+  align-items: center;
+}
+
+.timeline-label {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 760;
+}
+
+.timeline-lane {
+  position: relative;
+  height: 42px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.event-dot {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 11px;
+  height: 11px;
+  border-radius: 99px;
+  border: 2px solid #fff;
+  background: var(--c);
+  box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.24);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.event-dot.selected {
+  width: 15px;
+  height: 15px;
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+.matrix-wrap {
+  overflow-x: auto;
+}
+
+.matrix {
+  min-width: 860px;
+  display: grid;
+  grid-template-columns: 150px repeat(10, minmax(62px, 1fr));
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.matrix-cell {
+  min-height: 42px;
+  border-right: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.matrix-head {
+  background: var(--quiet);
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.matrix-row-label {
+  justify-content: flex-start;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.heat {
+  cursor: pointer;
+  color: #fff;
+  font-weight: 850;
+  background: color-mix(in srgb, var(--heat-color) calc(var(--heat) * 18%), #f8fafc);
+}
+
+.heat.empty {
+  background: #fff;
+  color: #cbd5e1;
+  cursor: default;
+}
+
+.cohort-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.cohort-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.cohort-card.active {
+  border-color: var(--indigo);
+  box-shadow: inset 0 0 0 1px var(--indigo);
+}
+
+.cohort-card h3 {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 7px;
+  font-size: 0.9rem;
+}
+
+.cohort-card .badge {
+  flex: 0 0 auto;
+  align-self: start;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--quiet);
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 760;
+}
+
+.cohort-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.cohort-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.study-table-wrap {
+  overflow: auto;
+  max-height: 690px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 980px;
+  font-size: 0.78rem;
+}
+
+th,
+td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: top;
+  text-align: left;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--quiet);
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+tr.study-row { cursor: pointer; }
+tr.study-row:hover td { background: #fafbff; }
+tr.study-row.selected td { background: #eef2ff; }
+
+.pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--quiet);
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 760;
+}
+
+.detail {
+  position: sticky;
+  top: 88px;
+}
+
+.detail h2 {
+  margin: 0 0 7px;
+  font-size: 1.25rem;
+  line-height: 1.18;
+}
+
+.detail .citation {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-bottom: 12px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.detail-kv {
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  padding: 9px;
+  background: var(--quiet);
+}
+
+.detail-kv .k {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.detail-kv .v {
+  margin-top: 3px;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.detail p {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.source-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  margin-top: 4px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--indigo);
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 0.78rem;
+}
+
+.excluded-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.excluded-list li {
+  border-bottom: 1px solid var(--line-soft);
+  padding-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.excluded-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+footer {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+@media (max-width: 1180px) {
+  .app-header,
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .scope-card {
+    width: 100%;
+  }
+  .detail {
+    position: static;
+  }
+}
+
+@media (max-width: 920px) {
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .controls {
+    position: static;
+    grid-template-columns: 1fr 1fr;
+  }
+  .controls input {
+    grid-column: 1 / -1;
+  }
+  .cohort-grid {
+    grid-template-columns: 1fr;
+  }
+  .concept-grid,
+  .architecture-grid,
+  .measure-grid,
+  .flow-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .app {
+    width: min(100% - 20px, 1480px);
+  }
+  .metrics,
+  .controls,
+  .detail-grid,
+  .concept-grid,
+  .architecture-grid,
+  .measure-grid,
+  .flow-strip {
+    grid-template-columns: 1fr;
+  }
+  .panel-header {
+    display: block;
+  }
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <nav class="topnav" aria-label="Breadcrumb">
+    <a href="../index.html">Audodidactic</a>
+    <span class="sep">/</span>
+    <span>자폐 유전체 코호트</span>
+  </nav>
+
+  <header class="app-header">
+    <div>
+      <div class="eyebrow">audodidactic study map</div>
+      <h1>자폐 유전체 코호트 아틀라스</h1>
+      <p class="lead">자폐 스펙트럼 장애(ASD) 연구에서 자주 만나는 코호트, 유전체 분석 층위, 표현형 측정, 유전적 기여도를 한 페이지에서 이어 봅니다. “어떤 코호트에서, 어떤 변이를, 어떤 표현형과 엮어 해석하는가”를 먼저 잡은 뒤 논문 데이터베이스로 들어갑니다.</p>
+    </div>
+    <aside class="scope-card">
+      <strong>범위</strong>
+      <p>코호트와 논문 항목은 아래에서 바로 탐색할 수 있습니다. 논문 링크는 제목/DOI 기반 Google Scholar 검색으로 연결됩니다.</p>
+    </aside>
+  </header>
+
+  <section class="metrics" id="metrics"></section>
+
+  <section class="primer" aria-label="ASD genomics learning primer">
+    <section class="primer-section">
+      <div class="primer-head">
+        <div>
+          <h2>먼저 보는 코호트 지도</h2>
+          <p>ASD 유전체 연구의 결과는 “누구를, 어떤 방식으로 모았는지”에 크게 좌우됩니다. 같은 ASD라도 simplex 가족, multiplex 가족, 병원 기반 코호트, 웹 모집 코호트, 국가 레지스트리는 각자 잘 답하는 질문이 다릅니다.</p>
+        </div>
+        <span class="primer-badge">cohort logic</span>
+      </div>
+      <div class="concept-grid">
+        <article class="concept-card">
+          <div class="kicker">simplex trio / quad</div>
+          <h3>새로 생긴 de novo 변이를 찾기 좋음</h3>
+          <p>부모와 자녀, 때로는 비진단 형제를 함께 시퀀싱합니다. SSC처럼 한 가족에 ASD 자녀가 한 명인 구조에서는 부모에게 없던 새 변이가 아이에게 생겼는지 직접 볼 수 있습니다.</p>
+        </article>
+        <article class="concept-card">
+          <div class="kicker">multiplex family</div>
+          <h3>가족 안에서 물려받은 위험을 보기 좋음</h3>
+          <p>AGRE, iHART처럼 ASD가 여러 명 있는 가족은 inherited rare variant, polygenic background, 형제 간 유전적 차이를 비교하는 데 강합니다.</p>
+        </article>
+        <article class="concept-card">
+          <div class="kicker">registry / case-control</div>
+          <h3>common variant와 PRS에 유리함</h3>
+          <p>iPSYCH/PGC, Swedish/PAGES처럼 수만 명 이상의 사례-대조군 또는 인구 레지스트리는 효과가 작은 SNP들을 많이 모아 SNP heritability와 PRS를 추정합니다.</p>
+        </article>
+        <article class="concept-card">
+          <div class="kicker">ancestry-aware cohort</div>
+          <h3>한 인구집단의 답을 모두에게 일반화하지 않기</h3>
+          <p>K-ARC, GALA, Japanese WES 같은 비유럽 코호트는 유럽 중심 결과가 다른 조상 배경에서도 보이는지, 또 새 유전자와 변이가 드러나는지 확인합니다.</p>
+        </article>
+      </div>
+      <div class="flow-strip">
+        <div class="flow-step"><b>1. 모집</b><span>가족 구조, 진단 기준, 조상 배경, 동반질환 기록이 정해집니다.</span></div>
+        <div class="flow-step"><b>2. 표현형</b><span>ADOS, ADI-R, IQ, Vineland, 언어/발달 이력처럼 여러 축을 측정합니다.</span></div>
+        <div class="flow-step"><b>3. 유전체</b><span>array, WES, WGS, CNV/SV, STR, PRS 같은 분석 층위를 고릅니다.</span></div>
+        <div class="flow-step"><b>4. 통계</b><span>GWAS, TADA, burden, pTDT, category-wide association, family-relative 모델을 씁니다.</span></div>
+        <div class="flow-step"><b>5. 해석</b><span>진단 전체 평균인지, 표현형 하위축인지, 가족 배경을 제거한 효과인지 구분합니다.</span></div>
+      </div>
+    </section>
+
+    <section class="primer-section">
+      <div class="primer-head">
+        <div>
+          <h2>표현형 측정은 “심한 정도” 하나가 아닙니다</h2>
+          <p>유전체 신호는 진단명 하나보다 사회성, 언어, 인지, 적응행동, 반복행동, 발달 이정표, 동반질환 같은 여러 표현형 축에서 더 선명해질 때가 많습니다.</p>
+        </div>
+        <span class="primer-badge">phenotypes</span>
+      </div>
+      <div class="measure-grid">
+        <article class="measure-card"><div class="kicker">ADOS / CSS</div><h3>관찰 기반 핵심 ASD 특성</h3><p>훈련된 평가자가 사회적 상호작용, 의사소통, 제한적/반복 행동을 직접 관찰합니다. Calibrated Severity Score는 연령과 언어 수준 차이를 줄여 비교하려는 지표입니다.</p></article>
+        <article class="measure-card"><div class="kicker">ADI-R</div><h3>보호자 면담 기반 발달 이력</h3><p>초기 발달, 사회성, 의사소통, 반복행동을 보호자 면담으로 복원합니다. 현재 상태뿐 아니라 유아기부터의 궤적을 잡는 데 유용합니다.</p></article>
+        <article class="measure-card"><div class="kicker">SRS / SCQ / AQ</div><h3>연속적인 자폐 특성 점수</h3><p>진단 여부만 보지 않고 사회적 의사소통과 반복행동 특성이 어느 정도인지 점수화합니다. 가족 구성원과 일반 인구의 broad autism phenotype을 볼 때도 쓰입니다.</p></article>
+        <article class="measure-card"><div class="kicker">IQ / DQ / NVIQ</div><h3>인지와 발달 수준</h3><p>언어 IQ, 비언어 IQ, 발달지수는 유전 신호와 강하게 얽힙니다. de novo 고영향 변이는 ASD 핵심 특성보다 IQ와 발달지연 쪽에 더 강하게 보일 수 있습니다.</p></article>
+        <article class="measure-card"><div class="kicker">Vineland / VABS</div><h3>일상 적응 기능</h3><p>의사소통, 일상생활, 사회화, 운동 기능을 봅니다. 실제 생활에서 얼마나 도움을 필요로 하는지와 연결되며 CNV/희귀 변이 영향 해석에 자주 쓰입니다.</p></article>
+        <article class="measure-card"><div class="kicker">milestones / co-occurrence</div><h3>언어, 운동, 동반질환</h3><p>첫 단어, 보행, 퇴행, 발작, ADHD, 수면, GI 문제, 운동 협응 등은 ASD 안의 생물학적 하위축을 찾는 단서가 됩니다.</p></article>
+      </div>
+      <p class="learning-note">읽는 법: 표현형은 “나쁘다/좋다”보다 어떤 축이 어느 방향으로 달라지는지가 중요합니다. Warrier 2022, Antaki 2022, Litman 2025, Kim 2025 WFSD 계열 연구는 ASD 진단 평균보다 표현형 축과 가족 배경을 분리해서 봅니다.</p>
+    </section>
+
+    <section class="primer-section">
+      <div class="primer-head">
+        <div>
+          <h2>유전적 조성: 작은 효과가 많은가, 큰 효과가 드문가</h2>
+          <p>ASD 유전학에는 common SNP, rare de novo coding variant, CNV/SV, inherited rare variant, noncoding WGS, STR, sex/ancestry 효과가 함께 놓여 있습니다. 숫자는 코호트와 모델에 따라 달라지므로 “대략 어느 층위가 무엇을 설명하는가”로 읽는 편이 안전합니다.</p>
+        </div>
+        <span class="primer-badge">genetic architecture</span>
+      </div>
+      <div class="architecture-grid">
+        <article class="architecture-card" style="--arch-color:var(--blue)">
+          <div class="kicker">common SNP / PRS</div>
+          <h3>효과는 작지만 매우 많음</h3>
+          <p>개별 SNP의 효과는 약합니다. 그래서 수천-수만 개 변이를 합쳐 PRS로 봅니다. Grove 2019는 18,381 cases/27,969 controls에서 5개 genome-wide loci와 SNP heritability 약 11%를 보고했습니다.</p>
+          <div class="arch-facts"><div><b>variance</b><span>모델별 약 11%에서 common variation 49.4%까지 다르게 추정</span></div><div><b>use</b><span>진단 위험, age at diagnosis, core-feature heterogeneity</span></div></div>
+        </article>
+        <article class="architecture-card" style="--arch-color:var(--rose)">
+          <div class="kicker">rare de novo coding</div>
+          <h3>드물지만 변이 하나의 영향이 큼</h3>
+          <p>부모에게 없는 PTV/damaging missense가 아이에게 생긴 경우입니다. ASC/Satterstrom 2020은 102개 ASD risk gene(FDR <= 0.1)을, Zhou 2022는 통합 분석에서 60개 exome-wide significant gene을 제시했습니다.</p>
+          <div class="arch-facts"><div><b>contribution</b><span>WGS 연구에서 de novo 기여 30-39%, low-risk simplex 52-67% 추정</span></div><div><b>phenotype</b><span>IQ, adaptive behavior, milestones와 강하게 연결</span></div></div>
+        </article>
+        <article class="architecture-card" style="--arch-color:var(--amber)">
+          <div class="kicker">CNV / SV</div>
+          <h3>유전체 조각의 삭제/중복</h3>
+          <p>Sebat 2007은 de novo CNV가 sporadic ASD 10.2%, control 1.0%에서 보인다고 보고했습니다. 16p11.2, 7q11.23 duplication, NRXN1, SHANK2 같은 큰 구조 변이는 해석 단위가 유전자 하나보다 큽니다.</p>
+          <div class="arch-facts"><div><b>effect</b><span>penetrance와 표현형 범위가 크며 ID/DD와 겹침</span></div><div><b>contribution</b><span>recurrent de novo CNV가 대략 5-10% ASD risk에 기여</span></div></div>
+        </article>
+        <article class="architecture-card" style="--arch-color:var(--green)">
+          <div class="kicker">inherited rare / two-hit</div>
+          <h3>가족 배경과 함께 쌓이는 위험</h3>
+          <p>multiplex 가족에서는 물려받은 희귀 변이와 polygenic background가 중요해집니다. MSSNG 연구는 affected sibling pair의 69.4%가 서로 다른 ASD-relevant mutation 조합을 가질 수 있음을 보였습니다.</p>
+          <div class="arch-facts"><div><b>model</b><span>burden, transmission, co-occurrence, family-relative deviation</span></div><div><b>meaning</b><span>같은 가족, 같은 진단이어도 유전 경로가 다를 수 있음</span></div></div>
+        </article>
+        <article class="architecture-card" style="--arch-color:var(--violet)">
+          <div class="kicker">WGS noncoding / STR</div>
+          <h3>exome 밖의 조절 변이와 반복서열</h3>
+          <p>WGS는 promoter, conserved noncoding element, chromatin interaction, short tandem repeat expansion을 봅니다. Turner 2016은 regulatory de novo candidate가 약 10% families에 있을 수 있음을 제안했고, Trost 2020은 17,231 genomes에서 repeat expansion 층위를 열었습니다.</p>
+          <div class="arch-facts"><div><b>effect</b><span>개별 해석은 어렵지만 세포형/조절맥락과 연결 가능</span></div><div><b>assay</b><span>WGS, STR caller, CWAS/category-wide tests</span></div></div>
+        </article>
+        <article class="architecture-card" style="--arch-color:var(--cyan)">
+          <div class="kicker">sex / ancestry</div>
+          <h3>누가 표본에 들어왔는지가 결과를 바꿈</h3>
+          <p>여아 ASD에서 더 높은 mutational burden을 보고한 연구들이 있고, X chromosome 분석에서는 20개 loci의 59개 significant variant가 제시됐습니다. GALA는 4,717명의 ASD admixed American/Latin American 참여자에서 35개 gene(FDR &lt; 0.05)을 보고했습니다.</p>
+          <div class="arch-facts"><div><b>why</b><span>female protective effect, ascertainment, ancestry LD가 섞임</span></div><div><b>cohorts</b><span>K-ARC, GALA, Japanese WES, SPARK multi-ancestry</span></div></div>
+        </article>
+      </div>
+    </section>
+  </section>
+
+  <section class="controls" aria-label="Atlas filters">
+    <input id="searchBox" type="search" placeholder="논문, 코호트, 유전자, 방법 검색">
+    <select id="layerFilter"></select>
+    <select id="cohortFilter"></select>
+    <select id="assayFilter"></select>
+    <select id="ancestryFilter"></select>
+    <button id="resetBtn" type="button">초기화</button>
+  </section>
+
+  <section class="layout">
+    <div class="main-stack">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">증거 레이어</h2>
+            <p class="panel-sub">하나의 논문은 common, coding, phenotype처럼 여러 레이어에 동시에 속할 수 있습니다.</p>
+          </div>
+          <div id="visibleCount" class="panel-sub"></div>
+        </div>
+        <div class="panel-body">
+          <div class="layer-chips" id="layerChips"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">타임라인</h2>
+            <p class="panel-sub">가족 리소스와 array CNV에서 multi-ancestry sequencing, 표현형 분해 유전학으로 이동한 흐름입니다.</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="timeline" id="timeline"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">코호트 x 증거 매트릭스</h2>
+            <p class="panel-sub">셀 값은 이 아틀라스 안에서 해당 코호트와 레이어를 동시에 다룬 출판 논문 수입니다.</p>
+          </div>
+        </div>
+        <div class="panel-body matrix-wrap">
+          <div class="matrix" id="matrix"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">대표 코호트</h2>
+            <p class="panel-sub">통합 분석에서는 표본이 서로 겹칠 수 있으므로 규모는 독립 표본 수가 아니라 보고된 맥락으로 읽어야 합니다.</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="cohort-grid" id="cohortGrid"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">출판 연구 테이블</h2>
+            <p class="panel-sub">행을 클릭하면 오른쪽에서 코호트, assay, 규모, 발견 요약을 볼 수 있습니다.</p>
+          </div>
+        </div>
+        <div class="study-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Paper</th>
+                <th>Cohort</th>
+                <th>Assay</th>
+                <th>Layers</th>
+                <th>Main finding</th>
+              </tr>
+            </thead>
+            <tbody id="studyRows"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <aside class="side-stack">
+      <section class="panel detail" id="detailPanel"></section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">레이어 카운트</h2>
+            <p class="panel-sub">필터가 바뀌면 함께 업데이트됩니다.</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="bars" id="layerBars"></div>
+        </div>
+      </section>
+
+    </aside>
+  </section>
+
+  <footer>
+    표본 규모와 코호트 라벨은 각 논문의 보고 방식을 따릅니다. 통합 분석에서는 같은 참여자가 여러 연구에 겹쳐 들어갈 수 있습니다.
+  </footer>
+</main>
+
+<script>
+const layerMeta = {
+  resource: { label: "Cohort resources", color: "#475569" },
+  common: { label: "Common SNP / PRS", color: "#4f46e5" },
+  coding: { label: "Rare coding / exome", color: "#0f9488" },
+  cnv: { label: "CNV / SV", color: "#d97706" },
+  wgs: { label: "Whole-genome", color: "#2563eb" },
+  noncoding: { label: "Noncoding regulatory", color: "#0891b2" },
+  repeat: { label: "Tandem repeats / STR", color: "#7c3aed" },
+  inherited: { label: "Inherited / oligogenic", color: "#15803d" },
+  sex: { label: "Sex / X chromosome", color: "#e11d48" },
+  phenotype: { label: "Phenotype heterogeneity", color: "#be123c" },
+  ancestry: { label: "Ancestry diversity", color: "#9333ea" }
+};
+
+const timelineRows = [
+  { id: "resource", label: "Resources", layers: ["resource"] },
+  { id: "cnv", label: "CNV/SV", layers: ["cnv"] },
+  { id: "coding", label: "Coding", layers: ["coding", "inherited"] },
+  { id: "common", label: "Common", layers: ["common"] },
+  { id: "wgs", label: "WGS", layers: ["wgs", "noncoding"] },
+  { id: "repeat", label: "Repeats", layers: ["repeat"] },
+  { id: "sex", label: "Sex/X", layers: ["sex"] },
+  { id: "phenotype", label: "Phenotype", layers: ["phenotype", "ancestry"] }
+];
+
+const cohorts = [
+  { name: "AGRE", kind: "Multiplex", scale: "343 completed families at launch; later thousands", assays: "Genome scan, arrays, WES/WGS reuse", ancestry: "Mostly North American / European", note: "First open autism genetics biomaterial and clinical-data exchange; multiplex ascertainment shaped linkage and inherited-risk work." },
+  { name: "AGP", kind: "Consortium", scale: "1,496 ASD families; 1,181 linkage families", assays: "Linkage, SNP arrays, CNV", ancestry: "International, mostly European", note: "Anchored early linkage, common-variant, and CNV aggregation across multiplex autism families." },
+  { name: "SSC", kind: "Simplex quads", scale: ">2,000 simplex families", assays: "Array, WES, WGS, phenotype", ancestry: "US, mostly European", note: "The de novo discovery workhorse: proband, unaffected sibling, and parents enable direct burden contrasts." },
+  { name: "SPARK", kind: "Web-scale family cohort", scale: "Target 50,000 families; 35,130 cases in Zhou 2022", assays: "Array, WES, phenotype", ancestry: "US multi-ancestry, still EUR-heavy", note: "Large family recruitment makes common-variant, inherited LoF, and phenotype genetics analyses scalable." },
+  { name: "ASC", kind: "Sequencing consortium", scale: "3,871 cases in 2014; 35,584 samples in 2020; 63,237 in 2022", assays: "WES, CNV integration", ancestry: "International, mostly European", note: "Pooled exome framework that turned isolated de novo events into recurrent ASD-risk gene discovery." },
+  { name: "iPSYCH / PGC", kind: "Population / registry", scale: "18,381 cases and 27,969 controls in Grove 2019", assays: "Array GWAS, registry phenotypes", ancestry: "Danish / European", note: "Key common-variant backbone for ASD SNP heritability, PRS, and age-at-diagnosis studies." },
+  { name: "MSSNG", kind: "WGS family resource", scale: "11,312 WGS individuals; 5,100 ASD", assays: "WGS, SV, CNV, mtDNA, STR", ancestry: "International, EUR-heavy", note: "Whole-genome resource for diagnostic yield and all-variant-class ASD architecture." },
+  { name: "iHART / AGRE", kind: "Multiplex WGS", scale: "493 multiplex families; 2,308 individuals", assays: "WGS, inherited and de novo variants", ancestry: "Mostly European", note: "Highlights inherited network risk and family-specific rare variation in multiplex ASD." },
+  { name: "K-ARC", kind: "Korean family cohort", scale: "1,400 families / 3,730 phenotyped; WGS in 2,255 individuals", assays: "WGS, phenotype, PRS, STR", ancestry: "East Asian / Korean", note: "Published Korean WGS resource for sex-differentiated familial pattern and STR severity analyses." },
+  { name: "GALA", kind: "Latin American ancestry", scale: "6,977 QC-passed; 4,717 ASD", assays: "WES, WGS, small CNV", ancestry: "Admixed American / Latin American", note: "Directly tests whether deleterious coding ASD signals discovered in European-heavy cohorts transfer across ancestries." },
+  { name: "Japanese WES", kind: "Case-control", scale: "301 ASD cases and 296 controls", assays: "WES rare-variant burden", ancestry: "East Asian / Japanese", note: "Small but important non-European exome burden dataset centered on synaptic gene sets." },
+  { name: "Swedish / PAGES", kind: "Registry + population", scale: ">1.6M families; PAGES 466 cases and 2,580 controls", assays: "SNP heritability", ancestry: "Swedish / European", note: "Population-liability framework behind the claim that common variation explains much ASD risk." }
+];
+
+const studies = [
+  {
+    id: "geschwind-2001", year: 2001, citation: "Geschwind 2001",
+    title: "The Autism Genetic Resource Exchange: A Resource for the Study of Autism and Related Neuropsychiatric Conditions",
+    cohorts: ["AGRE"], assay: "Biomaterial + genome scan", ancestry: "North American",
+    layers: ["resource"], n: "343 completed multiplex families at publication",
+    finding: "Created an open multiplex autism repository with ADI-R/ADOS, biomaterials, pedigrees, and genome-scan data.",
+    why: "Established the open-data family-resource model later complemented by SSC and SPARK.",
+    doi: "10.1086/321951"
+  },
+  {
+    id: "agp-2007", year: 2007, citation: "Autism Genome Project 2007",
+    title: "Mapping autism risk loci using genetic linkage and chromosomal rearrangements",
+    cohorts: ["AGP", "AGRE"], assay: "Linkage + SNP array + CNV", ancestry: "International",
+    layers: ["resource", "cnv"], n: "1,496 ASD families; 1,181 multiplex linkage families",
+    finding: "Reported suggestive linkage at 11p12-p13 and CNV evidence implicating neurexin and glutamatergic pathways.",
+    why: "Marked the late linkage-to-CNV transition before sequencing became central.",
+    doi: "10.1038/ng1985"
+  },
+  {
+    id: "sebat-2007", year: 2007, citation: "Sebat 2007",
+    title: "Strong Association of De Novo Copy Number Mutations with Autism",
+    cohorts: ["Sporadic/familial ASD"], assay: "Array CGH", ancestry: "Mixed / not primary",
+    layers: ["cnv"], n: "118 sporadic ASD, 77 familial ASD, 196 controls",
+    finding: "De novo CNVs occurred in 10.2% of sporadic ASD versus 1.0% of controls and 2.6% of familial ASD.",
+    why: "Founded the de novo CNV hypothesis for simplex autism.",
+    doi: "10.1126/science.1138659"
+  },
+  {
+    id: "wang-2009", year: 2009, citation: "Wang 2009",
+    title: "Common genetic variants on 5p14.1 associate with autism spectrum disorders",
+    cohorts: ["AGRE", "ASC-like case-control"], assay: "GWAS", ancestry: "European",
+    layers: ["common"], n: "780 AGRE families plus 1,204 cases and 6,491 controls",
+    finding: "Identified rs4307059 at the CDH10-CDH9 region with genome-wide significance and modest effect.",
+    why: "One of the first common-variant ASD GWAS signals, though later work emphasized stronger polygenicity.",
+    doi: "10.1038/nature07999"
+  },
+  {
+    id: "anney-2010", year: 2010, citation: "Anney 2010",
+    title: "A genome-wide scan for common alleles affecting risk for autism",
+    cohorts: ["AGP"], assay: "GWAS", ancestry: "European-heavy international",
+    layers: ["common"], n: "1,369 ASD families; 4,661 individuals",
+    finding: "Found no genome-wide significant common SNP and argued individual common effects are small.",
+    why: "Helped shift interpretation from single common hits to broad polygenic liability.",
+    doi: "10.1093/hmg/ddq307"
+  },
+  {
+    id: "pinto-2010", year: 2010, citation: "Pinto 2010",
+    title: "Functional impact of global rare copy number variation in autism spectrum disorders",
+    cohorts: ["AGP"], assay: "SNP array CNV", ancestry: "International",
+    layers: ["cnv", "inherited"], n: "996 ASD individuals",
+    finding: "Rare genic CNV burden was 1.19-fold higher in ASD and enriched known ASD/ID loci; highlighted SHANK2, SYNGAP1, DLGAP2, and DDX53-PTCHD1.",
+    why: "Moved CNV analysis from recurrence alone toward gene and pathway convergence.",
+    doi: "10.1038/nature09146"
+  },
+  {
+    id: "fischbach-2010", year: 2010, citation: "Fischbach 2010",
+    title: "The Simons Simplex Collection: A Resource for Identification of Autism Genetic Risk Factors",
+    cohorts: ["SSC"], assay: "Cohort resource + phenotype", ancestry: "US",
+    layers: ["resource"], n: ">2,000 simplex families planned; 1,887 probands enrolled at report",
+    finding: "Built a deeply phenotyped simplex-family resource with proband, parents, and unaffected sibling.",
+    why: "Enabled the direct proband-versus-sibling de novo architecture that dominated 2011-2018.",
+    doi: "10.1016/j.neuron.2010.10.006"
+  },
+  {
+    id: "sanders-2011-cnv", year: 2011, citation: "Sanders 2011",
+    title: "Multiple recurrent de novo CNVs, including duplications of the 7q11.23 Williams syndrome region, are strongly associated with autism",
+    cohorts: ["SSC"], assay: "Array CNV", ancestry: "US",
+    layers: ["cnv"], n: "1,124 SSC families",
+    finding: "Recurrent de novo CNVs, including 7q11.23 duplication and 16p11.2, contributed roughly 5-10% of ASD risk.",
+    why: "Showed that simplex CNV discovery can identify recurrent, high-impact genomic disorders.",
+    doi: "10.1016/j.neuron.2011.05.002"
+  },
+  {
+    id: "oroak-2011", year: 2011, citation: "O'Roak 2011",
+    title: "Exome sequencing in sporadic autism spectrum disorders identifies severe de novo mutations",
+    cohorts: ["SSC / sporadic trios"], assay: "WES trio", ancestry: "US",
+    layers: ["coding"], n: "20 sporadic ASD trios",
+    finding: "Detected severe de novo coding mutations affecting genes such as FOXP1, GRIN2B, SCN1A, and LAMC3.",
+    why: "Early proof that exome sequencing could uncover single-gene ASD risk from simplex trios.",
+    doi: "10.1038/ng.835"
+  },
+  {
+    id: "levy-2011", year: 2011, citation: "Levy 2011",
+    title: "Rare de novo and transmitted copy-number variation in autistic spectrum disorders",
+    cohorts: ["SSC"], assay: "CNV", ancestry: "US",
+    layers: ["cnv", "inherited"], n: "Simplex ASD families",
+    finding: "Cataloged rare de novo and transmitted CNVs in autism, complementing recurrent-CNV discovery in SSC.",
+    why: "Placed inherited and de novo CNVs on the same family-based ASD map.",
+    doi: "10.1016/j.neuron.2011.05.015"
+  },
+  {
+    id: "anney-2012", year: 2012, citation: "Anney 2012",
+    title: "Individual common variants exert weak effects on the risk for autism spectrum disorders",
+    cohorts: ["AGP"], assay: "GWAS meta-analysis", ancestry: "European-heavy international",
+    layers: ["common"], n: "AGP GWAS meta-analysis",
+    finding: "No individual SNP reached genome-wide significance; aggregate polygenic signal was more informative than single loci.",
+    why: "Clarified why ASD GWAS needed much larger cohorts and PRS-style aggregation.",
+    doi: "10.1093/hmg/dds301"
+  },
+  {
+    id: "iossifov-2012", year: 2012, citation: "Iossifov 2012",
+    title: "De Novo Gene Disruptions in Children on the Autistic Spectrum",
+    cohorts: ["SSC"], assay: "WES quartet", ancestry: "US",
+    layers: ["coding"], n: "343 families in early SSC exome work",
+    finding: "Showed an excess of de novo gene-disrupting mutations in autistic children relative to unaffected siblings.",
+    why: "Established sibling-controlled exome burden as a central ASD design.",
+    doi: "10.1016/j.neuron.2012.04.009"
+  },
+  {
+    id: "oroak-2012", year: 2012, citation: "O'Roak 2012",
+    title: "Sporadic autism exomes reveal a highly interconnected protein network of de novo mutations",
+    cohorts: ["SSC"], assay: "WES", ancestry: "US",
+    layers: ["coding"], n: "209 sporadic ASD families; 677 exomes",
+    finding: "Found paternal-origin bias, recurrent CHD8 and NTNG1 hits, and convergence on beta-catenin/chromatin networks.",
+    why: "Turned isolated de novo events into connected protein-network biology.",
+    doi: "10.1038/nature10989"
+  },
+  {
+    id: "neale-2012", year: 2012, citation: "Neale 2012",
+    title: "Patterns and rates of exonic de novo mutations in autism spectrum disorders",
+    cohorts: ["SSC"], assay: "WES trio", ancestry: "US",
+    layers: ["coding"], n: "175 ASD trios",
+    finding: "Reported modest de novo rates and prioritized genes including CHD8 and KATNAL2 through mutation and network context.",
+    why: "One of the parallel 2012 exome papers that made ASD gene discovery statistically tractable.",
+    doi: "10.1038/nature11011"
+  },
+  {
+    id: "sanders-2012", year: 2012, citation: "Sanders 2012",
+    title: "De novo mutations revealed by whole-exome sequencing are strongly associated with autism",
+    cohorts: ["SSC"], assay: "WES quartet", ancestry: "US",
+    layers: ["coding"], n: "200 SSC quartet families",
+    finding: "Observed more de novo likely gene-disrupting mutations in probands than siblings and nominated DYRK1A, POGZ, KATNAL2, and TBR1.",
+    why: "Provided clean quartet evidence that de novo coding disruption is strongly associated with ASD.",
+    doi: "10.1038/nature10945"
+  },
+  {
+    id: "michaelson-2012", year: 2012, citation: "Michaelson 2012",
+    title: "Whole-Genome Sequencing in Autism Identifies Hot Spots for De Novo Germline Mutation",
+    cohorts: ["MZ twins"], assay: "WGS", ancestry: "US",
+    layers: ["wgs"], n: "10 ASD-concordant monozygotic twin pairs and parents",
+    finding: "Found about 58 germline DNMs per offspring, paternal-age effects, and 100-fold regional mutation-rate variation.",
+    why: "Connected ASD de novo observations to genome-wide mutability and paternal-age biology.",
+    doi: "10.1016/j.cell.2012.11.019"
+  },
+  {
+    id: "buxbaum-2012", year: 2012, citation: "Buxbaum 2012",
+    title: "The Autism Sequencing Consortium: Large-Scale, High-Throughput Sequencing in Autism Spectrum Disorders",
+    cohorts: ["ASC"], assay: "Consortium WES/WGS framework", ancestry: "International",
+    layers: ["resource", "coding"], n: "Thousands of planned cases and controls",
+    finding: "Defined the ASC rare-variant statistical and collaboration framework for large-scale ASD sequencing.",
+    why: "Built the shared infrastructure that enabled De Rubeis 2014 and later ASC exome expansions.",
+    doi: "10.1016/j.neuron.2012.12.008"
+  },
+  {
+    id: "de-rubeis-2014", year: 2014, citation: "De Rubeis 2014",
+    title: "Synaptic, transcriptional and chromatin genes disrupted in autism",
+    cohorts: ["ASC"], assay: "WES", ancestry: "International",
+    layers: ["coding"], n: "3,871 ASD cases and 9,937 controls",
+    finding: "Identified 22 ASD genes at FDR < 0.05 and 107 at FDR < 0.30, converging on synaptic, transcriptional, and chromatin biology.",
+    why: "Moved ASD exome genetics from candidate events to gene-level discovery.",
+    doi: "10.1038/nature13772"
+  },
+  {
+    id: "iossifov-2014", year: 2014, citation: "Iossifov 2014",
+    title: "The Contribution of De Novo Coding Mutations to Autism Spectrum Disorder",
+    cohorts: ["SSC"], assay: "WES", ancestry: "US",
+    layers: ["coding", "sex", "phenotype"], n: "Large SSC exome family set",
+    finding: "Quantified de novo coding contribution and showed architecture differs by sex and cognitive phenotype.",
+    why: "Made de novo burden interpretable as part of ASD liability rather than a list of rare events.",
+    doi: "10.1038/nature13908"
+  },
+  {
+    id: "dong-2014", year: 2014, citation: "Dong 2014",
+    title: "De Novo Insertions and Deletions of Predominantly Paternal Origin Are Associated with Autism Spectrum Disorder",
+    cohorts: ["SSC"], assay: "WES indels", ancestry: "US",
+    layers: ["coding"], n: "ASD family exome data",
+    finding: "Showed de novo indels are enriched in ASD and predominantly paternal in origin.",
+    why: "Extended de novo coding architecture beyond SNVs to small insertions and deletions.",
+    doi: "10.1016/j.celrep.2014.08.068"
+  },
+  {
+    id: "uddin-2014", year: 2014, citation: "Uddin 2014",
+    title: "Brain-expressed exons under purifying selection are enriched for de novo mutations in autism spectrum disorder",
+    cohorts: ["SSC / ASD exomes"], assay: "WES + exon constraint", ancestry: "US",
+    layers: ["coding"], n: "ASD de novo exome cohorts",
+    finding: "Prioritized brain-expressed exons under purifying selection as enriched targets of ASD de novo mutations.",
+    why: "Added exon-level evolutionary constraint to ASD variant interpretation.",
+    doi: "10.1038/ng.2980"
+  },
+  {
+    id: "pinto-2014", year: 2014, citation: "Pinto 2014",
+    title: "Convergence of genes and cellular pathways dysregulated in autism spectrum disorders",
+    cohorts: ["AGP", "SSC"], assay: "CNV", ancestry: "International",
+    layers: ["cnv"], n: "2,446 ASD cases and 2,640 controls",
+    finding: "Showed rare CNV genes converge on synaptic, neuronal-developmental, and chromatin-remodeling pathways.",
+    why: "Paired CNV burden with pathway convergence across large ASD samples.",
+    doi: "10.1016/j.ajhg.2014.03.018"
+  },
+  {
+    id: "gaugler-2014", year: 2014, citation: "Gaugler 2014",
+    title: "Most genetic risk for autism resides with common variation",
+    cohorts: ["Swedish / PAGES"], assay: "SNP heritability", ancestry: "Swedish / European",
+    layers: ["common"], n: ">1.6M family registry; PAGES 466 cases and 2,580 controls",
+    finding: "Estimated narrow-sense heritability around 54%, common variants around 49.4%, and de novo mutations around 2.6% of liability variance.",
+    why: "Balanced rare de novo excitement with the population-scale impact of common inherited variation.",
+    doi: "10.1038/ng.3039"
+  },
+  {
+    id: "jacquemont-2014", year: 2014, citation: "Jacquemont 2014",
+    title: "A Higher Mutational Burden in Females Supports a Female Protective Model in Neurodevelopmental Disorders",
+    cohorts: ["ASD / NDD cohorts"], assay: "CNV + SNV burden", ancestry: "Multi-cohort",
+    layers: ["sex", "coding", "cnv"], n: "Neurodevelopmental disorder cohorts",
+    finding: "Females with NDD carried higher mutational burden than males, supporting a female protective threshold model.",
+    why: "Set the frame for later sex-specific ASD genomic burden analyses.",
+    doi: "10.1016/j.ajhg.2014.02.001"
+  },
+  {
+    id: "chaste-2015", year: 2015, citation: "Chaste 2015",
+    title: "A GWAS of autism using the Simons Simplex Collection: does reducing phenotypic heterogeneity increase genetic homogeneity?",
+    cohorts: ["SSC"], assay: "GWAS + subphenotyping", ancestry: "US / European subset",
+    layers: ["common", "phenotype"], n: "2,576 SSC families",
+    finding: "No genome-wide significant signal in full sample or phenotype subgroups; subgrouping had only modest impact on genetic homogeneity.",
+    why: "A cautionary counterpoint to later phenotype-clustered and family-relative methods.",
+    doi: "10.1016/j.biopsych.2014.09.017"
+  },
+  {
+    id: "sanders-2015", year: 2015, citation: "Sanders 2015",
+    title: "Insights into Autism Spectrum Disorder Genomic Architecture and Biology from 71 Risk Loci",
+    cohorts: ["SSC", "ASC"], assay: "Integrated dnSNV + dnCNV", ancestry: "International",
+    layers: ["coding", "cnv"], n: "Integrated de novo CNV and SNV datasets",
+    finding: "Reported 65 ASD-associated genes at FDR < 0.1 and highlighted chromatin and synaptic convergence.",
+    why: "Unified exome and CNV evidence into a single ASD genomic architecture model.",
+    doi: "10.1016/j.neuron.2015.09.016"
+  },
+  {
+    id: "krumm-2015", year: 2015, citation: "Krumm 2015",
+    title: "Excess of rare, inherited truncating mutations in autism",
+    cohorts: ["SSC"], assay: "WES inherited PTV", ancestry: "US",
+    layers: ["coding", "inherited", "sex"], n: "2,270 SSC quartet families",
+    finding: "Rare inherited PTVs were enriched in probands, strongest in constrained and prior de novo genes; female probands had higher burden.",
+    why: "Brought inherited rare coding variation back into an ASD field dominated by de novo events.",
+    doi: "10.1038/ng.3303"
+  },
+  {
+    id: "yuen-2015", year: 2015, citation: "Yuen 2015",
+    title: "Whole-genome sequencing of quartet families with autism spectrum disorder",
+    cohorts: ["MSSNG"], assay: "WGS", ancestry: "Canada / international",
+    layers: ["wgs", "inherited", "cnv"], n: "85 ASD multiplex quartet families; 340 subjects",
+    finding: "69.4% of affected sibling pairs carried discordant ASD-relevant mutations across SNVs, indels, CNVs, SVs, and X-linked variants.",
+    why: "Showed multiplex ASD often reflects distinct rare variants even within the same family.",
+    doi: "10.1038/nm.3792"
+  },
+  {
+    id: "merikangas-2015", year: 2015, citation: "Merikangas 2015",
+    title: "The phenotypic manifestations of rare genic CNVs in autism spectrum disorder",
+    cohorts: ["AGP"], assay: "CNV + phenotype", ancestry: "European",
+    layers: ["cnv", "phenotype"], n: "1,590 AGP ASD cases carrying at least one rare genic CNV",
+    finding: "ASD/ID-gene CNVs tracked language and communication phenotypes, while broader brain-expressed-gene CNVs tracked adaptive function.",
+    why: "Connected CNV class to within-ASD phenotypic heterogeneity.",
+    doi: "10.1038/mp.2014.150"
+  },
+  {
+    id: "leppa-2016", year: 2016, citation: "Leppa 2016",
+    title: "Rare inherited and de novo CNVs reveal complex contributions to ASD risk in multiplex families",
+    cohorts: ["AGRE", "multiplex ASD"], assay: "CNV", ancestry: "Multiplex cohorts",
+    layers: ["cnv", "inherited"], n: "Multiplex ASD families",
+    finding: "Showed rare inherited and de novo CNVs both contribute to multiplex ASD risk.",
+    why: "Important counterweight to simplex-only de novo architecture.",
+    doi: "10.1016/j.ajhg.2016.06.036"
+  },
+  {
+    id: "turner-2016", year: 2016, citation: "Turner 2016",
+    title: "Genome sequencing of autism-affected families reveals disruption of putative noncoding regulatory DNA",
+    cohorts: ["ASD WGS families"], assay: "WGS", ancestry: "US",
+    layers: ["wgs", "noncoding"], n: "ASD families",
+    finding: "Reported de novo regulatory variants in promoters and conserved noncoding elements, suggesting roughly 10% of families had regulatory de novo candidates.",
+    why: "One of the first ASD WGS studies to explicitly move beyond the exome.",
+    doi: "10.1016/j.ajhg.2016.08.004"
+  },
+  {
+    id: "weiner-2017", year: 2017, citation: "Weiner 2017",
+    title: "Polygenic transmission disequilibrium confirms that common and rare variation act additively to create risk for autism spectrum disorders",
+    cohorts: ["SSC", "SPARK", "AGRE"], assay: "pTDT / PRS", ancestry: "Multi-cohort",
+    layers: ["common", "inherited"], n: "6,454 ASD families",
+    finding: "ASD, schizophrenia, and educational attainment PRS were overtransmitted to autistic children and added to rare de novo risk.",
+    why: "Connected family-based common polygenic risk to rare variant architecture.",
+    doi: "10.1038/ng.3863"
+  },
+  {
+    id: "turner-2017", year: 2017, citation: "Turner 2017",
+    title: "Genomic Patterns of De Novo Mutation in Simplex Autism",
+    cohorts: ["SSC"], assay: "WGS", ancestry: "US",
+    layers: ["wgs", "noncoding", "cnv"], n: "516 simplex autism families; 2,064 individuals",
+    finding: "Cataloged >59M SNVs, 133,992 de novo SNVs, 88 de novo CNVs, and proband enrichment for gene-disruptive and regulatory mutations.",
+    why: "Comprehensive simplex WGS map for both coding and noncoding de novo burden.",
+    doi: "10.1016/j.cell.2017.08.047"
+  },
+  {
+    id: "spark-2018", year: 2018, citation: "SPARK 2018",
+    title: "SPARK: A US Cohort of 50,000 Families to Accelerate Autism Research",
+    cohorts: ["SPARK"], assay: "Cohort resource + array + WES", ancestry: "US multi-ancestry",
+    layers: ["resource"], n: "First year: about 18,000 autistic individuals and 28,000 first-degree relatives",
+    finding: "Launched a national web-based family cohort with thousands of trios, unaffected siblings, and multiplex families.",
+    why: "Scaled ASD genetics from expert-center cohorts to national online recruitment.",
+    doi: "10.1016/j.neuron.2018.01.015"
+  },
+  {
+    id: "werling-2018", year: 2018, citation: "Werling 2018",
+    title: "An analytical framework for whole-genome sequence association studies and its implications for autism spectrum disorder",
+    cohorts: ["SSC"], assay: "WGS category-wide association", ancestry: "US",
+    layers: ["wgs", "noncoding"], n: "519 SSC cases, siblings, and parents; 2,076 total",
+    finding: "Tested 51,801 annotation categories and found no noncoding category significant; coding signal remained strongest.",
+    why: "Set a sober baseline for WGS noncoding association power.",
+    doi: "10.1038/s41588-018-0107-y"
+  },
+  {
+    id: "an-2018", year: 2018, citation: "An 2018",
+    title: "Genome-wide de novo risk score implicates promoter variation in autism spectrum disorder",
+    cohorts: ["SSC"], assay: "WGS de novo risk score", ancestry: "US",
+    layers: ["wgs", "noncoding"], n: "1,902 SSC quartet families; 7,608 samples; 255,106 DNMs",
+    finding: "Promoter variation, especially conserved TFBS in distal promoters, contributed to ASD risk score signal.",
+    why: "A major noncoding de novo result using family-based whole-genome annotations.",
+    doi: "10.1126/science.aat6576"
+  },
+  {
+    id: "grove-2019", year: 2019, citation: "Grove 2019",
+    title: "Identification of common genetic risk variants for autism spectrum disorder",
+    cohorts: ["iPSYCH / PGC"], assay: "GWAS", ancestry: "European",
+    layers: ["common"], n: "18,381 cases and 27,969 controls",
+    finding: "Identified five genome-wide significant loci and estimated SNP heritability around 11%.",
+    why: "First mature ASD common-variant map at psychiatric-consortium scale.",
+    doi: "10.1038/s41588-019-0344-8"
+  },
+  {
+    id: "ruzzo-2019", year: 2019, citation: "Ruzzo 2019",
+    title: "Inherited and De Novo Genetic Risk for Autism Impacts Shared Networks",
+    cohorts: ["iHART / AGRE"], assay: "WGS", ancestry: "Multiplex international",
+    layers: ["wgs", "coding", "inherited"], n: "493 multiplex families; 2,308 individuals",
+    finding: "Prioritized 69 genes, 16 newly implicated primarily inherited genes, and convergent inherited/de novo networks.",
+    why: "A central multiplex-family WGS study for inherited ASD risk.",
+    doi: "10.1016/j.cell.2019.07.015"
+  },
+  {
+    id: "matoba-2020", year: 2020, citation: "Matoba 2020",
+    title: "Common genetic risk variants identified in the SPARK cohort support DDHD2 as a candidate risk gene for autism",
+    cohorts: ["SPARK", "iPSYCH / PGC"], assay: "GWAS + MPRA + eQTL", ancestry: "European subset plus cross-ancestry SPARK QC",
+    layers: ["common", "noncoding"], n: "6,222 SPARK case-pseudocontrol pairs; meta-analysis 18,381 cases and 27,969 controls",
+    finding: "Identified a SPARK chromosome 8 locus and prioritized DDHD2 through MPRA, eQTL, H-MAGMA, and expression evidence.",
+    why: "Shows how large family GWAS can move from common locus to regulatory candidate gene.",
+    doi: "10.1038/s41398-020-00953-9"
+  },
+  {
+    id: "satterstrom-2020", year: 2020, citation: "Satterstrom 2020",
+    title: "Large-scale exome sequencing study implicates both developmental and functional changes in the neurobiology of autism",
+    cohorts: ["ASC", "iPSYCH"], assay: "WES", ancestry: "International",
+    layers: ["coding"], n: "35,584 samples; 11,986 ASD",
+    finding: "Identified 102 ASD risk genes at FDR <= 0.1, split between broader NDD and more ASD-predominant signals.",
+    why: "The canonical large exome ASD gene-discovery paper before SPARK-scale expansions.",
+    doi: "10.1016/j.cell.2019.12.036"
+  },
+  {
+    id: "trost-2020", year: 2020, citation: "Trost 2020",
+    title: "Tandem DNA repeats expanded in autism",
+    cohorts: ["MSSNG", "SSC"], assay: "WGS tandem-repeat expansion", ancestry: "International",
+    layers: ["repeat", "wgs", "phenotype"], n: "17,231 genomes from MSSNG, SSC, and 1000 Genomes",
+    finding: "Rare gene-associated repeat expansions occurred in 23.3% of affected individuals versus 20.7% of siblings and were linked to lower IQ/adaptive function.",
+    why: "Opened ASD WGS to repeat expansions missed by SNP, CNV, and exome-first analyses.",
+    doi: "10.1038/s41586-020-2579-z"
+  },
+  {
+    id: "narita-2020", year: 2020, citation: "Narita 2020",
+    title: "Clustering by phenotype and genome-wide association study in autism",
+    cohorts: ["SSC"], assay: "Phenotype-clustered GWAS", ancestry: "White male SSC subset",
+    layers: ["common", "phenotype"], n: "597 male ASD probands and 370 unaffected brothers; replication 712 probands and 354 brothers",
+    finding: "Phenotype-clustered GWAS found 65 significant loci and replicated SRRM4, while conventional full-cohort GWAS found none.",
+    why: "A phenotype-stratification counterpoint to Chaste 2015 with a stronger but narrower signal.",
+    doi: "10.1038/s41398-020-00951-x"
+  },
+  {
+    id: "mitra-2021", year: 2021, citation: "Mitra 2021",
+    title: "Patterns of de novo tandem repeat mutations and their role in autism",
+    cohorts: ["SSC"], assay: "WGS de novo tandem repeat", ancestry: "US",
+    layers: ["repeat", "wgs", "noncoding"], n: "1,637 SSC quad families; 175,291 TR mutations across 94,616 loci",
+    finding: "ASD probands carried excess de novo tandem-repeat mutations, especially in fetal brain promoters and constrained rare alleles.",
+    why: "Adds a mutation-rate and regulatory-repeat layer to ASD de novo WGS.",
+    doi: "10.1038/s41586-020-03078-7"
+  },
+  {
+    id: "yoon-2021", year: 2021, citation: "Yoon 2021",
+    title: "Rates of contributory de novo mutation in high and low-risk autism families",
+    cohorts: ["SSC", "AGRE"], assay: "WGS de novo comparison", ancestry: "US / international",
+    layers: ["wgs", "coding", "noncoding"], n: "Simplex and multiplex WGS families",
+    finding: "Estimated de novo contribution at 52-67% in low-risk simplex families and 30-39% across all autism, lower in multiplex families.",
+    why: "Explicitly contrasts simplex and multiplex de novo architecture.",
+    doi: "10.1038/s42003-021-02533-z"
+  },
+  {
+    id: "antaki-2022", year: 2022, citation: "Antaki 2022",
+    title: "A phenotypic spectrum of autism is attributable to the combined effects of rare variants, polygenic risk and sex",
+    cohorts: ["UCSD / REACH", "SSC", "SPARK"], assay: "WGS/WES + PRS + phenotype", ancestry: "Multi-cohort",
+    layers: ["wgs", "coding", "common", "sex", "phenotype"], n: ">37,000 individuals from 11,313 ASD families",
+    finding: "Rare and common variation each explained about 2% of liability, together about 4%, with higher burdens in female cases.",
+    why: "Integrates rare, common, sex, and phenotype rather than treating them as separate architectures.",
+    doi: "10.1038/s41588-022-01064-5"
+  },
+  {
+    id: "fu-2022", year: 2022, citation: "Fu 2022",
+    title: "Rare coding variation provides insight into the genetic architecture and phenotypic context of autism",
+    cohorts: ["ASC", "SPARK"], assay: "WES + TADA", ancestry: "International",
+    layers: ["coding", "phenotype"], n: "63,237 individuals; 20,627 affected across 33 ASD exome cohorts",
+    finding: "Identified 72 ASD genes at FDR <= 0.001 and 185 at FDR <= 0.05; differentiated ASD-predominant from DD-predominant developmental contexts.",
+    why: "Largest rare-coding ASD architecture expansion before Zhou/GALA-style ancestry and inherited analyses.",
+    doi: "10.1038/s41588-022-01104-0"
+  },
+  {
+    id: "zhou-2022", year: 2022, citation: "Zhou 2022",
+    title: "Integrating de novo and inherited variants in 42,607 autism cases identifies mutations in new moderate-risk genes",
+    cohorts: ["SPARK", "ASC", "MSSNG", "SSC"], assay: "WES de novo + inherited", ancestry: "International",
+    layers: ["coding", "inherited"], n: "42,607 ASD cases, including 35,130 SPARK cases and 16,877 trios",
+    finding: "Identified 60 exome-wide significant genes and new moderate-risk genes including NAV3, ITSN1, MARK2, SCAF1, and HNRNPUL2.",
+    why: "Scaled inherited LoF and de novo integration using SPARK as the major new sample engine.",
+    doi: "10.1038/s41588-022-01148-2"
+  },
+  {
+    id: "warrier-2022", year: 2022, citation: "Warrier 2022",
+    title: "Genetic correlates of phenotypic heterogeneity in autism",
+    cohorts: ["SSC", "SPARK", "AGRE", "AIMS-2-TRIALS"], assay: "PRS + de novo burden + latent phenotype", ancestry: "Multi-cohort",
+    layers: ["common", "coding", "phenotype", "sex"], n: "Up to 12,893 autistic individuals; 24,420 for latent phenotypes",
+    finding: "Common PGS mapped to core-feature heterogeneity, while high-impact de novo variants tracked IQ, adaptive behavior, milestones, and DD burden.",
+    why: "Separates core-autism and associated-impairment genetic axes.",
+    doi: "10.1038/s41588-022-01072-5"
+  },
+  {
+    id: "kimura-2022", year: 2022, citation: "Kimura 2022",
+    title: "Exome sequencing analysis of Japanese autism spectrum disorder case-control sample supports an increased burden of synaptic function-related genes",
+    cohorts: ["Japanese WES"], assay: "WES rare-variant burden", ancestry: "Japanese / East Asian",
+    layers: ["coding", "ancestry"], n: "301 ASD cases and 296 controls after QC",
+    finding: "Rare LoF variation was enriched in constrained genes and synaptic gene sets, especially trans-synaptic signaling.",
+    why: "Adds a non-European case-control exome burden axis to ASD genetics.",
+    doi: "10.1038/s41398-022-02033-6"
+  },
+  {
+    id: "trost-2022", year: 2022, citation: "Trost 2022",
+    title: "Genomic architecture of autism from comprehensive whole-genome sequence annotation",
+    cohorts: ["MSSNG", "SSC"], assay: "WGS all variant classes", ancestry: "International",
+    layers: ["wgs", "coding", "cnv", "repeat"], n: "MSSNG 11,312 individuals; 5,100 ASD plus SSC and 1000 Genomes comparators",
+    finding: "Diagnostic yield was 14.1% in MSSNG and 14.5% in SSC; diagnosed cases split across sequence, structural, and mitochondrial classes.",
+    why: "A whole-genome architecture view that treats SNVs, SVs, CNVs, repeats, and mtDNA together.",
+    doi: "10.1016/j.cell.2022.10.009"
+  },
+  {
+    id: "kim-2022", year: 2022, citation: "Kim 2022",
+    title: "Non-coding de novo mutations in chromatin interactions are implicated in autism spectrum disorder",
+    cohorts: ["SSC / ASD WGS"], assay: "WGS + chromatin interactions", ancestry: "ASD family cohorts",
+    layers: ["wgs", "noncoding"], n: "ASD de novo WGS cohorts",
+    finding: "Noncoding de novo mutations in chromatin-interaction contexts contributed to ASD risk.",
+    why: "Links de novo noncoding variants to 3D regulatory architecture.",
+    doi: "10.1038/s41380-022-01697-2"
+  },
+  {
+    id: "kim-2024-wgs", year: 2024, citation: "Kim 2024",
+    title: "Whole genome sequencing analysis identifies sex differences of familial pattern contributing to phenotypic severity in autism",
+    cohorts: ["K-ARC", "SSC", "SPARK"], assay: "WGS + phenotype + PRS", ancestry: "Korean plus cross-cohort comparison",
+    layers: ["wgs", "sex", "phenotype", "ancestry"], n: "K-ARC 1,400 families / 3,730 phenotyped; WGS 673 families / 2,255 individuals",
+    finding: "Female de novo PTV enrichment and female relatives' higher tolerated polygenic burden supported sex-differentiated familial patterns.",
+    why: "Adds a Korean WGS axis to ASD sex and family-liability architecture.",
+    doi: "10.1186/s13073-024-01385-6"
+  },
+  {
+    id: "kim-2024-str", year: 2024, citation: "Kim 2024 STR",
+    title: "Short tandem repeat expansions in cortical layer-specific genes implicate phenotypic severity and autism risk",
+    cohorts: ["K-ARC"], assay: "WGS STR expansion", ancestry: "Korean",
+    layers: ["repeat", "wgs", "phenotype", "ancestry"], n: "634 Korean ASD families; 2,104 individuals",
+    finding: "Rare STR expansions in cortical layer-specific genes were associated with SRS and Vineland severity.",
+    why: "Connects repeat expansion burden to quantitative ASD severity in an East Asian WGS cohort.",
+    doi: "10.1111/pcn.13676"
+  },
+  {
+    id: "kim-2024-cwas", year: 2024, citation: "Kim 2024 CWAS-Plus",
+    title: "CWAS-Plus: estimating category-wide association of rare noncoding variation from whole-genome sequencing data",
+    cohorts: ["ASD WGS"], assay: "CWAS-Plus WGS method", ancestry: "ASD / Alzheimer WGS",
+    layers: ["wgs", "noncoding"], n: "7,280 ASD WGS samples",
+    finding: "A faster category-wide framework highlighted de novo noncoding TFBS signal in conserved loci.",
+    why: "Improves the computational layer for rare noncoding association in ASD WGS.",
+    doi: "10.1093/bib/bbae323"
+  },
+  {
+    id: "mendes-2025", year: 2025, citation: "Mendes 2025",
+    title: "Chromosome X-wide common variant association study in autism spectrum disorder",
+    cohorts: ["MSSNG", "SSC", "SPARK", "HostSeq", "MGRB"], assay: "XWAS", ancestry: "Multi-cohort",
+    layers: ["common", "sex"], n: "6,873 ASD probands and 8,981 controls",
+    finding: "Identified 59 significant X-chromosome variants across 20 loci, including PTCHD1-AS/DDX53 and sex-stratified signals.",
+    why: "Brings the often-excluded X chromosome into ASD common-variant mapping.",
+    doi: "10.1016/j.ajhg.2024.11.008"
+  },
+  {
+    id: "litman-2025", year: 2025, citation: "Litman 2025",
+    title: "Decomposition of phenotypic heterogeneity in autism reveals underlying genetic programs",
+    cohorts: ["Large ASD phenotype-genetics cohorts"], assay: "Phenotype decomposition + genetics", ancestry: "Multi-cohort",
+    layers: ["phenotype", "common", "coding"], n: "239 phenotypic features",
+    finding: "Resolved four ASD phenotypic classes with different genetic programs across social/behavioral, mixed DD, moderate, and broadly affected profiles.",
+    why: "Updates cohort genetics from diagnosis-wide averaging to phenotype-class architecture.",
+    doi: "10.1038/s41588-025-02224-z"
+  },
+  {
+    id: "zhang-2025", year: 2025, citation: "Zhang 2025",
+    title: "Polygenic and developmental profiles of autism differ by age at diagnosis",
+    cohorts: ["SPARK", "iPSYCH", "MCS", "LSAC"], assay: "GWAS / PRS / developmental profiles", ancestry: "Multi-cohort",
+    layers: ["common", "phenotype"], n: "Core cohorts included SPARK and iPSYCH; 6,206 SPARK trios for rare coding check",
+    finding: "Common variants explained about 11% of age-at-diagnosis variance in SPARK/iPSYCH and separated early versus late diagnosis polygenic factors.",
+    why: "Treats diagnosis timing as a genetically informative developmental phenotype.",
+    doi: "10.1038/s41586-025-09542-6"
+  },
+  {
+    id: "kim-2025-wfsd", year: 2025, citation: "Kim 2025 WFSD",
+    title: "Evaluation of familial phenotype deviation to measure the impact of de novo mutations in autism",
+    cohorts: ["K-ARC", "SSC", "SPARK"], assay: "WES/WGS + family-relative phenotype", ancestry: "Multi-ancestry with Korean subset",
+    layers: ["coding", "wgs", "phenotype"], n: "78,685 individuals in 21,735 ASD trios/simplex families",
+    finding: "WFSD sharpened de novo genotype-phenotype associations and improved discovery yield, including 18 novel ASD-associated genes.",
+    why: "Uses unaffected relatives to remove family background from phenotype impact estimates.",
+    doi: "10.1186/s13073-025-01532-7"
+  },
+  {
+    id: "gala-2026", year: 2026, citation: "GALA 2026",
+    title: "Deleterious coding variation associated with autism is shared across ancestries",
+    cohorts: ["GALA"], assay: "WES/WGS + TADA + small CNV", ancestry: "Admixed American / Latin American",
+    layers: ["coding", "ancestry", "cnv"], n: "6,977 QC-passed individuals; 4,717 ASD and 2,260 controls/siblings",
+    finding: "Identified 35 genes at FDR < 0.05 and showed deleterious coding ASD signals replicate across non-AMR cohorts.",
+    why: "Most direct curated evidence for ancestry transferability beyond European-heavy ASD sequencing.",
+    doi: "10.1038/s41591-026-04228-6"
+  },
+  {
+    id: "lee-2026", year: 2026, citation: "Lee 2026",
+    title: "Co-occurrence of rare variants implicates gene pairs in cytoskeletal pathways and is associated with phenotypic severity in autism",
+    cohorts: ["K-ARC", "SSC", "SPARK", "KoGES"], assay: "WGS/WES rare-variant co-occurrence", ancestry: "East Asian and European",
+    layers: ["coding", "inherited", "phenotype", "ancestry"], n: "52,670 WGS/WES samples; EAS and EUR cohorts",
+    finding: "Identified 162 disrupted gene pairs and linked carrier status to cytoskeletal/cilia pathways, ADOS CSS, and polygenic overtransmission.",
+    why: "Adds a two-hit/co-occurrence layer across EAS and EUR ASD cohorts.",
+    doi: "10.1186/s13059-026-04041-x"
+  }
+];
+
+const state = {
+  search: "",
+  layer: "all",
+  cohort: "all",
+  assay: "all",
+  ancestry: "all",
+  selectedId: "gala-2026"
+};
+
+const minYear = 2001;
+const maxYear = 2026;
+const matrixCohorts = ["AGRE", "AGP", "SSC", "SPARK", "ASC", "iPSYCH / PGC", "MSSNG", "iHART / AGRE", "K-ARC", "GALA"];
+const matrixLayers = ["resource", "common", "coding", "cnv", "wgs", "noncoding", "repeat", "inherited", "sex", "phenotype", "ancestry"];
+
+function layerColor(layer) {
+  return layerMeta[layer]?.color || "#475569";
+}
+
+function layerLabel(layer) {
+  return layerMeta[layer]?.label || layer;
+}
+
+function option(value, label) {
+  return `<option value="${value}">${label}</option>`;
+}
+
+function normalize(value) {
+  return String(value || "").toLowerCase();
+}
+
+function unique(values) {
+  return [...new Set(values)].sort((a, b) => a.localeCompare(b));
+}
+
+function studyText(study) {
+  return normalize([
+    study.citation,
+    study.title,
+    study.cohorts.join(" "),
+    study.assay,
+    study.ancestry,
+    study.finding,
+    study.why,
+    study.layers.join(" ")
+  ].join(" "));
+}
+
+function filteredStudies() {
+  return studies.filter(study => {
+    const searchOk = !state.search || studyText(study).includes(normalize(state.search));
+    const layerOk = state.layer === "all" || study.layers.includes(state.layer);
+    const cohortOk = state.cohort === "all" || study.cohorts.includes(state.cohort);
+    const assayOk = state.assay === "all" || normalize(study.assay).includes(normalize(state.assay));
+    const ancestryOk = state.ancestry === "all" || normalize(study.ancestry).includes(normalize(state.ancestry));
+    return searchOk && layerOk && cohortOk && assayOk && ancestryOk;
+  });
+}
+
+function populateFilters() {
+  const layerFilter = document.getElementById("layerFilter");
+  layerFilter.innerHTML = option("all", "전체 레이어") + Object.entries(layerMeta).map(([id, meta]) => option(id, meta.label)).join("");
+
+  const allCohorts = unique(studies.flatMap(study => study.cohorts));
+  document.getElementById("cohortFilter").innerHTML = option("all", "전체 코호트") + allCohorts.map(value => option(value, value)).join("");
+
+  const assayKinds = ["GWAS", "WES", "WGS", "CNV", "PRS", "STR", "phenotype", "resource"];
+  document.getElementById("assayFilter").innerHTML = option("all", "전체 assay") + assayKinds.map(value => option(value, value)).join("");
+
+  const ancestryKinds = ["European", "Korean", "Japanese", "East Asian", "Latin", "Admixed", "International", "US", "Multi-cohort"];
+  document.getElementById("ancestryFilter").innerHTML = option("all", "전체 조상 배경") + ancestryKinds.map(value => option(value, value)).join("");
+}
+
+function renderMetrics() {
+  const years = studies.map(study => study.year);
+  const allCohorts = unique(studies.flatMap(study => study.cohorts));
+  const metrics = [
+    { value: studies.length, label: "출판 논문 및 코호트 리소스" },
+    { value: allCohorts.length, label: "표시된 코호트 라벨" },
+    { value: Object.keys(layerMeta).length, label: "유전체 증거 레이어" },
+    { value: `${Math.min(...years)}-${Math.max(...years)}`, label: "논문 연도 범위" },
+    { value: "0", label: "내부 draft 포함" }
+  ];
+  document.getElementById("metrics").innerHTML = metrics.map(item => `
+    <div class="metric">
+      <div class="value">${item.value}</div>
+      <div class="label">${item.label}</div>
+    </div>
+  `).join("");
+}
+
+function renderLayerChips() {
+  const visible = filteredStudies();
+  const counts = Object.keys(layerMeta).reduce((acc, layer) => {
+    acc[layer] = visible.filter(study => study.layers.includes(layer)).length;
+    return acc;
+  }, {});
+  const chips = [
+    `<button class="layer-chip ${state.layer === "all" ? "active" : ""}" style="--chip-color:#111827" data-layer="all"><span class="dot"></span>All <strong>${visible.length}</strong></button>`
+  ];
+  Object.entries(layerMeta).forEach(([id, meta]) => {
+    chips.push(`<button class="layer-chip ${state.layer === id ? "active" : ""}" style="--chip-color:${meta.color}" data-layer="${id}"><span class="dot"></span>${meta.label} <strong>${counts[id]}</strong></button>`);
+  });
+  document.getElementById("layerChips").innerHTML = chips.join("");
+  document.getElementById("layerChips").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.layer = btn.dataset.layer;
+      document.getElementById("layerFilter").value = state.layer;
+      renderAll();
+    });
+  });
+}
+
+function xForYear(year) {
+  return 3 + (((year - minYear) / (maxYear - minYear)) * 94);
+}
+
+function renderTimeline() {
+  const visible = filteredStudies();
+  const ticks = [2001, 2005, 2010, 2015, 2020, 2026];
+  const axis = `
+    <div class="timeline-axis">
+      <div></div>
+      <div class="year-axis">
+        ${ticks.map(year => `<div class="year-tick" style="left:${xForYear(year)}%"><span>${year}</span></div>`).join("")}
+      </div>
+    </div>`;
+  const rows = timelineRows.map(row => {
+    const rowStudies = visible.filter(study => study.layers.some(layer => row.layers.includes(layer)));
+    const dots = rowStudies.map((study, index) => {
+      const primary = study.layers.find(layer => row.layers.includes(layer)) || study.layers[0];
+      const y = 12 + ((index % 3) * 10);
+      return `<button class="event-dot ${state.selectedId === study.id ? "selected" : ""}" style="--x:${xForYear(study.year)}%; --y:${y}px; --c:${layerColor(primary)}" title="${study.citation}: ${study.title}" data-id="${study.id}" aria-label="${study.citation}"></button>`;
+    }).join("");
+    return `
+      <div class="timeline-row">
+        <div class="timeline-label">${row.label}</div>
+        <div class="timeline-lane">${dots}</div>
+      </div>`;
+  }).join("");
+  document.getElementById("timeline").innerHTML = axis + rows;
+  document.querySelectorAll(".event-dot").forEach(dot => {
+    dot.addEventListener("click", () => selectStudy(dot.dataset.id));
+  });
+}
+
+function matrixCount(layer, cohortName) {
+  return filteredStudies().filter(study => study.layers.includes(layer) && study.cohorts.includes(cohortName)).length;
+}
+
+function renderMatrix() {
+  const maxCell = Math.max(1, ...matrixLayers.flatMap(layer => matrixCohorts.map(cohort => matrixCount(layer, cohort))));
+  let html = `<div class="matrix-cell matrix-head"></div>`;
+  html += matrixCohorts.map(cohort => `<div class="matrix-cell matrix-head">${cohort}</div>`).join("");
+  matrixLayers.forEach(layer => {
+    html += `<div class="matrix-cell matrix-row-label"><span class="dot" style="--chip-color:${layerColor(layer)}"></span>${layerLabel(layer)}</div>`;
+    matrixCohorts.forEach(cohort => {
+      const count = matrixCount(layer, cohort);
+      const heat = count ? Math.max(2, Math.ceil((count / maxCell) * 5)) : 0;
+      html += `<button class="matrix-cell heat ${count ? "" : "empty"}" style="--heat:${heat}; --heat-color:${layerColor(layer)}" data-layer="${layer}" data-cohort="${cohort}" ${count ? "" : "disabled"}>${count || ""}</button>`;
+    });
+  });
+  document.getElementById("matrix").innerHTML = html;
+  document.querySelectorAll(".heat:not(.empty)").forEach(cell => {
+    cell.addEventListener("click", () => {
+      state.layer = cell.dataset.layer;
+      state.cohort = cell.dataset.cohort;
+      document.getElementById("layerFilter").value = state.layer;
+      document.getElementById("cohortFilter").value = state.cohort;
+      renderAll();
+    });
+  });
+}
+
+function renderCohorts() {
+  document.getElementById("cohortGrid").innerHTML = cohorts.map(cohort => {
+    const count = studies.filter(study => study.cohorts.includes(cohort.name)).length;
+    return `
+      <article class="cohort-card ${state.cohort === cohort.name ? "active" : ""}" data-cohort="${cohort.name}">
+        <h3>${cohort.name}<span class="badge">${count} papers</span></h3>
+        <p>${cohort.note}</p>
+        <div class="cohort-meta">
+          <span>${cohort.kind}</span>
+          <span>${cohort.assays}</span>
+          <span>${cohort.scale}</span>
+          <span>${cohort.ancestry}</span>
+        </div>
+      </article>`;
+  }).join("");
+  document.querySelectorAll(".cohort-card").forEach(card => {
+    card.addEventListener("click", () => {
+      state.cohort = state.cohort === card.dataset.cohort ? "all" : card.dataset.cohort;
+      document.getElementById("cohortFilter").value = state.cohort;
+      renderAll();
+    });
+  });
+}
+
+function renderTable() {
+  const visible = filteredStudies().slice().sort((a, b) => b.year - a.year || a.citation.localeCompare(b.citation));
+  document.getElementById("visibleCount").textContent = `${visible.length} shown`;
+  document.getElementById("studyRows").innerHTML = visible.map(study => `
+    <tr class="study-row ${state.selectedId === study.id ? "selected" : ""}" data-id="${study.id}">
+      <td>${study.year}</td>
+      <td><strong>${study.citation}</strong><br>${study.title}</td>
+      <td>${study.cohorts.join("<br>")}</td>
+      <td>${study.assay}</td>
+      <td><div class="pill-list">${study.layers.map(layer => `<span class="pill" style="color:${layerColor(layer)}">${layerLabel(layer)}</span>`).join("")}</div></td>
+      <td>${study.finding}</td>
+    </tr>
+  `).join("");
+  document.querySelectorAll(".study-row").forEach(row => {
+    row.addEventListener("click", () => selectStudy(row.dataset.id));
+  });
+}
+
+function scholarUrl(study) {
+  const doi = study.doi && study.doi !== "NA" ? study.doi : "";
+  const query = doi || `${study.title} ${study.citation}`;
+  return `https://scholar.google.com/scholar?q=${encodeURIComponent(query)}`;
+}
+
+function renderDetail() {
+  const visible = filteredStudies();
+  let selected = studies.find(study => study.id === state.selectedId);
+  if (!selected || !visible.includes(selected)) {
+    selected = visible[0] || studies[0];
+    state.selectedId = selected.id;
+  }
+  document.getElementById("detailPanel").innerHTML = `
+    <div class="panel-header">
+      <div>
+        <h2 class="panel-title">선택한 논문</h2>
+        <p class="panel-sub">${selected.year} · ${selected.citation}</p>
+      </div>
+    </div>
+    <div class="panel-body detail">
+      <h2>${selected.title}</h2>
+      <div class="citation">${selected.citation} · DOI ${selected.doi}</div>
+      <div class="pill-list">${selected.layers.map(layer => `<span class="pill" style="color:${layerColor(layer)}">${layerLabel(layer)}</span>`).join("")}</div>
+      <div class="detail-grid">
+        <div class="detail-kv"><div class="k">Cohort</div><div class="v">${selected.cohorts.join(", ")}</div></div>
+        <div class="detail-kv"><div class="k">Assay</div><div class="v">${selected.assay}</div></div>
+        <div class="detail-kv"><div class="k">Scale</div><div class="v">${selected.n}</div></div>
+        <div class="detail-kv"><div class="k">Ancestry</div><div class="v">${selected.ancestry}</div></div>
+      </div>
+      <p><strong>핵심 발견.</strong> ${selected.finding}</p>
+      <p><strong>왜 중요한가.</strong> ${selected.why}</p>
+      <a class="source-link" href="${scholarUrl(selected)}" target="_blank" rel="noopener">Google Scholar에서 보기</a>
+    </div>`;
+}
+
+function renderLayerBars() {
+  const visible = filteredStudies();
+  const counts = Object.keys(layerMeta).map(layer => ({
+    layer,
+    count: visible.filter(study => study.layers.includes(layer)).length
+  })).sort((a, b) => b.count - a.count);
+  const max = Math.max(1, ...counts.map(item => item.count));
+  document.getElementById("layerBars").innerHTML = counts.map(item => `
+    <div class="bar-row">
+      <div class="bar-label">${layerLabel(item.layer)}</div>
+      <div class="bar-track"><div class="bar-fill" style="--w:${(item.count / max) * 100}%; --c:${layerColor(item.layer)}"></div></div>
+      <div class="bar-value">${item.count}</div>
+    </div>
+  `).join("");
+}
+
+function selectStudy(id) {
+  state.selectedId = id;
+  renderTimeline();
+  renderTable();
+  renderDetail();
+}
+
+function bindControls() {
+  document.getElementById("searchBox").addEventListener("input", event => {
+    state.search = event.target.value;
+    renderAll();
+  });
+  document.getElementById("layerFilter").addEventListener("change", event => {
+    state.layer = event.target.value;
+    renderAll();
+  });
+  document.getElementById("cohortFilter").addEventListener("change", event => {
+    state.cohort = event.target.value;
+    renderAll();
+  });
+  document.getElementById("assayFilter").addEventListener("change", event => {
+    state.assay = event.target.value;
+    renderAll();
+  });
+  document.getElementById("ancestryFilter").addEventListener("change", event => {
+    state.ancestry = event.target.value;
+    renderAll();
+  });
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    state.search = "";
+    state.layer = "all";
+    state.cohort = "all";
+    state.assay = "all";
+    state.ancestry = "all";
+    document.getElementById("searchBox").value = "";
+    document.getElementById("layerFilter").value = "all";
+    document.getElementById("cohortFilter").value = "all";
+    document.getElementById("assayFilter").value = "all";
+    document.getElementById("ancestryFilter").value = "all";
+    renderAll();
+  });
+}
+
+function renderAll() {
+  renderLayerChips();
+  renderTimeline();
+  renderMatrix();
+  renderCohorts();
+  renderTable();
+  renderDetail();
+  renderLayerBars();
+}
+
+populateFilters();
+renderMetrics();
+bindControls();
+renderAll();
+</script>
+</body>
+</html>
