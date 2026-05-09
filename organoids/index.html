@@ -232,17 +232,17 @@ input,select{
 }
 .body-viz{
   position:relative;
-  min-height:520px;
+  min-height:560px;
   border:1px solid var(--line);
   border-radius:8px;
-  background:linear-gradient(180deg,#fff,#f8fafc);
+  background:linear-gradient(180deg,#fff 0%,#fbfcff 55%,#f8fafc 100%);
   overflow:hidden;
 }
 .body-svg{
   position:absolute;
-  inset:20px 28px;
-  width:calc(100% - 56px);
-  height:calc(100% - 40px);
+  inset:22px 34px;
+  width:calc(100% - 68px);
+  height:calc(100% - 44px);
 }
 .organ-node{
   position:absolute;
@@ -261,10 +261,13 @@ input,select{
   transition:transform .14s ease, box-shadow .14s ease, opacity .14s ease;
 }
 .organ-node:hover,.organ-node.active{
-  transform:translate(-50%,-50%) scale(1.14);
+  transform:translate(-50%,-50%) scale(1.1);
   box-shadow:0 0 0 2px #101828,0 12px 26px rgba(16,24,40,.22);
 }
 .organ-node.dim{opacity:.34}
+.organ-node.method-node{
+  border-radius:10px;
+}
 .body-side{
   display:grid;
   gap:12px;
@@ -1062,14 +1065,14 @@ const organProfiles = {
 };
 
 const organPositions = {
-  "Brain": {x:50,y:12,code:"Br"},
-  "Retina": {x:41,y:16,code:"Re"},
-  "Lung/Airway": {x:50,y:34,code:"Lu"},
-  "Heart": {x:57,y:40,code:"Ht"},
-  "Liver": {x:43,y:49,code:"Li"},
-  "Gut/Colon": {x:51,y:60,code:"Gu"},
-  "Kidney": {x:36,y:56,code:"Ki"},
-  "Methods/NAM": {x:69,y:72,code:"M"}
+  "Brain": {x:50,y:14,code:"Br"},
+  "Retina": {x:43,y:19,code:"Re"},
+  "Lung/Airway": {x:50,y:37,code:"Lu"},
+  "Heart": {x:55,y:41,code:"Ht"},
+  "Liver": {x:45,y:49,code:"Li"},
+  "Gut/Colon": {x:50,y:61,code:"Gu"},
+  "Kidney": {x:38,y:55,code:"Ki"},
+  "Methods/NAM": {x:82,y:86,code:"M"}
 };
 
 const organOrder = ["Brain","Kidney","Liver","Lung/Airway","Gut/Colon","Retina","Heart","Methods/NAM"];
@@ -1134,28 +1137,42 @@ function renderOrganBody(rows){
     const pos = organPositions[organ];
     const count = globalCounts[organ] || 0;
     const visibleCount = counts[organ] || 0;
-    const size = 32 + Math.round((count/maxCount)*18);
+    const size = organ === "Methods/NAM" ? 34 : 28 + Math.round((count/maxCount)*12);
     const active = organ === activeOrgan ? " active" : "";
     const dim = state.organ !== "All" && organ !== state.organ ? " dim" : "";
-    return `<button class="organ-node${active}${dim}" data-organ="${organ}" title="${organ}: ${visibleCount}/${count} shown" style="left:${pos.x}%;top:${pos.y}%;width:${size}px;height:${size}px;background:${colorFor(organ)}">${pos.code}</button>`;
+    const method = organ === "Methods/NAM" ? " method-node" : "";
+    return `<button class="organ-node${active}${dim}${method}" data-organ="${organ}" title="${organ}: ${visibleCount}/${count} shown" style="left:${pos.x}%;top:${pos.y}%;width:${size}px;height:${size}px;background:${colorFor(organ)}">${pos.code}</button>`;
   }).join("");
   const bars = organOrder.map(organ=>{
     const pct = Math.max(3, (globalCounts[organ] || 0) / maxCount * 100);
     return `<div class="organ-bar"><span>${organ}</span><div class="organ-bar-track"><div class="organ-bar-fill" style="width:${pct}%;background:${colorFor(organ)}"></div></div><b>${globalCounts[organ] || 0}</b></div>`;
   }).join("");
   holder.innerHTML = `
-    <div class="body-viz" aria-label="Human body organ map">
-      <svg class="body-svg" viewBox="0 0 180 360" role="img" aria-label="Schematic human body">
-        <path d="M90 18c20 0 34 15 34 34 0 16-9 28-22 33l8 29c26 6 44 30 44 62v63c0 26-17 50-41 58l-7 47H74l-7-47c-24-8-41-32-41-58v-63c0-32 18-56 44-62l8-29C65 80 56 68 56 52c0-19 14-34 34-34z" fill="#f7f9fc" stroke="#cfd6e2" stroke-width="2"/>
-        <path d="M61 137c19-20 39-22 58-1M54 193c23 14 49 14 73 0M69 250c15 8 29 8 43 0" fill="none" stroke="#d8dee8" stroke-width="2" stroke-linecap="round"/>
-        <ellipse cx="76" cy="135" rx="18" ry="31" fill="rgba(8,122,162,.08)" stroke="#b8c5d4"/>
-        <ellipse cx="105" cy="135" rx="18" ry="31" fill="rgba(8,122,162,.08)" stroke="#b8c5d4"/>
-        <path d="M74 173c20-12 44-10 55 4-8 17-34 22-59 13 0-6 1-11 4-17z" fill="rgba(179,107,0,.08)" stroke="#d6c1a0"/>
-        <rect x="68" y="202" width="45" height="42" rx="14" fill="rgba(63,143,70,.08)" stroke="#bad3bd"/>
-        <path d="M68 188c-10 9-20 7-24-5 3-12 13-17 24-10M112 188c10 9 20 7 24-5-3-12-13-17-24-10" fill="rgba(15,138,122,.08)" stroke="#9ecdc5"/>
-      </svg>
-      ${nodes}
-    </div>
+	    <div class="body-viz" aria-label="Human body organ map">
+	      <svg class="body-svg" viewBox="0 0 240 430" role="img" aria-label="Schematic human body with organ locations">
+	        <defs>
+	          <linearGradient id="bodySkin" x1="0" x2="0" y1="0" y2="1">
+	            <stop offset="0" stop-color="#fbfcff"/>
+	            <stop offset="1" stop-color="#f1f5fa"/>
+	          </linearGradient>
+	        </defs>
+	        <path d="M120 14c24 0 43 19 43 43 0 18-11 34-28 40l5 23c35 6 59 29 66 66l20 104c3 16-7 30-22 32-14 2-26-7-29-21l-15-71-5 103-14 80h-23l-8-86-8 86H79l-14-80-5-103-15 71c-3 14-15 23-29 21-15-2-25-16-22-32l20-104c7-37 31-60 66-66l5-23c-17-6-28-22-28-40 0-24 19-43 43-43z" fill="url(#bodySkin)" stroke="#cfd6e2" stroke-width="3" stroke-linejoin="round"/>
+	        <path d="M91 120c11 11 47 11 58 0M68 183c20-28 84-28 104 0M75 281c24 20 66 20 90 0" fill="none" stroke="#d9e0ea" stroke-width="3" stroke-linecap="round"/>
+	        <path d="M89 42c10-18 49-15 58 5 4 9 1 22-5 30-11 14-33 13-50 5-12-6-12-25-3-40z" fill="rgba(91,91,214,.09)" stroke="rgba(91,91,214,.32)" stroke-width="2"/>
+	        <circle cx="104" cy="61" r="3" fill="#a9b4c4"/>
+	        <circle cx="136" cy="61" r="3" fill="#a9b4c4"/>
+	        <path d="M92 151c-19 14-27 43-18 75 18 2 36-19 37-48 1-15-6-24-19-27z" fill="rgba(8,122,162,.10)" stroke="#a9c7d3" stroke-width="2"/>
+	        <path d="M148 151c19 14 27 43 18 75-18 2-36-19-37-48-1-15 6-24 19-27z" fill="rgba(8,122,162,.10)" stroke="#a9c7d3" stroke-width="2"/>
+	        <path d="M116 184c13-8 29-3 31 12 2 15-15 25-31 37-16-12-32-22-30-37 2-15 18-20 30-12z" fill="rgba(196,61,83,.10)" stroke="#e0a7b2" stroke-width="2"/>
+	        <path d="M78 229c36-22 80-20 107 2-13 24-58 36-105 18-3-7-3-14-2-20z" fill="rgba(179,107,0,.11)" stroke="#d8bd91" stroke-width="2"/>
+	        <path d="M91 267c-14 12-30 10-38-3 4-17 21-25 37-14M150 267c14 12 30 10 38-3-4-17-21-25-37-14" fill="rgba(15,138,122,.10)" stroke="#a6d0c8" stroke-width="2"/>
+	        <rect x="87" y="285" width="66" height="62" rx="23" fill="rgba(63,143,70,.10)" stroke="#b7d2ba" stroke-width="2"/>
+	        <path d="M98 307c17-12 35-12 44 0M97 326c16 12 34 12 46 0" fill="none" stroke="#c7d9ca" stroke-width="3" stroke-linecap="round"/>
+	        <path d="M184 363h30v30h-30z" fill="rgba(94,106,117,.08)" stroke="#c4cbd4" stroke-width="2" stroke-dasharray="4 4"/>
+	        <path d="M161 336c17 12 26 21 35 35" fill="none" stroke="#c4cbd4" stroke-width="2" stroke-dasharray="4 4" stroke-linecap="round"/>
+	      </svg>
+	      ${nodes}
+	    </div>
     <div class="body-side">
       <article class="organ-summary">
         <h4>${activeOrgan}</h4>
