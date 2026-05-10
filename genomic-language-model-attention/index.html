@@ -36,6 +36,22 @@ body{
 button,input,select{font:inherit}
 a{color:inherit}
 .page{max-width:1460px;margin:0 auto;padding:28px 24px 42px}
+.home-crumb{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin:0 0 16px;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:999px;
+  padding:7px 11px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:850;
+  text-decoration:none;
+  box-shadow:0 4px 14px rgba(23,32,42,.04);
+}
+.home-crumb:hover{color:var(--teal);border-color:#9aa7b8}
 .mast{
   display:block;
   border-bottom:1px solid var(--line);
@@ -727,6 +743,7 @@ h1 .line{display:block}
 </head>
 <body>
 <main class="page">
+  <a class="home-crumb" href="../index.html">Autodidact 홈</a>
   <header class="mast">
     <div>
       <p class="eyebrow">Genomic Language Model Attention Lens</p>

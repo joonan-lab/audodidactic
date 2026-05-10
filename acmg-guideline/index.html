@@ -76,10 +76,11 @@ body::after{
 }
 .page{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:56px 28px 80px}
 .hero{margin-bottom:42px;padding:58px 0 30px}
-.brand{display:inline-flex;align-items:center;gap:12px;font-family:var(--f-mono);font-size:12.5px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:24px}
+.brand{display:inline-flex;align-items:center;gap:12px;font-family:var(--f-mono);font-size:12.5px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:24px;text-decoration:none}
 .brand-mark{width:30px;height:30px;border-radius:9px;background:conic-gradient(from 220deg at 50% 50%,var(--t-stat-glow),var(--t-cell-glow) 35%,var(--t-dna-glow) 70%,var(--t-stat-glow));box-shadow:0 1px 2px oklch(0.2 0.02 250 / .1),inset 0 0 0 1.5px oklch(1 0 0 / .6),inset 0 -3px 6px oklch(0.2 0.02 250 / .1);position:relative}
 .brand-mark::after{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--surface)}
 .brand strong{color:var(--ink);font-weight:800}
+.brand:hover strong{color:var(--t-stat)}
 .hero h1{font-family:var(--f-display);font-size:clamp(38px,5.6vw,68px);font-weight:850;letter-spacing:-.025em;line-height:1.08;max-width:960px;margin:0 0 22px}
 .mobile-break{display:none}
 .accent{background:linear-gradient(120deg,var(--t-stat) 0%,var(--t-cell) 55%,var(--t-dna) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
@@ -163,10 +164,10 @@ section{scroll-margin-top:105px}
 <body>
 <div class="page">
   <header class="hero">
-    <div class="brand">
+    <a class="brand" href="../index.html" aria-label="Autodidact 홈으로 돌아가기">
       <span class="brand-mark" aria-hidden="true"></span>
       <span><strong>autodidact</strong> · joonan-lab variant guide</span>
-    </div>
+    </a>
     <h1>ACMG/AMP 변이<span class="mobile-break"><br></span> 해석을<br><span class="accent">개념 흐름으로 익힌다</span></h1>
     <p class="lede">
       Criteria를 외우는 대신, 한 variant를 어떤 질문 순서로 읽는지 정리합니다. 기준선은 2015 ACMG/AMP guideline입니다. ClinGen guidance와 VCEP/CSpec은 그 기준을 더 구체적으로 적용하기 위한 보정층입니다.

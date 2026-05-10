@@ -42,9 +42,9 @@ nav .links::-webkit-scrollbar {
   display: none;
 }
 
+.home-view,
 .reset-view {
   flex: 0 0 auto;
-  margin-left: 14px;
   border: 1px solid rgba(47, 134, 168, 0.28);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.82);
@@ -60,6 +60,15 @@ nav .links::-webkit-scrollbar {
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
+.home-view {
+  text-decoration: none;
+}
+
+.reset-view {
+  margin-left: 14px;
+}
+
+.home-view:hover,
 .reset-view:hover {
   border-color: rgba(47, 134, 168, 0.46);
   background: rgba(47, 134, 168, 0.12);

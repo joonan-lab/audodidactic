@@ -86,12 +86,14 @@ a:hover { text-decoration: underline; }
   display: inline-flex; align-items: center; gap: 10px;
   font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em;
   color: var(--muted); text-transform: uppercase; margin-bottom: 16px;
+  text-decoration: none;
 }
 .brand-dot {
   width: 8px; height: 8px; border-radius: 50%; background: var(--tc);
   box-shadow: 0 0 0 4px oklch(from var(--tc) calc(l + 0.05) c h / 0.18);
 }
 .brand strong { color: var(--ink); font-weight: 700; }
+.brand:hover strong { color: var(--tc); }
 .hero h1 {
   font-family: var(--f-display); font-size: clamp(32px, 5vw, 56px);
   font-weight: 850; letter-spacing: -0.022em; line-height: 1.1; margin-bottom: 18px;
@@ -569,10 +571,10 @@ a:hover { text-decoration: underline; }
 
 <!-- HERO -->
 <header class="hero">
-  <div class="brand">
+  <a class="brand" href="../index.html" aria-label="Autodidact 홈으로 돌아가기">
     <span class="brand-dot" aria-hidden="true"></span>
     <span><strong>autodidact</strong> &middot; cancer spatial transcriptomics</span>
-  </div>
+  </a>
   <h1>암 &times; 공간전사체 <span class="accent">읽기 지도</span></h1>
   <p class="lede">
     암 조직 RNA 공간전사체 플랫폼, 샘플 규모, L-R (리간드-수용체) 분석 흐름을 한데 모았습니다. Visium, Xenium, MERSCOPE 등 RNA 기반 ST 플랫폼만 포함합니다.

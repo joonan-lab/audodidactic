@@ -31,6 +31,22 @@ body{
 button,input,select{font:inherit}
 a{color:inherit}
 .page{max-width:1420px;margin:0 auto;padding:28px 24px 44px}
+.home-crumb{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin:0 0 16px;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:999px;
+  padding:7px 11px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+  text-decoration:none;
+  box-shadow:0 4px 14px rgba(23,32,42,.04);
+}
+.home-crumb:hover{color:var(--blue);border-color:#9aa7b8}
 .mast{
   display:grid;
   grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);
@@ -764,6 +780,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 </head>
 <body>
 <main class="page" style="--accent:var(--blue)">
+  <a class="home-crumb" href="../index.html">Autodidact 홈</a>
   <section class="mast">
     <div>
       <div class="eyebrow">통계 유전학 방법론 해설</div>
