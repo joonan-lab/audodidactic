@@ -72,6 +72,7 @@ h2,.hero h1,.hero p,.subtitle{word-break:keep-all;overflow-wrap:anywhere}
 .gene-table tr:hover td{background:rgba(100,181,246,0.05)}
 .gene-table .gene-name{color:var(--accent);font-weight:700;font-family:monospace;font-size:15px}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.two-col>*{min-width:0}
 .card{background:var(--bg2);border:1px solid var(--gray2);border-radius:12px;padding:20px}
 .card h4{font-size:15px;color:var(--amber);margin-bottom:12px}
 .legend{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0;justify-content:center}
@@ -255,25 +256,30 @@ h2,.hero h1,.hero p,.subtitle{word-break:keep-all;overflow-wrap:anywhere}
       <div class="card">
         <h4>Xi 보호 모델 (Talukdar 2026)</h4>
         <div class="xi-diagram">
-          <svg viewBox="0 0 400 200" style="width:100%;max-width:400px">
-            <!-- X chromosome bar -->
-            <rect x="40" y="50" width="320" height="30" rx="15" fill="#1565c0" opacity="0.4"/>
-            <text x="200" y="70" text-anchor="middle" fill="#64b5f6" font-size="13" font-weight="bold">비활성 X 염색체 (Xi)</text>
-            <!-- Escape genes -->
-            <circle cx="80" cy="65" r="6" fill="#66bb6a"/>
-            <circle cx="120" cy="65" r="6" fill="#66bb6a"/>
-            <circle cx="160" cy="65" r="6" fill="#66bb6a"/>
-            <circle cx="200" cy="65" r="6" fill="#66bb6a"/>
-            <circle cx="240" cy="65" r="6" fill="#66bb6a"/>
-            <circle cx="280" cy="65" r="6" fill="#66bb6a"/>
-            <circle cx="320" cy="65" r="6" fill="#66bb6a"/>
-            <!-- Label -->
-            <text x="200" y="110" text-anchor="middle" fill="#81c784" font-size="12">60+ 탈출 유전자 (escape genes)</text>
-            <!-- Arrows -->
-            <line x1="200" y1="120" x2="200" y2="145" stroke="#81c784" stroke-width="2" marker-end="url(#arrow)"/>
-            <text x="200" y="165" text-anchor="middle" fill="#e0e0e8" font-size="12">상염색체 위험 변이의 표현형 영향을 완충</text>
-            <text x="200" y="185" text-anchor="middle" fill="#a0a0b8" font-size="11">남성 편향 소아 형질에서도 유사 메커니즘</text>
-            <defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#81c784"/></marker></defs>
+          <svg viewBox="0 0 420 230" style="width:100%;max-width:440px" role="img" aria-labelledby="xi-title xi-desc">
+            <title id="xi-title">Xi 보호 모델</title>
+            <desc id="xi-desc">비활성 X 염색체에서 발현을 유지하는 escape gene이 상염색체 위험 변이의 표현형 영향을 완충한다는 모델입니다.</desc>
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#81c784"/>
+              </marker>
+            </defs>
+            <text x="210" y="34" text-anchor="middle" fill="#64b5f6" font-size="14" font-weight="700">비활성 X 염색체 (Xi)</text>
+            <rect x="58" y="48" width="304" height="30" rx="15" fill="#1565c0" opacity="0.45"/>
+            <text x="210" y="68" text-anchor="middle" fill="#b9dcff" font-size="11" font-weight="700">대부분의 유전자는 발현 억제</text>
+            <g fill="#66bb6a">
+              <circle cx="84" cy="104" r="6"/>
+              <circle cx="126" cy="104" r="6"/>
+              <circle cx="168" cy="104" r="6"/>
+              <circle cx="210" cy="104" r="6"/>
+              <circle cx="252" cy="104" r="6"/>
+              <circle cx="294" cy="104" r="6"/>
+              <circle cx="336" cy="104" r="6"/>
+            </g>
+            <text x="210" y="132" text-anchor="middle" fill="#81c784" font-size="13" font-weight="700">60+ 탈출 유전자 (escape genes)</text>
+            <line x1="210" y1="144" x2="210" y2="166" stroke="#81c784" stroke-width="2" marker-end="url(#arrow)"/>
+            <text x="210" y="190" text-anchor="middle" fill="#e0e0e8" font-size="13" font-weight="700">상염색체 위험 변이의 표현형 영향을 완충</text>
+            <text x="210" y="212" text-anchor="middle" fill="#a0a0b8" font-size="11">남성 편향 소아 형질에서도 유사 메커니즘</text>
           </svg>
         </div>
         <p class="source-ref">Talukdar 2026, Nature Genetics</p>
