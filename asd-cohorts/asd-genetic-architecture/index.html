@@ -144,6 +144,7 @@ h2,.hero h1,.hero p,.subtitle{word-break:keep-all;overflow-wrap:anywhere}
     <a href="#sex">성별 차이</a>
     <a href="#resolution">해상도 진화</a>
   </div>
+  <button class="reset-view" id="resetPage" type="button">초기화</button>
 </nav>
 
 <div class="container">
@@ -272,7 +273,7 @@ h2,.hero h1,.hero p,.subtitle{word-break:keep-all;overflow-wrap:anywhere}
             <line x1="200" y1="120" x2="200" y2="145" stroke="#81c784" stroke-width="2" marker-end="url(#arrow)"/>
             <text x="200" y="165" text-anchor="middle" fill="#e0e0e8" font-size="12">상염색체 위험 변이의 표현형 영향을 완충</text>
             <text x="200" y="185" text-anchor="middle" fill="#a0a0b8" font-size="11">남성 편향 소아 형질에서도 유사 메커니즘</text>
-            <defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#81c784"/></marker></defs>
+            <defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#81c784"/></marker></defs>
           </svg>
         </div>
         <p class="source-ref">Talukdar 2026, Nature Genetics</p>
@@ -409,9 +410,9 @@ const VARIANT_DATA = {
     '복잡 SV/기타': {
       title: '복잡 구조변이 및 기타',
       stats: [{val:'??',label:'기여도 미정량'}],
-      desc: '역위, 전좌, 복합 SV 등 짧은 읽기 시퀀싱의 한계로 미탐지된 변이 유형. 장기 읽기 시퀀싱으로 해결 가능.',
+      desc: '역위, 전좌, 복합 SV 등 짧은길이(short-read) 시퀀싱의 한계로 미탐지된 변이 유형. 긴길이(long-read) 시퀀싱으로 해결 가능.',
       genes: '미확인',
-      source: '향후 장기 읽기 시퀀싱 연구'
+      source: '향후 긴길이 시퀀싱 연구'
     }
   }
 };
@@ -562,6 +563,40 @@ const darkLayout = {
   font:{family:'Noto Sans KR', color:'#e0e0e8'},
   margin:{l:60,r:30,t:30,b:60}
 };
+
+const DEFAULT_DETAIL_HTML = {
+  'heritability-detail': '<h3>변이 유형을 클릭하세요</h3><p>각 세그먼트를 클릭하면 해당 변이 유형의 상세 정보가 여기에 표시됩니다.</p>',
+  'timeline-detail': '<h3>이벤트를 클릭하세요</h3><p>타임라인의 점을 클릭하면 해당 연구의 상세 정보가 표시됩니다.</p>',
+  'network-detail': '<h3>경로를 클릭하세요</h3><p>경로 또는 유전자를 클릭하면 상세 정보가 표시됩니다.</p>',
+  'resolution-detail': '<h3>기술 단계를 클릭하세요</h3><p>각 포인트를 클릭하면 해당 기술이 가능케 한 발견이 표시됩니다.</p>'
+};
+
+const CHART_IDS = ['sunburst-chart', 'timeline-chart', 'pathway-chart', 'sex-chart', 'resolution-chart'];
+
+function resetDetailPanels(){
+  Object.entries(DEFAULT_DETAIL_HTML).forEach(([id, html])=>{
+    const panel = document.getElementById(id);
+    if(panel) panel.innerHTML = html;
+  });
+}
+
+function resetPageState({redraw=false, scrollTop=false} = {}){
+  resetDetailPanels();
+  if(redraw){
+    CHART_IDS.forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) Plotly.purge(el);
+    });
+    initSunburst();
+    initTimeline();
+    initPathway();
+    initSex();
+    initResolution();
+  }
+  if(scrollTop){
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+}
 
 // --- Section 1: Sunburst ---
 function initSunburst(){
@@ -824,19 +859,27 @@ function initNav(){
     a.addEventListener('click', e=>{
       e.preventDefault();
       const target = document.querySelector(a.getAttribute('href'));
-      if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+      if(target){
+        const top = target.getBoundingClientRect().top + window.scrollY - 70;
+        window.scrollTo({top, behavior:'smooth'});
+      }
     });
+  });
+}
+
+function initResetButton(){
+  const button = document.getElementById('resetPage');
+  if(!button) return;
+  button.addEventListener('click', ()=>{
+    resetPageState({redraw:true, scrollTop:true});
   });
 }
 
 // ===== INIT =====
 window.addEventListener('load', ()=>{
-  initSunburst();
-  initTimeline();
-  initPathway();
-  initSex();
-  initResolution();
+  resetPageState({redraw:true});
   initNav();
+  initResetButton();
   setTimeout(()=>{
     const loader = document.getElementById('loading');
     loader.style.opacity = '0';
