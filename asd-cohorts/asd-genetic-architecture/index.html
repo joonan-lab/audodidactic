@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ASD 유전 아키텍처 인터랙티브 시각화</title>
+<title>ASD 유전 아키텍처 지도 | Autodidact</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.plot.ly/plotly-2.35.0.min.js" charset="utf-8"></script>
@@ -29,7 +29,7 @@ nav{
   display:flex;align-items:center;padding:0 24px;height:56px;
 }
 nav .logo{font-weight:700;font-size:16px;color:var(--accent);white-space:nowrap}
-nav .links{display:flex;gap:4px;margin-left:32px;overflow-x:auto}
+nav .links{display:flex;gap:4px;margin-left:32px;overflow-x:auto;min-width:0}
 nav .links a{
   color:var(--text2);text-decoration:none;font-size:13px;font-weight:500;
   padding:8px 14px;border-radius:8px;white-space:nowrap;transition:all .2s;
@@ -39,6 +39,7 @@ nav .links a:hover,nav .links a.active{color:var(--accent);background:rgba(100,1
 section{min-height:80vh;padding:48px 0;border-bottom:1px solid var(--gray2)}
 section:last-child{border-bottom:none}
 h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
+h2,.hero h1,.hero p,.subtitle{word-break:keep-all;overflow-wrap:anywhere}
 .subtitle{color:var(--text2);font-size:15px;margin-bottom:32px}
 .chart-wrap{position:relative;width:100%;margin-bottom:24px}
 .detail-panel{
@@ -78,7 +79,8 @@ h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
 .legend-dot{width:12px;height:12px;border-radius:50%}
 .hero{text-align:center;padding:80px 0 40px}
 .hero h1{font-size:36px;font-weight:700;color:#fff;margin-bottom:16px}
-.hero p{font-size:16px;color:var(--text2);max-width:640px;margin:0 auto}
+.hero p{font-size:16px;color:var(--text2);max-width:780px;margin:0 auto}
+.author-line{margin-top:14px;font-size:13px;color:var(--text2)}
 .hero .stats-row{display:flex;justify-content:center;gap:32px;margin-top:32px;flex-wrap:wrap}
 .hero .stat-box{text-align:center}
 .hero .stat-box .num{font-size:36px;font-weight:700;color:var(--accent)}
@@ -106,12 +108,19 @@ h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
   text-align:center;
 }
 @media(max-width:768px){
+  .container{padding:72px 20px 40px}
   nav .logo{font-size:14px}
   nav .links a{font-size:12px;padding:6px 10px}
   h2{font-size:22px}
-  .hero h1{font-size:26px}
-  .hero .stats-row{gap:16px}
-  .hero .stat-box .num{font-size:28px}
+  .hero h1{font-size:28px;line-height:1.25}
+  .hero h1,.hero p,.subtitle{max-width:calc(100vw - 40px);margin-left:auto;margin-right:auto}
+  .hero p{font-size:15px;line-height:1.75}
+  .hero .stats-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}
+  .hero .stat-box{min-width:0}
+  .hero .stat-box .num{font-size:26px;white-space:normal;overflow-wrap:anywhere}
+  .legend{justify-content:flex-start;overflow-x:auto;padding-bottom:6px}
+  .chart-wrap{overflow-x:auto}
+  .chart-wrap>div{min-width:680px}
   .two-col{grid-template-columns:1fr}
   .detail-panel .stat{padding:6px 12px}
   .detail-panel .stat .val{font-size:18px}
@@ -126,7 +135,7 @@ h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
 </div>
 
 <nav>
-  <div class="logo">ASD Genetic Architecture</div>
+  <div class="logo">ASD Genetics Map</div>
   <div class="links">
     <a href="#heritability" class="active">유전율 구조</a>
     <a href="#timeline">발견의 역사</a>
@@ -140,20 +149,21 @@ h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
 
 <!-- Hero -->
 <div class="hero">
-  <h1>자폐 스펙트럼 장애의 유전 아키텍처</h1>
-  <p>146편의 연구 논문을 종합한 ASD 유전학의 정량적 구조. 변이 유형별 기여도부터 유전자 네트워크, 성별 차이, 기술 진화까지.</p>
+  <h1>ASD의 유전 아키텍처</h1>
+  <p>ASD 유전학의 정량적 구조를 변이 유형, 유전자 네트워크, 성별 차이, 기술 해상도 흐름으로 연결해 읽습니다.</p>
+  <div class="author-line">작성자: 박우영 · 업데이트: 2026-05-10</div>
   <div class="stats-row">
     <div class="stat-box"><div class="num">~80%</div><div class="lbl">전체 유전율</div></div>
     <div class="stat-box"><div class="num">~1,000+</div><div class="lbl">추정 위험 유전자</div></div>
     <div class="stat-box"><div class="num">5</div><div class="lbl">수렴 분자 경로</div></div>
-    <div class="stat-box"><div class="num">146</div><div class="lbl">종합 논문 수</div></div>
+    <div class="stat-box"><div class="num">Missing</div><div class="lbl">아직 설명되지 않은 유전율</div></div>
   </div>
 </div>
 
 <!-- Section 1: Heritability -->
 <section id="heritability">
-  <h2>1. 변이 유형별 기여도</h2>
-  <p class="subtitle">ASD 유전율 ~80% 중 약 30-40%만 현재 설명됨. 나머지는 "Missing Heritability"로 남아 있다.</p>
+  <h2>변이 유형별 기여도</h2>
+  <p class="subtitle">ASD 유전율 ~80% 중 현재 설명되는 부분과 아직 남아 있는 missing heritability를 나누어 봅니다.</p>
   <div class="chart-wrap">
     <div id="sunburst-chart" style="width:100%;height:560px"></div>
   </div>
@@ -165,8 +175,8 @@ h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
 
 <!-- Section 2: Timeline -->
 <section id="timeline">
-  <h2>2. 발견의 역사: 2006-2026</h2>
-  <p class="subtitle">20년간 ASD 유전학이 어떻게 축적되어 왔는지, 핵심 이정표를 시간순으로 추적한다.</p>
+  <h2>발견의 역사: 2006-2026</h2>
+  <p class="subtitle">ASD 유전학이 어떤 기술과 코호트를 거치며 축적되어 왔는지 핵심 이정표를 시간순으로 봅니다.</p>
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:#ef5350"></div>열성/유전</div>
     <div class="legend-item"><div class="legend-dot" style="background:#42a5f5"></div>De novo CNV</div>
@@ -185,8 +195,8 @@ h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
 
 <!-- Section 3: Gene Network -->
 <section id="network">
-  <h2>3. 유전자 네트워크와 경로 수렴</h2>
-  <p class="subtitle">~1,000개의 이질적 위험 유전자가 5개 핵심 경로로 수렴한다. 경로를 클릭하여 구성 유전자를 확인하세요.</p>
+  <h2>유전자 네트워크와 경로 수렴</h2>
+  <p class="subtitle">여러 위험 유전자가 시냅스, 크로마틴, 전사 조절 같은 핵심 경로로 모이는 양상을 확인합니다. 경로를 클릭하면 구성 유전자를 볼 수 있습니다.</p>
   <div class="chart-wrap">
     <div id="pathway-chart" style="width:100%;height:520px"></div>
   </div>
@@ -214,7 +224,7 @@ h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
 
 <!-- Section 4: Sex Differences -->
 <section id="sex">
-  <h2>4. 성별 차이와 여성 보호 효과</h2>
+  <h2>성별 차이와 여성 보호 효과</h2>
   <p class="subtitle">ASD 남:녀 비율 ~4:1의 분자적 기전. 열성 유전이 우세한 코호트에서 비율이 2.6:1로 감소한다.</p>
   <div class="two-col">
     <div>
@@ -243,7 +253,7 @@ h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
             <!-- Arrows -->
             <line x1="200" y1="120" x2="200" y2="145" stroke="#81c784" stroke-width="2" marker-end="url(#arrow)"/>
             <text x="200" y="165" text-anchor="middle" fill="#e0e0e8" font-size="12">상염색체 위험 변이의 표현형 영향을 완충</text>
-            <text x="200" y="185" text-anchor="middle" fill="#a0a0b8" font-size="11">17개 남성 편향 소아 질환에서도 동일 메커니즘</text>
+            <text x="200" y="185" text-anchor="middle" fill="#a0a0b8" font-size="11">남성 편향 소아 형질에서도 유사 메커니즘</text>
             <defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#81c784"/></marker></defs>
           </svg>
         </div>
@@ -264,8 +274,8 @@ h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
 
 <!-- Section 5: Resolution Evolution -->
 <section id="resolution">
-  <h2>5. 해상도의 진화: 벌크에서 단일세포로</h2>
-  <p class="subtitle">2011년 마이크로어레이부터 2025년 단일세포 메틸화+전사체 동시 측정까지, ASD 뇌 연구의 해상도 혁명.</p>
+  <h2>해상도의 진화: 벌크에서 단일세포로</h2>
+  <p class="subtitle">마이크로어레이에서 단일세포 메틸화+전사체 동시 측정까지, ASD 관련 뇌 연구의 해상도가 어떻게 달라졌는지 봅니다.</p>
   <div class="chart-wrap">
     <div id="resolution-chart" style="width:100%;height:480px"></div>
   </div>
@@ -274,11 +284,6 @@ h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
     <p>각 포인트를 클릭하면 해당 기술이 가능케 한 발견이 표시됩니다.</p>
   </div>
 </section>
-
-<footer style="text-align:center;padding:40px 0;color:var(--text2);font-size:13px">
-  <p>LLM Wiki 프로젝트 | 146편의 연구 논문 종합 | 2026</p>
-  <p style="margin-top:8px">데이터 출처: ASC, SSC, SPARK, MSSNG, iPSYCH, PsychENCODE</p>
-</footer>
 
 </div><!-- /container -->
 
@@ -441,7 +446,7 @@ const TIMELINE_EVENTS = [
   {year:2025, track:3, title:'표현형 분해', author:'Litman/Zhang', importance:2,
    detail:'표현형 혼합 모델링으로 4개 ASD 클래스 분해 (Litman). 진단 시기별 다유전자 구조 차이 확인 (Zhang).', color:'#ffb74d'},
   {year:2026, track:0, title:'Xi 보호 유전자 60+', author:'Talukdar', importance:3,
-   detail:'비활성 X에서 발현되는 60+ 유전자가 상염색체 위험 변이를 완충. 17개 남성 편향 소아 질환으로 확장.', color:'#ef5350'}
+   detail:'비활성 X에서 발현되는 60+ 유전자가 상염색체 위험 변이를 완충. 남성 편향 소아 형질에서도 유사한 메커니즘이 제안됨.', color:'#ef5350'}
 ];
 
 const TRACK_LABELS = ['열성/유전', 'De novo CNV', 'De novo 코딩', 'GWAS/공통', '기능 검증/통합'];
@@ -822,9 +827,9 @@ window.addEventListener('load', ()=>{
 });
 </script>
 <footer style="text-align:center;padding:32px 24px;border-top:1px solid var(--gray2);color:var(--text2);font-size:13px">
-  Data sourced from the <a href="https://github.com/pwy02221-dev/asd-genetic-architecture" style="color:var(--accent);text-decoration:none">LLM Wiki project</a> (146 studies).
+  공개 문헌과 코호트 자료를 바탕으로 구성한 ASD 유전학 읽기 지도입니다.
   <br>
-  Related: <a href="https://pwy02221-dev.github.io/asd-brain-enhancer-landscape/" style="color:var(--accent);text-decoration:none">싱글셀 뇌 인핸서 랜드스케이프</a> · <a href="https://pwy02221-dev.github.io/genome-foundation-model-landscape/" style="color:var(--accent);text-decoration:none">Genome FM 진화 지도</a>
+  Related: <a href="../brain-enhancer-landscape/index.html" style="color:var(--accent);text-decoration:none">ASD 뇌 인핸서 조절 지도</a> · <a href="../../genomic-language-model-attention/genome-fm-landscape/index.html" style="color:var(--accent);text-decoration:none">게놈 파운데이션 모델 진화 지도</a>
 </footer>
 </body>
 </html>

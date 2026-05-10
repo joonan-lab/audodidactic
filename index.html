@@ -140,6 +140,7 @@ body::after {
 .brand {
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
   font-family: var(--f-mono);
   font-size: 12.5px;
@@ -171,6 +172,7 @@ body::after {
   box-shadow: inset 0 1px 2px oklch(0.2 0.02 250 / 0.06);
 }
 .brand strong { color: var(--ink); font-weight: 700; }
+.brand span { min-width: 0; }
 
 .hero h1 {
   font-family: var(--f-display);
@@ -198,6 +200,8 @@ body::after {
   line-height: 1.7;
   max-width: 580px;
   margin-bottom: 18px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 .hero .lede a {
   color: inherit;
@@ -213,6 +217,8 @@ body::after {
   font-size: 14.5px;
   line-height: 1.75;
   color: var(--muted);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 .autodidact-note strong {
   color: var(--ink);
@@ -245,6 +251,32 @@ body::after {
     max-width: none;
     margin: 30px 0 0;
   }
+}
+
+@media (max-width: 640px) {
+  .page { padding: 28px 24px 64px; }
+  .brand {
+    display: flex;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    line-height: 1.5;
+  }
+  .brand span {
+    max-width: calc(100vw - 88px);
+    overflow-wrap: anywhere;
+  }
+  .hero,
+  .hero .lede,
+  .autodidact-note {
+    width: 100%;
+    max-width: calc(100vw - 48px);
+  }
+  .hero h1 {
+    font-size: 42px;
+    line-height: 1.1;
+  }
+  .hero .lede { font-size: 16px; }
 }
 
 /* ============== TRACKS ============== */
@@ -326,6 +358,8 @@ body::after {
   max-width: 680px;
   line-height: 1.7;
   margin: 16px 0 28px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 /* ============== CARDS ============== */
@@ -433,6 +467,8 @@ body::after {
   color: var(--ink-soft);
   line-height: 1.7;
   flex-grow: 1;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
 .card-cta {
@@ -718,9 +754,9 @@ body::after {
       </a>
       <a class="card" href="genomic-language-model-attention/genome-fm-landscape/index.html">
         <span class="card-tag">interactive viz · foundation model</span>
-        <h3 class="card-title">Genome Foundation Model 진화 지도</h3>
+        <h3 class="card-title">게놈 파운데이션 모델 진화 지도</h3>
         <p class="card-desc">
-          게놈 FM의 아키텍처 계보(Transformer→SSM→Hybrid), 토큰화 전략, 적용 범위 확장, 예측→설계 스펙트럼, gLM vs Activity Predictor 패러다임 수렴을 인터랙티브 차트로 탐색합니다.
+          게놈 파운데이션 모델의 아키텍처 계보(Transformer→SSM→Hybrid), 토큰화 전략, 적용 범위 확장, 예측→설계 스펙트럼, gLM vs Activity Predictor의 수렴 흐름을 인터랙티브 차트로 탐색합니다.
         </p>
         <div class="card-cta">
           <span class="card-cta-text">페이지로 들어가기</span>
@@ -827,11 +863,11 @@ body::after {
   <section class="track" data-track="model" aria-labelledby="t04">
     <header class="track-head">
       <div class="track-title-group">
-        <h2 class="track-title" id="t04">질환 유전학과 인간 조직 모델</h2>
+        <h2 class="track-title" id="t04">ASD 유전학과 인간 조직 모델</h2>
       </div>
     </header>
     <p class="track-blurb">
-      자폐 유전체 연구의 코호트, 표현형, 유전적 조성을 먼저 정리하고, 이어서 오가노이드가 어떤 세포원과 배양 로직으로 인간 조직 모델을 만드는지 연결해서 읽습니다.
+      ASD 유전학 연구의 코호트, 표현형, 유전적 조성을 먼저 정리하고, 이어서 오가노이드가 어떤 세포원과 배양 로직으로 인간 조직 모델을 만드는지 연결해서 읽습니다.
     </p>
     <div class="cards split">
       <a class="card" href="asd-cohorts/index.html">
@@ -853,7 +889,7 @@ body::after {
         <span class="card-tag">interactive viz · ASD genetics</span>
         <h3 class="card-title">ASD 유전 아키텍처 인터랙티브 맵</h3>
         <p class="card-desc">
-          위키에 축적된 ASD 유전학 연구를 종합하여 변이 유형별 기여도, 발견 타임라인, 유전자 네트워크 수렴, 성별 차이, 기술 해상도 진화를 인터랙티브 차트로 탐색합니다.
+          공개 문헌에서 정리한 ASD 유전학 연구를 바탕으로 변이 유형별 기여도, 발견 타임라인, 유전자 네트워크 수렴, 성별 차이, 기술 해상도 진화를 인터랙티브 차트로 탐색합니다.
         </p>
         <div class="card-cta">
           <span class="card-cta-text">페이지로 들어가기</span>
@@ -866,9 +902,9 @@ body::after {
       </a>
       <a class="card" href="asd-cohorts/brain-enhancer-landscape/index.html">
         <span class="card-tag">interactive viz · brain enhancer</span>
-        <h3 class="card-title">싱글셀 뇌 인핸서/조절 요소 랜드스케이프</h3>
+        <h3 class="card-title">ASD 뇌 인핸서 조절 지도</h3>
         <p class="card-desc">
-          ASD 뇌의 인핸서 및 조절 요소 변화를 추적합니다. 기술-해상도 진화, 조절 요소 규모, 세포유형별 영향 히트맵, 수렴 증거를 인터랙티브 차트로 탐색합니다.
+          ASD 관련 뇌에서 인핸서와 조절 요소가 어떻게 달라지는지 살펴봅니다. 기술-해상도 진화, 조절 요소 규모, 세포유형별 신호, 수렴 증거를 인터랙티브 차트로 탐색합니다.
         </p>
         <div class="card-cta">
           <span class="card-cta-text">페이지로 들어가기</span>
@@ -965,7 +1001,7 @@ body::after {
     <span class="badge">coming soon</span>
   </div>
   <ul class="upcoming-list">
-    <li>뇌질환 연구 지도</li>
+    <li>뇌 연구 지도</li>
     <li>Multi-modal clinical genomics</li>
   </ul>
 </section>

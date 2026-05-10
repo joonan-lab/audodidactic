@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Genome Foundation Model 진화 지도</title>
+<title>게놈 파운데이션 모델 진화 지도 | Autodidact</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.plot.ly/plotly-2.35.0.min.js" charset="utf-8"></script>
@@ -20,13 +20,14 @@
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(15,15,26,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--gray2);display:flex;align-items:center;padding:0 24px;height:56px}
 nav .logo{font-weight:700;font-size:15px;color:var(--accent);white-space:nowrap}
-nav .links{display:flex;gap:4px;margin-left:24px;overflow-x:auto}
+nav .links{display:flex;gap:4px;margin-left:24px;overflow-x:auto;min-width:0}
 nav .links a{color:var(--text2);text-decoration:none;font-size:13px;font-weight:500;padding:8px 14px;border-radius:8px;white-space:nowrap;transition:all .2s}
 nav .links a:hover,nav .links a.active{color:var(--accent);background:rgba(100,181,246,0.1)}
 .container{max-width:1200px;margin:0 auto;padding:80px 24px 48px}
 section{min-height:80vh;padding:48px 0;border-bottom:1px solid var(--gray2)}
 section:last-child{border-bottom:none}
 h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
+h2,.hero h1,.hero p,.subtitle{word-break:keep-all;overflow-wrap:anywhere}
 .subtitle{color:var(--text2);font-size:15px;margin-bottom:32px}
 .chart-wrap{position:relative;width:100%;margin-bottom:24px}
 .detail-panel{background:var(--bg2);border:1px solid var(--gray2);border-radius:12px;padding:24px;margin-top:16px;min-height:120px;transition:all .3s ease}
@@ -39,7 +40,8 @@ h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
 .detail-panel .stat .label{font-size:11px;color:var(--text2)}
 .hero{text-align:center;padding:80px 0 40px}
 .hero h1{font-size:36px;font-weight:700;color:#fff;margin-bottom:16px}
-.hero p{font-size:16px;color:var(--text2);max-width:700px;margin:0 auto}
+.hero p{font-size:16px;color:var(--text2);max-width:780px;margin:0 auto}
+.author-line{margin-top:14px;font-size:13px;color:var(--text2)}
 .hero .stats-row{display:flex;justify-content:center;gap:32px;margin-top:32px;flex-wrap:wrap}
 .hero .stat-box{text-align:center}
 .hero .stat-box .num{font-size:36px;font-weight:700;color:var(--accent)}
@@ -65,8 +67,12 @@ footer a:hover{text-decoration:underline}
 #loading p{margin-top:16px;color:var(--text2);font-size:14px}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:768px){
+  .container{padding:72px 20px 40px}
   nav .logo{font-size:13px}nav .links a{font-size:12px;padding:6px 10px}
-  h2{font-size:22px}.hero h1{font-size:26px}.hero .stats-row{gap:16px}.hero .stat-box .num{font-size:28px}
+  h2{font-size:22px}.hero h1{font-size:28px;line-height:1.25}.hero h1,.hero p,.subtitle{max-width:calc(100vw - 40px);margin-left:auto;margin-right:auto}.hero p{font-size:15px;line-height:1.75}.hero .stats-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}.hero .stat-box{min-width:0}.hero .stat-box .num{font-size:26px;white-space:normal;overflow-wrap:anywhere}
+  .legend{justify-content:flex-start;overflow-x:auto;padding-bottom:6px}
+  .chart-wrap{overflow-x:auto}
+  .chart-wrap>div{min-width:680px}
   .conv-cards,.challenge-cards{grid-template-columns:repeat(2,1fr)}
   .detail-panel .stat{padding:6px 12px}.detail-panel .stat .val{font-size:18px}
 }
@@ -77,7 +83,7 @@ footer a:hover{text-decoration:underline}
 <div id="loading"><div class="spinner"></div><p>시각화를 불러오는 중...</p></div>
 
 <nav>
-  <div class="logo">Genome FM Landscape</div>
+  <div class="logo">Genome FM Map</div>
   <div class="links">
     <a href="#architecture" class="active">아키텍처</a>
     <a href="#tokenization">토큰화</a>
@@ -90,10 +96,11 @@ footer a:hover{text-decoration:underline}
 <div class="container">
 
 <div class="hero">
-  <h1>Genome Foundation Model 진화 지도</h1>
-  <p>58편의 문헌에서 추출한 30개 게놈 FM의 아키텍처 계보, 토큰화 전략, 적용 범위, 그리고 "예측에서 설계로"의 패러다임 전환을 추적한다.</p>
+  <h1>게놈 파운데이션 모델 진화 지도</h1>
+  <p>주요 게놈 파운데이션 모델의 아키텍처 계보, 토큰화 전략, 적용 범위, 그리고 예측에서 설계로 이어지는 흐름을 정리합니다.</p>
+  <div class="author-line">작성자: 박우영 · 업데이트: 2026-05-10</div>
   <div class="stats-row">
-    <div class="stat-box"><div class="num">30</div><div class="lbl">분석 모델 수</div></div>
+    <div class="stat-box"><div class="num">gLM</div><div class="lbl">서열 사전학습</div></div>
     <div class="stat-box"><div class="num">9.3T bp</div><div class="lbl">최대 훈련 데이터 (Evo2)</div></div>
     <div class="stat-box"><div class="num">15B</div><div class="lbl">최대 파라미터 (ESMFold)</div></div>
     <div class="stat-box"><div class="num">1M bp</div><div class="lbl">문맥 길이 상한</div></div>
@@ -102,8 +109,8 @@ footer a:hover{text-decoration:underline}
 
 <!-- Section 1 -->
 <section id="architecture">
-  <h2>1. 아키텍처 계보: 삼파전에서 하이브리드 수렴으로</h2>
-  <p class="subtitle">2020-2026년, Transformer 독점 → SSM 도전 → 하이브리드 수렴의 3단계 진화. 버블 크기는 파라미터 규모, Y축은 문맥 길이(log).</p>
+  <h2>아키텍처 계보: 세 갈래 경쟁에서 하이브리드 수렴으로</h2>
+  <p class="subtitle">Transformer 중심 흐름에서 SSM과 하이브리드 구조가 등장하며 문맥 길이와 파라미터 규모가 어떻게 바뀌었는지 봅니다. 버블 크기는 파라미터 규모, Y축은 문맥 길이(log)입니다.</p>
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:#42a5f5"></div>Transformer</div>
     <div class="legend-item"><div class="legend-dot" style="background:#66bb6a"></div>SSM</div>
@@ -120,8 +127,8 @@ footer a:hover{text-decoration:underline}
 
 <!-- Section 2 -->
 <section id="tokenization">
-  <h2>2. 토큰화 진화: "어떻게 읽을 것인가"</h2>
-  <p class="subtitle">k-mer에서 BPE, 단일 뉴클레오타이드, 학습가능 토큰화, 도메인 특화까지. 토큰화가 아키텍처만큼 중요하다.</p>
+  <h2>토큰화 진화: 어떻게 읽을 것인가</h2>
+  <p class="subtitle">k-mer, BPE, 단일 뉴클레오타이드, 학습 가능 토큰화, 도메인 특화 전략을 비교합니다. 같은 DNA라도 어디서 끊어 읽는지가 모델의 해상도를 바꿉니다.</p>
   <div class="chart-wrap"><div id="token-chart" style="width:100%;height:420px"></div></div>
   <div class="detail-panel" id="token-detail">
     <h3>토큰화 방식을 클릭하세요</h3>
@@ -131,8 +138,8 @@ footer a:hover{text-decoration:underline}
 
 <!-- Section 3 -->
 <section id="domains">
-  <h2>3. 적용 범위 확장: DNA → 멀티모달 생물학</h2>
-  <p class="subtitle">DNA 서열 전용에서 RNA, 단백질, 후성유전체, mRNA 번역, 변이 효과까지 6개 축으로 확장.</p>
+  <h2>적용 범위 확장: DNA에서 멀티모달 생물학으로</h2>
+  <p class="subtitle">DNA 서열 전용 모델이 RNA, 단백질, 후성유전체, mRNA 번역, 변이 효과 해석으로 넓어지는 방향을 정리합니다.</p>
   <div class="chart-wrap"><div id="domain-chart" style="width:100%;height:420px"></div></div>
   <div class="detail-panel" id="domain-detail">
     <h3>도메인을 클릭하세요</h3>
@@ -142,8 +149,8 @@ footer a:hover{text-decoration:underline}
 
 <!-- Section 4 -->
 <section id="spectrum">
-  <h2>4. 예측에서 설계로: 생성형 게놈학의 부상</h2>
-  <p class="subtitle">초기 모델의 "이해"에서 "예측"을 거쳐 "설계(생성)"까지. 시간에 따라 설계 능력을 갖춘 모델이 급증.</p>
+  <h2>예측에서 설계로: 생성형 게놈학의 부상</h2>
+  <p class="subtitle">초기 모델의 이해와 예측 중심 접근이 설계(생성) 능력으로 확장되는 흐름을 시간축에서 봅니다.</p>
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:#42a5f5"></div>Transformer</div>
     <div class="legend-item"><div class="legend-dot" style="background:#66bb6a"></div>SSM</div>
@@ -160,11 +167,11 @@ footer a:hover{text-decoration:underline}
 
 <!-- Section 5 -->
 <section id="paradigm">
-  <h2>5. gLM vs Activity Predictor — 수렴과 미해결 과제</h2>
-  <p class="subtitle">비지도 언어 모델과 지도 학습 예측기, 두 패러다임이 2025년 수렴하고 있다. 그러나 세 가지 근본 과제가 남아 있다.</p>
+  <h2>gLM vs Activity Predictor — 수렴과 미해결 과제</h2>
+  <p class="subtitle">비지도 언어 모델과 지도 학습 activity predictor가 사전학습과 사후학습이라는 하나의 레시피로 가까워지고 있습니다. 다만 형평성, 생물학적 정합, 평가 표준은 여전히 남아 있습니다.</p>
 
   <div class="conv-cards">
-    <div class="conv-card"><div class="cv">30</div><div class="cl">분석 모델 수</div></div>
+    <div class="conv-card"><div class="cv">gLM</div><div class="cl">비지도 서열 사전학습</div></div>
     <div class="conv-card"><div class="cv">9.3T</div><div class="cl">최대 훈련 데이터 (bp)</div></div>
     <div class="conv-card"><div class="cv">15B</div><div class="cl">최대 파라미터</div></div>
     <div class="conv-card"><div class="cv">1M</div><div class="cl">문맥 길이 상한 (bp)</div></div>
@@ -253,9 +260,9 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <footer>
-  Data sourced from <a href="https://github.com/pwy02221-dev/genome-foundation-model-landscape">LLM Wiki project</a> (58 studies, 30 models).
+  공개 문헌과 게놈 파운데이션 모델 정리를 바탕으로 구성한 읽기 지도입니다.
   <br>
-  Related: <a href="https://pwy02221-dev.github.io/asd-genetic-architecture/">ASD 유전 아키텍처</a> · <a href="https://pwy02221-dev.github.io/asd-brain-enhancer-landscape/">싱글셀 뇌 인핸서 랜드스케이프</a>
+  Related: <a href="../../asd-cohorts/asd-genetic-architecture/index.html">ASD 유전 아키텍처</a> · <a href="../../asd-cohorts/brain-enhancer-landscape/index.html">ASD 뇌 인핸서 조절 지도</a>
 </footer>
 
 <script>
@@ -321,27 +328,27 @@ const MODELS = [
 ];
 
 const TOKEN_GROUPS = [
-  {name:'k-mer',models:['DNABERT'],count:1,color:'#ef5350',
+  {name:'k-mer',models:['DNABERT'],score:1.0,stage:'초기 BERT 이식',color:'#ef5350',
     desc:'DNA를 고정 길이 k-mer(3~6bp)로 분할. NLP BERT의 직접 이식.',
     pros:'간단한 구현, DNA "단어" 개념 최초 도입',
     cons:'정보 누출 문제 (겹치는 k-mer), 어휘 크기 4^k로 지수 증가',
     impact:'DNABERT가 "DNA도 언어다"를 증명. 그러나 k-mer 한계가 빠르게 드러남.'},
-  {name:'BPE',models:['DNABERT-2','GROVER','GENA-LM'],count:3,color:'#42a5f5',
+  {name:'BPE',models:['DNABERT-2','GROVER','GENA-LM'],score:2.0,stage:'서브워드 압축',color:'#42a5f5',
     desc:'Byte Pair Encoding. 빈도 기반으로 서브워드 단위를 자동 구축.',
     pros:'어휘 크기 제어 가능, 다종 학습에 적합, k-mer 대비 효율적',
     cons:'생물학적 경계(코돈, 모티프)와 무관한 분할 가능',
     impact:'DNABERT→DNABERT-2: 21x 파라미터↓, 92x 컴퓨팅↓, 동등 성능. GROVER: 게놈 "문법" 발견.'},
-  {name:'단일 뉴클레오타이드',models:['Enformer','HyenaDNA','Evo2','AIDO.DNA','NTv3','JanusDNA','HybriDNA','Genos','Gene42','ATGC-Gen','OmniReg-GPT','megaDNA','DeepSTARR','SpliceBERT','EPInformer'],count:15,color:'#66bb6a',
+  {name:'단일 뉴클레오타이드',models:['Enformer','HyenaDNA','Evo2','AIDO.DNA','NTv3','JanusDNA','HybriDNA','Genos','Gene42','ATGC-Gen','OmniReg-GPT','megaDNA','DeepSTARR','SpliceBERT','EPInformer'],score:3.0,stage:'최대 해상도',color:'#66bb6a',
     desc:'A, T, G, C 각 뉴클레오타이드를 개별 토큰으로 처리. 최대 해상도.',
     pros:'정보 손실 없음, 단일 변이(SNP) 수준 해상도',
     cons:'서열 길이 = 토큰 수 → 긴 문맥에서 계산 비용 급증',
     impact:'SSM/하이브리드 아키텍처가 단일nt 토큰화의 계산 비용 문제를 해결하며 주류로 부상.'},
-  {name:'학습 가능 토큰화',models:['DNAChunker'],count:1,color:'#ffb74d',
+  {name:'학습 가능 토큰화',models:['DNAChunker'],score:2.6,stage:'적응형 경계',color:'#ffb74d',
     desc:'토큰 경계 자체를 학습 대상으로. 프로모터는 세밀하게, 반복 서열은 크게 읽는 적응적 전략.',
     pros:'서열의 기능적 밀도에 따라 해상도 자동 조절',
     cons:'최신(2026), 아직 대규모 검증 부족',
     impact:'토큰화의 최전선. "어디서 자를 것인가"를 사람이 아닌 모델이 결정하는 패러다임.'},
-  {name:'도메인 특화',models:['CodonBERT','UTR-LM','BMFM-DNA','GENERator'],count:4,color:'#b39ddb',
+  {name:'도메인 특화',models:['CodonBERT','UTR-LM','BMFM-DNA','GENERator'],score:2.3,stage:'생물학 단위',color:'#b39ddb',
     desc:'생물학적 단위에 맞춘 특화 토큰화. 코돈(CodonBERT), SNP(BMFM-DNA), 6-mer(GENERator).',
     pros:'생물학적으로 의미 있는 단위로 분할, 도메인 지식 반영',
     cons:'범용성 제한, 특정 태스크에만 최적',
@@ -349,19 +356,23 @@ const TOKEN_GROUPS = [
 ];
 
 const DOMAIN_DATA = [
-  {name:'DNA 서열',count:20,color:'#42a5f5',models:'DNABERT, Enformer, HyenaDNA, Evo2, NTv3, AIDO.DNA 등',
+  {name:'DNA 서열',breadth:3.0,focus:'핵심 축',color:'#42a5f5',models:'DNABERT, Enformer, HyenaDNA, Evo2, NTv3, AIDO.DNA 등',
     desc:'게놈 FM의 핵심 도메인. 프로모터 예측, 조절 요소 식별, 변이 효과부터 전체 게놈 생성까지.',challenge:'비기능 영역(~98%), 반복 서열(~50%)이 신호 대 잡음비를 악화.'},
-  {name:'RNA/스플라이싱',count:1,color:'#26a69a',models:'SpliceBERT',
+  {name:'RNA/스플라이싱',breadth:1.5,focus:'전사체 경계',color:'#26a69a',models:'SpliceBERT',
     desc:'72종 척추동물 1차 RNA에서 사전학습. 스플라이스 사이트 탐지, 분기점 식별, 교차종 예측.',challenge:'대안 스플라이싱의 맥락 의존성, 조직 특이적 패턴 포착.'},
-  {name:'단백질',count:2,color:'#b39ddb',models:'ESM1b, ESMFold',
+  {name:'단백질',breadth:1.8,focus:'구조/기능',color:'#b39ddb',models:'ESM1b, ESMFold',
     desc:'단백질 서열에서 구조와 기능 자발적 발현. gLM의 이론적 정당성 확립.',challenge:'서열→구조 넘어 서열→기능→약물 응답까지 확장.'},
-  {name:'후성유전체+3D',count:3,color:'#ef5350',models:'EpiGePT, Akita, EPInformer',
+  {name:'후성유전체+3D',breadth:2.4,focus:'조절 맥락',color:'#ef5350',models:'EpiGePT, Akita, EPInformer',
     desc:'DNA 서열 + 에피게놈(히스톤, TF) + 3D 게놈 접힘(Hi-C) 통합 예측.',challenge:'세포유형 특이적 에피게놈 상태의 역동성, 데이터 희소성.'},
-  {name:'mRNA 번역',count:2,color:'#ffb74d',models:'CodonBERT, UTR-LM',
+  {name:'mRNA 번역',breadth:1.7,focus:'치료제 설계',color:'#ffb74d',models:'CodonBERT, UTR-LM',
     desc:'mRNA 치료제 파이프라인과 직접 접목. 코돈 최적화, 5\' UTR 설계.',challenge:'in silico 최적화와 in vivo 효능 간 격차. 동의 코돈 변경의 단백질 기능 영향.'},
-  {name:'변이 효과 (VEP)',count:4,color:'#81c784',models:'CADD, ESM1b, Evo2, BMFM-DNA',
+  {name:'변이 효과 (VEP)',breadth:2.5,focus:'기능 해석',color:'#81c784',models:'CADD, ESM1b, Evo2, BMFM-DNA',
     desc:'CADD(2014, SVM)→ESM1b(2023, 제로샷)→Evo2(2025, 비코딩 포함). 지도→비지도로 패러다임 전환.',challenge:'비코딩 변이의 인구집단 특이적 메커니즘, 임상 검증.'}
 ];
+
+const KEY_MODEL_LABELS = new Set([
+  'Akita','Enformer','HyenaDNA','DNABERT-2','NTv3','Evo2','Gene42','EPInformer','DNAChunker','ESMFold'
+]);
 
 const darkLayout = {
   paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
@@ -400,9 +411,9 @@ function initArch(){
       return m.year + (jitterCount[key]-1)*0.12 - ((jitter[key]-1)*0.06);
     }),
     y: MODELS.map(m=>Math.log10(m.ctx)),
-    text: MODELS.map(m=>m.name),
-    textposition: MODELS.map((_,i)=>i%3===0?'top center':i%3===1?'bottom center':'top right'),
-    textfont:{size:9,color:'#c0c0d0'},
+    text: MODELS.map(m=>KEY_MODEL_LABELS.has(m.name)?m.name:''),
+    textposition: MODELS.map((m,i)=>m.year>=2025?(i%2===0?'top left':'bottom right'):(i%3===0?'top center':i%3===1?'bottom center':'top right')),
+    textfont:{size:10,color:'#c0c0d0'},
     marker:{
       size: MODELS.map(m=>sizeMap[m.params]||15),
       color: MODELS.map(m=>ARCH_COLORS[m.arch]),
@@ -447,16 +458,17 @@ function initToken(){
   const trace = {
     type:'bar',orientation:'h',
     y: TOKEN_GROUPS.map(g=>g.name),
-    x: TOKEN_GROUPS.map(g=>g.count),
+    x: TOKEN_GROUPS.map(g=>g.score),
     marker:{color:TOKEN_GROUPS.map(g=>g.color)},
-    text: TOKEN_GROUPS.map(g=>`${g.count}개 모델`),
+    text: TOKEN_GROUPS.map(g=>g.stage),
     textposition:'outside',
     textfont:{color:'#e0e0e8',size:12},
     customdata: TOKEN_GROUPS,
-    hovertemplate:'%{y}: %{x}개 모델<extra></extra>'
+    hovertemplate:'%{y}<br>%{customdata.stage}<extra></extra>'
   };
   const layout = Object.assign({},darkLayout,{
-    xaxis:{...darkLayout.xaxis,title:'모델 수',range:[0,20]},
+    xaxis:{...darkLayout.xaxis,title:'토큰화 전략의 위치',range:[0,3.6],
+      tickvals:[1,2,3],ticktext:['고정 k-mer','서브워드/특화','단일 nt/적응형']},
     yaxis:{...darkLayout.yaxis,automargin:true},
     margin:{l:160,r:80,t:20,b:50},showlegend:false
   });
@@ -488,16 +500,17 @@ function initDomain(){
   const trace = {
     type:'bar',orientation:'h',
     y: DOMAIN_DATA.map(d=>d.name),
-    x: DOMAIN_DATA.map(d=>d.count),
+    x: DOMAIN_DATA.map(d=>d.breadth),
     marker:{color:DOMAIN_DATA.map(d=>d.color)},
-    text: DOMAIN_DATA.map(d=>`${d.count}개`),
+    text: DOMAIN_DATA.map(d=>d.focus),
     textposition:'outside',
     textfont:{color:'#e0e0e8',size:12},
     customdata: DOMAIN_DATA,
-    hovertemplate:'%{y}: %{x}개 모델<extra></extra>'
+    hovertemplate:'%{y}<br>%{customdata.focus}<extra></extra>'
   };
   const layout = Object.assign({},darkLayout,{
-    xaxis:{...darkLayout.xaxis,title:'모델 수',range:[0,25]},
+    xaxis:{...darkLayout.xaxis,title:'적용 범위의 확장 방향',range:[0,3.4],
+      tickvals:[1,2,3],ticktext:['특화 태스크','조절 맥락','범용 서열']},
     yaxis:{...darkLayout.yaxis,automargin:true,autorange:'reversed'},
     margin:{l:160,r:60,t:20,b:50},showlegend:false
   });
@@ -508,7 +521,7 @@ function initDomain(){
     showDetail('domain-detail',`
       <h3>${dm.name}</h3>
       <div class="meta">모델: ${dm.models}</div>
-      <div style="margin:12px 0"><div class="stat"><div class="val">${dm.count}</div><div class="label">모델 수</div></div></div>
+      <div style="margin:12px 0"><div class="stat"><div class="val">${dm.focus}</div><div class="label">읽는 축</div></div></div>
       <p>${dm.desc}</p>
       <p style="margin-top:12px;color:var(--amber)"><strong>미해결 과제:</strong> ${dm.challenge}</p>
     `);
@@ -541,9 +554,9 @@ function initSpectrum(){
       return tx + (jc2[key]-1)*0.03 - ((jitter2[key]-1)*0.015);
     }),
     y: MODELS.map(m=>m.year + (Math.random()-0.5)*0.15),
-    text: MODELS.map(m=>m.name),
-    textposition:'right',
-    textfont:{size:9,color:'#c0c0d0'},
+    text: MODELS.map(m=>KEY_MODEL_LABELS.has(m.name)?m.name:''),
+    textposition: MODELS.map((_,i)=>i%2===0?'top right':'bottom right'),
+    textfont:{size:10,color:'#c0c0d0'},
     marker:{
       size: MODELS.map(m=>Math.max(10,Math.log10(m.ctx)*4)),
       color: MODELS.map(m=>ARCH_COLORS[m.arch]),

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>싱글셀 뇌 인핸서/조절 요소 랜드스케이프</title>
+<title>ASD 뇌 인핸서 조절 지도 | Autodidact</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.plot.ly/plotly-2.35.0.min.js" charset="utf-8"></script>
@@ -29,7 +29,7 @@ nav{
   display:flex;align-items:center;padding:0 24px;height:56px;
 }
 nav .logo{font-weight:700;font-size:15px;color:var(--accent);white-space:nowrap}
-nav .links{display:flex;gap:4px;margin-left:24px;overflow-x:auto}
+nav .links{display:flex;gap:4px;margin-left:24px;overflow-x:auto;min-width:0}
 nav .links a{
   color:var(--text2);text-decoration:none;font-size:13px;font-weight:500;
   padding:8px 14px;border-radius:8px;white-space:nowrap;transition:all .2s;
@@ -39,6 +39,7 @@ nav .links a:hover,nav .links a.active{color:var(--accent);background:rgba(100,1
 section{min-height:80vh;padding:48px 0;border-bottom:1px solid var(--gray2)}
 section:last-child{border-bottom:none}
 h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
+h2,.hero h1,.hero p,.subtitle{word-break:keep-all;overflow-wrap:anywhere}
 .subtitle{color:var(--text2);font-size:15px;margin-bottom:32px}
 .chart-wrap{position:relative;width:100%;margin-bottom:24px}
 .detail-panel{
@@ -62,7 +63,8 @@ h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
 .detail-panel .stat .label{font-size:11px;color:var(--text2)}
 .hero{text-align:center;padding:80px 0 40px}
 .hero h1{font-size:36px;font-weight:700;color:#fff;margin-bottom:16px}
-.hero p{font-size:16px;color:var(--text2);max-width:700px;margin:0 auto}
+.hero p{font-size:16px;color:var(--text2);max-width:780px;margin:0 auto}
+.author-line{margin-top:14px;font-size:13px;color:var(--text2)}
 .hero .stats-row{display:flex;justify-content:center;gap:32px;margin-top:32px;flex-wrap:wrap}
 .hero .stat-box{text-align:center}
 .hero .stat-box .num{font-size:36px;font-weight:700;color:var(--accent)}
@@ -102,12 +104,19 @@ footer a:hover{text-decoration:underline}
 #loading p{margin-top:16px;color:var(--text2);font-size:14px}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:768px){
+  .container{padding:72px 20px 40px}
   nav .logo{font-size:13px}
   nav .links a{font-size:12px;padding:6px 10px}
   h2{font-size:22px}
-  .hero h1{font-size:26px}
-  .hero .stats-row{gap:16px}
-  .hero .stat-box .num{font-size:28px}
+  .hero h1{font-size:28px;line-height:1.25}
+  .hero h1,.hero p,.subtitle{max-width:calc(100vw - 40px);margin-left:auto;margin-right:auto}
+  .hero p{font-size:15px;line-height:1.75}
+  .hero .stats-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}
+  .hero .stat-box{min-width:0}
+  .hero .stat-box .num{font-size:26px;white-space:normal;overflow-wrap:anywhere}
+  .legend{justify-content:flex-start;overflow-x:auto;padding-bottom:6px}
+  .chart-wrap{overflow-x:auto}
+  .chart-wrap>div{min-width:680px}
   .convergence-cards{grid-template-columns:repeat(2,1fr)}
   .detail-panel .stat{padding:6px 12px}
   .detail-panel .stat .val{font-size:18px}
@@ -122,7 +131,7 @@ footer a:hover{text-decoration:underline}
 </div>
 
 <nav>
-  <div class="logo">Brain Enhancer Landscape</div>
+  <div class="logo">Brain Enhancer Map</div>
   <div class="links">
     <a href="#resolution" class="active">기술-해상도</a>
     <a href="#elements">조절 요소</a>
@@ -135,20 +144,21 @@ footer a:hover{text-decoration:underline}
 <div class="container">
 
 <div class="hero">
-  <h1>싱글셀 뇌 인핸서/조절 요소 랜드스케이프</h1>
-  <p>8편의 핵심 연구를 종합하여, ASD 뇌에서 조절 요소(인핸서, DMR, CRE)가 어떤 세포 유형에서 어떻게 변화하는지 추적한다.</p>
+  <h1>ASD 뇌 인핸서 조절 지도</h1>
+  <p>ASD 관련 뇌에서 인핸서, DMR, CRE 같은 조절 요소가 어떤 세포 유형에서 어떻게 달라지는지 정리합니다.</p>
+  <div class="author-line">작성자: 박우영 · 업데이트: 2026-05-10</div>
   <div class="stats-row">
     <div class="stat-box"><div class="num">591,043</div><div class="lbl">최대 프로파일 핵 수</div></div>
     <div class="stat-box"><div class="num">5,000+</div><div class="lbl">발견된 CRE</div></div>
     <div class="stat-box"><div class="num">35</div><div class="lbl">PE2 세포 유형</div></div>
-    <div class="stat-box"><div class="num">8</div><div class="lbl">종합 연구 수</div></div>
+    <div class="stat-box"><div class="num">L2/3</div><div class="lbl">반복 관찰 세포 유형</div></div>
   </div>
 </div>
 
 <!-- Section 1: Resolution Bubble Chart -->
 <section id="resolution">
-  <h2>1. 연구별 기술-해상도 비교</h2>
-  <p class="subtitle">14년간(2011-2025) ASD 뇌 조절 요소 연구의 기술적 해상도가 어떻게 진화했는지 한눈에 비교한다. 버블 크기는 샘플 수, 색상은 기술 유형.</p>
+  <h2>연구별 기술-해상도 비교</h2>
+  <p class="subtitle">ASD 관련 뇌 조절 요소 연구의 기술 해상도가 어떻게 높아졌는지 비교합니다. 버블 크기는 샘플 수, 색상은 기술 유형입니다.</p>
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:#ef5350"></div>Microarray/벌크</div>
     <div class="legend-item"><div class="legend-dot" style="background:#42a5f5"></div>후성유전학</div>
@@ -167,8 +177,8 @@ footer a:hover{text-decoration:underline}
 
 <!-- Section 2: Regulatory Elements Bar -->
 <section id="elements">
-  <h2>2. 조절 요소 규모 비교</h2>
-  <p class="subtitle">각 연구에서 발견된 조절 요소의 수와 유형. DMR 58개부터 CRE 5,000+개까지, 기술 발전에 따른 발견 규모의 확대.</p>
+  <h2>조절 요소 규모 비교</h2>
+  <p class="subtitle">각 연구에서 포착한 조절 요소의 유형과 규모를 함께 봅니다. 기술이 바뀌면서 DMR, CRE, haQTL, GRN이 어떤 층위로 확장되는지 확인할 수 있습니다.</p>
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:#ef5350"></div>DMR (차별메틸화영역)</div>
     <div class="legend-item"><div class="legend-dot" style="background:#42a5f5"></div>CRE (시스-조절요소)</div>
@@ -187,8 +197,8 @@ footer a:hover{text-decoration:underline}
 
 <!-- Section 3: Cell Type Heatmap -->
 <section id="celltype">
-  <h2>3. 세포 유형별 ASD 영향 히트맵</h2>
-  <p class="subtitle">행은 뇌 세포 유형, 열은 연구(시간순). L2/3 흥분성 뉴런과 미세아교세포가 3개 이상의 독립 연구에서 반복적으로 ASD 영향을 확인.</p>
+  <h2>세포 유형별 ASD 관련 신호</h2>
+  <p class="subtitle">행은 뇌 세포 유형, 열은 연구입니다. L2/3 흥분성 뉴런과 미세아교세포에서 반복적으로 관찰되는 신호를 중심으로 읽습니다.</p>
   <div class="chart-wrap">
     <div id="heatmap-chart" style="width:100%;height:520px"></div>
   </div>
@@ -200,8 +210,8 @@ footer a:hover{text-decoration:underline}
 
 <!-- Section 4: Tech Evolution -->
 <section id="techevo">
-  <h2>4. 기술 스택 진화: 한계의 극복</h2>
-  <p class="subtitle">각 기술이 이전 세대의 어떤 한계를 극복했는지, 그리고 어떤 새로운 발견을 가능하게 했는지 추적한다.</p>
+  <h2>기술 스택 진화: 한계의 극복</h2>
+  <p class="subtitle">각 기술이 이전 세대의 어떤 한계를 넘었고, 어떤 발견을 가능하게 했는지 연결해서 봅니다.</p>
   <div class="chart-wrap">
     <div id="techevo-chart" style="width:100%;height:520px"></div>
   </div>
@@ -213,13 +223,13 @@ footer a:hover{text-decoration:underline}
 
 <!-- Section 5: Convergence Evidence -->
 <section id="convergence">
-  <h2>5. 수렴 증거: 모든 길은 인핸서로 통한다</h2>
-  <p class="subtitle">코딩 변이, 비코딩 변이, 환경 요인 — 세 경로가 "인핸서 상태 변화"라는 공통 노드에서 수렴하여 세포유형별 발현 이상을 유발한다.</p>
+  <h2>수렴 증거: 인핸서 상태로 모이는 신호</h2>
+  <p class="subtitle">코딩 변이, 비코딩 변이, 환경 요인이 인핸서 상태 변화라는 공통 노드로 모이고, 세포유형별 발현 변화로 이어지는 흐름을 봅니다.</p>
 
   <div class="convergence-cards">
     <div class="conv-card"><div class="cv">68%</div><div class="cl">ASD 공유 아세틸롬<br>(Sun 2016)</div></div>
     <div class="conv-card"><div class="cv">4x</div><div class="cl">수렴형 DEG 배수<br>(Ramaswami 2020)</div></div>
-    <div class="conv-card"><div class="cv">L2/3</div><div class="cl">최영향 세포 유형<br>(3+ 독립 연구)</div></div>
+    <div class="conv-card"><div class="cv">L2/3</div><div class="cl">반복 관찰 세포 유형<br>(독립 연구)</div></div>
     <div class="conv-card"><div class="cv">35</div><div class="cl">PE2 세포 유형<br>(Wamsley 2024)</div></div>
   </div>
 
@@ -289,16 +299,16 @@ footer a:hover{text-decoration:underline}
       <rect x="460" y="388" width="200" height="32" rx="8" fill="#26a69a" opacity="0.9"/>
       <text x="560" y="409" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">미세아교세포</text>
     </svg>
-    <p class="source-ref">코딩 변이, 비코딩 변이, 환경 요인이 인핸서 상태 변화를 거쳐 L2/3 흥분성 뉴런과 미세아교세포에 수렴. 8편의 독립 연구에서 반복 확인.</p>
+    <p class="source-ref">코딩 변이, 비코딩 변이, 환경 요인이 인핸서 상태 변화를 거쳐 L2/3 흥분성 뉴런과 미세아교세포 신호로 수렴하는 모델.</p>
   </div>
 </section>
 
 </div>
 
 <footer>
-  Data sourced from <a href="https://github.com/pwy02221-dev/asd-brain-enhancer-landscape">LLM Wiki project</a> (8 studies, 2011-2025).
+  공개 문헌과 싱글셀/후성유전학 연구를 바탕으로 구성한 ASD 뇌 조절 요소 읽기 지도입니다.
   <br>
-  Related: <a href="https://pwy02221-dev.github.io/asd-genetic-architecture/">ASD 유전 아키텍처</a> · <a href="https://pwy02221-dev.github.io/genome-foundation-model-landscape/">Genome FM 진화 지도</a>
+  Related: <a href="../asd-genetic-architecture/index.html">ASD 유전 아키텍처</a> · <a href="../../genomic-language-model-attention/genome-fm-landscape/index.html">게놈 파운데이션 모델 진화 지도</a>
 </footer>
 
 <script>
@@ -427,7 +437,7 @@ const CELL_TYPE_INFO = {
   'L5/6 흥분성 뉴런': 'Layer 5/6 심층 흥분성 뉴런. 피질 출력의 주요 경로. L2/3보다 ASD 영향이 상대적으로 적지만, PE2에서 GRN 변화 관찰.',
   '미세아교세포': '뇌의 상주 면역 세포. Voineagu(2011)의 M16 면역 모듈, Velmeshev(2019), Wamsley(2024, MG2 반응성), Eyring(2025) 4개 연구에서 ASD 영향 확인. 염증-구동 반응 상태 식별.',
   '성상교세포': '뉴런 지원 아교세포. Wamsley(2024)에서 ASTRO1/3 아형의 GRN 조절 이상 확인. 반응성 성상교세포 상태 식별.',
-  '억제 뉴런(PV)': 'Parvalbumin 양성 억제 뉴런. Nardone(2017)에서 GABAergic 시스템의 메틸화 이상 확인. Eyring(2025)에서 ASD 환자의 연령별 억제 뉴런 비율 감소 관찰.',
+  '억제 뉴런(PV)': 'Parvalbumin 양성 억제 뉴런. Nardone(2017)에서 GABAergic 시스템의 메틸화 이상 확인. Eyring(2025)에서 ASD 당사자의 연령별 억제 뉴런 비율 감소 관찰.',
   '억제 뉴런(SST)': 'Somatostatin 양성 억제 뉴런. PE2에서 GRN 이상 관찰되나, PV보다 효과 크기 작음.',
   '억제 뉴런(VIP)': 'VIP 양성 억제 뉴런. 싱글셀 연구에서 측정되었으나 ASD 특이적 변화는 상대적으로 미미.',
   '희소돌기교세포': '축삭 수초화 담당. 싱글셀 연구에서 측정, 경미한 변화 관찰.',
