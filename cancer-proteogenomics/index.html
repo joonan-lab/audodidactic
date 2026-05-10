@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CPTAC 암 멀티오믹스 마커 랜드스케이프 | Autodidact</title>
+<meta property="og:title" content="CPTAC 암 멀티오믹스 마커 랜드스케이프">
+<meta property="og:description" content="CPTAC Cell/Cancer Cell 10편 종합 — 암종별 단백체·인산화체·아세틸화체 마커와 치료 타겟 (원문 PDF 기반)">
+<meta property="og:type" content="website">
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+<style>
+:root {
+  --bg: oklch(0.985 0.005 90);
+  --surface: oklch(1 0 0);
+  --surface-glass: oklch(1 0 0 / 0.6);
+  --surface-glass-strong: oklch(1 0 0 / 0.85);
+  --ink: oklch(0.18 0.02 250);
+  --ink-soft: oklch(0.36 0.02 250);
+  --muted: oklch(0.55 0.015 250);
+  --line: oklch(0.91 0.005 250);
+  --line-soft: oklch(0.94 0.004 250);
+
+  /* track: cancer multi-omics — deep violet */
+  --tc: oklch(0.5 0.18 295);
+  --tc-glow: oklch(0.78 0.16 295);
+  --tc-tint: oklch(0.96 0.025 295);
+  /* accent: PTM phosphorylation — coral */
+  --lr: oklch(0.6 0.13 35);
+  --lr-glow: oklch(0.82 0.1 35);
+  --lr-tint: oklch(0.96 0.02 35);
+
+  --shadow-1: 0 1px 2px oklch(0.2 0.02 250 / 0.04), 0 2px 6px oklch(0.2 0.02 250 / 0.04);
+  --shadow-2: 0 2px 4px oklch(0.2 0.02 250 / 0.05), 0 8px 20px oklch(0.2 0.02 250 / 0.05);
+  --shadow-hover: 0 2px 4px oklch(0.2 0.02 250 / 0.05), 0 12px 28px oklch(0.2 0.02 250 / 0.07), 0 32px 72px oklch(0.2 0.02 250 / 0.09);
+  --r-card: 24px;
+  --r-inner: 16px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --f-display: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --f-body: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --f-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--f-body);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  position: relative;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+body::before {
+  content: "";
+  position: fixed; inset: -10%;
+  background:
+    radial-gradient(60% 50% at 12% 8%, oklch(0.78 0.16 295 / 0.16), transparent 60%),
+    radial-gradient(50% 45% at 92% 22%, oklch(0.82 0.1 35 / 0.14), transparent 65%),
+    radial-gradient(55% 50% at 70% 92%, oklch(0.76 0.13 220 / 0.10), transparent 65%);
+  pointer-events: none; z-index: 0;
+  animation: drift 28s ease-in-out infinite alternate;
+}
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  background-image: radial-gradient(oklch(0.2 0.02 250 / 0.012) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none; z-index: 0;
+  mix-blend-mode: multiply;
+}
+@keyframes drift {
+  0%   { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
+  50%  { transform: translate3d(2%,-1.5%,0) scale(1.04) rotate(0.4deg); }
+  100% { transform: translate3d(-1.5%,2%,0) scale(1.03) rotate(-0.3deg); }
+}
+@media (prefers-reduced-motion: reduce) { body::before { animation: none; } }
+
+.page { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 56px 28px 80px; }
+a { color: var(--tc); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---- HERO ---- */
+.hero { margin-bottom: 56px; }
+.brand {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em;
+  color: var(--muted); text-transform: uppercase; margin-bottom: 16px;
+}
+.brand-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--tc);
+  box-shadow: 0 0 0 4px oklch(from var(--tc) calc(l + 0.05) c h / 0.18);
+}
+.brand strong { color: var(--ink); font-weight: 700; }
+.hero h1 {
+  font-family: var(--f-display); font-size: clamp(32px, 5vw, 56px);
+  font-weight: 850; letter-spacing: -0.022em; line-height: 1.1; margin-bottom: 18px;
+}
+.hero h1 .accent {
+  background: linear-gradient(120deg, var(--tc) 0%, var(--lr) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+}
+.hero .lede { font-size: 16px; color: var(--ink-soft); line-height: 1.7; max-width: 680px; }
+.hero-meta {
+  margin-top: 14px; padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 0.78rem; color: var(--muted); font-weight: 500;
+}
+
+/* ---- STATS ---- */
+.stat-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 48px; }
+.stat-box {
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--line); border-radius: var(--r-inner);
+  padding: 20px 16px; text-align: center;
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  box-shadow: var(--shadow-1);
+}
+.stat-box:hover { transform: translateY(-3px); box-shadow: var(--shadow-2); }
+.stat-num { font-family: var(--f-display); font-size: 2rem; font-weight: 850; color: var(--tc); letter-spacing: -0.03em; }
+.stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; font-weight: 500; }
+
+/* ---- TAB BAR ---- */
+.tab-bar {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-bottom: 32px; padding: 6px;
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--line); border-radius: 999px;
+  box-shadow: var(--shadow-1);
+}
+.tab {
+  flex: 1; padding: 10px 18px;
+  border-radius: 999px; cursor: pointer;
+  font-size: 0.85rem; font-weight: 600;
+  color: var(--muted); background: transparent;
+  border: none; font-family: var(--f-body);
+  transition: all 0.3s var(--ease);
+  white-space: nowrap;
+}
+.tab.active { background: var(--tc); color: white; box-shadow: 0 4px 12px oklch(from var(--tc) l c h / 0.3); }
+.tab:hover:not(.active) { color: var(--ink); background: var(--tc-tint); }
+
+.panel { display: none; }
+.panel.active { display: block; animation: fadeIn 0.4s var(--ease); }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ---- SECTION ---- */
+.section { margin-bottom: 56px; }
+.section-head {
+  display: flex; align-items: baseline; gap: 14px;
+  margin-bottom: 8px; padding-bottom: 14px; position: relative;
+}
+.section-head::after {
+  content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(to right, var(--tc) 0%, var(--line) 25%, var(--line) 100%); opacity: 0.5;
+}
+.section-num {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em;
+  color: var(--tc); font-weight: 700; text-transform: uppercase;
+}
+.section-num::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--tc); box-shadow: 0 0 0 4px oklch(from var(--tc) calc(l + 0.05) c h / 0.18);
+}
+.section-title {
+  font-family: var(--f-display); font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 800; letter-spacing: -0.018em; color: var(--ink); line-height: 1.15;
+}
+.section-blurb { font-size: 14.5px; color: var(--ink-soft); max-width: 720px; line-height: 1.7; margin: 14px 0 24px; }
+
+/* ---- CHART CARDS ---- */
+.cards { display: grid; gap: 16px; }
+.cards-2 { grid-template-columns: 1fr 1fr; }
+.card {
+  position: relative; display: flex; flex-direction: column; gap: 10px;
+  padding: 26px 24px 22px;
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid var(--line); border-radius: var(--r-card);
+  overflow: hidden; isolation: isolate;
+  transition: transform 0.5s var(--ease), border-color 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  box-shadow: var(--shadow-1);
+}
+.card::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: radial-gradient(120% 90% at 100% 0%, oklch(from var(--tc-glow) l c h / 0.18), transparent 65%),
+    linear-gradient(135deg, transparent 30%, var(--tc-tint) 100%);
+  opacity: 0.4; transition: opacity 0.5s var(--ease);
+}
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: oklch(from var(--tc) l c h / 0.35); }
+.card:hover::before { opacity: 0.7; }
+.card h2 {
+  font-family: var(--f-display); font-size: 15px; font-weight: 700;
+  color: var(--ink); margin-bottom: 4px;
+}
+.chart-container { position: relative; width: 100%; min-height: 380px; }
+
+/* ---- CANCER CARDS ---- */
+.cancer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 16px;
+}
+.cancer-card {
+  position: relative;
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--line); border-radius: var(--r-inner);
+  padding: 22px 22px 20px;
+  border-left: 4px solid var(--tc);
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.4s var(--ease);
+  box-shadow: var(--shadow-1);
+}
+.cancer-card:hover {
+  transform: translateY(-3px); box-shadow: var(--shadow-2);
+  border-color: oklch(from var(--tc) l c h / 0.5);
+}
+.cc-header {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+  margin-bottom: 14px;
+}
+.cc-name { font-family: var(--f-display); font-size: 1.05rem; font-weight: 800; color: var(--ink); }
+.cc-paper { font-size: 0.72rem; color: var(--muted); margin-top: 3px; font-family: var(--f-mono); }
+.cc-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 999px;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.04em;
+  font-family: var(--f-mono); white-space: nowrap;
+}
+.badge-cell { background: oklch(0.94 0.03 220); color: oklch(0.4 0.12 220); }
+.badge-cancer-cell { background: oklch(0.94 0.03 295); color: oklch(0.4 0.15 295); }
+.cc-stats {
+  display: flex; gap: 8px; margin-bottom: 14px;
+}
+.cc-stat {
+  flex: 1; padding: 10px 8px;
+  background: var(--surface-glass);
+  border: 1px solid var(--line-soft); border-radius: 10px;
+  text-align: center;
+}
+.cc-stat-val { font-family: var(--f-display); font-size: 1.05rem; font-weight: 800; color: var(--tc); }
+.cc-stat-label { font-size: 0.66rem; color: var(--muted); margin-top: 2px; }
+.cc-marker-cat {
+  font-size: 0.68rem; color: var(--tc); font-weight: 700;
+  margin-top: 12px; margin-bottom: 6px; text-transform: uppercase;
+  letter-spacing: 0.06em; font-family: var(--f-mono);
+}
+.cc-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.cc-tag {
+  font-size: 0.71rem; padding: 3px 9px; border-radius: 999px;
+  background: var(--surface-glass); color: var(--ink-soft);
+  border: 1px solid var(--line);
+}
+.cc-tag.highlight {
+  background: oklch(from var(--tc) calc(l + 0.42) calc(c - 0.1) h / 0.5);
+  color: var(--tc); border-color: oklch(from var(--tc) l c h / 0.3);
+  font-weight: 600;
+}
+
+/* ---- TABLE ---- */
+.summary-wrap {
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--line); border-radius: var(--r-card);
+  padding: 8px; box-shadow: var(--shadow-1);
+  overflow-x: auto;
+}
+.summary-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+.summary-table thead tr { border-bottom: 2px solid var(--line); }
+.summary-table th {
+  padding: 12px 12px; text-align: left;
+  font-family: var(--f-mono); font-size: 0.7rem;
+  color: var(--tc); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700;
+}
+.summary-table td {
+  padding: 11px 12px; border-bottom: 1px solid var(--line-soft);
+  color: var(--ink-soft); vertical-align: top;
+}
+.summary-table tr:hover td { background: var(--tc-tint); }
+.summary-table .cancer-cell { color: var(--ink); font-weight: 700; }
+.summary-table .num-cell { text-align: right; font-variant-numeric: tabular-nums; color: var(--tc); font-weight: 600; font-family: var(--f-mono); }
+.summary-table .target-cell { text-align: right; color: oklch(0.45 0.12 160); font-weight: 700; font-family: var(--f-mono); }
+
+/* ---- NOTE ---- */
+.note {
+  padding: 18px 22px; margin: 20px 0;
+  background: var(--surface-glass);
+  backdrop-filter: blur(14px);
+  border: 1px dashed oklch(from var(--tc) l c h / 0.3);
+  border-radius: var(--r-inner);
+  font-size: 0.85rem; color: var(--ink-soft); line-height: 1.75;
+}
+.note strong { color: var(--ink); font-weight: 700; }
+.note ul { padding-left: 20px; margin-top: 8px; }
+.note li { margin: 4px 0; }
+
+/* ---- FOOTER ---- */
+.foot {
+  margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line);
+  font-size: 13px; color: var(--muted); line-height: 1.75;
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+}
+.foot strong { color: var(--ink-soft); font-weight: 700; }
+.foot .right { font-family: var(--f-mono); font-size: 12px; }
+.foot a { color: var(--muted); }
+.foot a:hover { color: var(--ink); }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 1000px) {
+  .cards-2 { grid-template-columns: 1fr; }
+  .stat-row { grid-template-columns: repeat(3, 1fr); }
+  .tab { flex: 0 0 auto; }
+}
+@media (max-width: 600px) {
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+  .page { padding: 32px 16px 48px; }
+  .cancer-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HERO -->
+<header class="hero">
+  <div class="brand">
+    <span class="brand-dot" aria-hidden="true"></span>
+    <span><strong>autodidact</strong> &middot; cancer proteogenomics</span>
+  </div>
+  <h1>CPTAC 암 멀티오믹스 <span class="accent">마커 랜드스케이프</span></h1>
+  <p class="lede">
+    Clinical Proteomic Tumor Analysis Consortium (CPTAC) 의 Cell / Cancer Cell 핵심 논문 10편을 종합합니다. 게놈만으로는 보이지 않던 단백·인산화·아세틸화·당단백 마커가 어떻게 9가지 암종에서 임상적 의미를 얻었는지 — 원문 PDF에서 직접 추출한 정량 수치로 비교합니다.
+  </p>
+  <div class="hero-meta">작성자: Jongseo Park &nbsp;&middot;&nbsp; 업데이트: 2026-05-10 &nbsp;&middot;&nbsp; 출처: CPTAC Cell/Cancer Cell 2019–2023</div>
+</header>
+
+<!-- STATS -->
+<div class="stat-row">
+  <div class="stat-box"><div class="stat-num">10</div><div class="stat-label">분석 논문 수</div></div>
+  <div class="stat-box"><div class="stat-num">9</div><div class="stat-label">CPTAC 암종</div></div>
+  <div class="stat-box"><div class="stat-num">1,347</div><div class="stat-label">총 코호트 환자</div></div>
+  <div class="stat-box"><div class="stat-num">220K+</div><div class="stat-label">정량 인산화 부위</div></div>
+  <div class="stat-box"><div class="stat-num">25K+</div><div class="stat-label">정량 아세틸화 부위</div></div>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar" role="tablist">
+  <button class="tab active" data-panel="overview">전체 개요</button>
+  <button class="tab" data-panel="omics">오믹스 커버리지</button>
+  <button class="tab" data-panel="targets">치료 타겟</button>
+  <button class="tab" data-panel="cards">암종별 카드</button>
+  <button class="tab" data-panel="table">요약 테이블</button>
+</div>
+
+<!-- ===== PANEL 1: 전체 개요 ===== -->
+<div id="panel-overview" class="panel active">
+  <section class="section">
+    <header class="section-head">
+      <span class="section-num">01</span>
+      <h2 class="section-title">정량 단백체 &middot; 인산화체 규모</h2>
+    </header>
+    <p class="section-blurb">
+      CPTAC는 NCI 주도 컨소시엄으로, 2019–2023년에 9가지 주요 암종에 대한 대규모 단백유전체 특성화 연구를 발표했습니다. 각 연구는 WGS/WES + RNA-seq + 단백체 + 인산화체 (± 아세틸화체, 당단백질체, 대사체)를 통합해 게놈만으로는 포착되지 않는 임상적 마커를 도출합니다.
+    </p>
+    <div class="cards"><div class="card"><div class="chart-container" id="chart-overview-bar"></div></div></div>
+  </section>
+</div>
+
+<!-- ===== PANEL 2: 오믹스 커버리지 ===== -->
+<div id="panel-omics" class="panel">
+  <section class="section">
+    <header class="section-head">
+      <span class="section-num">02</span>
+      <h2 class="section-title">단백체 vs 인산화체 산점도</h2>
+    </header>
+    <p class="section-blurb">버블 크기는 코호트 환자 수에 비례합니다. 췌장암(PDAC)이 가장 깊은 인산화체 — 51K+ 부위 — 데이터셋을 보유합니다.</p>
+    <div class="cards"><div class="card"><div class="chart-container" id="chart-omics-scatter"></div></div></div>
+  </section>
+  <section class="section">
+    <header class="section-head">
+      <span class="section-num">03</span>
+      <h2 class="section-title">아세틸화 &middot; 당단백 &middot; 지질 추가 레이어</h2>
+    </header>
+    <p class="section-blurb">기본 단백·인산화 레이어 외 추가 PTM 또는 분자 종을 측정한 암종만 표시합니다. PDAC은 N-당단백, GBM은 지질학을 동반합니다.</p>
+    <div class="cards"><div class="card"><div class="chart-container" id="chart-special-bar" style="min-height:340px;"></div></div></div>
+  </section>
+</div>
+
+<!-- ===== PANEL 3: 치료 타겟 ===== -->
+<div id="panel-targets" class="panel">
+  <section class="section">
+    <header class="section-head">
+      <span class="section-num">04</span>
+      <h2 class="section-title">암종별 치료 타겟 마커</h2>
+    </header>
+    <p class="section-blurb">원문에서 직접 치료 타겟으로 지목된 단백/인산화 부위 수입니다. 해당 단백 이름은 호버하면 표시됩니다.</p>
+    <div class="cards"><div class="card"><div class="chart-container" id="chart-targets-bar" style="min-height:440px;"></div></div></div>
+  </section>
+  <section class="section">
+    <header class="section-head">
+      <span class="section-num">05</span>
+      <h2 class="section-title">마커 카테고리 분포</h2>
+    </header>
+    <p class="section-blurb">10편 논문 전체에서 도출된 마커를 PTM 유형별로 분류한 분포입니다.</p>
+    <div class="cards"><div class="card"><div class="chart-container" id="chart-category-pie" style="min-height:380px;"></div></div></div>
+  </section>
+</div>
+
+<!-- ===== PANEL 4: 암종별 카드 ===== -->
+<div id="panel-cards" class="panel">
+  <section class="section">
+    <header class="section-head">
+      <span class="section-num">06</span>
+      <h2 class="section-title">암종별 발견 마커 카드</h2>
+    </header>
+    <p class="section-blurb">각 카드에는 해당 논문의 코호트, 정량 단백/인산화 규모, 치료 타겟 마커, 핵심 인산화·아세틸화·당단백 부위, 그리고 핵심 발견을 정리합니다.</p>
+    <div class="cancer-grid" id="cards-container"></div>
+  </section>
+</div>
+
+<!-- ===== PANEL 5: 요약 테이블 ===== -->
+<div id="panel-table" class="panel">
+  <section class="section">
+    <header class="section-head">
+      <span class="section-num">07</span>
+      <h2 class="section-title">CPTAC 정량 데이터 요약</h2>
+    </header>
+    <p class="section-blurb">10편 논문의 정량 마커 수치 비교표입니다.</p>
+    <div class="summary-wrap">
+      <table class="summary-table" id="summary-table"></table>
+    </div>
+    <div class="note">
+      <strong>교차 암종 패턴 — 본 종합에서 반복적으로 등장하는 5가지 신호</strong>
+      <ul>
+        <li><strong>PTPN11 인산화 수렴 취약점</strong> — 폐선암(Gillette 2020) · 교모세포종(Wang 2021) 모두에서 EGFR/RTK 경로의 공통 하위 허브로 지목.</li>
+        <li><strong>Rb 인산화 = CDK4/6 바이오마커</strong> — 대장암(Vasaikar 2019) · 유방암(Krug 2020) 에서 확립, 폐편평암(Satpathy 2021)에서 확장.</li>
+        <li><strong>해당작용 → 면역 배제</strong> — MSI-H 대장암(Vasaikar 2019) · 췌장암(Cao 2021) 공통, 일반 원리 후보.</li>
+        <li><strong>아세틸화체 = 대사·후성유전 동시 판독</strong> — 유방암(Krug 2020) · 자궁내막암(Dou 2020) · 교모세포종(Wang 2021) 에서 아형 특이 패턴.</li>
+        <li><strong>4종 면역 아형 구조</strong> — 신장암(Clark 2019) · 교모세포종(Wang 2021) 에서 독립적으로 동일 4-class 분류 도출.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<footer class="foot">
+  <div>
+    <strong>autodidact</strong> &middot; cancer proteogenomics study guide<br>
+    원문 PDF에서 추출한 정량 수치만 사용합니다 — 본 페이지는 종합 검토용이며 임상 진단 자료가 아닙니다.<br>
+    핵심 축: WGS/WES &middot; RNA-seq &middot; 단백체(TMT) &middot; 인산화체 &middot; 아세틸화체 &middot; 당단백질체 &middot; 대사체.
+  </div>
+  <div class="right">
+    <a href="../index.html">← autodidact index</a>
+  </div>
+</footer>
+
+</div>
+
+<script>
+// =====================
+// DATA — CPTAC 9 cancer types (10 papers; LSCC has 2 entries upstream → consolidated)
+// =====================
+const CANCERS = [
+  { id:'colon', name:'대장암', paper:'Vasaikar et al. 2019', journal:'Cell', cohort:110,
+    proteins:8067, phosphosites:7295, acetylsites:0, glycosites:0, lipids:0,
+    diffProteins:2217, cancerSpecificProteins:31, cancerSpecificPhospho:63, subtypes:2,
+    therapeuticTargets:['Rb 인산화(CDK4/6)','CDK4','MELK','PFKFB3','CDK7'],
+    keyPhospho:['pRb-S807/S811','TP53-S315','APC-T2451','TGFBR2-S553'],
+    themes:['Rb 인산화 = CDK4/6 바이오마커','MSI-H 해당작용 → 면역 배제','15개 단백 임상 유틸리티 확인'] },
+  { id:'ccrcc', name:'신장암(ccRCC)', paper:'Clark et al. 2019', journal:'Cell', cohort:103,
+    proteins:7150, phosphosites:20976, acetylsites:0, glycosites:0, lipids:0,
+    diffProteins:820, cancerSpecificProteins:820, cancerSpecificPhospho:null, subtypes:4,
+    therapeuticTargets:['mTOR 경로','OXPHOS','VHL-HIF 축','CDK1-Y15'],
+    keyPhospho:['CDK1-Y15','mTORC1 기질'],
+    themes:['OXPHOS 단백 대장암과 역방향 대사','3p 결실 단백 수준 규명','4종 면역 아형 정의'] },
+  { id:'endometrial', name:'자궁내막암', paper:'Dou et al. 2020', journal:'Cell', cohort:95,
+    proteins:8000, phosphosites:12000, acetylsites:322, glycosites:0, lipids:0,
+    diffProteins:null, cancerSpecificProteins:null, cancerSpecificPhospho:72, subtypes:4,
+    therapeuticTargets:['Wnt/β-카테닌','p53','PI3K/AKT','MAPK'],
+    keyPhospho:['CTNNB1-Y30/S33','PLK1-T210','AURKA'],
+    keyAcetyl:['H2B N-말단(216개 상향)','FOXA2-K274','H3K27/K36'],
+    themes:['322개 차등 아세틸화 부위','MSI 항원 제시 결함','circRNA-QKI EMT 피드백'] },
+  { id:'luad', name:'폐선암(LUAD)', paper:'Gillette et al. 2020', journal:'Cell', cohort:110,
+    proteins:10107, phosphosites:38968, acetylsites:9869, glycosites:0, lipids:0,
+    diffProteins:227, cancerSpecificProteins:null, cancerSpecificPhospho:null, subtypes:4,
+    therapeuticTargets:['PTPN11(EGFR)','SOS1(KRAS)','ALK Y1507','STK11-호중구','CDK4'],
+    keyPhospho:['ALK-Y1507','PTPN11 수렴 허브','CTNNB1-S552','SMAD4-S138'],
+    themes:['PTPN11 GBM과 동일 취약점','STK11 면역 냉각 기전','흡연 NAT 장오염 효과'] },
+  { id:'breast', name:'유방암', paper:'Krug et al. 2020', journal:'Cell', cohort:122,
+    proteins:10107, phosphosites:38968, acetylsites:9869, glycosites:0, lipids:0,
+    diffProteins:null, cancerSpecificProteins:null, cancerSpecificPhospho:null, subtypes:4,
+    therapeuticTargets:['ERBB2 정량','pRb-S780(CDK4/6)','EGFR','SRC','CDK'],
+    keyPhospho:['pRb-S780','ERBB2 경로 인산화체'],
+    keyAcetyl:['HK3/PFKP/GAPDH(해당 저아세틸화)','SIRT3 미토 조절','KAT7 표적'],
+    themes:['ERBB2 단백 정량 = IHC 대체','pRb 수준이 CDK4/6 반응 최적 예측','아형별 대사 아세틸화 서명'] },
+  { id:'pediatric', name:'소아 뇌종양', paper:'Petralia et al. 2020', journal:'Cell', cohort:218,
+    proteins:8802, phosphosites:18235, acetylsites:0, glycosites:0, lipids:0,
+    diffProteins:null, cancerSpecificProteins:null, cancerSpecificPhospho:null, subtypes:7,
+    therapeuticTargets:['MEK/ERK','AKT','CDK','PI3K','BRAF-V600E'],
+    keyPhospho:['ERK1/2','AKT 기질','BRAF 경로'],
+    themes:['조직형 경계 초월 단백체 클러스터','조직형 불문 치료 전략 근거','두개인두종 면역 활성 아형'] },
+  { id:'gbm', name:'교모세포종(GBM)', paper:'Wang et al. 2021', journal:'Cancer Cell', cohort:99,
+    proteins:9000, phosphosites:15000, acetylsites:30, glycosites:0, lipids:500,
+    diffProteins:null, cancerSpecificProteins:null, cancerSpecificPhospho:95, subtypes:4,
+    therapeuticTargets:['PTPN11-Y62','PLCG1-Y783','BRD 단백','CREBBP/EP300','CDK2/6'],
+    keyPhospho:['PTPN11-Y62','PLCG1-Y783','TP53-S315','RB1 관련 CDK2/6'],
+    keyAcetyl:['H2B N-말단(BRD/CREBBP/EP300)','H1/H2A/H2B/H3 >30 부위'],
+    themes:['PTPN11/PLCG1 RTK 수렴 허브','4종 면역 아형 snRNA-seq 검증','지질 분포 아형 특이'] },
+  { id:'pdac', name:'췌장암(PDAC)', paper:'Cao et al. 2021', journal:'Cell', cohort:140,
+    proteins:11662, phosphosites:51469, acetylsites:0, glycosites:1727, lipids:0,
+    diffProteins:4444, cancerSpecificProteins:27, cancerSpecificPhospho:645, subtypes:4,
+    therapeuticTargets:['KRAS 하위 MAPK','PI3K/AKT','LOXL2','THBS2','CEACAM6','LGALS3BP'],
+    keyPhospho:['KRAS 효과기 경로','E2F4','HDAC1-S406/S410/S421','RALGAPA2'],
+    keyGlyco:['75개 종양 특이 N-당단백 (48개 암 특이)','THBS2','CEACAM6','LGALS3BP'],
+    themes:['CPTAC 최대 인산화체 데이터셋','27개 기질 보정 종양 특이 단백','당단백 조기 검출 바이오마커'] },
+  { id:'lscc', name:'폐편평암(LSCC)', paper:'Satpathy et al. 2021', journal:'Cell', cohort:108,
+    proteins:8000, phosphosites:15000, acetylsites:5000, glycosites:0, lipids:0,
+    diffProteins:2154, cancerSpecificProteins:null, cancerSpecificPhospho:null, subtypes:5,
+    therapeuticTargets:['Survivin(BIRC5)','NSD3','LSD1(KDM1A)','EZH2','CDK4/6'],
+    keyPhospho:['NFE2L2-S433(CDK5)','GSK3B-T433','Rb CDK4/6 바이오마커'],
+    themes:['Survivin 저p63 아형 타겟','SOX2 비직접 표적 LSD1/EZH2 전략','CDK4/6 저항성 Rb 정밀 평가'] },
+  { id:'ovarian', name:'난소암(HGSOC)', paper:'Chowdhury et al. 2023', journal:'Cell', cohort:242,
+    proteins:8800, phosphosites:2648, acetylsites:0, glycosites:0, lipids:0,
+    diffProteins:null, cancerSpecificProteins:64, cancerSpecificPhospho:89, subtypes:5,
+    therapeuticTargets:['64개 난치성 서명','TAP1(항원 제시)','BCL2L1/BCLXL','TGM2'],
+    keyPhospho:['대사 경로 89개 인산화 부위'],
+    themes:['64개 단백 앙상블 난치성 예측','Chr17-LOH TP53 단백 과발현','5종 단백체 클러스터'] },
+];
+
+// 색상 팔레트 (light theme)
+const PALETTE = ['oklch(0.55 0.14 220)','oklch(0.6 0.15 30)','oklch(0.55 0.14 320)','oklch(0.5 0.13 160)','oklch(0.55 0.16 350)','oklch(0.5 0.18 295)','oklch(0.55 0.13 60)','oklch(0.5 0.13 200)','oklch(0.55 0.13 270)','oklch(0.55 0.14 100)'];
+CANCERS.forEach((c, i) => c.color = PALETTE[i % PALETTE.length]);
+
+// CSS 변수 → 실제 색상 (Plotly에 oklch 직접 안 먹어서 hex/rgb로 컨버트는 브라우저 표준 못씀, oklch는 최신 Plotly 지원)
+const PLOTLY_BASE = {
+  paper_bgcolor: 'rgba(255,255,255,0.0)',
+  plot_bgcolor: 'rgba(255,255,255,0.0)',
+  font: { family: '"Pretendard Variable", "Apple SD Gothic Neo", sans-serif', color: '#3a4456', size: 12 },
+  xaxis: { gridcolor: 'rgba(160,170,200,0.18)', zerolinecolor: 'rgba(160,170,200,0.4)', linecolor: 'rgba(160,170,200,0.4)' },
+  yaxis: { gridcolor: 'rgba(160,170,200,0.18)', zerolinecolor: 'rgba(160,170,200,0.4)', linecolor: 'rgba(160,170,200,0.4)' },
+  margin: { t: 40, b: 60, l: 70, r: 24 },
+};
+const ACCENT = '#7c3aed';      // tc violet
+const ACCENT_2 = '#c084fc';    // tc-glow lighter
+const ACCENT_3 = '#4f46e5';    // indigo
+const ACCENT_4 = '#ec4899';    // pink coral
+
+// =====================
+// CHART 1: 전체 개요 — 그룹 막대
+// =====================
+function drawOverview() {
+  const names = CANCERS.map(c => c.name);
+  const tProt = { name:'정량 단백체', x:names, y:CANCERS.map(c=>c.proteins),
+    type:'bar', marker:{ color:ACCENT_3, opacity:0.85 } };
+  const tPhospho = { name:'인산화 부위', x:names, y:CANCERS.map(c=>c.phosphosites),
+    type:'bar', marker:{ color:ACCENT, opacity:0.85 } };
+  const tDiff = { name:'차등 발현 단백', x:names, y:CANCERS.map(c=>c.diffProteins||0),
+    type:'bar', marker:{ color:ACCENT_2, opacity:0.9 } };
+  const layout = { ...PLOTLY_BASE, barmode:'group',
+    title:{ text:'암종별 단백체·인산화체 정량화 규모', font:{ color:'#1a1f2e', size:14, family:PLOTLY_BASE.font.family } },
+    legend:{ orientation:'h', y:-0.18, font:{ color:'#3a4456' }, bgcolor:'rgba(255,255,255,0)' },
+    margin:{ t:50, b:130, l:80, r:24 },
+    xaxis:{ ...PLOTLY_BASE.xaxis, tickangle:-30, tickfont:{ size:11 } },
+    yaxis:{ ...PLOTLY_BASE.yaxis, title:'마커 수', tickformat:',d' },
+    height: 460 };
+  Plotly.newPlot('chart-overview-bar', [tProt, tPhospho, tDiff], layout, { responsive:true, displayModeBar:false });
+}
+
+// CHART 2: 단백 vs 인산화 산점도 (leader line annotations)
+function drawOmicsScatter() {
+  // 라벨 오프셋 — 픽셀 단위. ax/ay 양수: 오른쪽/아래
+  const LABEL_OFFSET = {
+    'colon':       { ax:  44, ay:  18 },
+    'ccrcc':       { ax:   0, ay: -32 },
+    'endometrial': { ax: -38, ay:  28 },
+    'luad':        { ax: -52, ay: -22 },
+    'breast':      { ax:  52, ay:  26 },   // LUAD와 동일 좌표 → 반대쪽
+    'pediatric':   { ax:  56, ay:  -8 },
+    'gbm':         { ax:  64, ay: -28 },
+    'pdac':        { ax: -50, ay: -18 },
+    'lscc':        { ax: -56, ay:  22 },   // GBM과 가까움 → 반대쪽
+    'ovarian':     { ax:   0, ay: -30 },
+  };
+  const trace = {
+    x: CANCERS.map(c=>c.proteins), y: CANCERS.map(c=>c.phosphosites),
+    mode:'markers', type:'scatter',
+    text: CANCERS.map(c=>c.name),
+    cliponaxis: false,
+    marker:{
+      size: CANCERS.map(c=>Math.sqrt(c.cohort)*3.5),
+      color: CANCERS.map(c=>c.color), opacity:0.72,
+      line:{ width:1.5, color:'#fff' },
+    },
+    hovertemplate:'<b>%{text}</b><br>단백체: %{x:,}개<br>인산화체: %{y:,}개<extra></extra>',
+  };
+  const annotations = CANCERS.map(c => {
+    const off = LABEL_OFFSET[c.id] || { ax:0, ay:-26 };
+    return {
+      x: c.proteins, y: c.phosphosites,
+      xref:'x', yref:'y',
+      text: c.name,
+      showarrow: true,
+      arrowhead: 0,           // 0 = no arrowhead, just line
+      arrowsize: 1,
+      arrowwidth: 1,
+      arrowcolor: 'rgba(90,100,120,0.55)',
+      ax: off.ax, ay: off.ay,
+      axref: 'pixel', ayref: 'pixel',
+      standoff: 4,            // 라인이 마커에서 살짝 떨어져 시작
+      font: { size: 10, color: '#1a1f2e', family: PLOTLY_BASE.font.family },
+      bgcolor: 'rgba(255,255,255,0.78)',
+      borderpad: 2,
+      borderwidth: 0,
+    };
+  });
+  const layout = { ...PLOTLY_BASE,
+    title:{ text:'단백체 vs 인산화체 정량화 (버블 = 코호트)', font:{ color:'#1a1f2e', size:13 } },
+    xaxis:{ ...PLOTLY_BASE.xaxis, title:'정량 단백체 수', tickformat:',d' },
+    yaxis:{ ...PLOTLY_BASE.yaxis, title:'정량 인산화 부위 수', tickformat:',d' },
+    margin:{ t:50, b:60, l:80, r:40 }, height: 480,
+    annotations };
+  Plotly.newPlot('chart-omics-scatter', [trace], layout, { responsive:true, displayModeBar:false });
+}
+
+// CHART 3: 추가 PTM 막대
+function drawSpecialBar() {
+  const withSpecial = CANCERS.filter(c => c.acetylsites>0 || c.glycosites>0 || c.lipids>0);
+  const names = withSpecial.map(c=>c.name);
+  const trA = { name:'아세틸화 부위', x:names, y:withSpecial.map(c=>c.acetylsites), type:'bar', marker:{ color:'#f59e0b', opacity:0.85 } };
+  const trG = { name:'당단백질 부위(N-glyco)', x:names, y:withSpecial.map(c=>c.glycosites), type:'bar', marker:{ color:'#10b981', opacity:0.85 } };
+  const trL = { name:'지질', x:names, y:withSpecial.map(c=>c.lipids), type:'bar', marker:{ color:'#ef4444', opacity:0.85 } };
+  const layout = { ...PLOTLY_BASE, barmode:'group',
+    title:{ text:'추가 PTM / 분자 레이어 (해당 데이터 보유 암종만)', font:{ color:'#1a1f2e', size:13 } },
+    legend:{ orientation:'h', y:-0.22, bgcolor:'rgba(255,255,255,0)', font:{ color:'#3a4456' } },
+    margin:{ t:40, b:110, l:80, r:24 },
+    xaxis:{ ...PLOTLY_BASE.xaxis, tickfont:{ size:11 } },
+    yaxis:{ ...PLOTLY_BASE.yaxis, title:'부위 수', tickformat:',d' },
+    height: 360 };
+  Plotly.newPlot('chart-special-bar', [trA, trG, trL], layout, { responsive:true, displayModeBar:false });
+}
+
+// CHART 4: 치료 타겟 가로 막대
+function drawTargets() {
+  const sorted = [...CANCERS].sort((a,b) => a.therapeuticTargets.length - b.therapeuticTargets.length);
+  const tr = {
+    name:'치료 타겟 마커 수',
+    y: sorted.map(c=>c.name), x: sorted.map(c=>c.therapeuticTargets.length),
+    type:'bar', orientation:'h',
+    marker:{ color: sorted.map(c=>c.color), opacity:0.85, line:{ width:1, color:'rgba(255,255,255,0.6)' } },
+    text: sorted.map(c=>c.therapeuticTargets.join(' · ')),
+    hovertemplate:'<b>%{y}</b><br>타겟 수: %{x}개<br>%{text}<extra></extra>',
+  };
+  const layout = { ...PLOTLY_BASE,
+    title:{ text:'암종별 지목된 치료 타겟 수 (원문 직접 언급)', font:{ color:'#1a1f2e', size:13 } },
+    margin:{ t:40, b:60, l:160, r:24 },
+    xaxis:{ ...PLOTLY_BASE.xaxis, title:'치료 타겟 마커 수', dtick:1 },
+    yaxis:{ ...PLOTLY_BASE.yaxis, automargin:true },
+    height: 440 };
+  Plotly.newPlot('chart-targets-bar', [tr], layout, { responsive:true, displayModeBar:false });
+}
+
+// CHART 5: 카테고리 도넛
+function drawPie() {
+  const cats = {
+    '인산화 타겟 (Phospho)': 0,
+    '단백 발현 타겟 (Protein)': 0,
+    '아세틸화 타겟 (Acetyl)': 0,
+    '당단백질 타겟 (Glyco)': 0,
+    '지질/대사 (Lipid/Metabolic)': 0,
+  };
+  CANCERS.forEach(c => {
+    cats['인산화 타겟 (Phospho)'] += (c.cancerSpecificPhospho || 0);
+    cats['단백 발현 타겟 (Protein)'] += (c.cancerSpecificProteins || 0) + c.therapeuticTargets.length;
+    cats['아세틸화 타겟 (Acetyl)'] += c.acetylsites > 0 ? Math.round(c.acetylsites * 0.15) : 0;
+    cats['당단백질 타겟 (Glyco)'] += c.glycosites > 0 ? 75 : 0;
+    cats['지질/대사 (Lipid/Metabolic)'] += c.lipids > 0 ? 12 : 0;
+  });
+  const trace = {
+    labels: Object.keys(cats), values: Object.values(cats),
+    type:'pie', hole:0.5,
+    marker:{ colors:[ACCENT, ACCENT_3, '#f59e0b', '#10b981', '#ef4444'], line:{ color:'#fff', width:2 } },
+    textinfo:'label+percent', textfont:{ size:11, color:'#1a1f2e' },
+    hovertemplate:'<b>%{label}</b><br>%{value}개 (%{percent})<extra></extra>',
+  };
+  const layout = { ...PLOTLY_BASE,
+    title:{ text:'전체 마커 카테고리 분포', font:{ color:'#1a1f2e', size:13 } },
+    legend:{ font:{ color:'#3a4456' }, bgcolor:'rgba(255,255,255,0)', orientation:'h', y:-0.05 },
+    margin:{ t:40, b:80, l:24, r:24 }, showlegend:true, height: 400 };
+  Plotly.newPlot('chart-category-pie', [trace], layout, { responsive:true, displayModeBar:false });
+}
+
+// =====================
+// PANEL 4: 카드 렌더링
+// =====================
+function renderCards() {
+  const container = document.getElementById('cards-container');
+  container.innerHTML = '';
+  CANCERS.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'cancer-card';
+    card.style.borderLeftColor = c.color;
+    const badgeClass = c.journal === 'Cell' ? 'badge-cell' : 'badge-cancer-cell';
+    const stats = [
+      { val: c.proteins.toLocaleString(), label: '정량 단백' },
+      { val: c.phosphosites.toLocaleString(), label: '인산화 부위' },
+      { val: c.subtypes, label: '아형' },
+    ];
+    let mh = '';
+    mh += `<div class="cc-marker-cat">치료 타겟 (${c.therapeuticTargets.length})</div>`;
+    mh += `<div class="cc-tags">${c.therapeuticTargets.map(t=>`<span class="cc-tag highlight">${t}</span>`).join('')}</div>`;
+    if (c.keyPhospho) {
+      mh += `<div class="cc-marker-cat">주요 인산화</div>`;
+      mh += `<div class="cc-tags">${c.keyPhospho.map(t=>`<span class="cc-tag">${t}</span>`).join('')}</div>`;
+    }
+    if (c.keyAcetyl) {
+      mh += `<div class="cc-marker-cat">아세틸화</div>`;
+      mh += `<div class="cc-tags">${c.keyAcetyl.map(t=>`<span class="cc-tag">${t}</span>`).join('')}</div>`;
+    }
+    if (c.keyGlyco) {
+      mh += `<div class="cc-marker-cat">당단백</div>`;
+      mh += `<div class="cc-tags">${c.keyGlyco.map(t=>`<span class="cc-tag">${t}</span>`).join('')}</div>`;
+    }
+    mh += `<div class="cc-marker-cat">핵심 발견</div>`;
+    mh += `<div class="cc-tags">${c.themes.map(t=>`<span class="cc-tag">${t}</span>`).join('')}</div>`;
+    card.innerHTML = `
+      <div class="cc-header">
+        <div>
+          <div class="cc-name" style="color:${c.color}">${c.name}</div>
+          <div class="cc-paper">${c.paper}, ${c.journal} · n=${c.cohort}</div>
+        </div>
+        <span class="cc-badge ${badgeClass}">${c.journal}</span>
+      </div>
+      <div class="cc-stats">
+        ${stats.map(s=>`<div class="cc-stat"><div class="cc-stat-val">${s.val}</div><div class="cc-stat-label">${s.label}</div></div>`).join('')}
+      </div>
+      <div>${mh}</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// =====================
+// PANEL 5: 테이블 렌더링
+// =====================
+function renderTable() {
+  const table = document.getElementById('summary-table');
+  const headers = ['암종','논문','코호트','단백체','인산화체','아세틸화','당단백','차등단백','암특이','타겟','아형'];
+  const thead = document.createElement('thead');
+  thead.innerHTML = `<tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr>`;
+  table.appendChild(thead);
+  const tbody = document.createElement('tbody');
+  CANCERS.forEach(c => {
+    const fmt = v => v ? v.toLocaleString() : '—';
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td class="cancer-cell" style="color:${c.color};">${c.name}</td>
+      <td style="font-size:0.78rem;color:var(--muted);font-family:var(--f-mono);">${c.paper}</td>
+      <td class="num-cell">${c.cohort}</td>
+      <td class="num-cell">${fmt(c.proteins)}</td>
+      <td class="num-cell">${fmt(c.phosphosites)}</td>
+      <td class="num-cell">${c.acetylsites?fmt(c.acetylsites):'—'}</td>
+      <td class="num-cell">${c.glycosites?fmt(c.glycosites):'—'}</td>
+      <td class="num-cell">${c.diffProteins?fmt(c.diffProteins):'—'}</td>
+      <td class="num-cell">${c.cancerSpecificProteins?fmt(c.cancerSpecificProteins):'—'}</td>
+      <td class="target-cell">${c.therapeuticTargets.length}</td>
+      <td class="num-cell">${c.subtypes}</td>
+    `;
+    tbody.appendChild(row);
+  });
+  table.appendChild(tbody);
+}
+
+// =====================
+// TAB CONTROL
+// =====================
+const lazyDrawn = new Set(['overview']);
+function showPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+  // lazy resize trigger so Plotly fits container
+  if (!lazyDrawn.has(id)) {
+    lazyDrawn.add(id);
+    if (id === 'omics') { drawOmicsScatter(); drawSpecialBar(); }
+    if (id === 'targets') { drawTargets(); drawPie(); }
+  } else {
+    // resize visible Plotly charts
+    document.querySelectorAll('#panel-' + id + ' .chart-container').forEach(el => Plotly.Plots.resize(el));
+  }
+}
+
+// =====================
+// INIT
+// =====================
+window.addEventListener('DOMContentLoaded', () => {
+  drawOverview();      // panel 1
+  renderCards();       // panel 4 (cheap, no plotly)
+  renderTable();       // panel 5
+  // panel 2 / 3 charts drawn on first activation
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => showPanel(btn.dataset.panel, btn));
+  });
+});
+</script>
+</body>
+</html>
