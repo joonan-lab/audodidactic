@@ -102,10 +102,11 @@ body[data-lang="en"] .language-layer[data-lang-panel="en"]{display:block}
 .top-nav{position:sticky;top:0;z-index:5;margin:-18px 0 54px;padding:10px;background:oklch(1 0 0 / .74);border:1px solid var(--line);border-radius:var(--r-pill);backdrop-filter:blur(16px);box-shadow:var(--shadow-1);display:flex;gap:6px;overflow:auto}
 .top-nav a{white-space:nowrap;text-decoration:none;color:var(--ink-soft);font-size:13px;font-weight:700;padding:9px 14px;border-radius:var(--r-pill)}
 .top-nav a:hover,.top-nav a.active{background:var(--t-stat-tint);color:var(--t-stat)}
-.tracks{display:grid;gap:64px}
+.tracks{display:grid;grid-template-columns:minmax(0,1fr);gap:64px;min-width:0}
 .track{position:relative;--tc:var(--t-stat);--tc-glow:var(--t-stat-glow);--tc-tint:var(--t-stat-tint)}
 .track[data-track="cell"]{--tc:var(--t-cell);--tc-glow:var(--t-cell-glow);--tc-tint:var(--t-cell-tint)}
 .track[data-track="dna"]{--tc:var(--t-dna);--tc-glow:var(--t-dna-glow);--tc-tint:var(--t-dna-tint)}
+.track,.cards,.card,.content-section,.article-card{min-width:0}
 .track-head,.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:8px;padding-bottom:16px;position:relative}
 .track-head::after,.section-head::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(to right,var(--tc,var(--t-stat)) 0%,var(--line) 25%,var(--line) 100%);opacity:.5}
 .track-title,.section-head h2{font-family:var(--f-display);font-size:clamp(24px,2.6vw,32px);font-weight:800;letter-spacing:-.018em;line-height:1.15}
@@ -122,11 +123,13 @@ body[data-lang="en"] .language-layer[data-lang-panel="en"]{display:block}
 .card-title{font-family:var(--f-display);font-size:clamp(19px,1.6vw,22px);font-weight:800;letter-spacing:-.014em;line-height:1.28;color:var(--ink);margin:4px 0 2px}
 .mini-card .card-title{font-size:22px}
 .card-desc{font-size:13.5px;color:var(--ink-soft);line-height:1.7;flex-grow:1}
+.card-title,.card-desc,.track-blurb,.lede,.autodidact-note{word-break:keep-all;overflow-wrap:anywhere}
 .card-cta{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:14px;border-top:1px dashed oklch(from var(--tc) l c h / .25)}
 .card-cta-text{font-size:13.5px;color:var(--tc);font-weight:600}
 .card-cta-mark{width:36px;height:36px;border-radius:50%;background:var(--tc);color:oklch(1 0 0);display:grid;place-items:center;transition:transform .4s var(--ease-spring)}
 .card-cta-mark svg{width:14px;height:14px}.card:hover .card-cta-mark{transform:translateX(5px) scale(1.05)}
-.content-section{scroll-margin-top:96px;--tc:var(--t-stat);margin-top:64px}
+.track,.content-section{scroll-margin-top:104px}
+.content-section{--tc:var(--t-stat);margin-top:64px}
 .section-kicker{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;color:var(--tc);font-weight:800;text-transform:uppercase}
 .article-card{background:var(--surface-glass-strong);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--shadow-1);padding:30px;overflow:auto}
 .article-card h1,.article-card h2,.article-card h3{font-family:var(--f-display);letter-spacing:-.015em;line-height:1.25;margin:34px 0 12px;scroll-margin-top:112px}
@@ -716,7 +719,7 @@ body[data-lang="en"] .language-layer[data-lang-panel="en"]{display:block}
 </tbody>
 </table>
 <p>이 코드는 단순 점수표가 아니다. 각 criteria가 정말 적용 가능한지, 서로 독립적인지, 최신 ClinGen guidance에서 strength가 바뀌었는지 확인해야 한다.</p>
-<p>28개 criteria의 전체 표, 2015 ACMG/AMP guideline 조합 규칙, criterion별 상세 설명, PP3/BP4 cutoff 예시는 <a href="#ko-criteria">2015 ACMG/AMP guideline Criteria와 이후 업데이트</a>에 따로 정리했다. 이 문서는 큰 그림을 잡는 개요이고, 상세 criteria 문서는 실제 HTML 페이지의 핵심 내용으로 사용한다.</p>
+<p>28개 criteria의 전체 표, 2015 ACMG/AMP guideline 조합 규칙, criterion별 상세 설명, PP3/BP4 cutoff 예시는 <a href="#ko-criteria">2015 ACMG/AMP guideline Criteria와 이후 업데이트</a>에 따로 정리했다. 이 개요에서 큰 그림을 먼저 잡고, 이어지는 criteria 문서에서 실제 적용 기준을 하나씩 확인하면 된다.</p>
 <h2 id="ko-overview-6">6. 실무적 판정 흐름</h2>
 <p>ACMG/AMP 변이 해석을 교육용으로 단순화하면 다음 흐름이다.</p>
 <pre><code class="language-text">1. variant를 정확히 정의한다
@@ -2323,7 +2326,7 @@ OR pathogenic evidence와 benign evidence가 서로 충돌함
 </tbody>
 </table>
 <p>These codes are not a simple score sheet. Each criterion must be checked for applicability, independence from other evidence, and any strength modification in current ClinGen guidance.</p>
-<p>The full table of 28 criteria, the 2015 ACMG/AMP guideline combination rules, detailed criterion explanations, and PP3/BP4 cutoff examples are summarized separately in <a href="#en-criteria">2015 ACMG/AMP guideline criteria and later updates</a>. This overview provides the big picture, while the detailed criteria document is the core content of the HTML page.</p>
+<p>The full table of 28 criteria, the 2015 ACMG/AMP guideline combination rules, detailed criterion explanations, and PP3/BP4 cutoff examples are summarized separately in <a href="#en-criteria">2015 ACMG/AMP guideline criteria and later updates</a>. Use this overview for the big picture, then use the criteria document to check each application rule in detail.</p>
 <h2 id="en-overview-6-practical-classification-workflow">6. Practical classification workflow</h2>
 <p>As an educational simplification, ACMG/AMP variant interpretation follows this workflow.</p>
 <pre><code class="language-text">1. Define the variant precisely
@@ -3411,7 +3414,7 @@ OR pathogenic and benign evidence conflict
         Korean and English educational synthesis based on public ACMG/AMP and ClinGen materials · 확인 기준일 2026-05-10
       </div>
       <div>
-        Source MD: acmg_guidelines/content
+        Public ACMG/AMP and ClinGen materials only
       </div>
     </div>
   </footer>
@@ -3453,6 +3456,20 @@ function setLanguage(lang) {
   setupSectionObserver();
 }
 
+function applyHashLanguage(hash) {
+  if (hash && hash.startsWith('#en-')) setLanguage('en');
+  if (hash && hash.startsWith('#ko-')) setLanguage('ko');
+}
+
+function scrollToHash(hash, behavior = 'smooth') {
+  const target = hash ? document.querySelector(hash) : null;
+  if (!target) return;
+  const nav = document.querySelector(`.language-layer[data-lang-panel="${activeLang()}"] .top-nav`);
+  const offset = (nav ? nav.getBoundingClientRect().height : 0) + 24;
+  const top = target.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top: Math.max(0, top), behavior });
+}
+
 langButtons.forEach(button => {
   button.addEventListener('click', () => {
     const x = window.scrollX;
@@ -3462,21 +3479,27 @@ langButtons.forEach(button => {
   });
 });
 
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[href^="#"]');
+  if (!link) return;
+  const hash = link.getAttribute('href');
+  if (!hash || hash === '#') return;
+  const target = document.querySelector(hash);
+  if (!target) return;
+  event.preventDefault();
+  applyHashLanguage(hash);
+  history.pushState(null, '', hash);
+  requestAnimationFrame(() => scrollToHash(hash));
+});
+
 const hashLang = location.hash.startsWith('#en-') ? 'en' : location.hash.startsWith('#ko-') ? 'ko' : null;
 const initialLang = hashLang || localStorage.getItem('acmg-guide-lang') || 'ko';
 setLanguage(initialLang);
-requestAnimationFrame(() => {
-  const target = location.hash ? document.querySelector(location.hash) : null;
-  if (target) target.scrollIntoView({ block: 'start' });
-});
+requestAnimationFrame(() => scrollToHash(location.hash, 'auto'));
 
 window.addEventListener('hashchange', () => {
-  if (location.hash.startsWith('#en-')) setLanguage('en');
-  if (location.hash.startsWith('#ko-')) setLanguage('ko');
-  requestAnimationFrame(() => {
-    const target = location.hash ? document.querySelector(location.hash) : null;
-    if (target) target.scrollIntoView({ block: 'start' });
-  });
+  applyHashLanguage(location.hash);
+  requestAnimationFrame(() => scrollToHash(location.hash));
 });
 </script>
 </body>
