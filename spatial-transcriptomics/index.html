@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>암 × 공간전사체 랜드스케이프 | Autodidact</title>
-<meta property="og:title" content="암 × 공간전사체 랜드스케이프">
-<meta property="og:description" content="암 조직 RNA 공간전사체 플랫폼, 샘플 규모, L-R 분석 현황 (10편 논문)">
+<title>암 × 공간전사체 읽기 지도 | Autodidact</title>
+<meta property="og:title" content="암 × 공간전사체 읽기 지도">
+<meta property="og:description" content="암 조직 RNA 공간전사체 플랫폼, 샘플 규모, L-R 분석 흐름을 정리한 한글 학습 지도">
 <meta property="og:type" content="website">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
 :root {
   --bg: oklch(0.985 0.005 90);
@@ -102,7 +101,7 @@ a:hover { text-decoration: underline; }
   -webkit-background-clip: text; background-clip: text;
   color: transparent; -webkit-text-fill-color: transparent;
 }
-.hero .lede { font-size: 16px; color: var(--ink-soft); line-height: 1.7; max-width: 620px; }
+.hero .lede { font-size: 16px; color: var(--ink-soft); line-height: 1.7; max-width: 1120px; }
 .hero-meta {
   margin-top: 14px; padding-top: 12px;
   border-top: 1px solid var(--line);
@@ -146,7 +145,7 @@ a:hover { text-decoration: underline; }
   font-family: var(--f-display); font-size: clamp(22px, 2.4vw, 30px);
   font-weight: 800; letter-spacing: -0.018em; color: var(--ink); line-height: 1.15;
 }
-.section-blurb { font-size: 14.5px; color: var(--ink-soft); max-width: 680px; line-height: 1.7; margin: 14px 0 24px; }
+.section-blurb { font-size: 14.5px; color: var(--ink-soft); max-width: 1120px; line-height: 1.7; margin: 14px 0 24px; }
 
 /* ---- CARDS ---- */
 .cards { display: grid; gap: 16px; }
@@ -173,8 +172,258 @@ a:hover { text-decoration: underline; }
   font-family: var(--f-display); font-size: 15px; font-weight: 700;
   color: var(--ink); margin-bottom: 4px;
 }
-.chart-container { position: relative; width: 100%; }
-.chart-container canvas { width: 100% !important; }
+
+/* ---- RELATION VISUALS ---- */
+.relation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.relation-panel {
+  position: relative;
+  padding: 26px 24px 22px;
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(16px) saturate(1.25);
+  -webkit-backdrop-filter: blur(16px) saturate(1.25);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+  isolation: isolate;
+}
+.relation-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(110% 90% at 100% 0%, oklch(from var(--tc-glow) l c h / 0.16), transparent 62%),
+    linear-gradient(135deg, transparent 35%, var(--tc-tint) 100%);
+  opacity: 0.42;
+}
+.relation-panel.wide { grid-column: 1 / -1; }
+.relation-panel h2 {
+  font-family: var(--f-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.relation-kicker {
+  font-family: var(--f-mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tc);
+  margin-bottom: 6px;
+}
+.matrix,
+.tool-matrix,
+.lr-flow-list {
+  display: grid;
+  gap: 0;
+}
+.matrix-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.85fr) minmax(140px, 0.95fr) minmax(140px, 0.95fr) minmax(240px, 1.65fr);
+  gap: 14px;
+  align-items: start;
+  padding: 13px 0;
+  border-top: 1px solid var(--line-soft);
+}
+.matrix-row:first-child { border-top: 0; }
+.matrix-row.head,
+.tool-row.head {
+  padding-top: 0;
+  color: var(--tc);
+  font-family: var(--f-mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.entity-title {
+  display: block;
+  font-family: var(--f-display);
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.25;
+}
+.entity-sub {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+.cell-copy {
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+.tag-row,
+.link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.mini-tag,
+.link-tag,
+.pair-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid oklch(from var(--tc) l c h / 0.22);
+  background: oklch(from var(--tc-tint) l c h / 0.72);
+  color: var(--ink-soft);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.relation-flow-map {
+  display: grid;
+  gap: 12px;
+}
+.flow-band {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(150px, 0.9fr) minmax(260px, 1.45fr) minmax(260px, 1.45fr);
+  gap: 16px;
+  align-items: stretch;
+  padding: 14px 0;
+  border-top: 1px solid var(--line-soft);
+}
+.flow-band:first-child { border-top: 0; }
+.flow-band::before {
+  content: "";
+  position: absolute;
+  left: 13%;
+  right: 13%;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(to right, transparent, oklch(from var(--tc) l c h / 0.2), transparent);
+  z-index: 0;
+}
+.flow-stage {
+  position: relative;
+  z-index: 1;
+  min-height: 84px;
+  padding: 12px 14px;
+  border: 1px solid oklch(from var(--tc) l c h / 0.18);
+  border-radius: 18px;
+  background: oklch(1 0 0 / 0.72);
+}
+.flow-stage.primary {
+  background: oklch(from var(--tc-tint) l c h / 0.82);
+  border-color: oklch(from var(--tc) l c h / 0.28);
+}
+.flow-stage::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  background: var(--tc);
+  box-shadow: 0 0 0 5px oklch(from var(--tc) l c h / 0.12);
+}
+.flow-stage:last-child::after { display: none; }
+.flow-stage-title {
+  display: block;
+  font-family: var(--f-display);
+  font-size: 0.9rem;
+  font-weight: 850;
+  color: var(--ink);
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+.flow-stage-sub {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  margin-bottom: 8px;
+}
+.lr-flow {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(150px, 0.9fr) minmax(220px, 1.25fr) minmax(240px, 1.45fr);
+  gap: 14px;
+  align-items: center;
+  padding: 15px 0;
+  border-top: 1px solid var(--line-soft);
+}
+.lr-flow:first-child { border-top: 0; }
+.lr-flow::before {
+  content: "";
+  position: absolute;
+  left: 14%;
+  right: 36%;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(to right, oklch(from var(--lr) l c h / 0.2), oklch(from var(--lr) l c h / 0.1));
+  z-index: 0;
+}
+.flow-node {
+  position: relative;
+  z-index: 1;
+  min-height: 58px;
+  padding: 11px 12px;
+  border: 1px solid oklch(from var(--lr) l c h / 0.22);
+  border-radius: 18px;
+  background: oklch(1 0 0 / 0.62);
+}
+.flow-node strong {
+  display: block;
+  color: var(--ink);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+.flow-node span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  margin-top: 3px;
+}
+.pair-column {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.pair-tag {
+  font-family: var(--f-mono);
+  color: oklch(0.36 0.06 35);
+  background: oklch(from var(--lr-tint) l c h / 0.72);
+  border-color: oklch(from var(--lr) l c h / 0.28);
+}
+.flow-context {
+  position: relative;
+  z-index: 1;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+.tool-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.8fr) minmax(170px, 1fr) minmax(170px, 1fr) minmax(230px, 1.4fr);
+  gap: 14px;
+  align-items: start;
+  padding: 13px 0;
+  border-top: 1px solid var(--line-soft);
+}
+.tool-row:first-child { border-top: 0; }
 
 /* ---- PAPER LIST ---- */
 .paper-card {
@@ -290,6 +539,16 @@ a:hover { text-decoration: underline; }
 /* ---- RESPONSIVE ---- */
 @media (max-width: 1000px) {
   .cards-2 { grid-template-columns: 1fr; }
+  .relation-grid { grid-template-columns: 1fr; }
+  .matrix-row,
+  .tool-row,
+  .lr-flow { grid-template-columns: 1fr; gap: 8px; }
+  .flow-band { grid-template-columns: 1fr; gap: 8px; }
+  .flow-band::before,
+  .flow-stage::after,
+  .lr-flow::before { display: none; }
+  .matrix-row.head,
+  .tool-row.head { display: none; }
   .stat-row { grid-template-columns: repeat(3, 1fr); }
   .platform-grid { grid-template-columns: repeat(3, 1fr); }
   .paper-card { grid-template-columns: 1fr; }
@@ -298,6 +557,9 @@ a:hover { text-decoration: underline; }
 @media (max-width: 600px) {
   .stat-row { grid-template-columns: repeat(2, 1fr); }
   .platform-grid { grid-template-columns: 1fr 1fr; }
+  .relation-panel { padding: 20px 16px 18px; border-radius: var(--r-inner); }
+  .section-head { align-items: flex-start; }
+  .section-title { font-size: 22px; }
   .page { padding: 32px 16px 48px; }
 }
 </style>
@@ -311,40 +573,137 @@ a:hover { text-decoration: underline; }
     <span class="brand-dot" aria-hidden="true"></span>
     <span><strong>autodidact</strong> &middot; cancer spatial transcriptomics</span>
   </div>
-  <h1>암 &times; 공간전사체 <span class="accent">랜드스케이프</span></h1>
+  <h1>암 &times; 공간전사체 <span class="accent">읽기 지도</span></h1>
   <p class="lede">
-    암 조직 RNA 공간전사체 플랫폼, 샘플 규모, L-R (리간드-수용체) 분석 현황을 정리합니다. Visium, Xenium, MERSCOPE 등 RNA 기반 ST 플랫폼만 포함합니다.
+    암 조직 RNA 공간전사체 플랫폼, 샘플 규모, L-R (리간드-수용체) 분석 흐름을 한데 모았습니다. Visium, Xenium, MERSCOPE 등 RNA 기반 ST 플랫폼만 포함합니다.
   </p>
   <div class="hero-meta">작성자: 최희선 &nbsp;&middot;&nbsp; 업데이트: 2026-05-10</div>
 </header>
 
 <!-- STATS -->
 <div class="stat-row">
-  <div class="stat-box"><div class="stat-num">10</div><div class="stat-label">분석 논문 수</div></div>
-  <div class="stat-box"><div class="stat-num">5</div><div class="stat-label">RNA 기반 ST 플랫폼</div></div>
-  <div class="stat-box"><div class="stat-num">~720</div><div class="stat-label">총 조직 절편</div></div>
-  <div class="stat-box"><div class="stat-num">14M+</div><div class="stat-label">총 세포/spot 수</div></div>
-  <div class="stat-box"><div class="stat-num">20+</div><div class="stat-label">암종/장기 유형</div></div>
+  <div class="stat-box"><div class="stat-num">RNA</div><div class="stat-label">공간전사체 플랫폼</div></div>
+  <div class="stat-box"><div class="stat-num">L-R</div><div class="stat-label">세포 간 신호 분석</div></div>
+  <div class="stat-box"><div class="stat-num">ROI</div><div class="stat-label">절편·spot·cell 규모 비교</div></div>
+  <div class="stat-box"><div class="stat-num">QC</div><div class="stat-label">spillover와 해상도 해석</div></div>
+  <div class="stat-box"><div class="stat-num">TME</div><div class="stat-label">암 미세환경 구조</div></div>
 </div>
 
-<!-- SECTION 1: Charts -->
+<!-- SECTION 1: Platform Relationships -->
 <section class="section">
   <header class="section-head">
     <span class="section-num">01</span>
-    <h2 class="section-title">플랫폼 &middot; 샘플 &middot; 해상도</h2>
+    <h2 class="section-title">플랫폼 선택과 연구 질문의 연결</h2>
   </header>
-  <p class="section-blurb">10편 논문에서 사용된 RNA 기반 공간전사체 플랫폼의 사용 빈도, 샘플 규모, 공간 해상도, 유전자 패널 크기를 비교합니다.</p>
-  <div class="cards cards-2">
-    <div class="card"><h2>플랫폼별 논문 사용 빈도</h2><div class="chart-container"><canvas id="platformChart"></canvas></div></div>
-    <div class="card"><h2>논문별 샘플 규모</h2><div class="chart-container"><canvas id="sampleChart"></canvas></div></div>
-  </div>
-  <div class="cards cards-2" style="margin-top:16px;">
-    <div class="card"><h2>플랫폼별 해상도 비교</h2><div class="chart-container"><canvas id="resolutionChart"></canvas></div></div>
-    <div class="card"><h2>유전자 패널 크기</h2><div class="chart-container"><canvas id="genePanelChart"></canvas></div></div>
-  </div>
-  <div class="cards cards-2" style="margin-top:16px;">
-    <div class="card"><h2>논문별 분석 초점</h2><div class="chart-container"><canvas id="focusChart"></canvas></div></div>
-    <div class="card"><h2>논문별 세포/spot 수</h2><div class="chart-container"><canvas id="cellCountChart"></canvas></div></div>
+  <p class="section-blurb">논문 수부터 세기보다, 플랫폼의 공간 단위와 유전자 범위가 어떤 질문을 받쳐 주는지 먼저 봅니다. 한 연구가 여러 플랫폼을 섞는 이유도 이 관계에서 읽습니다.</p>
+  <div class="relation-grid">
+    <div class="relation-panel wide">
+      <div class="relation-kicker">platform trade-off</div>
+      <h2>해상도 &times; 유전자 범위 &times; 연구 질문</h2>
+      <div class="matrix">
+        <div class="matrix-row head">
+          <span>플랫폼</span><span>공간 단위</span><span>분자 범위</span><span>잘 맞는 질문</span>
+        </div>
+        <div class="matrix-row">
+          <div><span class="entity-title">Xenium</span><span class="entity-sub">패널형 imaging</span></div>
+          <div class="cell-copy">세포 좌표에 가까운 in situ readout</div>
+          <div class="cell-copy">표적 유전자 패널</div>
+          <div class="tag-row">
+            <span class="mini-tag">세포 이웃</span><span class="mini-tag">종양-면역 경계</span><span class="mini-tag">spillover QC</span>
+          </div>
+        </div>
+        <div class="matrix-row">
+          <div><span class="entity-title">Visium HD</span><span class="entity-sub">bin 기반 고해상도</span></div>
+          <div class="cell-copy">조직 구조를 더 촘촘하게 나눈 bin</div>
+          <div class="cell-copy">전체 전사체</div>
+          <div class="tag-row">
+            <span class="mini-tag">미세구조</span><span class="mini-tag">immune architecture</span><span class="mini-tag">whole-transcriptome signal</span>
+          </div>
+        </div>
+        <div class="matrix-row">
+          <div><span class="entity-title">Visium</span><span class="entity-sub">spot-level atlas</span></div>
+          <div class="cell-copy">절편 전체를 spot 단위로 읽는 지도</div>
+          <div class="cell-copy">전체 전사체</div>
+          <div class="tag-row">
+            <span class="mini-tag">코호트 비교</span><span class="mini-tag">niche atlas</span><span class="mini-tag">L-R 검증</span>
+          </div>
+        </div>
+        <div class="matrix-row">
+          <div><span class="entity-title">MERSCOPE</span><span class="entity-sub">MERFISH 기반 imaging</span></div>
+          <div class="cell-copy">단일분자 위치와 세포 경계를 함께 읽음</div>
+          <div class="cell-copy">표적 유전자 패널</div>
+          <div class="tag-row">
+            <span class="mini-tag">cell-state validation</span><span class="mini-tag">공간 패턴 확인</span>
+          </div>
+        </div>
+        <div class="matrix-row">
+          <div><span class="entity-title">legacy ST</span><span class="entity-sub">초기 spot 기술</span></div>
+          <div class="cell-copy">낮은 해상도의 조직 단위 신호</div>
+          <div class="cell-copy">전체 전사체</div>
+          <div class="tag-row">
+            <span class="mini-tag">역사적 기준점</span><span class="mini-tag">coarse anatomy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="relation-panel wide">
+      <div class="relation-kicker">relation map</div>
+      <h2>연구 질문에서 플랫폼 조합과 대표 논문으로 이어지는 길</h2>
+      <div class="relation-flow-map">
+        <div class="flow-band">
+          <div class="flow-stage primary">
+            <span class="flow-stage-title">넓은 atlas</span>
+            <span class="flow-stage-sub">암종과 절편을 넓게 묶어 반복되는 niche를 찾음</span>
+            <div class="tag-row"><span class="mini-tag">cohort</span><span class="mini-tag">prognosis</span></div>
+          </div>
+          <div class="flow-stage">
+            <span class="flow-stage-title">spot-level + 검증 플랫폼</span>
+            <span class="flow-stage-sub">Visium으로 넓게 읽고, MERSCOPE/Xenium으로 세포 위치를 확인</span>
+            <div class="tag-row"><span class="mini-tag">Visium</span><span class="mini-tag">MERSCOPE</span><span class="mini-tag">Xenium</span></div>
+          </div>
+          <div class="flow-stage">
+            <span class="flow-stage-title">Li H. TSME · Spatial EcoTyper</span>
+            <span class="flow-stage-sub">공통 niche, spatial ecotype, 액체생검 또는 예후 신호로 이어짐</span>
+            <div class="tag-row"><span class="mini-tag">niche atlas</span><span class="mini-tag">L-R score</span></div>
+          </div>
+        </div>
+        <div class="flow-band">
+          <div class="flow-stage primary">
+            <span class="flow-stage-title">경계와 미세구조</span>
+            <span class="flow-stage-sub">종양-면역 경계, CAF-종양 접점, TLS 주변을 촘촘히 읽음</span>
+            <div class="tag-row"><span class="mini-tag">interface</span><span class="mini-tag">micro-niche</span></div>
+          </div>
+          <div class="flow-stage">
+            <span class="flow-stage-title">고해상도 + 패널형 imaging</span>
+            <span class="flow-stage-sub">Visium HD로 전체 전사체를 보고 Xenium으로 세포 상태를 좁힘</span>
+            <div class="tag-row"><span class="mini-tag">Visium HD</span><span class="mini-tag">Xenium 5K</span></div>
+          </div>
+          <div class="flow-stage">
+            <span class="flow-stage-title">Sakai · Oliveira · FineST · Wang</span>
+            <span class="flow-stage-sub">치료 저항성, CRC 면역구조, TLS-L-R 회로 해석으로 이어짐</span>
+            <div class="tag-row"><span class="mini-tag">CRT resistance</span><span class="mini-tag">immune CRC</span><span class="mini-tag">TLS</span></div>
+          </div>
+        </div>
+        <div class="flow-band">
+          <div class="flow-stage primary">
+            <span class="flow-stage-title">관찰 단위 바꾸기</span>
+            <span class="flow-stage-sub">조직 이미지, virtual ST, RNA spillover 보정으로 해석 단위를 바꿈</span>
+            <div class="tag-row"><span class="mini-tag">inference</span><span class="mini-tag">QC</span></div>
+          </div>
+          <div class="flow-stage">
+            <span class="flow-stage-title">H&amp;E + ST + 보정 모델</span>
+            <span class="flow-stage-sub">이미지 기반 예측과 Xenium QC가 downstream 해석을 어떻게 바꾸는지 점검</span>
+            <div class="tag-row"><span class="mini-tag">H&amp;E</span><span class="mini-tag">virtual ST</span><span class="mini-tag">spillover</span></div>
+          </div>
+          <div class="flow-stage">
+            <span class="flow-stage-title">Phoenix · SPLIT · FineST</span>
+            <span class="flow-stage-sub">예측된 발현, leakage correction, nuclei-resolved L-R로 이어짐</span>
+            <div class="tag-row"><span class="mini-tag">therapy response</span><span class="mini-tag">marker correction</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -354,60 +713,89 @@ a:hover { text-decoration: underline; }
     <span class="section-num" style="--tc: var(--lr);">02</span>
     <h2 class="section-title">L-R (리간드-수용체) 분석 현황</h2>
   </header>
-  <p class="section-blurb">3편의 논문에서 체계적인 L-R pair 분석을 수행했습니다. 공간전사체 데이터에서 niche별, 암종별 세포간 통신 회로가 어떻게 밝혀졌는지 정리합니다.</p>
-  <div class="cards cards-2">
-    <div class="card" style="--tc: var(--lr); --tc-glow: var(--lr-glow); --tc-tint: var(--lr-tint);">
-      <h2>주요 L-R pair &times; 논문 매핑</h2>
-      <div class="chart-container"><canvas id="lrChart"></canvas></div>
-    </div>
-    <div class="card" style="--tc: var(--lr); --tc-glow: var(--lr-glow); --tc-tint: var(--lr-tint);">
-      <h2>L-R 분석 도구 비교</h2>
-      <div class="chart-container"><canvas id="lrToolChart"></canvas></div>
-    </div>
-  </div>
-  <div class="cards" style="margin-top:16px;">
-    <div class="card" style="--tc: var(--lr); --tc-glow: var(--lr-glow); --tc-tint: var(--lr-tint);">
-      <h2>논문별 L-R 분석 요약</h2>
-      <div style="overflow-x:auto;">
-      <table class="lr-table">
-        <thead><tr><th>논문</th><th>분석 도구</th><th>주요 L-R pairs</th><th>생물학적 맥락</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><span class="paper-name">Li H. 2026</span><br><span style="font-size:0.72rem;">Pan-cancer TSME<br>Cell Rep Med</span></td>
-            <td>Meta-analysis<br>LR score</td>
-            <td class="lr-pair">CXCL12-CXCR4<br>CXCL16-CXCR6<br>CXCL9-CXCR3<br>CCL19-CCR7<br>CXCL13-CXCR5<br>IL1B-IL1R2<br>IL15-IL15RA<br>CD274-PDCD1</td>
-            <td class="bio-context">13 niche별 체계적 L-R 분석<br><span class="lr-good">Niche_11/13</span>: 면역활성, 좋은 예후<br><span class="lr-bad">Niche_4</span>: 대식세포+종양, ICI 저항</td>
-          </tr>
-          <tr>
-            <td><span class="paper-name">Wang 2026</span><br><span style="font-size:0.72rem;">CRC/GC TLS<br>Mol Carcinogenesis</span></td>
-            <td>CellChat<br>stLearn</td>
-            <td class="lr-pair">CXCL16-CXCR6<br>CXCL10-CXCR3</td>
-            <td class="bio-context"><span class="lr-good">CRC</span>: CD16+ Mac &rarr; CD8+ T 모집<br><span class="lr-good">GC</span>: ISG15+ Mac &rarr; ISG+ CD8+ T<br>Visium에서 공간적 검증</td>
-          </tr>
-          <tr>
-            <td><span class="paper-name">FineST 2026</span><br><span style="font-size:0.72rem;">Li L. et al.<br>Nat Comms</span></td>
-            <td>FineST<br>(CellChat DB)</td>
-            <td class="lr-pair">INHBA-ACVR1B<br>NRG1-ERBB3<br>CD70-CD27<br>CCL3-CCR1</td>
-            <td class="bio-context">유방암: invasive front CAF-종양<br>NPC: TLS 내 Treg 모집<br>HCC: PD-1 저항 장벽<br><strong>핵 수준 해상도</strong> L-R 매핑</td>
-          </tr>
-          <tr>
-            <td><span class="paper-name">SPLIT 2026</span><br><span style="font-size:0.72rem;">Bilous et al.<br>Nat Methods</span></td>
-            <td>Xenium QC</td>
-            <td style="color:var(--muted); font-size:0.75rem;">(직접 L-R 분석 아님)</td>
-            <td class="bio-context">Spillover 보정 &rarr; L-R 정확도 영향<br>보정 전/후 소진 마커 차이 보고</td>
-          </tr>
-        </tbody>
-      </table>
+  <p class="section-blurb">L-R pair는 이름 목록보다 “어느 세포군이 무엇을 보내고, 어느 niche에서 어떤 해석으로 이어지는가”를 봐야 합니다. 아래는 반복되는 통신 회로와 분석 도구의 역할을 맥락별로 다시 묶은 지도입니다.</p>
+  <div class="relation-grid">
+    <div class="relation-panel wide" style="--tc: var(--lr); --tc-glow: var(--lr-glow); --tc-tint: var(--lr-tint);">
+      <div class="relation-kicker">communication map</div>
+      <h2>세포군 &rarr; L-R pair &rarr; 생물학적 맥락</h2>
+      <div class="lr-flow-list">
+        <div class="lr-flow">
+          <div class="flow-node"><strong>면역활성 niche</strong><span>Li H. TSME</span></div>
+          <div class="pair-column">
+            <span class="pair-tag">CXCL12-CXCR4</span><span class="pair-tag">CCL19-CCR7</span><span class="pair-tag">CXCL13-CXCR5</span>
+          </div>
+          <div class="flow-context">T/B cell recruitment와 TLS-like 구조를 읽는 축입니다. pan-cancer niche를 예후와 면역활성 상태로 나누는 데 쓰입니다.</div>
+        </div>
+        <div class="lr-flow">
+          <div class="flow-node"><strong>대식세포·종양 niche</strong><span>Li H. TSME</span></div>
+          <div class="pair-column">
+            <span class="pair-tag">IL1B-IL1R2</span><span class="pair-tag">IL15-IL15RA</span><span class="pair-tag">CD274-PDCD1</span>
+          </div>
+          <div class="flow-context">염증성 myeloid 신호와 checkpoint 축이 함께 보이는 구간입니다. ICI 반응성 또는 저항성 해석의 출발점으로 읽습니다.</div>
+        </div>
+        <div class="lr-flow">
+          <div class="flow-node"><strong>TLS 주변 macrophage</strong><span>Wang, CRC/GC</span></div>
+          <div class="pair-column">
+            <span class="pair-tag">CXCL16-CXCR6</span><span class="pair-tag">CXCL10-CXCR3</span>
+          </div>
+          <div class="flow-context">CD16+ macrophage 또는 ISG15+ macrophage가 CD8+ T cell을 끌어들이는 회로로 해석됩니다.</div>
+        </div>
+        <div class="lr-flow">
+          <div class="flow-node"><strong>CAF·종양 경계</strong><span>FineST</span></div>
+          <div class="pair-column">
+            <span class="pair-tag">INHBA-ACVR1B</span><span class="pair-tag">NRG1-ERBB3</span><span class="pair-tag">CD70-CD27</span><span class="pair-tag">CCL3-CCR1</span>
+          </div>
+          <div class="flow-context">invasive front, TLS 내 Treg 모집, PD-1 저항 장벽처럼 조직 경계에서 생기는 국소 상호작용을 핵 수준으로 좁혀 읽습니다.</div>
+        </div>
+        <div class="lr-flow">
+          <div class="flow-node"><strong>QC gate</strong><span>SPLIT</span></div>
+          <div class="pair-column">
+            <span class="pair-tag">spillover correction</span><span class="pair-tag">exhaustion markers</span>
+          </div>
+          <div class="flow-context">직접적인 L-R 도구는 아니지만, transcript leakage 보정 전후로 세포 상태와 상호작용 해석이 달라질 수 있음을 확인하게 해줍니다.</div>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="note">
-    <strong>L-R 분석 도구 비교:</strong><br>
-    &bull; <strong>CellChat</strong> &mdash; 가장 널리 사용. 분비형/접촉형/ECM 경로 분류. Wang, FineST에서 사용.<br>
-    &bull; <strong>FineST</strong> &mdash; 조직학 이미지 + ST 융합, 핵 수준 해상도에서 L-R 분석. contrastive learning 기반.<br>
-    &bull; <strong>SPIDER</strong> &mdash; 공간적으로 가변적인 L-R 상호작용(SVI) 동정. 하류 전사인자 활성으로 기능적 검증.<br>
-    &bull; <strong>stLearn</strong> &mdash; Visium 공간 좌표 기반 L-R 통신 강도 추정. Wang에서 공간 검증에 사용.<br>
-    &bull; <strong>SpatialDM / CellPhoneDB / NicheNet</strong> &mdash; 추가 L-R/CCC 분석 도구.
+
+    <div class="relation-panel wide" style="--tc: var(--lr); --tc-glow: var(--lr-glow); --tc-tint: var(--lr-tint);">
+      <div class="relation-kicker">tool matrix</div>
+      <h2>도구는 같은 L-R을 서로 다른 층위에서 봅니다</h2>
+      <div class="tool-matrix">
+        <div class="tool-row head">
+          <span>도구</span><span>관계 정의</span><span>공간 정보 사용</span><span>이 페이지에서 읽는 포인트</span>
+        </div>
+        <div class="tool-row">
+          <div><span class="entity-title">CellChat</span><span class="entity-sub">curated L-R DB</span></div>
+          <div class="cell-copy">분비형, 접촉형, ECM-receptor 경로를 카테고리로 묶음</div>
+          <div class="cell-copy">세포군 간 발현 기반 관계를 공간 annotation 위에서 해석</div>
+          <div class="tag-row"><span class="mini-tag">Wang</span><span class="mini-tag">FineST</span><span class="mini-tag">pathway-level view</span></div>
+        </div>
+        <div class="tool-row">
+          <div><span class="entity-title">FineST</span><span class="entity-sub">histology + ST</span></div>
+          <div class="cell-copy">조직 이미지와 ST를 결합해 더 작은 공간 단위의 관계를 추론</div>
+          <div class="cell-copy">핵 수준으로 좁힌 위치에서 L-R pair를 매핑</div>
+          <div class="tag-row"><span class="mini-tag">invasive front</span><span class="mini-tag">TLS</span><span class="mini-tag">HCC barrier</span></div>
+        </div>
+        <div class="tool-row">
+          <div><span class="entity-title">stLearn</span><span class="entity-sub">neighbor graph</span></div>
+          <div class="cell-copy">spot 또는 세포 주변 이웃 관계에서 통신 강도를 계산</div>
+          <div class="cell-copy">Visium 좌표를 써서 TLS 주변의 방향성을 확인</div>
+          <div class="tag-row"><span class="mini-tag">Wang</span><span class="mini-tag">spatial validation</span></div>
+        </div>
+        <div class="tool-row">
+          <div><span class="entity-title">LR score</span><span class="entity-sub">meta-analysis</span></div>
+          <div class="cell-copy">여러 연구에서 반복되는 niche별 L-R 신호를 요약</div>
+          <div class="cell-copy">공통 niche를 기준으로 암종 간 비교를 가능하게 함</div>
+          <div class="tag-row"><span class="mini-tag">Li H.</span><span class="mini-tag">pan-cancer</span><span class="mini-tag">prognosis</span></div>
+        </div>
+        <div class="tool-row">
+          <div><span class="entity-title">SpatialDM / SPIDER / NicheNet</span><span class="entity-sub">추가 선택지</span></div>
+          <div class="cell-copy">공간적으로 변하는 L-R 또는 ligand-target 관계를 별도로 모델링</div>
+          <div class="cell-copy">상호작용의 위치 의존성과 downstream effect를 더 묻고 싶을 때 사용</div>
+          <div class="tag-row"><span class="mini-tag">SVI</span><span class="mini-tag">TF activity</span><span class="mini-tag">ligand-target</span></div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -459,11 +847,11 @@ a:hover { text-decoration: underline; }
     <h2 class="section-title">플랫폼 요약</h2>
   </header>
   <div class="platform-grid">
-    <div class="platform-card"><h3>10x Xenium</h3><p><strong>7편</strong>에서 사용</p><p>V1 / Prime / 5K</p><p>300 ~ 5,000 유전자</p><span class="res-tag res-sc">단일세포</span></div>
-    <div class="platform-card"><h3>10x Visium HD</h3><p><strong>5편</strong>에서 사용</p><p>전체 전사체</p><p>~8 &mu;m bin</p><span class="res-tag res-hd">준단일세포</span></div>
-    <div class="platform-card"><h3>10x Visium</h3><p><strong>5편</strong>에서 사용</p><p>전체 전사체</p><p>~55 &mu;m spot</p><span class="res-tag res-spot">Spot-level</span></div>
-    <div class="platform-card"><h3>MERSCOPE</h3><p><strong>2편</strong>에서 사용</p><p>~500 유전자</p><p>MERFISH 기반</p><span class="res-tag res-sc">단일세포</span></div>
-    <div class="platform-card"><h3>legacy ST</h3><p><strong>1편</strong>에서 사용</p><p>전체 전사체</p><p>~100 &mu;m spot</p><span class="res-tag res-spot">Spot-level</span></div>
+    <div class="platform-card"><h3>10x Xenium</h3><p>패널형 단일세포 공간 분석</p><p>V1 / Prime / 5K</p><p>300 ~ 5,000 유전자</p><span class="res-tag res-sc">단일세포</span></div>
+    <div class="platform-card"><h3>10x Visium HD</h3><p>고해상도 bin 기반 분석</p><p>전체 전사체</p><p>~8 &mu;m bin</p><span class="res-tag res-hd">준단일세포</span></div>
+    <div class="platform-card"><h3>10x Visium</h3><p>spot-level 전체 전사체 분석</p><p>전체 전사체</p><p>~55 &mu;m spot</p><span class="res-tag res-spot">Spot-level</span></div>
+    <div class="platform-card"><h3>MERSCOPE</h3><p>MERFISH 기반 패널형 분석</p><p>~500 유전자</p><p>고해상도 imaging</p><span class="res-tag res-sc">단일세포</span></div>
+    <div class="platform-card"><h3>legacy ST</h3><p>초기 ST 기준점</p><p>전체 전사체</p><p>~100 &mu;m spot</p><span class="res-tag res-spot">Spot-level</span></div>
   </div>
 </section>
 
@@ -471,7 +859,7 @@ a:hover { text-decoration: underline; }
 <footer class="foot">
   <div>
     <strong>autodidact</strong> &middot; 학생용 학습 지도<br>
-    공개 문헌과 개념 노트를 바탕으로 정리한 암 공간전사체 랜드스케이프
+    공개 문헌과 개념 노트를 바탕으로 정리한 암 공간전사체 읽기 지도
   </div>
   <div class="right">
     <a href="../index.html">&larr; autodidact index</a>
@@ -481,110 +869,6 @@ a:hover { text-decoration: underline; }
 </div>
 
 <script>
-const tc = 'oklch(0.5 0.12 220)';
-const lr = 'oklch(0.6 0.13 35)';
-const gridColor = 'oklch(0.93 0.005 250)';
-const tickColor = 'oklch(0.5 0.015 250)';
-const labelColor = 'oklch(0.3 0.02 250)';
-
-Chart.defaults.font.family = "'Pretendard Variable', 'Apple SD Gothic Neo', sans-serif";
-Chart.defaults.color = tickColor;
-
-const colors = {
-  teal: 'oklch(0.6 0.12 220)', tealA: 'oklch(0.6 0.12 220 / 0.6)',
-  coral: 'oklch(0.65 0.12 35)', coralA: 'oklch(0.65 0.12 35 / 0.6)',
-  green: 'oklch(0.55 0.1 160)', greenA: 'oklch(0.55 0.1 160 / 0.6)',
-  violet: 'oklch(0.55 0.15 295)', violetA: 'oklch(0.55 0.15 295 / 0.6)',
-  amber: 'oklch(0.6 0.12 85)', amberA: 'oklch(0.6 0.12 85 / 0.6)',
-  rose: 'oklch(0.58 0.12 10)', roseA: 'oklch(0.58 0.12 10 / 0.6)',
-  slate: 'oklch(0.55 0.02 250)', slateA: 'oklch(0.55 0.02 250 / 0.5)',
-  cyan: 'oklch(0.55 0.1 200)', cyanA: 'oklch(0.55 0.1 200 / 0.6)',
-};
-
-// 1. Platform
-new Chart(document.getElementById('platformChart'), {
-  type: 'bar', data: {
-    labels: ['Xenium (V1/Prime/5K)', 'Visium HD', 'Visium', 'MERSCOPE', 'legacy ST'],
-    datasets: [{ data: [7,5,5,2,1], backgroundColor: [colors.greenA, colors.amberA, colors.tealA, colors.violetA, colors.slateA], borderColor: [colors.green, colors.amber, colors.teal, colors.violet, colors.slate], borderWidth: 1.5, borderRadius: 10, borderSkipped: false }]
-  }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { grid: { color: gridColor }, ticks: { stepSize: 1 }, title: { display: true, text: '논문 수' } }, y: { grid: { display: false }, ticks: { font: { size: 11, weight: '600' } } } } }
-});
-
-// 2. Sample
-new Chart(document.getElementById('sampleChart'), {
-  type: 'bar', data: {
-    labels: ['Li H. TSME', 'EcoTyper', 'Phoenix', 'Sakai', 'SPLIT', 'Dong', 'Oliveira', 'FineST', 'Wang'],
-    datasets: [{ data: [373,132,79,52,41,10,8,8,4], backgroundColor: [colors.slateA, colors.tealA, colors.greenA, colors.roseA, colors.coralA, colors.cyanA, colors.amberA, colors.violetA, colors.tealA], borderColor: [colors.slate, colors.teal, colors.green, colors.rose, colors.coral, colors.cyan, colors.amber, colors.violet, colors.teal], borderWidth: 1.5, borderRadius: 10, borderSkipped: false }]
-  }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 9, weight: '600' } } }, y: { grid: { color: gridColor }, title: { display: true, text: '조직 절편 수' } } } }
-});
-
-// 3. Resolution
-new Chart(document.getElementById('resolutionChart'), {
-  type: 'bubble', data: {
-    datasets: [
-      { label: 'legacy ST', data: [{x:100,y:1,r:8}], backgroundColor: colors.slateA, borderColor: colors.slate, borderWidth: 1 },
-      { label: 'Visium', data: [{x:55,y:5,r:17}], backgroundColor: colors.tealA, borderColor: colors.teal, borderWidth: 1 },
-      { label: 'Visium HD', data: [{x:8,y:5,r:17}], backgroundColor: colors.amberA, borderColor: colors.amber, borderWidth: 1 },
-      { label: 'Xenium', data: [{x:1,y:7,r:22}], backgroundColor: colors.greenA, borderColor: colors.green, borderWidth: 1 },
-      { label: 'MERSCOPE', data: [{x:1,y:2,r:12}], backgroundColor: colors.violetA, borderColor: colors.violet, borderWidth: 1 },
-    ]
-  }, options: { responsive: true, plugins: { legend: { labels: { font: { size: 10 }, usePointStyle: true, pointStyle: 'circle' }, position: 'bottom' }, tooltip: { callbacks: { label: ctx => { const r = ctx.raw.x; return ctx.dataset.label + ': ' + (r<=1 ? '단일세포' : r+' \u03BCm') + ' | ' + ctx.raw.y + '편'; } } } }, scales: { x: { type: 'logarithmic', grid: { color: gridColor }, ticks: { callback: v => v+' \u03BCm' }, title: { display: true, text: '공간 해상도 (로그)' } }, y: { grid: { color: gridColor }, ticks: { stepSize: 1 }, title: { display: true, text: '논문 수' } } } }
-});
-
-// 4. Gene panel
-new Chart(document.getElementById('genePanelChart'), {
-  type: 'bar', data: {
-    labels: ['Visium HD (전체)', 'Xenium 5K', 'Phoenix IO', 'Phoenix 다조직', 'SPLIT IO', 'Phoenix 대장', 'Phoenix 폐', 'Phoenix 유방'],
-    datasets: [{ data: [18000,5000,380,377,340,322,289,280], backgroundColor: [colors.amberA, colors.greenA, colors.coralA, colors.coralA, colors.coralA, colors.greenA, colors.greenA, colors.greenA], borderColor: [colors.amber, colors.green, colors.coral, colors.coral, colors.coral, colors.green, colors.green, colors.green], borderWidth: 1.5, borderRadius: 10, borderSkipped: false }]
-  }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { grid: { color: gridColor }, ticks: { callback: v => v>=1000?(v/1000)+'K':v }, title: { display: true, text: '유전자 수' } }, y: { grid: { display: false }, ticks: { font: { size: 10, weight: '500' } } } } }
-});
-
-// 5. Radar
-new Chart(document.getElementById('focusChart'), {
-  type: 'radar', data: {
-    labels: ['공간 생태형', '가상 ST', 'QC/보정', '다중모달', 'L-R 분석', '면역 프로파일', '치료 저항성'],
-    datasets: [
-      { label: 'EcoTyper', data: [5,1,1,3,0,3,1], backgroundColor: 'oklch(0.6 0.12 220 / 0.08)', borderColor: colors.teal, pointBackgroundColor: colors.teal, borderWidth: 2 },
-      { label: 'Phoenix', data: [3,5,1,2,0,2,2], backgroundColor: 'oklch(0.55 0.1 160 / 0.08)', borderColor: colors.green, pointBackgroundColor: colors.green, borderWidth: 2 },
-      { label: 'SPLIT', data: [0,0,5,1,1,0,0], backgroundColor: 'oklch(0.65 0.12 35 / 0.08)', borderColor: colors.coral, pointBackgroundColor: colors.coral, borderWidth: 2 },
-      { label: 'Li H. TSME', data: [4,0,0,1,5,4,2], backgroundColor: 'oklch(0.55 0.02 250 / 0.08)', borderColor: colors.slate, pointBackgroundColor: colors.slate, borderWidth: 2 },
-      { label: 'Wang (TLS)', data: [0,0,0,1,5,4,0], backgroundColor: 'oklch(0.55 0.1 200 / 0.08)', borderColor: colors.cyan, pointBackgroundColor: colors.cyan, borderWidth: 2 },
-      { label: 'FineST', data: [0,0,0,3,5,3,2], backgroundColor: 'oklch(0.55 0.15 295 / 0.08)', borderColor: colors.violet, pointBackgroundColor: colors.violet, borderWidth: 2 },
-    ]
-  }, options: { responsive: true, plugins: { legend: { labels: { font: { size: 9 }, usePointStyle: true }, position: 'bottom' } }, scales: { r: { angleLines: { color: gridColor }, grid: { color: gridColor }, pointLabels: { font: { size: 10, weight: '600' } }, ticks: { display: false }, suggestedMin: 0, suggestedMax: 5 } } }
-});
-
-// 6. Cell count
-new Chart(document.getElementById('cellCountChart'), {
-  type: 'bar', data: {
-    labels: ['EcoTyper\n(10M+)', 'Sakai\n(2.83M)', 'Li H. TSME\n(993K)', 'Oliveira\n(260K)', 'Wang\n(202K)'],
-    datasets: [{ data: [10000000,2830000,993380,260506,201769], backgroundColor: [colors.tealA, colors.roseA, colors.slateA, colors.amberA, colors.cyanA], borderColor: [colors.teal, colors.rose, colors.slate, colors.amber, colors.cyan], borderWidth: 1.5, borderRadius: 10, borderSkipped: false }]
-  }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { weight: '600', size: 9 } } }, y: { type: 'logarithmic', grid: { color: gridColor }, ticks: { callback: v => v>=1e6?(v/1e6)+'M':v>=1e3?(v/1e3)+'K':v }, title: { display: true, text: '세포/spot 수 (로그)' } } } }
-});
-
-// 7. L-R chart
-new Chart(document.getElementById('lrChart'), {
-  type: 'bar', data: {
-    labels: ['CXCL12\nCXCR4', 'CXCL16\nCXCR6', 'CXCL9/10\nCXCR3', 'CCL19\nCCR7', 'CXCL13\nCXCR5', 'IL1B\nIL1R2', 'IL15\nIL15RA', 'CD274\nPDCD1', 'INHBA\nACVR1B', 'NRG1\nERBB3'],
-    datasets: [
-      { label: 'Li H. TSME', data: [1,1,1,1,1,1,1,1,0,0], backgroundColor: colors.slateA, borderColor: colors.slate, borderWidth: 1, borderRadius: 6 },
-      { label: 'Wang (CRC/GC)', data: [0,1,1,0,0,0,0,0,0,0], backgroundColor: colors.cyanA, borderColor: colors.cyan, borderWidth: 1, borderRadius: 6 },
-      { label: 'FineST', data: [0,0,0,0,0,0,0,0,1,1], backgroundColor: colors.violetA, borderColor: colors.violet, borderWidth: 1, borderRadius: 6 },
-    ]
-  }, options: { responsive: true, plugins: { legend: { labels: { font: { size: 9 }, usePointStyle: true }, position: 'bottom' } }, scales: { x: { stacked: true, grid: { display: false }, ticks: { font: { size: 8, weight: '600', family: 'var(--f-mono)' }, maxRotation: 0 } }, y: { stacked: true, grid: { color: gridColor }, ticks: { stepSize: 1 }, title: { display: true, text: '보고 논문 수' } } } }
-});
-
-// 8. L-R Tool comparison
-new Chart(document.getElementById('lrToolChart'), {
-  type: 'bar', data: {
-    labels: ['CellChat', 'FineST', 'stLearn', 'LR score\n(meta)', 'SpatialDM', 'NicheNet'],
-    datasets: [
-      { label: '사용 논문 수', data: [2,1,1,1,0,0], backgroundColor: colors.coralA, borderColor: colors.coral, borderWidth: 1.5, borderRadius: 10, borderSkipped: false },
-      { label: '지원 L-R DB 크기', data: [3,3,2,2,2,1], backgroundColor: colors.violetA, borderColor: colors.violet, borderWidth: 1.5, borderRadius: 10, borderSkipped: false },
-    ]
-  }, options: { responsive: true, plugins: { legend: { labels: { font: { size: 9 }, usePointStyle: true }, position: 'bottom' } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 9, weight: '600' } } }, y: { grid: { color: gridColor }, ticks: { stepSize: 1 }, title: { display: true, text: '점수' } } } }
-});
-
-// Filter
 function filterPapers(p) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === p));
   document.querySelectorAll('.paper-card').forEach(c => { c.style.display = (p === 'all' || (c.dataset.platforms || '').includes(p)) ? '' : 'none'; });

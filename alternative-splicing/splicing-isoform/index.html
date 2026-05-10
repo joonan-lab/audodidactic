@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>스플라이싱과 Isoform — Homangla</title>
+<title>스플라이싱과 Isoform — Autodidact</title>
 <style>
 *{box-sizing:border-box}
 :root{
@@ -35,7 +35,8 @@ a{color:var(--accent)}
 .breadcrumb a:hover{color:var(--accent)}
 .eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:8px}
 h1{font-size:clamp(28px,3.5vw,44px);line-height:1.1;font-weight:850;letter-spacing:-.02em;margin:0 0 12px;word-break:keep-all}
-.dek{font-size:15px;color:#3f4b5d;max-width:760px;line-height:1.7}
+.dek{font-size:15px;color:#3f4b5d;max-width:960px;line-height:1.7}
+.mast-meta{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);font-weight:700}
 
 .tabs{display:flex;gap:4px;margin:28px 0 20px;flex-wrap:wrap}
 .tab-btn{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
@@ -121,10 +122,11 @@ tr:hover td{background:var(--soft)}
 <div class="page">
 
 <div class="mast">
-  <div class="breadcrumb"><a href="../index.html">← homangla</a> / 스플라이싱과 Isoform</div>
+  <div class="breadcrumb"><a href="../../index.html">← Autodidact</a> / 스플라이싱과 Isoform</div>
   <div class="eyebrow">alternative splicing · isoform diversity</div>
   <h1>스플라이싱과 Isoform</h1>
-  <p class="dek">하나의 유전자에서 어떻게 수십, 수천 개의 단백질이 만들어질 수 있을까요? Alternative splicing의 다섯 가지 유형과, 이를 통해 생겨나는 Isoform 다양성의 생물학적 의미를 살펴봅니다.</p>
+  <p class="dek">하나의 유전자는 exon 선택이 달라지면서 여러 isoform을 만듭니다. exon skipping, alternative 5'/3' splice site, intron retention 같은 유형이 단백질 구조, NMD, 치료 전략으로 어떻게 이어지는지 살펴봅니다.</p>
+  <div class="mast-meta">작성자: 김현하 &nbsp;&middot;&nbsp; 스플라이싱 학습 자료 정리 &nbsp;&middot;&nbsp; 업데이트: 2026-05-10</div>
 </div>
 
 <div class="tabs">
@@ -261,15 +263,15 @@ tr:hover td{background:var(--soft)}
               </p>
               <div class="card-sm" style="margin-bottom:10px">
                 <h4>PTBP1 → PTBP2 전환</h4>
-                <p>줄기세포에서 PTBP1이 신경 특이적 엑손을 억제. 신경 분화 시 miR-124가 PTBP1을 억제 → PTBP2로 교체 → 신경 특이적 AS 프로그램 활성화.</p>
+                <p>줄기세포에서는 PTBP1이 신경 특이적 엑손을 억제합니다. 신경 분화가 시작되면 miR-124가 PTBP1을 낮추고, PTBP2로 조절 축이 바뀌면서 신경 특이적 AS 프로그램이 켜집니다.</p>
               </div>
               <div class="card-sm" style="margin-bottom:10px">
                 <h4>SRRM4 발현</h4>
-                <p>신경세포 특이적 스플라이싱 인자 nSR100/SRRM4가 발현되면 수십–수백 개 neuronal microexon이 포함됨. ASD에서 이 과정이 교란됨(Irimia 2014).</p>
+                <p>신경세포 특이적 스플라이싱 인자 nSR100/SRRM4가 발현되면 수십–수백 개 neuronal microexon이 포함됩니다. ASD 관련 뇌 조직에서는 이 과정의 변화가 보고되었습니다(Irimia 2014).</p>
               </div>
               <div class="card-sm">
                 <h4>exon skipping → inclusion</h4>
-                <p>NRXN1 SS4, SHANK3 미공개 exon 등 다수의 시냅스 단백질 유전자에서 신경 분화 시 특정 exon의 포함이 증가.</p>
+                <p>NRXN1 SS4, SHANK3 미공개 exon 등 여러 시냅스 단백질 유전자에서 신경 분화 시 특정 exon 포함이 늘어납니다.</p>
               </div>
             </div>
           </div>
@@ -304,7 +306,7 @@ tr:hover td{background:var(--soft)}
                 <li><strong>단백질 상호작용 도메인 내에 위치:</strong> 작은 아미노산 삽입이 단백질-단백질 상호작용 면을 바꿈</li>
                 <li><strong>SHANK3, NRXN1, APBB1, CAMK2B</strong> 등 시냅스 단백질 유전자에 집중</li>
                 <li><strong>진화적 보존:</strong> 척추동물 전체에서 보존 → 기능적 중요성</li>
-                <li><strong>ASD 연관:</strong> nSR100 감소 시 microexon 포함 감소 → 시냅스 단백질 isoform 변화 (Irimia et al. 2014 Cell)</li>
+                <li><strong>ASD 관련:</strong> nSR100 감소 시 microexon 포함 감소 → 시냅스 단백질 isoform 변화 (Irimia et al. 2014 Cell)</li>
                 <li>단 1–2개 아미노산이 PDZ 도메인 결합 특이성, 인산화 부위, 핵 국소화를 결정</li>
               </ul>
             </div>
@@ -376,19 +378,19 @@ tr:hover td{background:var(--soft)}
             <div class="panel-head"><div class="panel-title">임상적 의미 — Intron Retention과 NMD</div></div>
             <div class="panel-body">
               <div class="info-box">
-                <strong>Intron retention + NMD = 효과적인 유전자 발현 감소.</strong> 많은 LOF 변이가 스플라이싱을 교란 → intron retention → PTC → NMD 경로를 통해 haploinsufficiency를 유발합니다.
+                <strong>Intron retention + NMD는 유전자 발현을 낮추는 경로입니다.</strong> 많은 LOF 변이는 스플라이싱을 교란하고, intron retention → PTC → NMD 흐름을 거쳐 haploinsufficiency로 이어집니다.
               </div>
               <div class="card-sm" style="margin-bottom:10px">
                 <h4>IR 기반 유전자 조절</h4>
-                <p>분화·발달 중 특정 인트론이 retention되면 → NMD로 mRNA 감소. 역으로, intron이 효율적으로 제거되면 mRNA 증가. 이는 "AS-NMD 스위치"로 작동.</p>
+                <p>분화·발달 중 특정 인트론이 retention되면 NMD로 mRNA가 줄어듭니다. 반대로 intron이 효율적으로 제거되면 mRNA가 늘어납니다. 이 흐름이 "AS-NMD 스위치"처럼 작동합니다.</p>
               </div>
               <div class="card-sm" style="margin-bottom:10px">
                 <h4>NMD Rescue 치료 전략</h4>
-                <p>아미노글리코사이드(gentamicin) 또는 ataluren으로 PTC readthrough 유도 (NMD 경로 억제가 아닌 리보솜의 PTC 통과 촉진). 스플라이싱 교정 ASO와 병용 시 효과 증폭 가능.</p>
+                <p>아미노글리코사이드(gentamicin) 또는 ataluren은 PTC readthrough를 유도합니다. NMD 경로 자체를 막기보다 리보솜이 PTC를 지나가게 하는 방식입니다. 스플라이싱 교정 ASO와 함께 쓰면 효과가 커질 수 있습니다.</p>
               </div>
               <div class="card-sm">
                 <h4>Cryptic Exon과 NMD</h4>
-                <p>딥 인트로닉 변이가 새로운 exon을 활성화 → 대부분 NMD 유발. SpliceAI로 예측, RT-PCR로 확인 가능.</p>
+                <p>딥 인트로닉 변이가 새로운 exon을 활성화하면 대개 NMD로 이어집니다. SpliceAI로 후보를 예측하고 RT-PCR로 확인합니다.</p>
               </div>
             </div>
           </div>

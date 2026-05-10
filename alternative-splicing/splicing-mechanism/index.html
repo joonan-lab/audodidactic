@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>스플라이싱 메커니즘 — Homangla</title>
+<title>스플라이싱 메커니즘 — Autodidact</title>
 <style>
 *{box-sizing:border-box}
 :root{
@@ -31,7 +31,8 @@ a{color:var(--accent)}
 .breadcrumb a:hover{color:var(--accent)}
 .eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:8px}
 h1{font-size:clamp(28px,3.5vw,44px);line-height:1.1;font-weight:850;letter-spacing:-.02em;margin:0 0 12px;word-break:keep-all}
-.dek{font-size:15px;color:#3f4b5d;max-width:760px;line-height:1.7}
+.dek{font-size:15px;color:#3f4b5d;max-width:960px;line-height:1.7}
+.mast-meta{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);font-weight:700}
 
 /* ── TABS ── */
 .tabs{display:flex;gap:4px;margin:28px 0 20px;flex-wrap:wrap}
@@ -130,10 +131,11 @@ tr:hover td{background:var(--soft)}
 <div class="page">
 
 <div class="mast">
-  <div class="breadcrumb"><a href="../index.html">← homangla</a> / 스플라이싱 메커니즘</div>
+  <div class="breadcrumb"><a href="../../index.html">← Autodidact</a> / 스플라이싱 메커니즘</div>
   <div class="eyebrow">mechanism · spliceosome</div>
   <h1>스플라이싱 메커니즘</h1>
-  <p class="dek">pre-mRNA에서 인트론이 제거되고 엑손이 연결되는 과정을 분자 수준으로 이해합니다. 스플라이소좀의 조립 단계, 두 번의 트랜스에스테르화 반응, 그리고 Major·Minor 스플라이소좀의 차이를 살펴봅니다.</p>
+  <p class="dek">스플라이싱은 pre-mRNA에서 intron을 잘라내고 exon을 이어 붙이는 과정입니다. splice site, branch point, polypyrimidine tract가 어떻게 읽히는지부터 스플라이소좀 조립, 두 단계 반응, major·minor spliceosome의 차이까지 차례로 따라갑니다.</p>
+  <div class="mast-meta">작성자: 김현하 &nbsp;&middot;&nbsp; 스플라이싱 학습 자료 정리 &nbsp;&middot;&nbsp; 업데이트: 2026-05-10</div>
 </div>
 
 <!-- TABS -->
@@ -228,15 +230,15 @@ tr:hover td{background:var(--soft)}
       <div class="grid-3">
         <div class="card-sm">
           <h4>ESE (Exonic Splicing Enhancer)</h4>
-          <p>엑손 내 SR 단백질 결합 서열. 인접 스플라이스 부위의 사용을 촉진하여 엑손 포함을 강화. 변이로 인한 ESE 파괴 → 엑손 스킵.</p>
+          <p>엑손 안쪽의 SR 단백질 결합 서열입니다. 인접 스플라이스 부위가 더 잘 쓰이게 해 엑손 포함을 늘립니다. ESE가 변이로 깨지면 엑손 스킵으로 이어질 수 있습니다.</p>
         </div>
         <div class="card-sm">
           <h4>ESS (Exonic Splicing Silencer)</h4>
-          <p>엑손 내 hnRNP 결합 서열. 스플라이싱을 억제하여 엑손 제외 유도. 변이가 새 ESS를 생성하거나 ESE를 파괴하면 엑손 스킵 유발.</p>
+          <p>엑손 안쪽의 hnRNP 결합 서열입니다. 스플라이싱을 억제해 엑손 제외를 유도합니다. 변이가 새 ESS를 만들거나 ESE를 깨뜨리면 엑손 스킵이 생길 수 있습니다.</p>
         </div>
         <div class="card-sm">
           <h4>ISE / ISS (Intronic)</h4>
-          <p>인트론 내 enhancer/silencer. 딥 인트로닉 변이가 ISS를 파괴하거나 새 ISE를 만들면 cryptic exon 활성화. SpliceAI 등 AI 모델의 주요 예측 타깃.</p>
+          <p>인트론 안쪽의 enhancer/silencer입니다. 딥 인트로닉 변이가 ISS를 깨거나 새 ISE를 만들면 cryptic exon이 활성화될 수 있습니다. SpliceAI 같은 AI 모델이 주로 겨냥하는 영역입니다.</p>
         </div>
       </div>
     </div>
@@ -429,7 +431,7 @@ tr:hover td{background:var(--soft)}
     <div class="panel-head"><div class="panel-title">공전사 스플라이싱 (Co-transcriptional Splicing)</div></div>
     <div class="panel-body">
       <p style="font-size:14px;color:#3a4a5e;margin-bottom:18px;line-height:1.7">
-        대부분의 스플라이싱은 전사가 완료된 후가 아니라, <strong>RNA 중합효소 II가 DNA를 읽으면서 동시에</strong> 일어납니다. 전사 속도와 스플라이싱 결과 사이에는 밀접한 연결이 있습니다.
+        대부분의 스플라이싱은 전사가 끝난 뒤가 아니라, <strong>RNA 중합효소 II가 DNA를 읽는 동안</strong> 함께 일어납니다. 그래서 전사 속도와 스플라이싱 결과는 서로 맞물려 있습니다.
       </p>
 
       <div class="grid-2">
@@ -463,15 +465,15 @@ tr:hover td{background:var(--soft)}
             <div class="panel-head"><div class="panel-title">임상적 의미</div></div>
             <div class="panel-body">
               <div class="info-box" style="margin-bottom:12px">
-                <strong>Splicing Effects of Synonymous Variants:</strong> 코딩 서열의 동의어 변이(synonymous)도 공전사 스플라이싱을 교란할 수 있습니다. 아미노산이 바뀌지 않더라도 ESE를 파괴하거나 전사 일시정지(polymerase pausing)를 변화시켜 대안적 스플라이싱을 유도.
+                <strong>Splicing Effects of Synonymous Variants:</strong> 코딩 서열의 동의어 변이(synonymous)도 공전사 스플라이싱을 흔들 수 있습니다. 아미노산이 바뀌지 않아도 ESE를 파괴하거나 전사 일시정지(polymerase pausing)를 바꾸면 대안적 스플라이싱이 생깁니다.
               </div>
               <div class="card-sm" style="margin-bottom:10px">
                 <h4>Exon Definition</h4>
-                <p>포유류에서 엑손은 상대적으로 짧고(평균 ~150 nt), 인트론은 매우 김(수 kb). 스플라이소좀은 인트론 전체를 한꺼번에 정의하는 대신 <strong>엑손 단위로</strong> 양쪽 스플라이스 부위를 인식합니다.</p>
+                <p>포유류에서 엑손은 상대적으로 짧고(평균 ~150 nt), 인트론은 매우 깁니다(수 kb). 스플라이소좀은 인트론 전체를 한꺼번에 잡기보다 <strong>엑손 단위로</strong> 양쪽 스플라이스 부위를 인식합니다.</p>
               </div>
               <div class="card-sm">
                 <h4>Recursive Splicing</h4>
-                <p>매우 긴 인트론(>100 kb)에서 일어나는 단계적 스플라이싱. 중간 "RS 부위"에서 순차적으로 인트론을 제거. 신경계 유전자에서 흔함 (예: DSCAM, NRXN1).</p>
+                <p>매우 긴 인트론(&gt;100 kb)에서 보이는 단계적 스플라이싱입니다. 중간 "RS 부위"를 거치며 인트론을 순차적으로 제거합니다. DSCAM, NRXN1 같은 신경계 유전자에서 자주 보입니다.</p>
               </div>
             </div>
           </div>

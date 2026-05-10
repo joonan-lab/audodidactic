@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>스플라이싱 변이 분류 — Homangla</title>
+<title>스플라이싱 변이 분류 — Autodidact</title>
 <style>
 *{box-sizing:border-box}
 :root{
@@ -32,7 +32,8 @@ a{color:var(--accent)}
 .breadcrumb a:hover{color:var(--accent)}
 .eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:8px}
 h1{font-size:clamp(28px,3.5vw,44px);line-height:1.1;font-weight:850;letter-spacing:-.02em;margin:0 0 12px;word-break:keep-all}
-.dek{font-size:15px;color:#3f4b5d;max-width:760px;line-height:1.7}
+.dek{font-size:15px;color:#3f4b5d;max-width:960px;line-height:1.7}
+.mast-meta{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);font-weight:700}
 
 .tabs{display:flex;gap:4px;margin:28px 0 20px;flex-wrap:wrap}
 .tab-btn{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
@@ -125,10 +126,11 @@ tr:hover td{background:var(--soft)}
 <div class="page">
 
 <div class="mast">
-  <div class="breadcrumb"><a href="../index.html">← homangla</a> / 스플라이싱 변이 분류</div>
+  <div class="breadcrumb"><a href="../../index.html">← Autodidact</a> / 스플라이싱 변이 분류</div>
   <div class="eyebrow">variant classification · ACMG · SpliceAI</div>
   <h1>스플라이싱 변이 분류</h1>
-  <p class="dek">유전체 변이가 스플라이싱에 어떤 영향을 미치는지, 위치와 기능적 증거에 따라 어떻게 분류하는지 이해합니다. 위치 기반 분류에서 ACMG 기준, SpliceAI 점수 해석까지.</p>
+  <p class="dek">스플라이싱 변이는 위치만 보고 끝내기 어렵습니다. canonical splice site, near-splice, deep intronic, exonic regulatory 변이를 SpliceAI, RNA assay, ACMG/ClinGen 기준과 함께 읽는 법을 정리합니다.</p>
+  <div class="mast-meta">작성자: 김현하 &nbsp;&middot;&nbsp; 스플라이싱 학습 자료 정리 &nbsp;&middot;&nbsp; 업데이트: 2026-05-10</div>
 </div>
 
 <div class="tabs">
@@ -154,7 +156,7 @@ tr:hover td{background:var(--soft)}
       <div class="class-detail" id="class-detail"></div>
 
       <div class="info-box" style="margin-top:20px">
-        <strong>핵심 원칙:</strong> 변이 위치는 분류의 출발점이지 결론이 아닙니다. 같은 canonical ±1,2 위치라도 RNA 기능 실험, SpliceAI 점수, 해당 전사체의 NMD 감수성, 질환과의 연관성을 종합해야 최종 분류가 가능합니다.
+        <strong>핵심 원칙:</strong> 변이 위치는 분류의 출발점이지 결론이 아닙니다. 같은 canonical ±1,2 위치라도 RNA 기능 실험, SpliceAI 점수, 해당 전사체의 NMD 감수성, 질환과의 연관성을 함께 봐야 최종 분류에 가까워집니다.
       </div>
     </div>
   </div>
@@ -250,7 +252,7 @@ tr:hover td{background:var(--soft)}
             </div>
             <div class="card-sm">
               <h4>사용 시나리오</h4>
-              <p>질환과 해당 조직의 스플라이싱이 다를 때. 예: 뇌 특이적 isoform이 임상적 의의가 있는 신경 발달 질환 변이. Pangolin 뇌 조직 점수가 SpliceAI보다 더 관련성 높은 예측 제공 가능.</p>
+              <p>관심 조직과 스플라이싱 맥락이 다를 때 씁니다. 예를 들어 뇌 특이적 isoform이 중요한 NDD 관련 변이라면, Pangolin의 뇌 조직 점수가 SpliceAI보다 더 직접적인 단서를 줄 수 있습니다.</p>
             </div>
           </div>
         </div>
@@ -265,7 +267,7 @@ tr:hover td{background:var(--soft)}
     <div class="panel-head"><div class="panel-title">ACMG/ClinGen 스플라이싱 변이 해석 기준</div></div>
     <div class="panel-body">
       <p style="font-size:14px;color:#3a4a5e;margin-bottom:16px;line-height:1.7">
-        Richards et al. 2015 ACMG 기준과 Abou Tayoun et al. 2018 (ClinGen Splicing Subcommittee) 가이드라인에 기반합니다. 스플라이싱 변이는 PVS1 기준이 핵심입니다.
+        Richards et al. 2015 ACMG 기준과 Abou Tayoun et al. 2018 (ClinGen Splicing Subcommittee) 가이드라인을 따릅니다. 스플라이싱 변이는 PVS1 기준이 핵심입니다.
       </p>
 
       <table style="margin-bottom:16px">
@@ -362,33 +364,33 @@ tr:hover td{background:var(--soft)}
     <div class="panel-head"><div class="panel-title">스플라이싱 변이의 RNA 결과 유형</div></div>
     <div class="panel-body">
       <p style="font-size:14px;color:#3a4a5e;margin-bottom:16px;line-height:1.7">
-        스플라이싱 변이 하나가 여러 RNA 결과를 동시에 만들 수 있습니다. RT-PCR 또는 RNA-seq으로 실제 결과를 확인하는 것이 중요합니다.
+        스플라이싱 변이 하나가 여러 RNA 결과를 동시에 만들 수 있습니다. 실제 결과는 RT-PCR 또는 RNA-seq으로 확인해야 합니다.
       </p>
 
       <div class="grid-3">
         <div class="card-sm">
           <h4 style="color:var(--c-canonical)">Exon Skipping</h4>
-          <p>해당 exon 전체가 mRNA에서 제외. Out-of-frame skipping → NMD, in-frame skipping → 단백질 기능 변화. 가장 흔한 스플라이싱 변이 결과.</p>
+          <p>해당 exon 전체가 mRNA에서 빠지는 결과입니다. Out-of-frame skipping은 NMD로, in-frame skipping은 단백질 기능 변화로 이어질 수 있습니다. 가장 흔한 스플라이싱 변이 결과입니다.</p>
         </div>
         <div class="card-sm">
           <h4 style="color:var(--c-near)">Intron Retention</h4>
-          <p>인트론이 mRNA에 남음. 보통 PTC 도입 → NMD. 약한 스플라이스 부위 변이 또는 ESE 파괴 시 발생. 일부 경우 IR이 기능적 단백질 변이체 생성.</p>
+          <p>인트론이 mRNA에 남는 결과입니다. 보통 PTC 도입 → NMD로 이어집니다. 약한 스플라이스 부위 변이 또는 ESE 파괴 때 생기며, 일부 경우에는 기능적 단백질 변이체를 만들기도 합니다.</p>
         </div>
         <div class="card-sm">
           <h4 style="color:var(--c-deep)">Cryptic Splice Site 활성화</h4>
-          <p>기존에 사용되지 않던 스플라이스 부위가 활성화. 딥 인트로닉 변이의 주요 메커니즘. 새로운 exon(pseudoexon) 삽입 또는 exon 연장/단축.</p>
+          <p>기존에 쓰이지 않던 스플라이스 부위가 활성화되는 결과입니다. 딥 인트로닉 변이의 주요 메커니즘이며, 새로운 exon(pseudoexon) 삽입이나 exon 연장/단축으로 나타납니다.</p>
         </div>
         <div class="card-sm">
           <h4>Cryptic Exon (Pseudoexon)</h4>
-          <p>딥 인트로닉 변이가 새로운 exon을 만들거나 기존 억제된 exon을 활성화. 보통 out-of-frame → NMD. ATM, BRCA2, DMD에서 다수 보고.</p>
+          <p>딥 인트로닉 변이가 새로운 exon을 만들거나 기존에 억제되던 exon을 활성화합니다. 보통 out-of-frame → NMD로 이어지며, ATM, BRCA2, DMD에서 여러 사례가 보고되었습니다.</p>
         </div>
         <div class="card-sm">
           <h4>Exon Extension / Truncation</h4>
-          <p>Alt 5'SS 또는 alt 3'SS 변이로 인해 엑손의 한쪽 경계가 변화. In-frame이면 단백질에 아미노산 추가/제거. Out-of-frame이면 NMD 가능.</p>
+          <p>Alt 5'SS 또는 alt 3'SS 변이로 엑손의 한쪽 경계가 바뀝니다. In-frame이면 단백질에 아미노산이 추가되거나 빠지고, out-of-frame이면 NMD로 이어질 수 있습니다.</p>
         </div>
         <div class="card-sm">
           <h4>Multiple Isoforms</h4>
-          <p>하나의 변이가 여러 스플라이싱 결과를 동시에 만드는 경우. 일부 전사체에서 skipping, 다른 전사체에서 retention. 유전자별 전사체 분석 필요.</p>
+          <p>하나의 변이가 여러 스플라이싱 결과를 동시에 만드는 경우입니다. 일부 전사체에서는 skipping, 다른 전사체에서는 retention이 생길 수 있어 유전자별 전사체 분석이 필요합니다.</p>
         </div>
       </div>
 
@@ -479,7 +481,7 @@ tr:hover td{background:var(--soft)}
                 </tbody>
               </table>
               <div class="info-box" style="margin-top:10px">
-                <strong>SpliceVault 활용:</strong> 해당 변이와 동일한 스플라이싱 패턴이 정상인에서 관찰되면 병원성 가능성 감소. SpliceVault (GTEx RNA-seq 데이터 기반)로 leaky splicing 여부 확인.
+                <strong>SpliceVault 활용:</strong> 해당 변이와 같은 스플라이싱 패턴이 정상인에서도 관찰되면 병원성 가능성은 낮아집니다. SpliceVault (GTEx RNA-seq 데이터 기반)로 leaky splicing 여부를 확인합니다.
               </div>
             </div>
           </div>

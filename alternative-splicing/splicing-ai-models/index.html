@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>스플라이싱 변이 예측 AI 모델 — Homangla</title>
+<title>스플라이싱 변이 예측 AI 모델 — Autodidact</title>
 <style>
 *{box-sizing:border-box}
 :root{
@@ -27,7 +27,8 @@ a{color:var(--accent)}
 .breadcrumb a:hover{color:var(--accent)}
 .eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:8px}
 h1{font-size:clamp(28px,3.5vw,44px);line-height:1.1;font-weight:850;letter-spacing:-.02em;margin:0 0 12px;word-break:keep-all}
-.dek{font-size:15px;color:#3f4b5d;max-width:760px;line-height:1.7}
+.dek{font-size:15px;color:#3f4b5d;max-width:960px;line-height:1.7}
+.mast-meta{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);font-weight:700}
 
 .tabs{display:flex;gap:4px;margin:28px 0 20px;flex-wrap:wrap}
 .tab-btn{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
@@ -111,10 +112,11 @@ tr:hover td{background:var(--soft)}
 <div class="page">
 
 <div class="mast">
-  <div class="breadcrumb"><a href="../index.html">← homangla</a> / 스플라이싱 변이 예측 AI 모델</div>
+  <div class="breadcrumb"><a href="../../index.html">← Autodidact</a> / 스플라이싱 변이 예측 AI 모델</div>
   <div class="eyebrow">deep learning · SpliceAI · Pangolin · MMSplice</div>
   <h1>스플라이싱 변이 예측 AI 모델</h1>
-  <p class="dek">규칙 기반 MaxEntScan부터 딥러닝 SpliceAI, 다조직 Pangolin, 조직 특이적 AbSplice까지. 각 모델의 아키텍처, 입출력, 장단점을 비교하고 임상 적용 가이드를 제공합니다.</p>
+  <p class="dek">스플라이싱 예측 모델은 입력 길이, 조직 정보, 출력 점수가 서로 다릅니다. MaxEntScan, SpliceAI, Pangolin, MMSplice, AbSplice, CADD-Splice를 같은 기준에 놓고 질문별로 어떤 모델이 맞는지 비교합니다.</p>
+  <div class="mast-meta">작성자: 김현하 &nbsp;&middot;&nbsp; 스플라이싱 학습 자료 정리 &nbsp;&middot;&nbsp; 업데이트: 2026-05-10</div>
 </div>
 
 <div class="tabs">
@@ -258,7 +260,7 @@ tr:hover td{background:var(--soft)}
       </div>
 
       <div class="info-box" style="margin-top:16px">
-        <strong>권장 조합:</strong> 임상 스플라이싱 변이 분석 시 <strong>SpliceAI</strong> (기본) + <strong>MaxEntScan</strong> (near-splice site 정량) + <strong>Pangolin</strong> (조직 맥락) + <strong>SpliceVault</strong> (정상인 비교) 조합이 가장 포괄적입니다. 계산 결과는 반드시 RNA 실험(RT-PCR)으로 검증해야 합니다.
+        <strong>권장 조합:</strong> 임상 스플라이싱 변이 분석에서는 <strong>SpliceAI</strong> (기본) + <strong>MaxEntScan</strong> (near-splice site 정량) + <strong>Pangolin</strong> (조직 맥락) + <strong>SpliceVault</strong> (정상인 비교)를 함께 보는 편이 가장 넓습니다. 계산 결과는 반드시 RNA 실험(RT-PCR)으로 검증해야 합니다.
       </div>
     </div>
   </div>
@@ -340,11 +342,11 @@ tr:hover td{background:var(--soft)}
         <div>
           <div class="card-sm" style="margin-bottom:10px">
             <h4>SpliceAI vs AbSplice 비교</h4>
-            <p>SpliceAI는 splice site 변화 확률, AbSplice는 실제 이상 스플라이싱 발생 확률. AbSplice가 false positive 감소에 유리. 단, 훈련 데이터가 GTEx 성인 조직에 편향.</p>
+            <p>SpliceAI는 splice site 변화 확률을, AbSplice는 실제 이상 스플라이싱 발생 확률을 봅니다. AbSplice는 false positive를 줄이는 데 유리하지만, 훈련 데이터가 GTEx 성인 조직에 치우쳐 있습니다.</p>
           </div>
           <div class="card-sm">
-            <h4>신경 발달 질환 적용 시 주의</h4>
-            <p>GTEx에는 태아 뇌 및 신경 발달 단계 데이터가 부족. 뇌 특이적 isoform이나 신경 분화 관련 스플라이싱은 AbSplice보다 Pangolin 뇌 조직 점수가 더 관련성 높을 수 있음.</p>
+            <h4>NDD 맥락에 적용할 때</h4>
+            <p>GTEx에는 태아 뇌와 신경 발달 단계 데이터가 부족합니다. 뇌 특이적 isoform이나 신경 분화 관련 스플라이싱은 AbSplice보다 Pangolin 뇌 조직 점수가 더 직접적인 단서를 줄 수 있습니다.</p>
           </div>
         </div>
       </div>
@@ -415,7 +417,7 @@ tr:hover td{background:var(--soft)}
       <div class="grid-3">
         <div class="card-sm">
           <h4>SpliceAI 실행 방법</h4>
-          <p>pip install spliceai. 입력: VCF + 참조 게놈. 출력: 각 변이에 DS_AG/AL/DG/DL + 위치 정보. 사전계산 점수 (Illumina BaseSpace)도 활용 가능.</p>
+          <p>pip install spliceai. 입력: VCF + 참조 게놈. 출력: 각 변이에 DS_AG/AL/DG/DL + 위치 정보. 사전계산 점수(Illumina BaseSpace)도 쓸 수 있습니다.</p>
         </div>
         <div class="card-sm">
           <h4>MaxEntScan 온라인 사용</h4>
@@ -428,13 +430,13 @@ tr:hover td{background:var(--soft)}
       </div>
 
       <div class="info-box" style="margin-top:16px">
-        <strong>모델 한계 공통 주의사항:</strong> (1) 모든 예측 모델은 훈련 데이터에 편향 — 희귀 스플라이싱 패턴 놓칠 수 있음. (2) 모델 점수는 스플라이싱 변화 확률이지 병원성 확률이 아님. (3) 긴 인트론 (>100 kb)의 딥 인트로닉 변이는 현재 모델들이 미처 커버 못할 수 있음. (4) Tissue-specific AS를 다루는 모델들도 GTEx 성인 조직에 편향 — 태아 발달 단계의 isoform은 과소예측 가능.
+        <strong>모델 한계 공통 주의사항:</strong> (1) 모든 예측 모델은 훈련 데이터의 영향을 받으므로 희귀 스플라이싱 패턴을 놓칠 수 있습니다. (2) 모델 점수는 스플라이싱 변화 확률이지 병원성 확률이 아닙니다. (3) 긴 인트론(&gt;100 kb)의 딥 인트로닉 변이는 현재 모델들이 충분히 커버하지 못할 수 있습니다. (4) Tissue-specific AS 모델도 GTEx 성인 조직에 치우쳐 있어 태아 발달 단계의 isoform을 과소예측할 수 있습니다.
       </div>
     </div>
   </div>
 
   <div class="panel">
-    <div class="panel-head"><div class="panel-title">ASD/신경발달 질환 스플라이싱 변이 분석 추천 파이프라인</div></div>
+    <div class="panel-head"><div class="panel-title">ASD/NDD 스플라이싱 변이 분석 흐름</div></div>
     <div class="panel-body">
       <ol style="font-size:13.5px;color:#3a4a5e;line-height:2;padding-left:20px;margin:0">
         <li><strong>변이 필터링:</strong> SpliceAI Δmax ≥ 0.1로 1차 필터 → 의미있는 스플라이싱 변이 후보 추출</li>
@@ -442,7 +444,7 @@ tr:hover td{background:var(--soft)}
         <li><strong>점수 통합:</strong> SpliceAI + MaxEntScan + Pangolin 뇌 조직 점수 조합</li>
         <li><strong>전사체 분석:</strong> 영향받는 전사체가 MANE Select인지, NMD 감수성인지 확인</li>
         <li><strong>SpliceVault 확인:</strong> 정상인에서 해당 스플라이싱 패턴 관찰 빈도 체크</li>
-        <li><strong>우선순위 변이 검증:</strong> RT-PCR (환자 혈액 또는 환자-유래 iPSC/신경세포)</li>
+        <li><strong>우선순위 변이 검증:</strong> RT-PCR (당사자 혈액 또는 당사자-유래 iPSC/신경세포)</li>
         <li><strong>ACMG 분류:</strong> 위 증거를 종합하여 PVS1/PS3/PM2/PP3 기준 적용</li>
       </ol>
     </div>
