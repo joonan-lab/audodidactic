@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>암 × 공간전사체 랜드스케이프 | Autodidact</title>
+<meta property="og:title" content="암 × 공간전사체 랜드스케이프">
+<meta property="og:description" content="암 조직 RNA 공간전사체 플랫폼, 샘플 규모, L-R 분석 현황 (10편 논문)">
+<meta property="og:type" content="website">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: oklch(0.985 0.005 90);
+  --surface: oklch(1 0 0);
+  --surface-glass: oklch(1 0 0 / 0.6);
+  --surface-glass-strong: oklch(1 0 0 / 0.85);
+  --ink: oklch(0.18 0.02 250);
+  --ink-soft: oklch(0.36 0.02 250);
+  --muted: oklch(0.55 0.015 250);
+  --line: oklch(0.91 0.005 250);
+  --line-soft: oklch(0.94 0.004 250);
+
+  /* track: spatial transcriptomics — teal-blue */
+  --tc: oklch(0.5 0.12 220);
+  --tc-glow: oklch(0.78 0.13 220);
+  --tc-tint: oklch(0.96 0.02 220);
+  /* accent: L-R / immune — coral */
+  --lr: oklch(0.6 0.13 35);
+  --lr-glow: oklch(0.82 0.1 35);
+  --lr-tint: oklch(0.96 0.02 35);
+
+  --shadow-1: 0 1px 2px oklch(0.2 0.02 250 / 0.04), 0 2px 6px oklch(0.2 0.02 250 / 0.04);
+  --shadow-2: 0 2px 4px oklch(0.2 0.02 250 / 0.05), 0 8px 20px oklch(0.2 0.02 250 / 0.05);
+  --shadow-hover: 0 2px 4px oklch(0.2 0.02 250 / 0.05), 0 12px 28px oklch(0.2 0.02 250 / 0.07), 0 32px 72px oklch(0.2 0.02 250 / 0.09);
+  --r-card: 24px;
+  --r-inner: 16px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --f-display: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --f-body: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --f-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--f-body);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  position: relative;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+body::before {
+  content: "";
+  position: fixed; inset: -10%;
+  background:
+    radial-gradient(60% 50% at 12% 8%, oklch(0.78 0.13 220 / 0.16), transparent 60%),
+    radial-gradient(50% 45% at 92% 22%, oklch(0.82 0.1 35 / 0.14), transparent 65%),
+    radial-gradient(55% 50% at 70% 92%, oklch(0.76 0.13 160 / 0.12), transparent 65%);
+  pointer-events: none; z-index: 0;
+  animation: drift 28s ease-in-out infinite alternate;
+}
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  background-image: radial-gradient(oklch(0.2 0.02 250 / 0.012) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none; z-index: 0;
+  mix-blend-mode: multiply;
+}
+@keyframes drift {
+  0%   { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
+  50%  { transform: translate3d(2%,-1.5%,0) scale(1.04) rotate(0.4deg); }
+  100% { transform: translate3d(-1.5%,2%,0) scale(1.03) rotate(-0.3deg); }
+}
+@media (prefers-reduced-motion: reduce) { body::before { animation: none; } }
+
+.page { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 56px 28px 80px; }
+a { color: var(--tc); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ---- HERO ---- */
+.hero { margin-bottom: 56px; }
+.brand {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.1em;
+  color: var(--muted); text-transform: uppercase; margin-bottom: 16px;
+}
+.brand-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--tc);
+  box-shadow: 0 0 0 4px oklch(from var(--tc) calc(l + 0.05) c h / 0.18);
+}
+.brand strong { color: var(--ink); font-weight: 700; }
+.hero h1 {
+  font-family: var(--f-display); font-size: clamp(32px, 5vw, 56px);
+  font-weight: 850; letter-spacing: -0.022em; line-height: 1.1; margin-bottom: 18px;
+}
+.hero h1 .accent {
+  background: linear-gradient(120deg, var(--tc) 0%, var(--lr) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+}
+.hero .lede { font-size: 16px; color: var(--ink-soft); line-height: 1.7; max-width: 620px; }
+.hero-meta {
+  margin-top: 14px; padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 0.78rem; color: var(--muted); font-weight: 500;
+}
+
+/* ---- STATS ---- */
+.stat-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 48px; }
+.stat-box {
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--line); border-radius: var(--r-inner);
+  padding: 20px 16px; text-align: center;
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  box-shadow: var(--shadow-1);
+}
+.stat-box:hover { transform: translateY(-3px); box-shadow: var(--shadow-2); }
+.stat-num { font-family: var(--f-display); font-size: 2rem; font-weight: 850; color: var(--tc); letter-spacing: -0.03em; }
+.stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; font-weight: 500; }
+
+/* ---- SECTION ---- */
+.section { margin-bottom: 56px; }
+.section-head {
+  display: flex; align-items: baseline; gap: 14px;
+  margin-bottom: 8px; padding-bottom: 14px; position: relative;
+}
+.section-head::after {
+  content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(to right, var(--tc) 0%, var(--line) 25%, var(--line) 100%); opacity: 0.5;
+}
+.section-num {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em;
+  color: var(--tc); font-weight: 700; text-transform: uppercase;
+}
+.section-num::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--tc); box-shadow: 0 0 0 4px oklch(from var(--tc) calc(l + 0.05) c h / 0.18);
+}
+.section-title {
+  font-family: var(--f-display); font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 800; letter-spacing: -0.018em; color: var(--ink); line-height: 1.15;
+}
+.section-blurb { font-size: 14.5px; color: var(--ink-soft); max-width: 680px; line-height: 1.7; margin: 14px 0 24px; }
+
+/* ---- CARDS ---- */
+.cards { display: grid; gap: 16px; }
+.cards-2 { grid-template-columns: 1fr 1fr; }
+.card {
+  position: relative; display: flex; flex-direction: column; gap: 10px;
+  padding: 26px 24px 22px;
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid var(--line); border-radius: var(--r-card);
+  overflow: hidden; isolation: isolate;
+  transition: transform 0.5s var(--ease), border-color 0.5s var(--ease), box-shadow 0.5s var(--ease);
+  box-shadow: var(--shadow-1);
+}
+.card::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: radial-gradient(120% 90% at 100% 0%, oklch(from var(--tc-glow) l c h / 0.2), transparent 65%),
+    linear-gradient(135deg, transparent 30%, var(--tc-tint) 100%);
+  opacity: 0.4; transition: opacity 0.5s var(--ease);
+}
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: oklch(from var(--tc) l c h / 0.35); }
+.card:hover::before { opacity: 0.8; }
+.card h2 {
+  font-family: var(--f-display); font-size: 15px; font-weight: 700;
+  color: var(--ink); margin-bottom: 4px;
+}
+.chart-container { position: relative; width: 100%; }
+.chart-container canvas { width: 100% !important; }
+
+/* ---- PAPER LIST ---- */
+.paper-card {
+  position: relative; display: grid;
+  grid-template-columns: 2.2fr 1.2fr 1fr 1fr 1.5fr;
+  gap: 14px; align-items: start;
+  padding: 22px 24px;
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--line); border-radius: var(--r-inner);
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.4s var(--ease);
+  box-shadow: var(--shadow-1);
+}
+.paper-card:hover {
+  transform: translateY(-2px); box-shadow: var(--shadow-2);
+  border-color: oklch(from var(--tc) l c h / 0.35);
+}
+.paper-title { font-family: var(--f-display); font-weight: 700; font-size: 0.92rem; line-height: 1.4; }
+.paper-title a { color: var(--ink); }
+.paper-title a:hover { color: var(--tc); text-decoration: none; }
+.paper-journal { font-size: 0.72rem; color: var(--muted); margin-top: 4px; font-weight: 500; }
+.paper-field { font-size: 0.8rem; color: var(--ink-soft); line-height: 1.5; }
+.paper-field strong { color: var(--ink); font-weight: 700; }
+.paper-header {
+  display: grid; grid-template-columns: 2.2fr 1.2fr 1fr 1fr 1.5fr;
+  gap: 14px; padding: 8px 24px;
+  font-family: var(--f-mono); font-size: 0.68rem; font-weight: 700;
+  color: var(--tc); text-transform: uppercase; letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--line); margin-bottom: 8px;
+}
+
+/* ---- BADGES ---- */
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 999px;
+  font-size: 0.68rem; font-weight: 700; margin: 2px; letter-spacing: 0.02em;
+  font-family: var(--f-mono);
+}
+.badge-visium { background: oklch(0.94 0.03 220); color: oklch(0.4 0.12 220); }
+.badge-xenium { background: oklch(0.94 0.03 160); color: oklch(0.38 0.1 160); }
+.badge-merscope { background: oklch(0.94 0.03 295); color: oklch(0.4 0.15 295); }
+.badge-vhd { background: oklch(0.94 0.03 85); color: oklch(0.42 0.1 85); }
+.badge-legacy { background: oklch(0.94 0.01 250); color: oklch(0.5 0.02 250); }
+.badge-lr { background: oklch(0.94 0.03 35); color: oklch(0.45 0.12 35); }
+
+/* ---- FILTER ---- */
+.filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.filter-btn {
+  padding: 7px 16px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface-glass);
+  color: var(--muted); cursor: pointer; font-size: 0.78rem; font-weight: 600;
+  font-family: var(--f-body); transition: all 0.3s var(--ease);
+}
+.filter-btn:hover, .filter-btn.active {
+  background: var(--tc); color: white; border-color: var(--tc);
+}
+
+/* ---- L-R TABLE ---- */
+.lr-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; color: var(--ink-soft); }
+.lr-table thead tr { border-bottom: 1px solid var(--line); }
+.lr-table th {
+  padding: 8px 8px; text-align: left; font-family: var(--f-mono);
+  font-size: 0.68rem; color: var(--tc); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;
+}
+.lr-table td { padding: 10px 8px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.lr-table .paper-name { color: var(--ink); font-weight: 700; }
+.lr-table .lr-pair { font-family: var(--f-mono); font-size: 0.72rem; color: var(--ink); }
+.lr-table .bio-context { font-size: 0.75rem; }
+.lr-good { color: oklch(0.45 0.12 160); }
+.lr-bad { color: oklch(0.5 0.12 25); }
+
+/* ---- PLATFORM GRID ---- */
+.platform-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.platform-card {
+  background: var(--surface-glass-strong); backdrop-filter: blur(16px);
+  border: 1px solid var(--line); border-radius: var(--r-inner);
+  padding: 20px 16px; text-align: center;
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  box-shadow: var(--shadow-1);
+}
+.platform-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-2); }
+.platform-card h3 { font-family: var(--f-display); font-size: 0.9rem; font-weight: 800; margin-bottom: 6px; }
+.platform-card p { font-size: 0.75rem; color: var(--muted); margin: 2px 0; }
+.res-tag {
+  display: inline-block; padding: 4px 12px; border-radius: 999px;
+  font-size: 0.68rem; font-weight: 700; margin-top: 8px; font-family: var(--f-mono);
+}
+.res-sc { background: oklch(0.94 0.03 160); color: oklch(0.38 0.1 160); }
+.res-spot { background: oklch(0.94 0.03 220); color: oklch(0.4 0.12 220); }
+.res-hd { background: oklch(0.94 0.03 85); color: oklch(0.42 0.1 85); }
+
+/* ---- NOTE ---- */
+.note {
+  padding: 18px 22px; margin: 20px 0;
+  background: var(--surface-glass);
+  backdrop-filter: blur(14px);
+  border: 1px dashed oklch(from var(--lr) l c h / 0.3);
+  border-radius: var(--r-inner);
+  font-size: 0.82rem; color: var(--ink-soft); line-height: 1.7;
+}
+.note strong { color: var(--ink); font-weight: 700; }
+
+/* ---- FOOTER ---- */
+.foot {
+  margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line);
+  font-size: 13px; color: var(--muted); line-height: 1.75;
+}
+.foot strong { color: var(--ink-soft); font-weight: 700; }
+.foot { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.foot .right { font-family: var(--f-mono); font-size: 12px; }
+.foot a { color: var(--muted); }
+.foot a:hover { color: var(--ink); }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 1000px) {
+  .cards-2 { grid-template-columns: 1fr; }
+  .stat-row { grid-template-columns: repeat(3, 1fr); }
+  .platform-grid { grid-template-columns: repeat(3, 1fr); }
+  .paper-card { grid-template-columns: 1fr; }
+  .paper-header { display: none; }
+}
+@media (max-width: 600px) {
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+  .platform-grid { grid-template-columns: 1fr 1fr; }
+  .page { padding: 32px 16px 48px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HERO -->
+<header class="hero">
+  <div class="brand">
+    <span class="brand-dot" aria-hidden="true"></span>
+    <span><strong>autodidact</strong> &middot; cancer spatial transcriptomics</span>
+  </div>
+  <h1>암 &times; 공간전사체 <span class="accent">랜드스케이프</span></h1>
+  <p class="lede">
+    암 조직 RNA 공간전사체 플랫폼, 샘플 규모, L-R (리간드-수용체) 분석 현황을 정리합니다. Visium, Xenium, MERSCOPE 등 RNA 기반 ST 플랫폼만 포함합니다.
+  </p>
+  <div class="hero-meta">작성자: 최희선 &nbsp;&middot;&nbsp; 업데이트: 2026-05-10</div>
+</header>
+
+<!-- STATS -->
+<div class="stat-row">
+  <div class="stat-box"><div class="stat-num">10</div><div class="stat-label">분석 논문 수</div></div>
+  <div class="stat-box"><div class="stat-num">5</div><div class="stat-label">RNA 기반 ST 플랫폼</div></div>
+  <div class="stat-box"><div class="stat-num">~720</div><div class="stat-label">총 조직 절편</div></div>
+  <div class="stat-box"><div class="stat-num">14M+</div><div class="stat-label">총 세포/spot 수</div></div>
+  <div class="stat-box"><div class="stat-num">20+</div><div class="stat-label">암종/장기 유형</div></div>
+</div>
+
+<!-- SECTION 1: Charts -->
+<section class="section">
+  <header class="section-head">
+    <span class="section-num">01</span>
+    <h2 class="section-title">플랫폼 &middot; 샘플 &middot; 해상도</h2>
+  </header>
+  <p class="section-blurb">10편 논문에서 사용된 RNA 기반 공간전사체 플랫폼의 사용 빈도, 샘플 규모, 공간 해상도, 유전자 패널 크기를 비교합니다.</p>
+  <div class="cards cards-2">
+    <div class="card"><h2>플랫폼별 논문 사용 빈도</h2><div class="chart-container"><canvas id="platformChart"></canvas></div></div>
+    <div class="card"><h2>논문별 샘플 규모</h2><div class="chart-container"><canvas id="sampleChart"></canvas></div></div>
+  </div>
+  <div class="cards cards-2" style="margin-top:16px;">
+    <div class="card"><h2>플랫폼별 해상도 비교</h2><div class="chart-container"><canvas id="resolutionChart"></canvas></div></div>
+    <div class="card"><h2>유전자 패널 크기</h2><div class="chart-container"><canvas id="genePanelChart"></canvas></div></div>
+  </div>
+  <div class="cards cards-2" style="margin-top:16px;">
+    <div class="card"><h2>논문별 분석 초점</h2><div class="chart-container"><canvas id="focusChart"></canvas></div></div>
+    <div class="card"><h2>논문별 세포/spot 수</h2><div class="chart-container"><canvas id="cellCountChart"></canvas></div></div>
+  </div>
+</section>
+
+<!-- SECTION 2: L-R Analysis -->
+<section class="section">
+  <header class="section-head">
+    <span class="section-num" style="--tc: var(--lr);">02</span>
+    <h2 class="section-title">L-R (리간드-수용체) 분석 현황</h2>
+  </header>
+  <p class="section-blurb">3편의 논문에서 체계적인 L-R pair 분석을 수행했습니다. 공간전사체 데이터에서 niche별, 암종별 세포간 통신 회로가 어떻게 밝혀졌는지 정리합니다.</p>
+  <div class="cards cards-2">
+    <div class="card" style="--tc: var(--lr); --tc-glow: var(--lr-glow); --tc-tint: var(--lr-tint);">
+      <h2>주요 L-R pair &times; 논문 매핑</h2>
+      <div class="chart-container"><canvas id="lrChart"></canvas></div>
+    </div>
+    <div class="card" style="--tc: var(--lr); --tc-glow: var(--lr-glow); --tc-tint: var(--lr-tint);">
+      <h2>L-R 분석 도구 비교</h2>
+      <div class="chart-container"><canvas id="lrToolChart"></canvas></div>
+    </div>
+  </div>
+  <div class="cards" style="margin-top:16px;">
+    <div class="card" style="--tc: var(--lr); --tc-glow: var(--lr-glow); --tc-tint: var(--lr-tint);">
+      <h2>논문별 L-R 분석 요약</h2>
+      <div style="overflow-x:auto;">
+      <table class="lr-table">
+        <thead><tr><th>논문</th><th>분석 도구</th><th>주요 L-R pairs</th><th>생물학적 맥락</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="paper-name">Li H. 2026</span><br><span style="font-size:0.72rem;">Pan-cancer TSME<br>Cell Rep Med</span></td>
+            <td>Meta-analysis<br>LR score</td>
+            <td class="lr-pair">CXCL12-CXCR4<br>CXCL16-CXCR6<br>CXCL9-CXCR3<br>CCL19-CCR7<br>CXCL13-CXCR5<br>IL1B-IL1R2<br>IL15-IL15RA<br>CD274-PDCD1</td>
+            <td class="bio-context">13 niche별 체계적 L-R 분석<br><span class="lr-good">Niche_11/13</span>: 면역활성, 좋은 예후<br><span class="lr-bad">Niche_4</span>: 대식세포+종양, ICI 저항</td>
+          </tr>
+          <tr>
+            <td><span class="paper-name">Wang 2026</span><br><span style="font-size:0.72rem;">CRC/GC TLS<br>Mol Carcinogenesis</span></td>
+            <td>CellChat<br>stLearn</td>
+            <td class="lr-pair">CXCL16-CXCR6<br>CXCL10-CXCR3</td>
+            <td class="bio-context"><span class="lr-good">CRC</span>: CD16+ Mac &rarr; CD8+ T 모집<br><span class="lr-good">GC</span>: ISG15+ Mac &rarr; ISG+ CD8+ T<br>Visium에서 공간적 검증</td>
+          </tr>
+          <tr>
+            <td><span class="paper-name">FineST 2026</span><br><span style="font-size:0.72rem;">Li L. et al.<br>Nat Comms</span></td>
+            <td>FineST<br>(CellChat DB)</td>
+            <td class="lr-pair">INHBA-ACVR1B<br>NRG1-ERBB3<br>CD70-CD27<br>CCL3-CCR1</td>
+            <td class="bio-context">유방암: invasive front CAF-종양<br>NPC: TLS 내 Treg 모집<br>HCC: PD-1 저항 장벽<br><strong>핵 수준 해상도</strong> L-R 매핑</td>
+          </tr>
+          <tr>
+            <td><span class="paper-name">SPLIT 2026</span><br><span style="font-size:0.72rem;">Bilous et al.<br>Nat Methods</span></td>
+            <td>Xenium QC</td>
+            <td style="color:var(--muted); font-size:0.75rem;">(직접 L-R 분석 아님)</td>
+            <td class="bio-context">Spillover 보정 &rarr; L-R 정확도 영향<br>보정 전/후 소진 마커 차이 보고</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+  <div class="note">
+    <strong>L-R 분석 도구 비교:</strong><br>
+    &bull; <strong>CellChat</strong> &mdash; 가장 널리 사용. 분비형/접촉형/ECM 경로 분류. Wang, FineST에서 사용.<br>
+    &bull; <strong>FineST</strong> &mdash; 조직학 이미지 + ST 융합, 핵 수준 해상도에서 L-R 분석. contrastive learning 기반.<br>
+    &bull; <strong>SPIDER</strong> &mdash; 공간적으로 가변적인 L-R 상호작용(SVI) 동정. 하류 전사인자 활성으로 기능적 검증.<br>
+    &bull; <strong>stLearn</strong> &mdash; Visium 공간 좌표 기반 L-R 통신 강도 추정. Wang에서 공간 검증에 사용.<br>
+    &bull; <strong>SpatialDM / CellPhoneDB / NicheNet</strong> &mdash; 추가 L-R/CCC 분석 도구.
+  </div>
+</section>
+
+<!-- SECTION 3: Paper List -->
+<section class="section">
+  <header class="section-head">
+    <span class="section-num">03</span>
+    <h2 class="section-title">논문별 상세 데이터</h2>
+  </header>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all" onclick="filterPapers('all')">전체</button>
+    <button class="filter-btn" data-filter="Xenium" onclick="filterPapers('Xenium')">Xenium</button>
+    <button class="filter-btn" data-filter="Visium" onclick="filterPapers('Visium')">Visium</button>
+    <button class="filter-btn" data-filter="Visium HD" onclick="filterPapers('Visium HD')">Visium HD</button>
+    <button class="filter-btn" data-filter="MERSCOPE" onclick="filterPapers('MERSCOPE')">MERSCOPE</button>
+    <button class="filter-btn" data-filter="L-R" onclick="filterPapers('L-R')">L-R 분석</button>
+  </div>
+
+  <div class="paper-header"><span>논문</span><span>플랫폼</span><span>샘플 규모</span><span>유전자 패널</span><span>분석 초점</span></div>
+
+  <div style="display:grid; gap:12px;" id="paperGrid">
+    <div class="paper-card" data-platforms="Visium,legacy ST,MERSCOPE,Xenium,Visium HD"><div><div class="paper-title"><a href="https://doi.org/10.1038/s41586-026-10452-4" target="_blank">Non-invasive profiling of the tumour microenvironment with spatial ecotypes</a></div><div class="paper-journal">Zhang et al. 2026 &middot; Nature &middot; Spatial EcoTyper / Liquid EcoTyper</div></div><div class="paper-field"><span class="badge badge-visium">Visium</span><span class="badge badge-legacy">legacy ST</span><span class="badge badge-merscope">MERSCOPE</span><span class="badge badge-xenium">Xenium</span><span class="badge badge-vhd">Visium HD</span></div><div class="paper-field"><strong>132</strong> ST 검체<br><strong>10M+</strong> 세포<br>78 cfDNA · 10 암종</div><div class="paper-field">Visium ~18k<br>Xenium 300-5k<br>MERSCOPE ~500</div><div class="paper-field">9개 공간 생태형(SE1-SE9)<br>cfDNA 메틸화 액체생검<br>ICI 반응 예측</div></div>
+
+    <div class="paper-card" data-platforms="Visium,MERSCOPE,L-R"><div><div class="paper-title"><a href="https://doi.org/10.1016/j.xcrm.2026.102751" target="_blank">Pan-cancer analysis of spatial transcriptomics reveals heterogeneous tumor spatial microenvironment</a></div><div class="paper-journal">Li H. et al. 2026 &middot; Cell Reports Medicine &middot; Pan-cancer TSME atlas</div></div><div class="paper-field"><span class="badge badge-visium">Visium</span><span class="badge badge-merscope">MERSCOPE (검증)</span><span class="badge badge-lr">L-R 분석</span></div><div class="paper-field"><strong>373</strong> samples<br><strong>993,380</strong> spots<br><strong>12</strong> 암종 · 776 ICI</div><div class="paper-field">Visium 전체 전사체</div><div class="paper-field">56 LCP, 13 consensus niches<br><strong>L-R:</strong> CXCL16-CXCR6 등<br>대식세포 공간 분포 바이오마커</div></div>
+
+    <div class="paper-card" data-platforms="Xenium"><div><div class="paper-title"><a href="https://doi.org/10.64898/2026.04.25.720812" target="_blank">Pan-cancer virtual spatial transcriptomics from routine histology with Phoenix</a></div><div class="paper-journal">Tran et al. 2026 &middot; bioRxiv &middot; Phoenix</div></div><div class="paper-field"><span class="badge badge-xenium">Xenium</span></div><div class="paper-field"><strong>79</strong> 슬라이드<br><strong>924</strong> 코어<br>10,000+ 환자</div><div class="paper-field">7개 패널: 유방 280,<br>대장 322, 폐 289 등</div><div class="paper-field">H&E에서 유전자 발현 추론<br>가상 공간전사체 생성<br>치료반응 공간 biomarker</div></div>
+
+    <div class="paper-card" data-platforms="Xenium"><div><div class="paper-title"><a href="https://doi.org/10.1038/s41592-026-03089-8" target="_blank">Resolving sensitivity, specificity and signal contamination in Xenium spatial transcriptomics</a></div><div class="paper-journal">Bilous et al. 2026 &middot; Nature Methods &middot; SPLIT</div></div><div class="paper-field"><span class="badge badge-xenium">Xenium</span><span class="badge badge-xenium">Xenium 5K</span></div><div class="paper-field"><strong>41</strong> FFPE 절편<br>유방 19 + 폐 22<br>27 기증자</div><div class="paper-field">유방 280, 폐 289<br>IO 340, 5K ~5,000</div><div class="paper-field">Spillover 보정 QC<br>L-R 분석 정확도 영향<br>소진 마커 검증</div></div>
+
+    <div class="paper-card" data-platforms="Visium,Xenium,Visium HD"><div><div class="paper-title"><a href="https://doi.org/10.1038/s41592-026-03070-5" target="_blank">Systematically decoding pathological morphologies and molecular profiles with unified multimodal embedding</a></div><div class="paper-journal">Zhang et al. 2026 &middot; Nature Methods &middot; Multi-Embed</div></div><div class="paper-field"><span class="badge badge-visium">Visium</span><span class="badge badge-xenium">Xenium</span><span class="badge badge-vhd">Visium HD</span></div><div class="paper-field"><strong>14,695</strong> TCGA WSI<br><strong>4,173</strong> CPTAC WSI<br>12 TCGA 암종</div><div class="paper-field">HVG (고변이 유전자)<br>전사체 전체</div><div class="paper-field">WSI-오믹스 다중모달 임베딩<br>메틸화/단백질/돌연변이 추론<br>약물 반응 예측</div></div>
+
+    <div class="paper-card" data-platforms="Xenium,Visium HD"><div><div class="paper-title"><a href="https://doi.org/10.64898/2026.04.30.721803" target="_blank">Single-cell spatial multiomics identifies POSTN+ CAFs mediating chemoradiotherapy resistance in rectal cancer</a></div><div class="paper-journal">Sakai et al. 2026 &middot; bioRxiv &middot; Xenium 5K + Visium HD + WES</div></div><div class="paper-field"><span class="badge badge-xenium">Xenium 5K</span><span class="badge badge-vhd">Visium HD</span></div><div class="paper-field"><strong>24</strong> 환자 · <strong>52</strong> 검체<br><strong>2.83M</strong> 세포<br>pre/post CRT</div><div class="paper-field">Xenium 5K ~5,000<br>Visium HD 전체 전사체</div><div class="paper-field">CRT 치료 저항성 메커니즘<br>POSTN+ CAF 동정<br>TME spatial remodeling</div></div>
+
+    <div class="paper-card" data-platforms="Visium HD,Xenium,Visium"><div><div class="paper-title"><a href="https://doi.org/10.1038/s41588-025-02193-3" target="_blank">High-definition spatial transcriptomic profiling of immune cell populations in colorectal cancer</a></div><div class="paper-journal">Oliveira et al. 2025 &middot; Nature Genetics &middot; Visium HD benchmark</div></div><div class="paper-field"><span class="badge badge-vhd">Visium HD</span><span class="badge badge-visium">Visium v2</span><span class="badge badge-xenium">Xenium</span></div><div class="paper-field"><strong>5</strong> CRC + <strong>3</strong> NAT<br>8 조직 절편<br>260,506 세포 (ref)</div><div class="paper-field">Visium HD 전체 전사체<br>8&mu;m bin 해상도</div><div class="paper-field">CRC 면역세포 공간 프로파일링<br>SELENOP+/SPP1+ 대식세포<br>T세포 클론 확장 공간 매핑</div></div>
+
+    <div class="paper-card" data-platforms="Visium,L-R"><div><div class="paper-title"><a href="https://doi.org/10.1002/mc.70058" target="_blank">Single-cell and spatial transcriptomic analysis reveals cellular interactions associated with TLS in CRC and GC</a></div><div class="paper-journal">Wang et al. 2026 &middot; Mol. Carcinogenesis &middot; CellChat L-R 분석</div></div><div class="paper-field"><span class="badge badge-visium">Visium</span><span class="badge badge-lr">L-R 분석</span></div><div class="paper-field"><strong>4</strong> Visium ST<br>2 CRC + 2 GC<br>201,769 세포</div><div class="paper-field">Visium 전체 전사체</div><div class="paper-field">TLS 내 면역세포 모집 회로<br><strong>L-R:</strong> CXCL16-CXCR6 (CRC)<br>CXCL10-CXCR3 (GC)</div></div>
+
+    <div class="paper-card" data-platforms="Xenium"><div><div class="paper-title"><a href="https://doi.org/10.1002/path.70035" target="_blank">Xenium-based spatial transcriptomic analyses uncover prognosis-associated heterogeneity in the TME of AITL</a></div><div class="paper-journal">Dong et al. 2026 &middot; J. Pathology &middot; AITL lymphoma</div></div><div class="paper-field"><span class="badge badge-xenium">Xenium</span></div><div class="paper-field"><strong>10</strong> 임상 검체<br>RR vs NR AITL</div><div class="paper-field">Xenium 패널</div><div class="paper-field">NEIL3+ Tfh 줄기세포 유사 클러스터<br>RR vs NR TME 구조 차이<br>예후 관련 면역세포 조직화</div></div>
+
+    <div class="paper-card" data-platforms="Visium HD,Xenium,Visium,L-R"><div><div class="paper-title"><a href="https://doi.org/10.1038/s41467-026-70528-7" target="_blank">FineST: contrastive learning integrates histology and spatial transcriptomics for nuclei-resolved ligand-receptor analysis</a></div><div class="paper-journal">Li et al. 2026 &middot; Nature Communications &middot; FineST L-R 분석 도구</div></div><div class="paper-field"><span class="badge badge-vhd">Visium HD</span><span class="badge badge-xenium">Xenium</span><span class="badge badge-visium">Visium</span><span class="badge badge-lr">L-R 분석</span></div><div class="paper-field"><strong>4</strong> 암종<br>CRC, 유방, HCC, NPC</div><div class="paper-field">Visium HD 전체 전사체<br>CellChat L-R DB</div><div class="paper-field">조직학 기반 L-R 분석<br>유방암 invasive front<br>NPC TLS, HCC PD-1 저항</div></div>
+  </div>
+</section>
+
+<!-- SECTION 4: Platforms -->
+<section class="section">
+  <header class="section-head">
+    <span class="section-num">04</span>
+    <h2 class="section-title">플랫폼 요약</h2>
+  </header>
+  <div class="platform-grid">
+    <div class="platform-card"><h3>10x Xenium</h3><p><strong>7편</strong>에서 사용</p><p>V1 / Prime / 5K</p><p>300 ~ 5,000 유전자</p><span class="res-tag res-sc">단일세포</span></div>
+    <div class="platform-card"><h3>10x Visium HD</h3><p><strong>5편</strong>에서 사용</p><p>전체 전사체</p><p>~8 &mu;m bin</p><span class="res-tag res-hd">준단일세포</span></div>
+    <div class="platform-card"><h3>10x Visium</h3><p><strong>5편</strong>에서 사용</p><p>전체 전사체</p><p>~55 &mu;m spot</p><span class="res-tag res-spot">Spot-level</span></div>
+    <div class="platform-card"><h3>MERSCOPE</h3><p><strong>2편</strong>에서 사용</p><p>~500 유전자</p><p>MERFISH 기반</p><span class="res-tag res-sc">단일세포</span></div>
+    <div class="platform-card"><h3>legacy ST</h3><p><strong>1편</strong>에서 사용</p><p>전체 전사체</p><p>~100 &mu;m spot</p><span class="res-tag res-spot">Spot-level</span></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <div>
+    <strong>autodidact</strong> &middot; 학생용 학습 지도<br>
+    공개 문헌과 개념 노트를 바탕으로 정리한 암 공간전사체 랜드스케이프
+  </div>
+  <div class="right">
+    <a href="../index.html">&larr; autodidact index</a>
+  </div>
+</footer>
+
+</div>
+
+<script>
+const tc = 'oklch(0.5 0.12 220)';
+const lr = 'oklch(0.6 0.13 35)';
+const gridColor = 'oklch(0.93 0.005 250)';
+const tickColor = 'oklch(0.5 0.015 250)';
+const labelColor = 'oklch(0.3 0.02 250)';
+
+Chart.defaults.font.family = "'Pretendard Variable', 'Apple SD Gothic Neo', sans-serif";
+Chart.defaults.color = tickColor;
+
+const colors = {
+  teal: 'oklch(0.6 0.12 220)', tealA: 'oklch(0.6 0.12 220 / 0.6)',
+  coral: 'oklch(0.65 0.12 35)', coralA: 'oklch(0.65 0.12 35 / 0.6)',
+  green: 'oklch(0.55 0.1 160)', greenA: 'oklch(0.55 0.1 160 / 0.6)',
+  violet: 'oklch(0.55 0.15 295)', violetA: 'oklch(0.55 0.15 295 / 0.6)',
+  amber: 'oklch(0.6 0.12 85)', amberA: 'oklch(0.6 0.12 85 / 0.6)',
+  rose: 'oklch(0.58 0.12 10)', roseA: 'oklch(0.58 0.12 10 / 0.6)',
+  slate: 'oklch(0.55 0.02 250)', slateA: 'oklch(0.55 0.02 250 / 0.5)',
+  cyan: 'oklch(0.55 0.1 200)', cyanA: 'oklch(0.55 0.1 200 / 0.6)',
+};
+
+// 1. Platform
+new Chart(document.getElementById('platformChart'), {
+  type: 'bar', data: {
+    labels: ['Xenium (V1/Prime/5K)', 'Visium HD', 'Visium', 'MERSCOPE', 'legacy ST'],
+    datasets: [{ data: [7,5,5,2,1], backgroundColor: [colors.greenA, colors.amberA, colors.tealA, colors.violetA, colors.slateA], borderColor: [colors.green, colors.amber, colors.teal, colors.violet, colors.slate], borderWidth: 1.5, borderRadius: 10, borderSkipped: false }]
+  }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { grid: { color: gridColor }, ticks: { stepSize: 1 }, title: { display: true, text: '논문 수' } }, y: { grid: { display: false }, ticks: { font: { size: 11, weight: '600' } } } } }
+});
+
+// 2. Sample
+new Chart(document.getElementById('sampleChart'), {
+  type: 'bar', data: {
+    labels: ['Li H. TSME', 'EcoTyper', 'Phoenix', 'Sakai', 'SPLIT', 'Dong', 'Oliveira', 'FineST', 'Wang'],
+    datasets: [{ data: [373,132,79,52,41,10,8,8,4], backgroundColor: [colors.slateA, colors.tealA, colors.greenA, colors.roseA, colors.coralA, colors.cyanA, colors.amberA, colors.violetA, colors.tealA], borderColor: [colors.slate, colors.teal, colors.green, colors.rose, colors.coral, colors.cyan, colors.amber, colors.violet, colors.teal], borderWidth: 1.5, borderRadius: 10, borderSkipped: false }]
+  }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 9, weight: '600' } } }, y: { grid: { color: gridColor }, title: { display: true, text: '조직 절편 수' } } } }
+});
+
+// 3. Resolution
+new Chart(document.getElementById('resolutionChart'), {
+  type: 'bubble', data: {
+    datasets: [
+      { label: 'legacy ST', data: [{x:100,y:1,r:8}], backgroundColor: colors.slateA, borderColor: colors.slate, borderWidth: 1 },
+      { label: 'Visium', data: [{x:55,y:5,r:17}], backgroundColor: colors.tealA, borderColor: colors.teal, borderWidth: 1 },
+      { label: 'Visium HD', data: [{x:8,y:5,r:17}], backgroundColor: colors.amberA, borderColor: colors.amber, borderWidth: 1 },
+      { label: 'Xenium', data: [{x:1,y:7,r:22}], backgroundColor: colors.greenA, borderColor: colors.green, borderWidth: 1 },
+      { label: 'MERSCOPE', data: [{x:1,y:2,r:12}], backgroundColor: colors.violetA, borderColor: colors.violet, borderWidth: 1 },
+    ]
+  }, options: { responsive: true, plugins: { legend: { labels: { font: { size: 10 }, usePointStyle: true, pointStyle: 'circle' }, position: 'bottom' }, tooltip: { callbacks: { label: ctx => { const r = ctx.raw.x; return ctx.dataset.label + ': ' + (r<=1 ? '단일세포' : r+' \u03BCm') + ' | ' + ctx.raw.y + '편'; } } } }, scales: { x: { type: 'logarithmic', grid: { color: gridColor }, ticks: { callback: v => v+' \u03BCm' }, title: { display: true, text: '공간 해상도 (로그)' } }, y: { grid: { color: gridColor }, ticks: { stepSize: 1 }, title: { display: true, text: '논문 수' } } } }
+});
+
+// 4. Gene panel
+new Chart(document.getElementById('genePanelChart'), {
+  type: 'bar', data: {
+    labels: ['Visium HD (전체)', 'Xenium 5K', 'Phoenix IO', 'Phoenix 다조직', 'SPLIT IO', 'Phoenix 대장', 'Phoenix 폐', 'Phoenix 유방'],
+    datasets: [{ data: [18000,5000,380,377,340,322,289,280], backgroundColor: [colors.amberA, colors.greenA, colors.coralA, colors.coralA, colors.coralA, colors.greenA, colors.greenA, colors.greenA], borderColor: [colors.amber, colors.green, colors.coral, colors.coral, colors.coral, colors.green, colors.green, colors.green], borderWidth: 1.5, borderRadius: 10, borderSkipped: false }]
+  }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { grid: { color: gridColor }, ticks: { callback: v => v>=1000?(v/1000)+'K':v }, title: { display: true, text: '유전자 수' } }, y: { grid: { display: false }, ticks: { font: { size: 10, weight: '500' } } } } }
+});
+
+// 5. Radar
+new Chart(document.getElementById('focusChart'), {
+  type: 'radar', data: {
+    labels: ['공간 생태형', '가상 ST', 'QC/보정', '다중모달', 'L-R 분석', '면역 프로파일', '치료 저항성'],
+    datasets: [
+      { label: 'EcoTyper', data: [5,1,1,3,0,3,1], backgroundColor: 'oklch(0.6 0.12 220 / 0.08)', borderColor: colors.teal, pointBackgroundColor: colors.teal, borderWidth: 2 },
+      { label: 'Phoenix', data: [3,5,1,2,0,2,2], backgroundColor: 'oklch(0.55 0.1 160 / 0.08)', borderColor: colors.green, pointBackgroundColor: colors.green, borderWidth: 2 },
+      { label: 'SPLIT', data: [0,0,5,1,1,0,0], backgroundColor: 'oklch(0.65 0.12 35 / 0.08)', borderColor: colors.coral, pointBackgroundColor: colors.coral, borderWidth: 2 },
+      { label: 'Li H. TSME', data: [4,0,0,1,5,4,2], backgroundColor: 'oklch(0.55 0.02 250 / 0.08)', borderColor: colors.slate, pointBackgroundColor: colors.slate, borderWidth: 2 },
+      { label: 'Wang (TLS)', data: [0,0,0,1,5,4,0], backgroundColor: 'oklch(0.55 0.1 200 / 0.08)', borderColor: colors.cyan, pointBackgroundColor: colors.cyan, borderWidth: 2 },
+      { label: 'FineST', data: [0,0,0,3,5,3,2], backgroundColor: 'oklch(0.55 0.15 295 / 0.08)', borderColor: colors.violet, pointBackgroundColor: colors.violet, borderWidth: 2 },
+    ]
+  }, options: { responsive: true, plugins: { legend: { labels: { font: { size: 9 }, usePointStyle: true }, position: 'bottom' } }, scales: { r: { angleLines: { color: gridColor }, grid: { color: gridColor }, pointLabels: { font: { size: 10, weight: '600' } }, ticks: { display: false }, suggestedMin: 0, suggestedMax: 5 } } }
+});
+
+// 6. Cell count
+new Chart(document.getElementById('cellCountChart'), {
+  type: 'bar', data: {
+    labels: ['EcoTyper\n(10M+)', 'Sakai\n(2.83M)', 'Li H. TSME\n(993K)', 'Oliveira\n(260K)', 'Wang\n(202K)'],
+    datasets: [{ data: [10000000,2830000,993380,260506,201769], backgroundColor: [colors.tealA, colors.roseA, colors.slateA, colors.amberA, colors.cyanA], borderColor: [colors.teal, colors.rose, colors.slate, colors.amber, colors.cyan], borderWidth: 1.5, borderRadius: 10, borderSkipped: false }]
+  }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { font: { weight: '600', size: 9 } } }, y: { type: 'logarithmic', grid: { color: gridColor }, ticks: { callback: v => v>=1e6?(v/1e6)+'M':v>=1e3?(v/1e3)+'K':v }, title: { display: true, text: '세포/spot 수 (로그)' } } } }
+});
+
+// 7. L-R chart
+new Chart(document.getElementById('lrChart'), {
+  type: 'bar', data: {
+    labels: ['CXCL12\nCXCR4', 'CXCL16\nCXCR6', 'CXCL9/10\nCXCR3', 'CCL19\nCCR7', 'CXCL13\nCXCR5', 'IL1B\nIL1R2', 'IL15\nIL15RA', 'CD274\nPDCD1', 'INHBA\nACVR1B', 'NRG1\nERBB3'],
+    datasets: [
+      { label: 'Li H. TSME', data: [1,1,1,1,1,1,1,1,0,0], backgroundColor: colors.slateA, borderColor: colors.slate, borderWidth: 1, borderRadius: 6 },
+      { label: 'Wang (CRC/GC)', data: [0,1,1,0,0,0,0,0,0,0], backgroundColor: colors.cyanA, borderColor: colors.cyan, borderWidth: 1, borderRadius: 6 },
+      { label: 'FineST', data: [0,0,0,0,0,0,0,0,1,1], backgroundColor: colors.violetA, borderColor: colors.violet, borderWidth: 1, borderRadius: 6 },
+    ]
+  }, options: { responsive: true, plugins: { legend: { labels: { font: { size: 9 }, usePointStyle: true }, position: 'bottom' } }, scales: { x: { stacked: true, grid: { display: false }, ticks: { font: { size: 8, weight: '600', family: 'var(--f-mono)' }, maxRotation: 0 } }, y: { stacked: true, grid: { color: gridColor }, ticks: { stepSize: 1 }, title: { display: true, text: '보고 논문 수' } } } }
+});
+
+// 8. L-R Tool comparison
+new Chart(document.getElementById('lrToolChart'), {
+  type: 'bar', data: {
+    labels: ['CellChat', 'FineST', 'stLearn', 'LR score\n(meta)', 'SpatialDM', 'NicheNet'],
+    datasets: [
+      { label: '사용 논문 수', data: [2,1,1,1,0,0], backgroundColor: colors.coralA, borderColor: colors.coral, borderWidth: 1.5, borderRadius: 10, borderSkipped: false },
+      { label: '지원 L-R DB 크기', data: [3,3,2,2,2,1], backgroundColor: colors.violetA, borderColor: colors.violet, borderWidth: 1.5, borderRadius: 10, borderSkipped: false },
+    ]
+  }, options: { responsive: true, plugins: { legend: { labels: { font: { size: 9 }, usePointStyle: true }, position: 'bottom' } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 9, weight: '600' } } }, y: { grid: { color: gridColor }, ticks: { stepSize: 1 }, title: { display: true, text: '점수' } } } }
+});
+
+// Filter
+function filterPapers(p) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === p));
+  document.querySelectorAll('.paper-card').forEach(c => { c.style.display = (p === 'all' || (c.dataset.platforms || '').includes(p)) ? '' : 'none'; });
+}
+</script>
+</body>
+</html>
