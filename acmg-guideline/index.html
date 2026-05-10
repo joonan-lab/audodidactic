@@ -1,0 +1,3483 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACMG/AMP Variant Interpretation Guide — joonan-lab autodidact</title>
+<meta name="description" content="A Korean and English standalone HTML learning page for the 2015 ACMG/AMP guideline, 28 evidence criteria, ClinGen guidance, and VCEP/CSpec application order.">
+<style>
+:root{
+  --bg: oklch(0.985 0.005 90);
+  --surface: oklch(1 0 0);
+  --surface-glass: oklch(1 0 0 / 0.62);
+  --surface-glass-strong: oklch(1 0 0 / 0.88);
+  --ink: oklch(0.18 0.02 250);
+  --ink-soft: oklch(0.36 0.02 250);
+  --muted: oklch(0.55 0.015 250);
+  --line: oklch(0.91 0.005 250);
+  --line-soft: oklch(0.94 0.004 250);
+  --t-stat: oklch(0.5 0.12 220);
+  --t-stat-glow: oklch(0.78 0.13 220);
+  --t-stat-tint: oklch(0.96 0.02 220);
+  --t-cell: oklch(0.6 0.13 35);
+  --t-cell-glow: oklch(0.82 0.1 35);
+  --t-cell-tint: oklch(0.96 0.02 35);
+  --t-dna: oklch(0.5 0.1 160);
+  --t-dna-glow: oklch(0.76 0.13 160);
+  --t-dna-tint: oklch(0.96 0.02 160);
+  --shadow-1: 0 1px 2px oklch(0.2 0.02 250 / 0.04), 0 2px 6px oklch(0.2 0.02 250 / 0.04);
+  --shadow-hover: 0 2px 4px oklch(0.2 0.02 250 / 0.05), 0 12px 28px oklch(0.2 0.02 250 / 0.07), 0 32px 72px oklch(0.2 0.02 250 / 0.09);
+  --r-card: 24px;
+  --r-inner: 16px;
+  --r-pill: 999px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.4, 1);
+  --f-display: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI Variable", system-ui, sans-serif;
+  --f-body: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --f-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--f-body);
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  text-wrap:pretty;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:-10%;
+  background:
+    radial-gradient(60% 50% at 12% 8%, oklch(0.78 0.13 220 / 0.15), transparent 60%),
+    radial-gradient(50% 45% at 92% 22%, oklch(0.82 0.1 35 / 0.13), transparent 65%),
+    radial-gradient(55% 50% at 70% 92%, oklch(0.76 0.13 160 / 0.11), transparent 65%);
+  pointer-events:none;
+  z-index:0;
+  animation:drift 28s ease-in-out infinite alternate;
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:radial-gradient(oklch(0.2 0.02 250 / 0.012) 1px, transparent 1px);
+  background-size:28px 28px;
+  pointer-events:none;
+  z-index:0;
+}
+@keyframes drift{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(2%,-1.5%,0) scale(1.04)}
+  100%{transform:translate3d(-1.5%,2%,0) scale(1.03)}
+}
+.page{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:56px 28px 80px}
+.hero{position:relative;margin-bottom:64px;min-height:380px;padding-right:min(32vw,360px)}
+.brand{display:inline-flex;align-items:center;gap:12px;font-family:var(--f-mono);font-size:12.5px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:20px}
+.brand-mark{width:30px;height:30px;border-radius:9px;background:conic-gradient(from 220deg at 50% 50%,var(--t-stat-glow),var(--t-cell-glow) 35%,var(--t-dna-glow) 70%,var(--t-stat-glow) 100%);box-shadow:0 1px 2px oklch(0.2 0.02 250 / .1),inset 0 0 0 1.5px oklch(1 0 0 / .6),inset 0 -3px 6px oklch(0.2 0.02 250 / .1);position:relative}
+.brand-mark::after{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--surface);box-shadow:inset 0 1px 2px oklch(0.2 0.02 250 / .06)}
+.brand strong{color:var(--ink);font-weight:700}
+.lang-switch{display:inline-flex;gap:6px;margin:0 0 18px 40px;padding:5px;background:var(--surface-glass-strong);border:1px solid var(--line);border-radius:var(--r-pill);box-shadow:var(--shadow-1)}
+.lang-switch button{appearance:none;border:0;background:transparent;color:var(--ink-soft);font:700 13px/1 var(--f-body);padding:8px 13px;border-radius:var(--r-pill);cursor:pointer}
+.lang-switch button:hover{background:var(--t-stat-tint);color:var(--t-stat)}
+body[data-lang="ko"] .lang-switch button[data-lang-toggle="ko"],
+body[data-lang="en"] .lang-switch button[data-lang-toggle="en"]{background:var(--t-stat);color:oklch(1 0 0)}
+.language-layer{display:none}
+body[data-lang="ko"] .language-layer[data-lang-panel="ko"],
+body[data-lang="en"] .language-layer[data-lang-panel="en"]{display:block}
+.page-meta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.page-meta span{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--surface-glass-strong);border-radius:var(--r-pill);padding:6px 11px;font-size:13px;font-weight:700;color:var(--ink-soft);box-shadow:var(--shadow-1)}
+.hero h1{font-family:var(--f-display);font-size:clamp(36px,5.6vw,64px);font-weight:850;letter-spacing:-.022em;line-height:1.08;margin:0 0 22px}
+.accent{background:linear-gradient(120deg,var(--t-stat) 0%,var(--t-cell) 55%,var(--t-dna) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.lede{font-size:17px;color:var(--ink-soft);line-height:1.75;max-width:620px;margin-bottom:18px}
+.autodidact-note{max-width:620px;padding-left:16px;border-left:2px solid oklch(from var(--t-stat) l c h / .45);font-size:14.5px;line-height:1.75;color:var(--muted)}
+.hero-badge{position:absolute;top:56px;right:clamp(0px,3vw,28px);width:clamp(220px,25vw,320px);padding:26px;background:var(--surface-glass-strong);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--shadow-1)}
+.hero-badge .num{font-family:var(--f-display);font-size:58px;font-weight:850;line-height:1;color:var(--t-stat)}
+.hero-badge p{font-size:14px;color:var(--ink-soft);margin-top:10px}
+@media(max-width:900px){.hero{min-height:0;padding-right:0}.hero-badge{position:relative;top:auto;right:auto;width:100%;margin-top:28px}}
+.top-nav{position:sticky;top:0;z-index:5;margin:-18px 0 54px;padding:10px;background:oklch(1 0 0 / .74);border:1px solid var(--line);border-radius:var(--r-pill);backdrop-filter:blur(16px);box-shadow:var(--shadow-1);display:flex;gap:6px;overflow:auto}
+.top-nav a{white-space:nowrap;text-decoration:none;color:var(--ink-soft);font-size:13px;font-weight:700;padding:9px 14px;border-radius:var(--r-pill)}
+.top-nav a:hover,.top-nav a.active{background:var(--t-stat-tint);color:var(--t-stat)}
+.tracks{display:grid;gap:64px}
+.track{position:relative;--tc:var(--t-stat);--tc-glow:var(--t-stat-glow);--tc-tint:var(--t-stat-tint)}
+.track[data-track="cell"]{--tc:var(--t-cell);--tc-glow:var(--t-cell-glow);--tc-tint:var(--t-cell-tint)}
+.track[data-track="dna"]{--tc:var(--t-dna);--tc-glow:var(--t-dna-glow);--tc-tint:var(--t-dna-tint)}
+.track-head,.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:8px;padding-bottom:16px;position:relative}
+.track-head::after,.section-head::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(to right,var(--tc,var(--t-stat)) 0%,var(--line) 25%,var(--line) 100%);opacity:.5}
+.track-title,.section-head h2{font-family:var(--f-display);font-size:clamp(24px,2.6vw,32px);font-weight:800;letter-spacing:-.018em;line-height:1.15}
+.track-blurb{font-size:15px;color:var(--ink-soft);max-width:760px;line-height:1.7;margin:16px 0 28px}
+.cards{display:grid;grid-template-columns:1fr;gap:18px}
+@media(min-width:720px){.cards.split{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:980px){.cards.criteria-grid{grid-template-columns:repeat(4,1fr)}}
+.card{position:relative;display:flex;flex-direction:column;gap:14px;padding:30px 28px 26px;background:var(--surface-glass-strong);backdrop-filter:blur(16px) saturate(1.3);border:1px solid var(--line);border-radius:var(--r-card);text-decoration:none;color:var(--ink);overflow:hidden;isolation:isolate;transition:transform .5s var(--ease),border-color .5s var(--ease),box-shadow .5s var(--ease);box-shadow:var(--shadow-1)}
+.card::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(120% 90% at 100% 0%,oklch(from var(--tc-glow) l c h / .32),transparent 65%),linear-gradient(135deg,transparent 30%,var(--tc-tint) 100%);opacity:.5;transition:opacity .5s var(--ease)}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:oklch(from var(--tc) l c h / .4)}
+.card:hover::before{opacity:.9}
+.card-tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tc);font-weight:700;align-self:flex-start}
+.card-tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--tc);box-shadow:0 0 0 3px oklch(from var(--tc) calc(l + .05) c h / .18)}
+.card-title{font-family:var(--f-display);font-size:clamp(19px,1.6vw,22px);font-weight:800;letter-spacing:-.014em;line-height:1.28;color:var(--ink);margin:4px 0 2px}
+.mini-card .card-title{font-size:22px}
+.card-desc{font-size:13.5px;color:var(--ink-soft);line-height:1.7;flex-grow:1}
+.card-cta{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:14px;border-top:1px dashed oklch(from var(--tc) l c h / .25)}
+.card-cta-text{font-size:13.5px;color:var(--tc);font-weight:600}
+.card-cta-mark{width:36px;height:36px;border-radius:50%;background:var(--tc);color:oklch(1 0 0);display:grid;place-items:center;transition:transform .4s var(--ease-spring)}
+.card-cta-mark svg{width:14px;height:14px}.card:hover .card-cta-mark{transform:translateX(5px) scale(1.05)}
+.content-section{scroll-margin-top:96px;--tc:var(--t-stat);margin-top:64px}
+.section-kicker{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;color:var(--tc);font-weight:800;text-transform:uppercase}
+.article-card{background:var(--surface-glass-strong);border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--shadow-1);padding:30px;overflow:auto}
+.article-card h1,.article-card h2,.article-card h3{font-family:var(--f-display);letter-spacing:-.015em;line-height:1.25;margin:34px 0 12px;scroll-margin-top:112px}
+.article-card h1:first-child,.article-card h2:first-child,.article-card h3:first-child{margin-top:0}
+.article-card h2{font-size:26px}.article-card h3{font-size:20px}
+.article-card p,.article-card li{font-size:15px;color:var(--ink-soft)}
+.article-card p{margin:10px 0 14px}.article-card ul,.article-card ol{padding-left:22px;margin:12px 0 18px}
+.article-card table{width:100%;border-collapse:collapse;margin:18px 0;border:1px solid var(--line);background:oklch(1 0 0 / .58);font-size:13px}
+.article-card th,.article-card td{padding:10px 12px;border:1px solid var(--line);vertical-align:top}
+.article-card th{background:var(--t-stat-tint);color:var(--ink);font-weight:800}
+.article-card code{font-family:var(--f-mono);font-size:.92em;background:oklch(0.96 0.01 250);border:1px solid var(--line-soft);border-radius:7px;padding:1px 5px;color:var(--ink)}
+.article-card pre{margin:16px 0;padding:16px;background:oklch(0.22 0.02 250);color:oklch(0.96 0.01 90);border-radius:var(--r-inner);overflow:auto}
+.article-card pre code{background:transparent;border:0;color:inherit;padding:0}
+.article-card a{color:var(--t-stat);text-underline-offset:3px}
+.foot{margin-top:72px;padding-top:28px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.75}
+.foot-row{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap}
+.foot a{color:var(--muted);text-decoration:underline;text-underline-offset:2px}.foot a:hover{color:var(--ink)}
+@media(max-width:680px){.page{padding:36px 18px 60px}.article-card{padding:22px}.top-nav{border-radius:18px}.hero h1{font-size:36px}.lang-switch{margin-left:0}}
+</style>
+</head>
+<body data-lang="ko">
+<div class="page">
+  <header class="hero">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span><strong>autodidact</strong> · joonan-lab variant guide</span>
+    </div>
+    <div class="lang-switch" aria-label="Language">
+      <button type="button" data-lang-toggle="en">English</button>
+      <button type="button" data-lang-toggle="ko">한국어</button>
+    </div>
+    <div class="language-layer hero-copy" data-lang-panel="ko">
+  <div class="page-meta" aria-label="한국어 page metadata">
+    <span>작성자: 민채원</span>
+    <span>업데이트 날짜: 2026.05.10</span>
+  </div>
+  <h1>ACMG/AMP 변이 해석을<br><span class="accent">한 페이지로 익힌다</span></h1>
+  <p class="lede">
+    Richards et al., 2015 (Genetics in Medicine)의 2015 ACMG/AMP guideline을 공식 기준선으로 두고, ClinGen criterion-specific guidance와 VCEP/CSpec 적용 순서를 분리해 정리한 ACMG 전용 학습 페이지입니다.
+  </p>
+  <p class="autodidact-note">
+    이 페이지는 임상 판정 자동화 도구가 아니라 교육용 해석 지도입니다. 실제 variant classification에는 gene-disease validity, inheritance, VCEP scope, laboratory policy, 최신 ClinGen guidance를 함께 확인해야 하며, 임상에 실제로 적용하기 위해서는 임상 전문가의 판단이 필요합니다.
+  </p>
+  <aside class="hero-badge" aria-label="ACMG evidence summary">
+    <div class="num">28</div>
+    <p>2015 ACMG/AMP evidence criteria 전체를 pathogenic direction 16개, benign direction 12개로 나누어 정리했습니다.</p>
+  </aside>
+</div>
+    <div class="language-layer hero-copy" data-lang-panel="en">
+  <div class="page-meta" aria-label="English page metadata">
+    <span>Author: Chaewon Min</span>
+    <span>Updated: 2026.05.10</span>
+  </div>
+  <h1>Learn ACMG/AMP variant interpretation<br><span class="accent">on one page</span></h1>
+  <p class="lede">
+    A dedicated ACMG learning page that uses Richards et al., 2015 (Genetics in Medicine) as the official 2015 ACMG/AMP guideline baseline and separates ClinGen criterion-specific guidance from VCEP/CSpec use.
+  </p>
+  <p class="autodidact-note">
+    This page is an educational interpretation map, not a clinical decision automation tool. Real variant classification requires checking gene-disease validity, inheritance, VCEP scope, laboratory policy, and current ClinGen guidance; clinical application also requires judgment by qualified clinical experts.
+  </p>
+  <aside class="hero-badge" aria-label="ACMG evidence summary">
+    <div class="num">28</div>
+    <p>All 28 evidence criteria from the 2015 ACMG/AMP guideline are organized into 16 pathogenic-direction criteria and 12 benign-direction criteria.</p>
+  </aside>
+</div>
+  </header>
+
+  <div class="language-layer lang-panel" data-lang-panel="ko">
+  <nav class="top-nav" aria-label="한국어 page sections">
+    <a href="#ko-overview">개요</a>
+<a href="#ko-criteria">28개 Criteria</a>
+  </nav>
+
+  <main class="tracks">
+    <section class="track" data-track="cell" aria-labelledby="ko-quick-start">
+      <header class="track-head">
+        <h2 class="track-title" id="ko-quick-start">핵심 진입점</h2>
+      </header>
+      <p class="track-blurb">
+        공식 baseline, current guidance, gene-specific specification, draft standard를 섞지 않고 읽는 것이 이 페이지의 핵심입니다.
+      </p>
+      <div class="cards split">
+        <a class="card" href="#ko-overview">
+  <span class="card-tag">baseline · guidance</span>
+  <h3 class="card-title">공식 기준선과 현재 권고</h3>
+  <p class="card-desc">2015 ACMG/AMP guideline, ClinGen Variant Classification Guidance, CSpec/VCEP의 위치를 먼저 분리합니다.</p>
+  <div class="card-cta"><span class="card-cta-text">개요 보기</span><span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span></div>
+</a>
+<a class="card" href="#ko-criteria">
+  <span class="card-tag">criteria · rule-based</span>
+  <h3 class="card-title">28개 criteria와 조합 규칙</h3>
+  <p class="card-desc">PVS/PS/PM/PP와 BA/BS/BP를 한눈에 보고, rule-based combination으로 최종 tier가 정해지는 구조를 익힙니다.</p>
+  <div class="card-cta"><span class="card-cta-text">criteria 보기</span><span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span></div>
+</a>
+      </div>
+    </section>
+
+    <section class="track" data-track="dna" aria-labelledby="ko-criteria-map">
+      <header class="track-head">
+        <h2 class="track-title" id="ko-criteria-map">Criteria Quick Map</h2>
+      </header>
+      <p class="track-blurb">
+        카드를 누르면 상세 criteria 섹션으로 이동합니다. PP3/BP4 cutoff와 SpliceAI decision tree는 상세 문서 안에 포함했습니다.
+      </p>
+      <div class="cards criteria-grid">
+        <a class="card mini-card" href="#ko-criterion-pvs1">
+  <span class="card-tag">Very Strong</span>
+  <h3 class="card-title">PVS1</h3>
+  <p class="card-desc">LOF가 disease mechanism인 gene의 null variant</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-ps1">
+  <span class="card-tag">Strong</span>
+  <h3 class="card-title">PS1</h3>
+  <p class="card-desc">이미 pathogenic인 variant와 같은 amino acid change</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-ps2">
+  <span class="card-tag">Strong</span>
+  <h3 class="card-title">PS2</h3>
+  <p class="card-desc">confirmed de novo</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-ps3">
+  <span class="card-tag">Strong</span>
+  <h3 class="card-title">PS3</h3>
+  <p class="card-desc">검증된 기능실험이 damaging effect 지지</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-ps4">
+  <span class="card-tag">Strong</span>
+  <h3 class="card-title">PS4</h3>
+  <p class="card-desc">affected cases에서 controls보다 유의하게 높음</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-pm1">
+  <span class="card-tag">Moderate</span>
+  <h3 class="card-title">PM1</h3>
+  <p class="card-desc">hotspot 또는 critical functional domain</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-pm2">
+  <span class="card-tag">Moderate</span>
+  <h3 class="card-title">PM2</h3>
+  <p class="card-desc">population controls에서 absent 또는 very rare</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-pm3">
+  <span class="card-tag">Moderate</span>
+  <h3 class="card-title">PM3</h3>
+  <p class="card-desc">recessive disorder에서 pathogenic variant와 trans</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-pm4">
+  <span class="card-tag">Moderate</span>
+  <h3 class="card-title">PM4</h3>
+  <p class="card-desc">protein length를 바꾸는 in-frame indel 또는 stop-loss</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-pm5">
+  <span class="card-tag">Moderate</span>
+  <h3 class="card-title">PM5</h3>
+  <p class="card-desc">같은 residue의 다른 missense pathogenic variant</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-pm6">
+  <span class="card-tag">Moderate</span>
+  <h3 class="card-title">PM6</h3>
+  <p class="card-desc">assumed de novo, parentage 미확인</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-pp1">
+  <span class="card-tag">Supporting</span>
+  <h3 class="card-title">PP1</h3>
+  <p class="card-desc">affected relatives에서 cosegregation</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-pp2">
+  <span class="card-tag">Supporting</span>
+  <h3 class="card-title">PP2</h3>
+  <p class="card-desc">missense가 주 disease mechanism인 gene</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-pp3">
+  <span class="card-tag">Supporting</span>
+  <h3 class="card-title">PP3</h3>
+  <p class="card-desc">calibrated computational evidence가 deleterious 지지</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-pp4">
+  <span class="card-tag">Supporting</span>
+  <h3 class="card-title">PP4</h3>
+  <p class="card-desc">phenotype/family history가 매우 특이적</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-pp5">
+  <span class="card-tag">Supporting</span>
+  <h3 class="card-title">PP5</h3>
+  <p class="card-desc">reputable source assertion, 현재는 독립 적용 지양</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-ba1">
+  <span class="card-tag">Stand-alone</span>
+  <h3 class="card-title">BA1</h3>
+  <p class="card-desc">너무 높은 population allele frequency</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-bs1">
+  <span class="card-tag">Strong benign</span>
+  <h3 class="card-title">BS1</h3>
+  <p class="card-desc">질환 기대 빈도보다 allele frequency가 높음</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-bs2">
+  <span class="card-tag">Strong benign</span>
+  <h3 class="card-title">BS2</h3>
+  <p class="card-desc">full penetrance early-onset 질환에서 건강 성인 관찰</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-bs3">
+  <span class="card-tag">Strong benign</span>
+  <h3 class="card-title">BS3</h3>
+  <p class="card-desc">기능실험이 no damaging effect 지지</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-bs4">
+  <span class="card-tag">Strong benign</span>
+  <h3 class="card-title">BS4</h3>
+  <p class="card-desc">affected family에서 lack of segregation</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-bp1">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP1</h3>
+  <p class="card-desc">truncating이 주 mechanism인 gene의 missense</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-bp2">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP2</h3>
+  <p class="card-desc">phase가 benign 방향을 지지</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-bp3">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP3</h3>
+  <p class="card-desc">known function 없는 repetitive region의 in-frame indel</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-bp4">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP4</h3>
+  <p class="card-desc">calibrated computational evidence가 no impact 지지</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-bp5">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP5</h3>
+  <p class="card-desc">alternate molecular basis가 있는 case</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-bp6">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP6</h3>
+  <p class="card-desc">reputable source assertion, 현재는 독립 적용 지양</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#ko-criterion-bp7">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP7</h3>
+  <p class="card-desc">splicing 영향 없는 synonymous variant</p>
+  <div class="card-cta">
+    <span class="card-cta-text">기준 보기</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+      </div>
+    </section>
+
+    <section class="content-section" id="ko-overview">
+  <header class="section-head">
+    <span class="section-kicker">ACMG GUIDE</span>
+    <h2>개요</h2>
+  </header>
+  <article class="article-card">
+    <p>이 문서는 ACMG/AMP germline sequence variant interpretation을 처음 보는 사람이 큰 그림을 잡을 수 있도록 정리한 한글 개요다. 목표는 "공식 기준", "최신 적용 guidance", "유전자/질환별 specification"을 섞지 않고 이해하는 것이다.</p>
+<p>확인 기준일: 2026-05-10.</p>
+<h2 id="ko-overview-1">1. 한 문장 요약</h2>
+<p>ACMG/AMP 변이 해석은 한 germline sequence variant를 <code>Pathogenic</code>, <code>Likely pathogenic</code>, <code>VUS</code>, <code>Likely benign</code>, <code>Benign</code> 중 하나로 분류하기 위해 여러 종류의 증거를 정해진 강도로 조합하는 체계다.</p>
+<h2 id="ko-overview-2">2. 가장 먼저 알아야 할 세 층</h2>
+<table>
+<thead>
+<tr>
+<th>층</th>
+<th>무엇인가</th>
+<th>지금 어떻게 쓰나</th>
+<th>헷갈리기 쉬운 점</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2015 ACMG/AMP guideline</td>
+<td>Richards et al., 2015 (Genetics in Medicine)의 공식 출판 기준선</td>
+<td>germline sequence variant 해석의 기본 프레임</td>
+<td>오래됐지만 현재 공개적으로 확인 가능한 공식 기준선이다</td>
+</tr>
+<tr>
+<td>ClinGen Variant Classification Guidance</td>
+<td>2015 ACMG/AMP guideline criteria를 더 일관되게 적용하기 위한 ClinGen 권고 모음</td>
+<td><code>PVS1</code>, <code>PM2</code>, <code>PS2/PM6</code>, <code>PP3/BP4</code>, <code>PS3/BS3</code> 등 criteria별 세부 적용 확인</td>
+<td>2015 ACMG/AMP guideline 전체를 대체한 새 guideline이 아니다</td>
+</tr>
+<tr>
+<td>ClinGen VCEP/CSpec</td>
+<td>특정 gene/disease에 맞춘 ACMG/AMP criteria specification</td>
+<td>해당 유전자와 질환 조합이 맞을 때 우선 확인</td>
+<td>모든 변이에 일반화하면 안 된다</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ko-overview-3-acmgamp">3. ACMG/AMP가 실제로 묻는 질문</h2>
+<p>ACMG/AMP classification은 "이 환자가 이 병을 갖고 있는가?"를 자동으로 판정하는 도구가 아니다. 더 정확한 질문은 다음과 같다.</p>
+<blockquote>
+<p>이 특정 variant가, 특정 gene-disease context에서, 질병 원인으로 볼 수 있을 만큼 충분한 증거를 갖고 있는가?</p>
+</blockquote>
+<p>따라서 판정 전에 세 가지를 고정해야 한다.</p>
+<table>
+<thead>
+<tr>
+<th>먼저 고정할 것</th>
+<th>예시</th>
+<th>왜 중요한가</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Variant identity</td>
+<td>transcript, cDNA, protein notation</td>
+<td>같은 gene 안에서도 variant마다 증거가 다르다</td>
+</tr>
+<tr>
+<td>Gene-disease context</td>
+<td><code>SCN1A</code>와 developmental epileptic encephalopathy</td>
+<td>같은 gene도 질환별 mechanism이 다를 수 있다</td>
+</tr>
+<tr>
+<td>Inheritance model</td>
+<td>autosomal dominant, autosomal recessive, X-linked</td>
+<td>population frequency, segregation, de novo evidence 해석이 달라진다</td>
+</tr>
+</tbody>
+</table>
+<p>이 세 가지가 불분명하면 evidence code를 붙여도 논리적으로 흔들린다.</p>
+<h2 id="ko-overview-4">4. 다섯 가지 최종 분류</h2>
+<table>
+<thead>
+<tr>
+<th>분류</th>
+<th>한글 설명</th>
+<th>실무적 의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Pathogenic</code></td>
+<td>병적 변이</td>
+<td>질병 원인으로 볼 증거가 충분함</td>
+</tr>
+<tr>
+<td><code>Likely pathogenic</code></td>
+<td>병적 가능성이 높은 변이</td>
+<td>질병 원인일 가능성이 높지만 pathogenic만큼 확정적이지는 않음</td>
+</tr>
+<tr>
+<td><code>VUS</code></td>
+<td>임상적 의미 불명 변이</td>
+<td>증거가 부족하거나 충돌함. 진단적 결론으로 과잉해석하면 안 됨</td>
+</tr>
+<tr>
+<td><code>Likely benign</code></td>
+<td>양성 가능성이 높은 변이</td>
+<td>질병 원인이 아닐 가능성이 높음</td>
+</tr>
+<tr>
+<td><code>Benign</code></td>
+<td>양성 변이</td>
+<td>질병 원인이 아니라고 볼 증거가 충분함</td>
+</tr>
+</tbody>
+</table>
+<p>가장 중요한 메시지는 <code>VUS</code>다. VUS는 "약한 양성"이나 "수상한 변이"가 아니라 "현재 증거로는 판단 보류"라는 뜻이다.</p>
+<h2 id="ko-overview-5-evidence-code">5. Evidence code의 기본 구조</h2>
+<p>ACMG/AMP evidence code는 pathogenic 방향과 benign 방향으로 나뉜다.</p>
+<table>
+<thead>
+<tr>
+<th>방향</th>
+<th>강도</th>
+<th>코드 예시</th>
+<th>직관적 의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pathogenic</td>
+<td>Very Strong</td>
+<td><code>PVS1</code></td>
+<td>질병 mechanism과 맞는 loss-of-function 등 매우 강한 증거</td>
+</tr>
+<tr>
+<td>Pathogenic</td>
+<td>Strong</td>
+<td><code>PS1</code>, <code>PS2</code>, <code>PS3</code>, <code>PS4</code></td>
+<td>같은 amino acid change, confirmed de novo, 기능실험, case enrichment 등</td>
+</tr>
+<tr>
+<td>Pathogenic</td>
+<td>Moderate</td>
+<td><code>PM1</code>-<code>PM6</code></td>
+<td>hotspot, rarity, in trans, protein length change 등</td>
+</tr>
+<tr>
+<td>Pathogenic</td>
+<td>Supporting</td>
+<td><code>PP1</code>-<code>PP5</code></td>
+<td>segregation, computational evidence, phenotype specificity 등</td>
+</tr>
+<tr>
+<td>Benign</td>
+<td>Stand-alone</td>
+<td><code>BA1</code></td>
+<td>너무 흔해서 pathogenic일 수 없음</td>
+</tr>
+<tr>
+<td>Benign</td>
+<td>Strong</td>
+<td><code>BS1</code>-<code>BS4</code></td>
+<td>빈도 높음, 건강 성인 관찰, 기능 정상, non-segregation 등</td>
+</tr>
+<tr>
+<td>Benign</td>
+<td>Supporting</td>
+<td><code>BP1</code>-<code>BP7</code></td>
+<td>benign 방향의 약한 보조 증거</td>
+</tr>
+</tbody>
+</table>
+<p>이 코드는 단순 점수표가 아니다. 각 criteria가 정말 적용 가능한지, 서로 독립적인지, 최신 ClinGen guidance에서 strength가 바뀌었는지 확인해야 한다.</p>
+<p>28개 criteria의 전체 표, 2015 ACMG/AMP guideline 조합 규칙, criterion별 상세 설명, PP3/BP4 cutoff 예시는 <a href="#ko-criteria">2015 ACMG/AMP guideline Criteria와 이후 업데이트</a>에 따로 정리했다. 이 문서는 큰 그림을 잡는 개요이고, 상세 criteria 문서는 실제 HTML 페이지의 핵심 내용으로 사용한다.</p>
+<h2 id="ko-overview-6">6. 실무적 판정 흐름</h2>
+<p>ACMG/AMP 변이 해석을 교육용으로 단순화하면 다음 흐름이다.</p>
+<pre><code class="language-text">1. variant를 정확히 정의한다
+2. gene-disease validity와 inheritance를 확인한다
+3. population frequency로 benign 가능성을 먼저 확인한다
+4. variant consequence와 disease mechanism을 본다
+5. computational, functional, segregation, de novo, phenotype evidence를 모은다
+6. ACMG/AMP criteria와 evidence strength를 붙인다
+7. ClinGen general/criterion-specific guidance와 VCEP/CSpec이 있는지 확인한다
+8. scope가 맞는 VCEP/CSpec이 있으면 해당 specification을 우선 적용한다
+9. evidence 조합으로 5-tier classification을 정한다
+10. VUS이면 무엇이 부족한지 명시한다
+</code></pre>
+<p>Benign evidence를 먼저 보는 이유는 단순하다. 질환 빈도와 penetrance를 고려했을 때 너무 흔한 variant는 pathogenic일 가능성이 낮기 때문이다.</p>
+<h2 id="ko-overview-7">7. 독자가 혼동하기 쉬운 지점</h2>
+<table>
+<thead>
+<tr>
+<th>혼동</th>
+<th>바로잡기</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>최신 파일이면 공식 guideline이다</td>
+<td>최신 draft와 공식 final은 다르다</td>
+</tr>
+<tr>
+<td>ACMG는 하나의 문서만 뜻한다</td>
+<td>baseline guideline, guidance, specification, draft standard가 구분된다</td>
+</tr>
+<tr>
+<td>gene-level evidence가 variant-level evidence다</td>
+<td>gene-disease validity와 variant pathogenicity는 다르다</td>
+</tr>
+<tr>
+<td>in silico 결과가 충분하면 pathogenic이다</td>
+<td>computational evidence는 보통 supporting level이다</td>
+</tr>
+<tr>
+<td>VUS는 거의 pathogenic이다</td>
+<td>VUS는 판단 보류다</td>
+</tr>
+<tr>
+<td>VCEP rule은 모든 gene에 적용된다</td>
+<td>지정된 gene/disease 범위 안에서만 쓴다</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ko-overview-evidence-domain">주요 Evidence Domain</h2>
+<h3 id="ko-overview-1-population-frequency">1. Population Frequency</h3>
+<p>질문: 이 variant가 질환 원인이라고 보기에는 너무 흔하지 않은가?</p>
+<p>확인할 것:</p>
+<ul>
+<li>gnomAD 등 population database에서 allele frequency가 얼마인가?</li>
+<li>ancestry가 맞는 population에서 확인했는가?</li>
+<li>질환 유병률, penetrance, inheritance model을 고려했을 때 빈도가 허용 가능한가?</li>
+<li><code>BA1</code> 또는 <code>BS1</code> 같은 benign evidence에 해당하는가?</li>
+<li>단순히 "없다"는 이유로 pathogenic evidence를 과하게 주고 있지는 않은가?</li>
+</ul>
+<p>주의: gnomAD에 없다는 사실은 대개 강한 pathogenic evidence가 아니다. 매우 드문 variant는 흔히 관찰된다.</p>
+<h3 id="ko-overview-2-variant-consequence-gene-mechanism">2. Variant Consequence와 Gene Mechanism</h3>
+<p>질문: variant가 단백질이나 splicing에 어떤 영향을 줄 것으로 예상되는가?</p>
+<p>예시:</p>
+<ul>
+<li>nonsense 또는 frameshift</li>
+<li>canonical splice donor/acceptor</li>
+<li>missense</li>
+<li>synonymous with possible splicing effect</li>
+<li>in-frame insertion/deletion</li>
+<li>start-loss 또는 stop-loss</li>
+</ul>
+<p>중요한 점은 gene mechanism이다. 예를 들어 truncating variant라도 해당 gene-disease에서 loss-of-function이 확립된 disease mechanism이어야 <code>PVS1</code>을 강하게 적용할 수 있다.</p>
+<p>주의: 모든 truncating variant에 자동으로 <code>PVS1</code>을 붙이면 안 된다. transcript relevance, nonsense-mediated decay, exon 위치, gene mechanism을 확인해야 한다.</p>
+<h3 id="ko-overview-3-computational-prediction">3. Computational Prediction</h3>
+<p>질문: in silico predictor들이 variant의 영향을 어떤 방향으로 지지하는가?</p>
+<p>예시:</p>
+<ul>
+<li>missense predictor: REVEL, BayesDel, AlphaMissense 등</li>
+<li>splicing predictor: SpliceAI 등</li>
+<li>conservation, protein domain, structural context</li>
+</ul>
+<p>주의: computational evidence는 보통 supporting level이다. 서로 비슷한 predictor들을 여러 개 더해 독립 증거처럼 세면 안 된다.</p>
+<h3 id="ko-overview-4-functional-evidence">4. Functional Evidence</h3>
+<p>질문: 기능실험이 질환 관련 기능 손상 또는 정상 기능을 설득력 있게 보여주는가?</p>
+<p>확인할 것:</p>
+<ul>
+<li>assay가 disease mechanism과 직접 관련 있는가?</li>
+<li>known pathogenic/benign control로 calibration 되었는가?</li>
+<li>threshold가 재현 가능하고 명확한가?</li>
+<li><code>PS3</code> 또는 <code>BS3</code>로 쓸 만큼 강한가, 아니면 supporting 수준인가?</li>
+</ul>
+<p>주의: wet-lab 결과라고 항상 strong evidence는 아니다. assay validity가 핵심이다.</p>
+<h3 id="ko-overview-5-segregation-de-novo-evidence">5. Segregation과 De Novo Evidence</h3>
+<p>질문: variant가 가족 내 질환과 함께 움직이는가, 또는 affected proband에서 de novo로 발생했는가?</p>
+<p>확인할 것:</p>
+<ul>
+<li>parentage가 확인되었는가?</li>
+<li>phenotype이 gene-disease와 잘 맞는가?</li>
+<li>penetrance와 age-related expression을 고려했는가?</li>
+<li>unaffected carrier가 있는가?</li>
+<li>다른 pathogenic variant나 alternate cause가 있는가?</li>
+</ul>
+<p>주의: de novo라는 말만으로 충분하지 않다. parentage, phenotype specificity, alternate cause를 확인해야 한다.</p>
+<h3 id="ko-overview-6-case-observation-database-evidence">6. Case Observation과 Database Evidence</h3>
+<p>질문: 이 variant가 환자군, ClinVar, 문헌, expert panel에서 어떻게 보고되었는가?</p>
+<p>확인할 것:</p>
+<ul>
+<li>ClinVar review status와 submitter confidence</li>
+<li>ClinGen expert panel classification 여부</li>
+<li>phenotype과 transcript 일치 여부</li>
+<li>보고 시점과 최신 reclassification 여부</li>
+<li>같은 variant인지, 같은 amino acid change인지, 같은 gene만 같은 것인지</li>
+</ul>
+<p>주의: ClinVar에 pathogenic이라고 적혀 있다고 그대로 복사하면 안 된다. evidence detail과 review status를 확인해야 한다.</p>
+<h2 id="ko-overview-criteria">Criteria 조합의 직관</h2>
+<p>ACMG/AMP는 evidence code 조합으로 최종 분류를 만든다. 교육용으로는 다음 원칙을 먼저 이해하면 된다.</p>
+<ul>
+<li>강한 pathogenic evidence가 충분히 모이면 <code>Pathogenic</code> 또는 <code>Likely pathogenic</code>으로 간다.</li>
+<li>강한 benign evidence가 충분하면 <code>Benign</code> 또는 <code>Likely benign</code>으로 간다.</li>
+<li>증거가 부족하거나 서로 충돌하면 대부분 <code>VUS</code>에 남는다.</li>
+<li><code>BA1</code>처럼 stand-alone benign evidence가 있으면 약한 pathogenic signal보다 우선한다.</li>
+<li>같은 정보에서 나온 evidence를 여러 번 세면 안 된다.</li>
+</ul>
+<p>HTML 페이지에서는 evidence block이 쌓여 final class로 이동하는 구조를 보여주되, "자동 진단 계산기"처럼 보이지 않게 해야 한다.</p>
+<h2 id="ko-overview-clingen">ClinGen은 어디에 들어가나</h2>
+<p>ClinGen은 2015 ACMG/AMP framework를 실제로 더 일관되게 적용하기 위한 guidance와 specification을 제공한다.</p>
+<p>실무적으로는 다음 순서가 안전하다.</p>
+<ol>
+<li>Variant identity, gene-disease context, inheritance model을 먼저 고정한다.</li>
+<li>2015 ACMG/AMP guideline으로 evidence code와 5-tier classification의 큰 구조를 잡는다.</li>
+<li>ClinGen Variant Classification Guidance에서 general recommendation과 criterion-specific recommendation을 확인한다.</li>
+<li>해당 gene/disease에 승인된 VCEP/CSpec specification이 있는지 확인한다.</li>
+<li>scope가 맞으면 gene/disease-specific VCEP/CSpec rule을 일반 ClinGen guidance보다 우선 적용한다.</li>
+<li>각 criterion별 primary evidence를 기록하고, strength modification과 version/date를 남긴다.</li>
+<li>2015 ACMG/AMP guideline 조합 규칙 또는 승인된 VCEP-specific 조합 규칙으로 최종 tier를 산출한다.</li>
+</ol>
+<p>이 순서는 다음 소스에서 온 operational synthesis다.</p>
+<ul>
+<li>Richards et al., 2015 (Genetics in Medicine): 기본 evidence criteria와 5-tier rule-based framework.</li>
+<li>ClinGen Variant Classification Guidance: ACMG/AMP criteria를 쓰기 위한 general recommendation, criterion-specific recommendation, ClinGen-endorsed recommendation 목록.</li>
+<li>ClinGen CSpec Registry: ClinGen VCEP과 biocurator가 사용하는 gene/disease-specific criteria specification.</li>
+<li>ClinGen General Sequence Variant Curation Process SOP v3.2: 각 criterion의 evidence를 확인하고 평가한 뒤 ACMG/AMP 조합 규칙으로 provisional classification을 산출하는 VCI workflow.</li>
+</ul>
+<h2 id="ko-overview-related-pages">Related Pages</h2>
+<ul>
+<li><a href="#ko-criteria">2015 ACMG/AMP guideline Criteria와 이후 업데이트</a></li>
+</ul>
+<h2 id="ko-overview-sources">Sources</h2>
+<ul>
+<li>Richards et al., 2015 (Genetics in Medicine). Standards and guidelines for the interpretation of sequence variants. DOI: <code>10.1038/gim.2015.30</code>.</li>
+<li>ClinGen Variant Classification Guidance: <a href="https://www.clinicalgenome.org/tools/clingen-variant-classification-guidance/">https://www.clinicalgenome.org/tools/clingen-variant-classification-guidance/</a></li>
+<li>ClinGen CSpec Registry: <a href="https://cspec.clinicalgenome.org/cspec/ui/">https://cspec.clinicalgenome.org/cspec/ui/</a></li>
+<li>ClinGen General Sequence Variant Curation Process SOP v3.2: <a href="https://clinicalgenome.org/site/assets/files/7438/variant_curation_sop_v3_2_oct_2022.pdf">https://clinicalgenome.org/site/assets/files/7438/variant_curation_sop_v3_2_oct_2022.pdf</a></li>
+</ul>
+  </article>
+</section>
+
+<section class="content-section" id="ko-criteria">
+  <header class="section-head">
+    <span class="section-kicker">ACMG GUIDE</span>
+    <h2>28개 Criteria</h2>
+  </header>
+  <article class="article-card">
+    <p>확인 기준일: 2026-05-10.</p>
+<p>이 문서는 germline sequence variant 해석에서 가장 기본이 되는 Richards et al., 2015 (Genetics in Medicine)의 2015 ACMG/AMP guideline 28개 evidence criteria를 한글로 정리한 핵심 노트다. 목표는 다음 세 가지다.</p>
+<ol>
+<li>2015 ACMG/AMP guideline 공식 기준선에서 각 criterion이 무엇을 뜻하는지 이해한다.</li>
+<li>criterion을 적용하기 전에 확인해야 할 조건과 흔한 실수를 정리한다.</li>
+<li>2015 ACMG/AMP guideline 이후 ClinGen guidance가 어떤 criterion을 어떻게 구체화했는지 구분한다.</li>
+</ol>
+<p>중요한 결론부터 말하면, 2015 ACMG/AMP guideline은 아직 공개적으로 확인 가능한 공식 기준선이다. ClinGen Variant Classification Guidance는 이 기준을 대체하는 새 최종 guideline이 아니라, 2015 ACMG/AMP guideline criteria를 더 일관되게 쓰기 위한 권고 모음이다.</p>
+<h2 id="ko-criteria-1">1. 공식 기준선과 현재 권고의 위치</h2>
+<table>
+<thead>
+<tr>
+<th>층</th>
+<th>상태</th>
+<th>어떻게 써야 하나</th>
+<th>핵심 링크</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2015 ACMG/AMP guideline</td>
+<td>공식 최종 기준선</td>
+<td>모든 설명의 출발점</td>
+<td><a href="https://www.acmg.net/docs/standards_guidelines_for_the_interpretation_of_sequence_variants.pdf">ACMG PDF</a>, <a href="https://pubmed.ncbi.nlm.nih.gov/25741868/">PubMed</a>, <a href="https://www.nature.com/articles/gim201530">Nature/GIM</a></td>
+</tr>
+<tr>
+<td>ClinGen Variant Classification Guidance</td>
+<td>최신 적용 권고 모음</td>
+<td>2015 ACMG/AMP guideline criteria의 criterion별 세부 적용 확인</td>
+<td><a href="https://www.clinicalgenome.org/tools/clingen-variant-classification-guidance/">ClinGen Guidance</a></td>
+</tr>
+<tr>
+<td>ClinGen SVI archived page</td>
+<td>공식이지만 archived 성격</td>
+<td>과거 SVI 자료와 문서 링크 확인</td>
+<td><a href="https://www.clinicalgenome.org/working-groups/sequence-variant-interpretation/">SVI archived page</a></td>
+</tr>
+<tr>
+<td>VCEP/CSpec specification</td>
+<td>gene/disease-specific 기준</td>
+<td>해당 gene-disease 조합에만 적용</td>
+<td><a href="https://cspec.clinicalgenome.org/cspec/ui/">CSpec Registry</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="ko-criteria-2-2015-acmgamp-guideline-rule-based-framework">2. 2015 ACMG/AMP guideline은 rule-based framework다</h2>
+<p>2015 ACMG/AMP guideline은 단순한 점수 합산표가 아니라 rule-based 조합 체계다. 각 evidence criterion은 pathogenic 방향 또는 benign 방향의 근거이며, 근거 강도는 <code>Very Strong</code>, <code>Strong</code>, <code>Moderate</code>, <code>Supporting</code>, <code>Stand-alone</code>으로 나뉜다. 최종 분류는 정해진 조합 규칙으로 결정된다.</p>
+<p>현재 권고안과 차기 적용 방향은 점수 기반 framework를 더 많이 사용한다. Tavtigian et al., 2020 (Human Mutation)은 2015 ACMG/AMP guideline의 evidence strength를 Bayesian odds에 비례하는 point system으로 추상화할 수 있다고 설명했고, ClinGen Variant Classification Guidance는 이 논문을 ClinGen-endorsed recommendation으로 제시한다. Bergquist et al., 2025 (Genetics in Medicine) Table 1 footnote도 ACMG/AMP guideline이 point-based system으로 전환될 것으로 예상된다고 명시한다.</p>
+<p>분류 전 반드시 고정해야 할 세 가지가 있다.</p>
+<table>
+<thead>
+<tr>
+<th>먼저 고정할 것</th>
+<th>예시</th>
+<th>이유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Variant identity</td>
+<td>transcript, cDNA, protein, genome build</td>
+<td>같은 variant인지 아닌지 판단해야 함</td>
+</tr>
+<tr>
+<td>Gene-disease context</td>
+<td><code>SCN1A</code> - developmental epileptic encephalopathy</td>
+<td>같은 gene도 질환별 mechanism이 다를 수 있음</td>
+</tr>
+<tr>
+<td>Inheritance model</td>
+<td>AD, AR, X-linked</td>
+<td>population frequency, segregation, de novo, phase 해석이 달라짐</td>
+</tr>
+</tbody>
+</table>
+<p>기본 decision tree는 다음과 같다.</p>
+<pre><code class="language-text">Variant 발견
+  -&gt; HGVS와 transcript를 확정한다
+  -&gt; gene-disease validity와 inheritance를 확인한다
+  -&gt; population frequency로 BA1/BS1/BS2 가능성을 먼저 확인한다
+  -&gt; variant consequence와 disease mechanism을 연결한다
+  -&gt; PVS1, PM4, BP3, BP7 등 consequence 기반 criteria를 검토한다
+  -&gt; functional, computational, segregation, de novo, phenotype evidence를 모은다
+  -&gt; 각 criterion의 적용 가능성과 evidence independence를 확인한다
+  -&gt; ClinGen guidance와 VCEP/CSpec이 있으면 strength와 cutoff를 조정한다
+  -&gt; 2015 ACMG/AMP guideline 조합 규칙 또는 승인된 gene-specific rule로 최종 tier를 결정한다
+</code></pre>
+<h2 id="ko-criteria-3-2015-acmgamp-guideline-28-criteria">3. 2015 ACMG/AMP guideline 기준 28개 criteria 한눈에 보기</h2>
+<h3 id="ko-criteria-31-pathogenic-direction-16">3.1 Pathogenic direction: 16개</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th style="text-align: right;">2015 ACMG/AMP guideline 강도</th>
+<th>짧은 정의</th>
+<th>핵심 질문</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PVS1</code></td>
+<td style="text-align: right;">Very Strong</td>
+<td>LOF가 질병 mechanism인 gene에서 null variant</td>
+<td>이 variant가 진짜 LOF이고, LOF가 해당 질환의 mechanism인가?</td>
+</tr>
+<tr>
+<td><code>PS1</code></td>
+<td style="text-align: right;">Strong</td>
+<td>이미 pathogenic인 variant와 같은 amino acid change</td>
+<td>nucleotide는 달라도 단백질 변화가 같은가? splicing 영향은 다른가?</td>
+</tr>
+<tr>
+<td><code>PS2</code></td>
+<td style="text-align: right;">Strong</td>
+<td>confirmed de novo</td>
+<td>부모 관계와 parental sample이 확인된 de novo인가? phenotype이 맞는가?</td>
+</tr>
+<tr>
+<td><code>PS3</code></td>
+<td style="text-align: right;">Strong</td>
+<td>잘 확립된 기능실험이 damaging effect 지지</td>
+<td>assay가 disease mechanism을 제대로 측정하는가?</td>
+</tr>
+<tr>
+<td><code>PS4</code></td>
+<td style="text-align: right;">Strong</td>
+<td>affected cases에서 variant 빈도가 controls보다 유의하게 높음</td>
+<td>case-control 또는 반복 case evidence가 충분한가?</td>
+</tr>
+<tr>
+<td><code>PM1</code></td>
+<td style="text-align: right;">Moderate</td>
+<td>benign variation이 없는 hotspot 또는 critical domain</td>
+<td>정말 critical domain이고 benign 변이가 드문가?</td>
+</tr>
+<tr>
+<td><code>PM2</code></td>
+<td style="text-align: right;">Moderate in 2015 ACMG/AMP guideline</td>
+<td>controls에서 없음 또는 매우 낮은 빈도</td>
+<td>단순 rarity를 과대평가하고 있지 않은가?</td>
+</tr>
+<tr>
+<td><code>PM3</code></td>
+<td style="text-align: right;">Moderate</td>
+<td>recessive 질환에서 pathogenic variant와 trans</td>
+<td>phase가 확인되었는가? 반대 allele variant는 P/LP인가?</td>
+</tr>
+<tr>
+<td><code>PM4</code></td>
+<td style="text-align: right;">Moderate</td>
+<td>non-repeat region의 in-frame indel 또는 stop-loss</td>
+<td>protein length change가 기능적으로 중요할 가능성이 있는가?</td>
+</tr>
+<tr>
+<td><code>PM5</code></td>
+<td style="text-align: right;">Moderate</td>
+<td>같은 amino acid residue의 다른 missense가 pathogenic</td>
+<td>같은 residue라는 이유만으로 충분한가? mechanism이 같은가?</td>
+</tr>
+<tr>
+<td><code>PM6</code></td>
+<td style="text-align: right;">Moderate</td>
+<td>assumed de novo, parentage 미확인</td>
+<td>de novo 근거가 있으나 부모 관계 확인이 부족한가?</td>
+</tr>
+<tr>
+<td><code>PP1</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>affected relatives에서 cosegregation</td>
+<td>가족 내 질환과 variant가 함께 움직이는가?</td>
+</tr>
+<tr>
+<td><code>PP2</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>benign missense가 드물고 missense가 흔한 disease mechanism인 gene</td>
+<td>이 gene은 missense pathogenicity가 주된 mechanism인가?</td>
+</tr>
+<tr>
+<td><code>PP3</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>computational evidence가 deleterious effect 지지</td>
+<td>calibrated tool과 cutoff를 사용했는가? 중복 계산은 없는가?</td>
+</tr>
+<tr>
+<td><code>PP4</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>phenotype/family history가 단일 genetic etiology에 매우 특이적</td>
+<td>phenotype specificity가 충분한가?</td>
+</tr>
+<tr>
+<td><code>PP5</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>reputable source가 pathogenic이라 보고했지만 근거 확인 불가</td>
+<td>현재는 독립 근거로 쓰지 않는 방향이 권고됨</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ko-criteria-32-benign-direction-12">3.2 Benign direction: 12개</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th style="text-align: right;">2015 ACMG/AMP guideline 강도</th>
+<th>짧은 정의</th>
+<th>핵심 질문</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BA1</code></td>
+<td style="text-align: right;">Stand-alone</td>
+<td>population allele frequency &gt;5%</td>
+<td>너무 흔해서 Mendelian pathogenic variant일 수 없는가?</td>
+</tr>
+<tr>
+<td><code>BS1</code></td>
+<td style="text-align: right;">Strong</td>
+<td>질환 기대 빈도보다 allele frequency가 높음</td>
+<td>prevalence, penetrance, inheritance를 고려해도 너무 흔한가?</td>
+</tr>
+<tr>
+<td><code>BS2</code></td>
+<td style="text-align: right;">Strong</td>
+<td>full penetrance early-onset 질환에서 건강 성인에게 관찰</td>
+<td>phenotype이 나타났어야 할 사람에게 없는가?</td>
+</tr>
+<tr>
+<td><code>BS3</code></td>
+<td style="text-align: right;">Strong</td>
+<td>well-established functional studies가 no damaging effect 지지</td>
+<td>assay가 충분히 검증되었고 정상 기능을 보여주는가?</td>
+</tr>
+<tr>
+<td><code>BS4</code></td>
+<td style="text-align: right;">Strong</td>
+<td>affected family members에서 lack of segregation</td>
+<td>phenocopy, reduced penetrance, locus heterogeneity를 고려했는가?</td>
+</tr>
+<tr>
+<td><code>BP1</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>truncating이 주 mechanism인 gene에서 missense variant</td>
+<td>missense는 이 gene에서 대개 disease mechanism이 아닌가?</td>
+</tr>
+<tr>
+<td><code>BP2</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>dominant fully penetrant disorder에서 pathogenic variant와 trans 또는 어떤 inheritance든 pathogenic variant와 cis</td>
+<td>phase와 disease model이 맞는가?</td>
+</tr>
+<tr>
+<td><code>BP3</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>known function 없는 repetitive region의 in-frame indel</td>
+<td>반복 영역 변이가 기능적으로 덜 중요할 가능성이 있는가?</td>
+</tr>
+<tr>
+<td><code>BP4</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>computational evidence가 no impact 지지</td>
+<td>calibrated benign cutoff를 만족하는가?</td>
+</tr>
+<tr>
+<td><code>BP5</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>alternate molecular basis가 있는 case에서 발견</td>
+<td>다른 원인 변이가 phenotype을 설명하는가?</td>
+</tr>
+<tr>
+<td><code>BP6</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>reputable source가 benign이라 보고했지만 근거 확인 불가</td>
+<td>현재는 독립 근거로 쓰지 않는 방향이 권고됨</td>
+</tr>
+<tr>
+<td><code>BP7</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>splicing 영향이 예측되지 않는 synonymous variant이며 nucleotide가 highly conserved 아님</td>
+<td>silent/intronic variant의 splice risk가 낮은가?</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ko-criteria-4-2015-acmgamp-guideline">4. 2015 ACMG/AMP guideline 조합 규칙</h2>
+<h3 id="ko-criteria-41-pathogenic">4.1 Pathogenic</h3>
+<p><code>Pathogenic</code>은 다음 중 하나를 만족한다.</p>
+<pre><code class="language-text">1 Very Strong AND
+  &gt;=1 Strong OR
+  &gt;=2 Moderate OR
+  1 Moderate + 1 Supporting OR
+  &gt;=2 Supporting
+
+OR
+
+&gt;=2 Strong
+
+OR
+
+1 Strong AND
+  &gt;=3 Moderate OR
+  2 Moderate + &gt;=2 Supporting OR
+  1 Moderate + &gt;=4 Supporting
+</code></pre>
+<h3 id="ko-criteria-42-likely-pathogenic">4.2 Likely pathogenic</h3>
+<p><code>Likely pathogenic</code>은 다음 중 하나를 만족한다.</p>
+<pre><code class="language-text">1 Very Strong + 1 Moderate
+1 Strong + 1-2 Moderate
+1 Strong + &gt;=2 Supporting
+&gt;=3 Moderate
+2 Moderate + &gt;=2 Supporting
+1 Moderate + &gt;=4 Supporting
+</code></pre>
+<h3 id="ko-criteria-43-benign-likely-benign">4.3 Benign과 Likely benign</h3>
+<pre><code class="language-text">Benign:
+  BA1 alone
+  OR &gt;=2 Strong benign criteria
+
+Likely benign:
+  1 Strong benign + 1 Supporting benign
+  OR &gt;=2 Supporting benign
+</code></pre>
+<h3 id="ko-criteria-44-vus">4.4 VUS</h3>
+<p>아래 상황이면 <code>VUS</code>가 된다.</p>
+<pre><code class="language-text">위 조합을 만족하지 못함
+OR pathogenic evidence와 benign evidence가 서로 충돌함
+</code></pre>
+<p>VUS는 "조금 pathogenic"이라는 뜻이 아니다. 현재 evidence set으로는 pathogenic 또는 benign 방향으로 충분히 분류하지 못한다는 뜻이다.</p>
+<h2 id="ko-criteria-5-criteria">5. Criteria별 상세 설명</h2>
+<h3 id="ko-criterion-pvs1">5.1 <code>PVS1</code>: LOF가 disease mechanism인 gene의 null variant</h3>
+<p>2015 ACMG/AMP guideline 정의: nonsense, frameshift, canonical +/-1 or 2 splice site, initiation codon, single/multiexon deletion 같은 null variant가 있고, 해당 gene에서 loss-of-function이 알려진 disease mechanism일 때 적용한다.</p>
+<p>적용 전에 확인할 것:</p>
+<ul>
+<li>해당 gene-disease에서 LOF가 확립된 disease mechanism인가?</li>
+<li>variant가 실제로 nonsense-mediated decay를 유도할 위치인가?</li>
+<li>마지막 exon 또는 penultimate exon의 마지막 50 bp 근처라 NMD를 피할 가능성은 없는가?</li>
+<li>splice variant가 exon skipping을 만들더라도 in-frame으로 critical domain이 보존되는가?</li>
+<li>clinically relevant transcript에서 해석하고 있는가?</li>
+<li>dominant-negative 또는 gain-of-function gene인데 truncating을 LOF처럼 오해하고 있지는 않은가?</li>
+</ul>
+<p>ClinGen 업데이트: PVS1은 2018 ClinGen SVI 권고에서 가장 많이 구체화된 criterion 중 하나다. 핵심은 PVS1을 항상 Very Strong으로 고정하지 않고 variant type, NMD 예측, exon 위치, critical region, transcript relevance, gene mechanism에 따라 <code>PVS1</code>, <code>PVS1_Strong</code>, <code>PVS1_Moderate</code>, <code>PVS1_Supporting</code>, not met로 낮출 수 있다는 점이다.</p>
+<p>간단한 decision tree:</p>
+<pre><code class="language-text">Null-like variant인가?
+  아니오 -&gt; PVS1 검토 대상 아님
+  예 -&gt; 해당 gene-disease에서 LOF가 established mechanism인가?
+        아니오 -&gt; PVS1 적용하지 않음
+        예 -&gt; variant가 NMD를 유도하거나 critical protein loss를 만들 가능성이 높은가?
+              예 -&gt; PVS1 또는 PVS1_Strong
+              불확실 -&gt; PVS1_Moderate 또는 PVS1_Supporting
+              아니오 -&gt; PVS1 적용하지 않거나 다른 criterion 검토
+</code></pre>
+<h3 id="ko-criterion-ps1">5.2 <code>PS1</code>: 같은 amino acid change</h3>
+<p>2015 ACMG/AMP guideline 정의: nucleotide change는 달라도, 단백질 수준에서 이미 pathogenic으로 확립된 variant와 같은 amino acid change이면 적용한다.</p>
+<p>예: 기존 <code>p.Val600Glu</code>가 pathogenic이고 다른 nucleotide change로 같은 <code>p.Val600Glu</code>가 생기면 PS1을 검토한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>비교 대상 variant가 truly pathogenic 또는 likely pathogenic인지 확인한다.</li>
+<li>같은 amino acid change라도 splicing impact가 다를 수 있다.</li>
+<li>transcript와 codon context가 같은지 확인한다.</li>
+<li>비교 대상이 같은 residue의 다른 amino acid change라면 PS1이 아니라 PM5 검토 대상이다.</li>
+</ul>
+<p>Splicing 업데이트: ClinGen SVI splicing guidance는 predicted/observed RNA effect가 같을 때 PS1을 어떻게 생각할지 논의한다. 즉, 단순 protein-level sameness만이 아니라 splicing effect의 동등성을 따져야 하는 상황이 있다.</p>
+<h3 id="ko-criterion-ps2">5.3 <code>PS2</code>: confirmed de novo</h3>
+<p>2015 ACMG/AMP guideline 정의: 환자가 해당 disease를 갖고 있고 가족력이 없으며, maternity와 paternity가 모두 확인된 de novo variant일 때 적용한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>부모 sample에서 variant가 없음을 확인했는가?</li>
+<li>parental relationship이 확인되었는가?</li>
+<li>phenotype이 gene-disease와 일치하는가?</li>
+<li>mosaicism, nonpaternity, egg donation, embryo transfer 같은 가능성을 고려했는가?</li>
+<li>같은 variant의 독립 de novo observation이 여러 건 있는가?</li>
+</ul>
+<p>ClinGen 업데이트: PS2/PM6는 2018 권고와 2021 v1.1 업데이트에서 point-based 방식으로 구체화되었다. de novo 한 건마다 phenotype specificity와 confirmed/assumed parental relationship에 따라 점수를 부여하고, 총점에 따라 <code>Supporting</code>, <code>Moderate</code>, <code>Strong</code>, <code>Very Strong</code>으로 strength를 정한다.</p>
+<p>간단한 decision tree:</p>
+<pre><code class="language-text">proband phenotype이 gene-disease와 맞는가?
+  아니오 -&gt; PS2/PM6 사용하지 않음
+  예 -&gt; 부모가 variant-negative인가?
+        아니오 또는 부모 미검사 -&gt; de novo evidence 없음
+        예 -&gt; parental relationship confirmed인가?
+              예 -&gt; PS2 계열
+              아니오 -&gt; PM6 계열
+        이후 phenotype specificity와 독립 observation 수로 strength 결정
+</code></pre>
+<h3 id="ko-criterion-ps3">5.4 <code>PS3</code>: 기능실험이 damaging effect를 지지</h3>
+<p>2015 ACMG/AMP guideline 정의: well-established in vitro 또는 in vivo functional study가 gene 또는 gene product에 damaging effect를 지지할 때 적용한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>assay가 disease mechanism을 직접 측정하는가?</li>
+<li>variant effect가 clinical pathogenicity와 연결되는가?</li>
+<li>known pathogenic/benign controls가 충분한가?</li>
+<li>assay threshold가 사전에 정의되었고 재현 가능한가?</li>
+<li>실험 결과가 단백질 기능, splicing, expression, localization 중 무엇을 측정하는가?</li>
+</ul>
+<p>ClinGen 업데이트: Brnich et al., 2019 (Genome Medicine) PS3/BS3 guidance는 기능실험을 네 단계로 평가하도록 권고한다. 질병 mechanism 정의, assay class 적합성, assay instance validation, individual variant 적용을 순서대로 확인한다. 충분한 control과 statistical framework가 없으면 Strong을 그대로 쓰지 않고 Moderate 또는 Supporting으로 낮춰야 한다.</p>
+<h3 id="ko-criterion-ps4">5.5 <code>PS4</code>: affected cases에서 유의한 enrichment</h3>
+<p>2015 ACMG/AMP guideline 정의: affected individuals에서 variant prevalence가 controls보다 유의하게 높을 때 적용한다. 2015 ACMG/AMP guideline은 relative risk 또는 odds ratio가 5보다 크고 confidence interval이 1을 포함하지 않는 상황을 strong evidence 예로 든다. 매우 드문 variant에서는 여러 unrelated patients에서 반복 관찰되고 controls에서 없다는 근거를 moderate evidence로 쓸 수 있다고 설명한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>case와 control ascertainment가 맞는가?</li>
+<li>ancestry matching이 되었는가?</li>
+<li>phenotype과 disease definition이 일관적인가?</li>
+<li>같은 환자나 같은 family를 중복 count하지 않았는가?</li>
+<li>publication bias와 ClinVar 중복 보고를 확인했는가?</li>
+</ul>
+<p>주의: "환자 한 명에서 보였다"는 사실은 PS4가 아니다. 통계적 비교 또는 반복 독립 관찰이 필요하다.</p>
+<h3 id="ko-criterion-pm1">5.6 <code>PM1</code>: mutational hotspot 또는 critical functional domain</h3>
+<p>2015 ACMG/AMP guideline 정의: benign variation이 없는 mutational hot spot 또는 well-established critical functional domain에 위치한 variant일 때 적용한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>domain이 functional assay, structural biology, curated disease mechanism으로 확립되었는가?</li>
+<li>같은 domain에 benign missense가 많이 존재하지 않는가?</li>
+<li>residue-level 또는 domain-level constraint가 disease와 연결되는가?</li>
+<li>hotspot이라는 말이 단순히 변이가 많이 보고된 위치라는 뜻으로 오용되지 않는가?</li>
+</ul>
+<p>주의: protein domain database에 이름이 있다는 것만으로 PM1을 적용하면 안 된다.</p>
+<h3 id="ko-criterion-pm2">5.7 <code>PM2</code>: population controls에서 absent 또는 very rare</h3>
+<p>2015 ACMG/AMP guideline 정의: Exome Sequencing Project, 1000 Genomes, ExAC 같은 controls에서 absent이거나 recessive disorder에서는 extremely low frequency일 때 적용한다.</p>
+<p>현재 권고안:</p>
+<ul>
+<li>현재 실무에서는 gnomAD 등 더 큰 population database를 함께 본다.</li>
+<li>ancestry-specific allele frequency를 확인한다.</li>
+<li>coverage, low complexity, CNV/indel calling limitation을 확인한다.</li>
+<li>disease prevalence, penetrance, inheritance, allelic heterogeneity를 고려한다.</li>
+</ul>
+<p>ClinGen 업데이트: 2020 SVI PM2 권고는 PM2를 기본적으로 <code>Moderate</code>에서 <code>Supporting</code>으로 낮추는 것을 제안했다. 이유는 absence/rarity alone이 pathogenicity의 moderate odds를 충분히 제공하지 못한다는 점이다. 따라서 많은 ClinGen/VCEP specification에서는 <code>PM2_Supporting</code>을 사용한다.</p>
+<p>주의: "gnomAD에 없다"는 사실은 흔히 보이는 rare variant 현상이다. 단독으로 pathogenic 결론을 만들면 안 된다.</p>
+<h3 id="ko-criterion-pm3">5.8 <code>PM3</code>: recessive disorder에서 trans</h3>
+<p>2015 ACMG/AMP guideline 정의: recessive disorder에서 평가 중인 variant가 다른 pathogenic variant와 trans로 관찰될 때 적용한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>phase가 부모 또는 offspring testing으로 확인되었는가?</li>
+<li>반대 allele variant가 pathogenic 또는 likely pathogenic인가?</li>
+<li>affected patient에서 관찰되었는가?</li>
+<li>homozygous observation인지 compound heterozygous인지 구분한다.</li>
+<li>두 variant가 같은 gene-disease mechanism에 맞는가?</li>
+</ul>
+<p>ClinGen 업데이트: 2019 SVI PM3 권고는 point-based system을 제안했다. confirmed in trans, phase unknown, homozygous occurrence, 반대 allele variant의 classification에 따라 proband별 점수를 부여하고 총점으로 <code>PM3_Supporting</code>, <code>PM3</code>, <code>PM3_Strong</code>, <code>PM3_VeryStrong</code>을 결정한다.</p>
+<h3 id="ko-criterion-pm4">5.9 <code>PM4</code>: protein length change</h3>
+<p>2015 ACMG/AMP guideline 정의: non-repeat region의 in-frame deletion/insertion 또는 stop-loss variant로 protein length가 변할 때 적용한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>in-frame indel이 repetitive region인지 아닌지 확인한다.</li>
+<li>삭제/삽입 위치가 critical domain, structural motif, active site와 관련 있는가?</li>
+<li>stop-loss가 실제 C-terminal extension을 만들고 기능적으로 의미가 있을 가능성이 있는가?</li>
+<li>splicing effect가 더 적절한 primary mechanism은 아닌가?</li>
+</ul>
+<p>주의: repeat region의 in-frame indel은 benign 방향 <code>BP3</code> 검토 대상일 수 있다.</p>
+<h3 id="ko-criterion-pm5">5.10 <code>PM5</code>: 같은 residue의 다른 missense pathogenic variant</h3>
+<p>2015 ACMG/AMP guideline 정의: 같은 amino acid residue에서 다른 missense change가 pathogenic으로 확립되어 있고, 새 missense variant가 관찰되었을 때 적용한다.</p>
+<p>예: <code>p.Arg156His</code>가 pathogenic이고 새 variant가 <code>p.Arg156Cys</code>라면 PM5를 검토한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>기존 variant가 충분한 근거로 pathogenic인지 확인한다.</li>
+<li>residue-level mechanism이 amino acid substitution 종류와 무관하게 중요한지 확인한다.</li>
+<li>새 amino acid change가 conservative substitution인지 radical substitution인지 고려한다.</li>
+<li>splicing effect 차이가 있는지 확인한다.</li>
+</ul>
+<p>주의: 같은 residue라고 항상 pathogenic은 아니다. 같은 codon의 synonymous 또는 splicing variant와 혼동하면 안 된다.</p>
+<h3 id="ko-criterion-pm6">5.11 <code>PM6</code>: assumed de novo</h3>
+<p>2015 ACMG/AMP guideline 정의: de novo로 추정되지만 paternity와 maternity가 확인되지 않은 경우 적용한다.</p>
+<p>ClinGen 업데이트: PS2와 같이 2018/2021 SVI de novo guidance에서 point-based로 다룬다. confirmed parental relationship이면 PS2 계열, unconfirmed parental relationship이면 PM6 계열로 점수를 낮게 부여한다. phenotype이 gene-disease와 맞지 않으면 점수를 주지 않는다.</p>
+<h3 id="ko-criterion-pp1">5.12 <code>PP1</code>: cosegregation</h3>
+<p>2015 ACMG/AMP guideline 정의: disease를 일으키는 것으로 확립된 gene에서 variant가 여러 affected family members와 함께 segregate할 때 적용한다. segregation data가 많아질수록 더 강한 evidence로 사용할 수 있다고 설명한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>family members의 phenotype diagnosis가 정확한가?</li>
+<li>penetrance와 age of onset을 고려했는가?</li>
+<li>unaffected carrier가 정말 unaffected인지, 아직 발병 전인지 확인했는가?</li>
+<li>phenocopy 가능성이 있는 흔한 phenotype인지 확인했는가?</li>
+<li>locus heterogeneity가 큰 질환인지 확인한다.</li>
+</ul>
+<p>ClinGen 업데이트: 2023/2024 PP1/BS4/PP4 guidance는 phenotype specificity와 co-segregation을 함께 보는 point-based heuristic을 제안한다. 단순 family count가 아니라 gene-phenotype specificity, locus heterogeneity, segregation information을 통합해야 한다.</p>
+<h3 id="ko-criterion-pp2">5.13 <code>PP2</code>: missense가 주 disease mechanism인 gene</h3>
+<p>2015 ACMG/AMP guideline 정의: benign missense variation rate가 낮고 missense variants가 disease의 흔한 mechanism인 gene에서 missense variant가 발견되면 적용한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>gene-level missense constraint가 disease mechanism과 연결되는가?</li>
+<li>truncating, splice, CNV가 주 mechanism인 gene은 아닌가?</li>
+<li>ClinGen/VCEP에서 해당 gene에 PP2 사용을 허용하는가?</li>
+</ul>
+<p>주의: 모든 missense variant에 PP2를 붙이면 안 된다. gene-specific mechanism criterion이다.</p>
+<h3 id="ko-criterion-pp3">5.14 <code>PP3</code>: computational evidence가 deleterious effect를 지지</h3>
+<p>2015 ACMG/AMP guideline 정의: conservation, evolutionary evidence, splicing impact 등 여러 computational line이 gene/gene product에 deleterious effect를 지지할 때 적용한다.</p>
+<p>2015 ACMG/AMP guideline caveat: 많은 in silico algorithms가 같은 또는 유사한 input을 사용하므로 predictor 여러 개를 독립 evidence처럼 더하면 안 된다. PP3는 한 variant 평가에서 한 번만 쓴다.</p>
+<p>현재 권고안:</p>
+<ul>
+<li>missense는 ClinGen-calibrated tools와 cutoff를 쓰는 것이 안전하다.</li>
+<li>splicing은 SpliceAI 같은 splicing predictor를 사용할 수 있으나 canonical +/-1,2 splice site는 대개 PVS1 splicing decision tree가 먼저다.</li>
+<li>population frequency를 score에 포함하는 tool은 PM2/BA1/BS1과 double counting 위험이 있다.</li>
+<li>VCEP/CSpec이 특정 tool과 cutoff를 지정하면 그 scope 안에서 우선한다.</li>
+</ul>
+<p>자세한 cutoff는 아래 <code>PP3/BP4 computational evidence</code> 섹션에 따로 정리했다.</p>
+<h3 id="ko-criterion-pp4">5.15 <code>PP4</code>: highly specific phenotype</h3>
+<p>2015 ACMG/AMP guideline 정의: patient phenotype 또는 family history가 single genetic etiology disease에 매우 특이적이면 적용한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>phenotype이 해당 gene-disease에 얼마나 특이적인가?</li>
+<li>clinical diagnosis가 객관적 기준으로 확립되었는가?</li>
+<li>locus heterogeneity가 낮은 disease인가?</li>
+<li>broad phenotype 또는 nonspecific phenotype을 과대평가하고 있지는 않은가?</li>
+</ul>
+<p>ClinGen 업데이트: PP1/BS4/PP4 guidance는 PP4를 segregation evidence와 분리하기 어렵다고 보고, gene-phenotype specificity와 cosegregation을 함께 정량화하는 접근을 제안한다.</p>
+<h3 id="ko-criterion-pp5">5.16 <code>PP5</code>: reputable source가 pathogenic으로 보고</h3>
+<p>2015 ACMG/AMP guideline 정의: reputable source가 variant를 pathogenic으로 보고했지만, laboratory가 독립적으로 evidence를 평가할 수 없을 때 적용한다.</p>
+<p>현재 권고안:</p>
+<ul>
+<li>ClinGen SVI는 PP5/BP6 같은 "근거 없는 reputable source assertion" 사용을 피하는 방향을 권고했다. 근거는 Biesecker and Harrison, 2018 (Genetics in Medicine; DOI <code>10.1038/gim.2018.42</code>)와 ClinGen General Sequence Variant Curation Process SOP v3.2의 "Reputable source section"이다.</li>
+<li>ClinVar, HGMD, locus-specific database의 결론만 가져오지 말고 underlying evidence를 직접 criteria로 재분해해야 한다.</li>
+<li>ClinGen expert panel assertion처럼 evidence가 공개되어 있으면 PP5 대신 해당 evidence code를 검토한다.</li>
+</ul>
+<p>실무 메모: 교육용 페이지에서는 PP5/BP6를 "2015 ACMG/AMP guideline에는 있었지만 현재 권고안에서는 독립 code로 쓰지 않는 방향"으로 표시하는 것이 좋다.</p>
+<h3 id="ko-criterion-ba1">5.17 <code>BA1</code>: 너무 높은 allele frequency</h3>
+<p>2015 ACMG/AMP guideline 정의: Exome Sequencing Project, 1000 Genomes, ExAC에서 allele frequency가 5%를 초과하면 benign stand-alone으로 적용한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>gnomAD 등 최신 population DB에서 ancestry-specific frequency가 높은가?</li>
+<li>variant calling quality와 coverage가 충분한가?</li>
+<li>disease가 common low-penetrance risk allele인지 Mendelian high-penetrance disease인지 구분한다.</li>
+<li>founder pathogenic variant나 pseudodeficiency allele처럼 BA1 exception에 해당하는지 확인한다.</li>
+</ul>
+<p>ClinGen 업데이트: 2018 BA1 recommendation은 BA1 exception list와 함께 BA1 사용을 구체화했다. <code>MAF &gt; 0.05</code>라도 일부 예외가 있으므로 exception list와 disease context를 확인한다.</p>
+<h3 id="ko-criterion-bs1">5.18 <code>BS1</code>: disease expectation보다 높은 allele frequency</h3>
+<p>2015 ACMG/AMP guideline 정의: allele frequency가 해당 disorder에서 기대 가능한 pathogenic variant frequency보다 높을 때 적용한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>disease prevalence</li>
+<li>penetrance</li>
+<li>inheritance model</li>
+<li>allelic and locus heterogeneity</li>
+<li>maximum credible allele frequency</li>
+<li>ancestry-specific frequency</li>
+</ul>
+<p>주의: BS1은 단순히 "빈도가 조금 있다"가 아니다. 질환 모델상 pathogenic이라고 보기 어려울 만큼 높아야 한다.</p>
+<h3 id="ko-criterion-bs2">5.19 <code>BS2</code>: 건강 성인에서 관찰</h3>
+<p>2015 ACMG/AMP guideline 정의: full penetrance가 early age에 기대되는 recessive, dominant, X-linked disorder에서 해당 genotype을 가진 healthy adult가 관찰되면 적용한다.</p>
+<p>적용 예:</p>
+<ul>
+<li>recessive disorder: homozygous healthy adult</li>
+<li>dominant disorder: heterozygous healthy adult</li>
+<li>X-linked disorder: hemizygous healthy adult</li>
+</ul>
+<p>확인할 것:</p>
+<ul>
+<li>질환이 정말 early-onset full penetrance인가?</li>
+<li>관찰된 사람이 충분히 나이가 많고 phenotype 평가가 되었는가?</li>
+<li>reduced penetrance, variable expressivity, mild phenotype을 고려했는가?</li>
+<li>population DB의 "healthy" 여부를 과신하지 않는가?</li>
+</ul>
+<h3 id="ko-criterion-bs3">5.20 <code>BS3</code>: 기능실험이 no damaging effect를 지지</h3>
+<p>2015 ACMG/AMP guideline 정의: well-established functional studies가 protein function 또는 splicing에 damaging effect가 없음을 보여줄 때 적용한다.</p>
+<p>ClinGen 업데이트: PS3와 같은 Brnich et al., 2019 (Genome Medicine) guidance를 따른다. assay가 disease mechanism과 맞고, benign/pathogenic controls로 충분히 calibrated 되어야 한다. assay가 해당 기능만 정상임을 보여줄 뿐 disease-relevant mechanism 전체를 배제하지 못하면 strength를 낮추거나 적용하지 않는다.</p>
+<h3 id="ko-criterion-bs4">5.21 <code>BS4</code>: lack of segregation</h3>
+<p>2015 ACMG/AMP guideline 정의: affected family members에서 variant가 disease와 segregate하지 않으면 benign strong evidence로 적용한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>phenocopy 가능성이 높은 질환인가?</li>
+<li>family에 두 번째 pathogenic variant 또는 다른 locus cause가 있을 수 있는가?</li>
+<li>penetrance와 age of onset을 고려했는가?</li>
+<li>가족 관계와 sample identity가 확인되었는가?</li>
+</ul>
+<p>ClinGen 업데이트: PP1/BS4/PP4 guidance는 non-segregation을 formal linkage 또는 point-based heuristic 관점에서 다루도록 제안한다. 단순히 affected 한 명에서 variant가 없다는 이유만으로 BS4를 기계적으로 적용하면 안 된다.</p>
+<h3 id="ko-criterion-bp1">5.22 <code>BP1</code>: truncating이 주 mechanism인 gene에서 missense</h3>
+<p>2015 ACMG/AMP guideline 정의: 주로 truncating variants가 disease를 일으키는 gene에서 missense variant이면 benign supporting evidence로 적용한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>해당 gene-disease에서 pathogenic missense가 드문가?</li>
+<li>LOF haploinsufficiency가 주 mechanism인가?</li>
+<li>missense gain-of-function 또는 dominant-negative mechanism이 알려져 있지 않은가?</li>
+</ul>
+<p>주의: "LOF gene이니 missense는 benign"이라고 자동화하면 안 된다. 일부 LOF gene에도 pathogenic missense가 존재한다.</p>
+<h3 id="ko-criterion-bp2">5.23 <code>BP2</code>: phase가 benign 방향을 지지</h3>
+<p>2015 ACMG/AMP guideline 정의:</p>
+<ul>
+<li>fully penetrant dominant gene/disorder에서 pathogenic variant와 trans로 관찰되거나</li>
+<li>어떤 inheritance pattern에서든 pathogenic variant와 cis로 관찰되면 적용한다.</li>
+</ul>
+<p>직관:</p>
+<ul>
+<li>dominant fully penetrant disease에서 두 pathogenic hits가 trans로 있어도 phenotype이 설명되지 않거나 생존 가능성과 맞지 않으면 benign 방향 근거가 될 수 있다.</li>
+<li>cis에 이미 pathogenic variant가 있고 phenotype이 그 variant로 설명되면, 평가 variant는 덜 의심된다.</li>
+</ul>
+<p>확인할 것:</p>
+<ul>
+<li>phase가 실험적으로 확인되었는가?</li>
+<li>반대 또는 같은 allele의 variant가 정말 pathogenic인가?</li>
+<li>disease model이 fully penetrant dominant인지 확인한다.</li>
+</ul>
+<h3 id="ko-criterion-bp3">5.24 <code>BP3</code>: repetitive region의 in-frame indel</h3>
+<p>2015 ACMG/AMP guideline 정의: known function이 없는 repetitive region에서 in-frame deletion/insertion이 있으면 적용한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>해당 repeat region이 low complexity 또는 tolerant region인가?</li>
+<li>domain, motif, active site, known pathogenic repeat mechanism이 없는가?</li>
+<li>indel calling quality가 좋은가?</li>
+</ul>
+<p>주의: repeat expansion disorder처럼 repeat 자체가 mechanism인 질환에는 단순 적용하면 안 된다.</p>
+<h3 id="ko-criterion-bp4">5.25 <code>BP4</code>: computational evidence가 no impact를 지지</h3>
+<p>2015 ACMG/AMP guideline 정의: conservation, evolutionary, splicing impact 등 computational evidence가 gene 또는 gene product에 영향을 주지 않을 것으로 지지하면 적용한다.</p>
+<p>2015 ACMG/AMP guideline caveat: BP4도 PP3처럼 predictor 여러 개를 독립 근거처럼 더하면 안 된다. 한 variant 평가에서 한 번만 사용한다.</p>
+<p>현재 권고안:</p>
+<ul>
+<li>missense는 calibrated benign thresholds를 사용한다.</li>
+<li>splicing은 SpliceAI lower cutoff 등을 사용할 수 있다.</li>
+<li>pathogenic direction evidence가 강한데 BP4가 weak하게 나온 경우, evidence conflict와 tool limitation을 검토한다.</li>
+</ul>
+<p>자세한 cutoff는 아래 PP3/BP4 섹션에 정리했다.</p>
+<h3 id="ko-criterion-bp5">5.26 <code>BP5</code>: alternate molecular basis</h3>
+<p>2015 ACMG/AMP guideline 정의: 환자의 phenotype을 설명할 수 있는 다른 molecular basis가 있는 case에서 variant가 발견되면 적용한다.</p>
+<p>확인할 것:</p>
+<ul>
+<li>alternate variant가 P/LP이고 phenotype을 충분히 설명하는가?</li>
+<li>dual diagnosis 가능성이 낮은가?</li>
+<li>phenotype이 두 질환으로 나뉘어 설명될 수 있지는 않은가?</li>
+<li>recessive disease에서 한 allele만 설명된 것은 아닌가?</li>
+</ul>
+<p>주의: 다른 후보 variant가 있다는 이유만으로 BP5를 적용하면 안 된다. alternate molecular diagnosis가 설득력 있어야 한다.</p>
+<h3 id="ko-criterion-bp6">5.27 <code>BP6</code>: reputable source가 benign으로 보고</h3>
+<p>2015 ACMG/AMP guideline 정의: reputable source가 benign으로 보고했지만 laboratory가 독립적으로 evidence를 평가할 수 없을 때 적용한다.</p>
+<p>현재 권고안:</p>
+<ul>
+<li>PP5와 같이 현재는 독립 criterion으로 쓰지 않는 방향이 권고된다. 근거는 Biesecker and Harrison, 2018 (Genetics in Medicine; DOI <code>10.1038/gim.2018.42</code>)와 ClinGen General Sequence Variant Curation Process SOP v3.2의 "Reputable source section"이다.</li>
+<li>ClinVar benign assertion을 그대로 BP6로 쓰기보다 frequency, functional, segregation 등 underlying evidence를 직접 평가한다.</li>
+</ul>
+<h3 id="ko-criterion-bp7">5.28 <code>BP7</code>: splicing 영향 없는 synonymous variant</h3>
+<p>2015 ACMG/AMP guideline 정의: synonymous variant에서 splicing prediction이 splice consensus sequence에 영향이 없고 새로운 splice site도 만들지 않으며 nucleotide가 highly conserved가 아닐 때 적용한다.</p>
+<p>현재 권고안:</p>
+<ul>
+<li>synonymous만이 아니라 일부 intronic variant에도 VCEP/ClinGen splicing guidance가 BP7-like reasoning을 확장할 수 있다.</li>
+<li>donor/acceptor splice region, 특히 exon의 first base 또는 last 3 bases처럼 splicing risk가 높은 위치에는 조심한다.</li>
+<li>missense effect가 함께 있는 variant에는 "splicing 영향 없음"만으로 BP7을 적용해 전체 variant를 benign 쪽으로 밀면 안 된다.</li>
+</ul>
+<p>ClinGen splicing guidance:</p>
+<ul>
+<li>canonical donor/acceptor +/-1,2는 PVS1 splicing decision tree가 우선이다.</li>
+<li>SpliceAI lower cutoff로 BP4를 적용한 뒤, synonymous/intronic context와 위치 조건을 만족할 때 BP7을 검토한다.</li>
+</ul>
+<h2 id="ko-criteria-6-pp3bp4-computational-evidence">6. PP3/BP4 computational evidence 자세히 보기</h2>
+<p>PP3/BP4는 실무에서 자주 쓰이지만 오용도 많다. 핵심 원칙은 네 가지다.</p>
+<ol>
+<li>같은 input을 공유하는 predictor들을 여러 개 더해 독립 evidence처럼 세지 않는다.</li>
+<li>calibrated cutoff가 있는 tool을 우선한다.</li>
+<li>missense prediction과 splicing prediction을 구분한다.</li>
+<li>gene/disease-specific VCEP specification이 있으면 해당 specification을 따른다.</li>
+</ol>
+<h3 id="ko-criteria-61-missense-predictor-cutoff">6.1 Missense predictor cutoff 예시</h3>
+<p>아래 첫 표는 Pejaver et al., 2022 (American Journal of Human Genetics)의 ClinGen SVI PP3/BP4 calibration에서 널리 쓰이는 tool 일부를 교육용으로 정리한 것이다. 이 cutoff는 missense variant pathogenicity prediction에 대한 calibration이며, 모든 variant type에 자동 적용하면 안 된다.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>BP4 방향 cutoff 예시</th>
+<th>PP3 방향 cutoff 예시</th>
+<th>메모</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>REVEL</td>
+<td><code>&lt;=0.003</code> very strong, <code>(0.003,0.016]</code> strong, <code>(0.016,0.183]</code> moderate, <code>(0.183,0.290]</code> supporting</td>
+<td><code>[0.644,0.773)</code> supporting, <code>[0.773,0.932)</code> moderate, <code>&gt;=0.932</code> strong</td>
+<td>VCEP에서 가장 자주 지정되는 missense meta-predictor 중 하나</td>
+</tr>
+<tr>
+<td>BayesDel</td>
+<td><code>&lt;=-0.36</code> moderate, <code>(-0.36,-0.18]</code> supporting</td>
+<td><code>[0.13,0.27)</code> supporting, <code>[0.27,0.50)</code> moderate, <code>&gt;=0.50</code> strong</td>
+<td>calibrated meta-predictor. population frequency 포함 여부와 double-counting을 주의</td>
+</tr>
+<tr>
+<td>MutPred2</td>
+<td><code>&lt;=0.010</code> strong, <code>(0.010,0.197]</code> moderate, <code>(0.197,0.391]</code> supporting</td>
+<td><code>[0.737,0.829)</code> supporting, <code>[0.829,0.932)</code> moderate, <code>&gt;=0.932</code> strong</td>
+<td>pathogenic direction strong cutoff 가능</td>
+</tr>
+<tr>
+<td>VEST4</td>
+<td><code>&lt;=0.302</code> moderate, <code>(0.302,0.449]</code> supporting</td>
+<td><code>[0.764,0.861)</code> supporting, <code>[0.861,0.965)</code> moderate, <code>&gt;=0.965</code> strong</td>
+<td>Pejaver et al., 2022 (American Journal of Human Genetics)에서 calibrated</td>
+</tr>
+<tr>
+<td>CADD</td>
+<td><code>&lt;=0.15</code> strong, <code>(0.15,17.3]</code> moderate, <code>(17.3,22.7]</code> supporting</td>
+<td><code>[25.3,28.1)</code> supporting, <code>&gt;=28.1</code> moderate</td>
+<td>broad score이므로 scope와 double-counting을 주의</td>
+</tr>
+</tbody>
+</table>
+<p>Bergquist et al., 2025 (Genetics in Medicine)은 AlphaMissense, ESM1b, VARITY_R을 추가로 calibration했고, Table 1에서 기존 Pejaver et al., 2022 (American Journal of Human Genetics)의 일부 calibrated tools와 새 tools를 point-based strength interval로 함께 제시했다. 아래 표는 Bergquist et al., 2025 (Genetics in Medicine) Table 1의 핵심 값을 교육용으로 옮긴 것이다.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>BP4 방향 interval</th>
+<th>Indeterminate</th>
+<th>PP3 방향 interval</th>
+<th>근거 파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BayesDel</td>
+<td><code>&lt;=-0.520</code> 3점, <code>[-0.519,-0.360]</code> 2점, <code>[-0.359,-0.180]</code> 1점</td>
+<td><code>[-0.179,0.129]</code></td>
+<td><code>[0.130,0.269]</code> 1점, <code>[0.270,0.409]</code> 2점, <code>[0.410,0.499]</code> 3점, <code>&gt;=0.500</code> 4점</td>
+<td>Bergquist et al., 2025 Table 1; Pejaver et al., 2022 재수록</td>
+</tr>
+<tr>
+<td>MutPred2</td>
+<td><code>&lt;=0.010</code> 4점, <code>[0.011,0.031]</code> 3점, <code>[0.032,0.197]</code> 2점, <code>[0.198,0.391]</code> 1점</td>
+<td><code>[0.392,0.736]</code></td>
+<td><code>[0.737,0.828]</code> 1점, <code>[0.829,0.894]</code> 2점, <code>[0.895,0.931]</code> 3점, <code>&gt;=0.932</code> 4점</td>
+<td>Bergquist et al., 2025 Table 1; Pejaver et al., 2022 재수록</td>
+</tr>
+<tr>
+<td>REVEL</td>
+<td><code>&lt;=0.016</code> 4점, <code>[0.017,0.052]</code> 3점, <code>[0.053,0.183]</code> 2점, <code>[0.184,0.290]</code> 1점</td>
+<td><code>[0.291,0.643]</code></td>
+<td><code>[0.644,0.772]</code> 1점, <code>[0.773,0.878]</code> 2점, <code>[0.879,0.931]</code> 3점, <code>&gt;=0.932</code> 4점</td>
+<td>Bergquist et al., 2025 Table 1; Pejaver et al., 2022 재수록</td>
+</tr>
+<tr>
+<td>VEST4</td>
+<td><code>&lt;=0.077</code> 3점, <code>[0.078,0.302]</code> 2점, <code>[0.303,0.449]</code> 1점</td>
+<td><code>[0.450,0.763]</code></td>
+<td><code>[0.764,0.860]</code> 1점, <code>[0.861,0.908]</code> 2점, <code>[0.909,0.964]</code> 3점, <code>&gt;=0.965</code> 4점</td>
+<td>Bergquist et al., 2025 Table 1; Pejaver et al., 2022 재수록</td>
+</tr>
+<tr>
+<td>AlphaMissense</td>
+<td><code>&lt;=0.070</code> 3점, <code>[0.071,0.099]</code> 2점, <code>[0.100,0.169]</code> 1점</td>
+<td><code>[0.170,0.791]</code></td>
+<td><code>[0.792,0.905]</code> 1점, <code>[0.906,0.971]</code> 2점, <code>[0.972,0.989]</code> 3점, <code>&gt;=0.990</code> 4점</td>
+<td>Bergquist et al., 2025 Table 1</td>
+</tr>
+<tr>
+<td>ESM1b</td>
+<td><code>&gt;=8.8</code> 3점, <code>[-3.1,8.7]</code> 2점, <code>[-6.3,-3.2]</code> 1점</td>
+<td><code>[-10.6,-6.4]</code></td>
+<td><code>[-12.1,-10.7]</code> 1점, <code>[-13.9,-12.2]</code> 2점, <code>[-23.9,-14.0]</code> 3점, <code>&lt;=-24.0</code> 4점</td>
+<td>Bergquist et al., 2025 Table 1</td>
+</tr>
+<tr>
+<td>VARITY_R</td>
+<td><code>&lt;=0.036</code> 4점, <code>[0.037,0.063]</code> 3점, <code>[0.064,0.116]</code> 2점, <code>[0.117,0.251]</code> 1점</td>
+<td><code>[0.252,0.674]</code></td>
+<td><code>[0.675,0.841]</code> 1점, <code>[0.842,0.914]</code> 2점, <code>[0.915,0.964]</code> 3점, <code>&gt;=0.965</code> 4점</td>
+<td>Bergquist et al., 2025 Table 1</td>
+</tr>
+</tbody>
+</table>
+<p>주의: 위 1/2/3/4점 표기는 Bergquist et al., 2025 (Genetics in Medicine)의 point-based strength interval 표기를 따른 것이다. 기존 2015 ACMG/AMP guideline 용어로는 대략 Supporting, Moderate, Intermediate 3점, Strong에 대응하지만, 3점 strength는 2015 ACMG/AMP guideline의 원래 strength category에는 없고 향후 point-based framework를 염두에 둔 interval이다.</p>
+<h3 id="ko-criteria-62-splicing-predictor-cutoff">6.2 Splicing predictor cutoff 예시</h3>
+<p>ClinGen SVI Splicing Subgroup guidance는 SpliceAI maximum delta score를 예로 들며 non-canonical splice site variants에서 다음과 같은 decision tree를 제시한다.</p>
+<pre><code class="language-text">canonical +/-1,2 splice site인가?
+  예 -&gt; PP3/BP4보다 PVS1 splicing decision tree 먼저 검토
+  아니오 -&gt; SpliceAI max delta score 확인
+        &gt;=0.20 -&gt; PP3 splicing evidence 검토
+        &lt;=0.10 -&gt; BP4 splicing evidence 검토
+        0.10-0.20 -&gt; PP3/BP4 splicing evidence 적용하지 않음
+</code></pre>
+<p>주의:</p>
+<ul>
+<li>SpliceAI <code>&gt;=0.20</code>은 spliceogenicity evidence이며, 그 splicing change가 disease-causing LOF인지까지 자동으로 증명하지 않는다.</li>
+<li>SpliceAI <code>&lt;=0.10</code>은 no splice impact evidence에 가깝지만, protein-level missense effect를 배제하지 않는다.</li>
+<li>BP7은 donor/acceptor splice region의 synonymous variant에 보수적으로 적용해야 한다.</li>
+</ul>
+<h2 id="ko-criteria-7-2015-acmgamp-guideline">7. 2015 ACMG/AMP guideline 이후 주요 업데이트 지도</h2>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>업데이트 또는 권고</th>
+<th>상태</th>
+<th>핵심 의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BA1</code></td>
+<td>Ghosh et al., 2018 (Human Mutation) BA1 update와 exception list</td>
+<td>ClinGen SVI recommendation</td>
+<td>MAF &gt;5% rule의 예외와 사용 조건을 명시</td>
+</tr>
+<tr>
+<td><code>PVS1</code></td>
+<td>Abou Tayoun et al., 2018 (Human Mutation) PVS1 decision tree</td>
+<td>ClinGen SVI recommendation</td>
+<td>LOF variant도 위치와 mechanism에 따라 strength 조정</td>
+</tr>
+<tr>
+<td><code>PP5/BP6</code></td>
+<td>Biesecker and Harrison, 2018 (Genetics in Medicine) reputable source criteria</td>
+<td>ClinGen SVI recommendation</td>
+<td>근거 없는 database assertion을 독립 criterion으로 쓰지 않는 방향</td>
+</tr>
+<tr>
+<td><code>PS2/PM6</code></td>
+<td>SVI de novo recommendation v1.1</td>
+<td>Supporting document, updated 2021</td>
+<td>phenotype specificity, parentage, observation count로 strength 결정</td>
+</tr>
+<tr>
+<td><code>PS3/BS3</code></td>
+<td>Brnich et al., 2019 (Genome Medicine) functional evidence framework</td>
+<td>ClinGen SVI publication</td>
+<td>assay validity와 controls에 따라 strength 조정</td>
+</tr>
+<tr>
+<td><code>PM2</code></td>
+<td>SVI PM2 absence/rarity recommendation 2020</td>
+<td>Supporting document</td>
+<td>PM2를 기본적으로 <code>PM2_Supporting</code>으로 낮춤</td>
+</tr>
+<tr>
+<td><code>PM3</code></td>
+<td>SVI in trans criterion recommendation 2019</td>
+<td>Supporting document</td>
+<td>trans observation을 point-based로 합산</td>
+</tr>
+<tr>
+<td><code>PP3/BP4</code></td>
+<td>Pejaver et al., 2022 (American Journal of Human Genetics) computational calibration; Bergquist et al., 2025 (Genetics in Medicine) additional tools</td>
+<td>ClinGen SVI publication</td>
+<td>calibrated predictor threshold와 strength level 제공</td>
+</tr>
+<tr>
+<td><code>PVS1/PS1/PP3/BP4/BP7</code></td>
+<td>Walker et al., 2023 (American Journal of Human Genetics) splicing guidance</td>
+<td>ClinGen SVI publication</td>
+<td>splicing prediction/RNA evidence를 criteria에 연결</td>
+</tr>
+<tr>
+<td><code>PP1/BS4/PP4</code></td>
+<td>Biesecker et al., 2024 (Genetics in Medicine) co-segregation/phenotype guidance</td>
+<td>ClinGen SVI publication</td>
+<td>phenotype specificity와 segregation을 함께 정량화</td>
+</tr>
+<tr>
+<td>여러 criteria</td>
+<td>VCEP/CSpec gene/disease-specific specification</td>
+<td>승인된 scope 안에서 적용</td>
+<td>특정 gene/disease에서 cutoff와 strength를 재정의</td>
+</tr>
+<tr>
+<td>## 8. 핵심 기억법</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>기억할 점</th>
+<th>이유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACMG/AMP는 variant-level pathogenicity framework다</td>
+<td>gene-disease validity나 patient diagnosis와 섞으면 안 됨</td>
+</tr>
+<tr>
+<td>2015 ACMG/AMP guideline framework는 rule-based다</td>
+<td>원래는 단순 점수 합산표가 아님</td>
+</tr>
+<tr>
+<td>현재 권고안은 Bayesian/point-based 해석을 점점 더 많이 사용한다</td>
+<td>Tavtigian et al., 2020 (Human Mutation)과 Bergquist et al., 2025 (Genetics in Medicine) 참고</td>
+</tr>
+<tr>
+<td>ClinGen guidance는 2015 ACMG/AMP guideline criteria 적용을 정교화한다</td>
+<td>최신 권고이지만 전체 replacement는 아님</td>
+</tr>
+<tr>
+<td>VCEP/CSpec은 scope가 맞을 때만 쓴다</td>
+<td>gene/disease-specific rule을 일반화하면 오류</td>
+</tr>
+<tr>
+<td>PM2는 현재 ClinGen 적용에서 대개 Supporting이다</td>
+<td>rarity alone은 약한 근거</td>
+</tr>
+<tr>
+<td>PP3/BP4는 calibrated cutoff가 핵심이다</td>
+<td>여러 predictor를 더하는 방식은 잘못</td>
+</tr>
+<tr>
+<td>PP5/BP6는 현재 매우 조심해야 한다</td>
+<td>source assertion보다 underlying evidence를 직접 평가해야 함</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ko-criteria-related-pages">Related Pages</h2>
+<ul>
+<li><a href="#ko-overview">ACMG 변이 해석 가이드라인</a></li>
+</ul>
+<h2 id="ko-criteria-sources">Sources</h2>
+<ul>
+<li>Richards et al., 2015 (Genetics in Medicine). Standards and guidelines for the interpretation of sequence variants. DOI: <code>10.1038/gim.2015.30</code>. <a href="https://www.acmg.net/docs/standards_guidelines_for_the_interpretation_of_sequence_variants.pdf">ACMG PDF</a>, <a href="https://pubmed.ncbi.nlm.nih.gov/25741868/">PubMed</a>, <a href="https://www.nature.com/articles/gim201530">Nature/GIM</a></li>
+<li>ClinGen Variant Classification Guidance. <a href="https://www.clinicalgenome.org/tools/clingen-variant-classification-guidance/">https://www.clinicalgenome.org/tools/clingen-variant-classification-guidance/</a></li>
+<li>ClinGen Sequence Variant Interpretation archived page. <a href="https://www.clinicalgenome.org/working-groups/sequence-variant-interpretation/">https://www.clinicalgenome.org/working-groups/sequence-variant-interpretation/</a></li>
+<li>ClinGen Criteria Specification Registry. <a href="https://cspec.clinicalgenome.org/cspec/ui/">https://cspec.clinicalgenome.org/cspec/ui/</a></li>
+<li>ClinGen General Sequence Variant Curation Process SOP v3.2. <a href="https://clinicalgenome.org/site/assets/files/7438/variant_curation_sop_v3_2_oct_2022.pdf">https://clinicalgenome.org/site/assets/files/7438/variant_curation_sop_v3_2_oct_2022.pdf</a></li>
+<li>Tavtigian et al., 2020 (Human Mutation). Fitting a naturally scaled point system to the ACMG/AMP variant classification guidelines. <a href="https://pubmed.ncbi.nlm.nih.gov/32720330/">PubMed</a></li>
+<li>Abou Tayoun et al., 2018 (Human Mutation). Recommendations for interpreting the loss of function PVS1 ACMG/AMP variant criterion. <a href="https://www.clinicalgenome.org/docs/recommendations-for-interpreting-the-loss-of-function-pvs1-acmg-amp-variant-criterion/">https://www.clinicalgenome.org/docs/recommendations-for-interpreting-the-loss-of-function-pvs1-acmg-amp-variant-criterion/</a></li>
+<li>Ghosh et al., 2018 (Human Mutation). Updated recommendation for the benign stand-alone ACMG/AMP criterion. <a href="https://www.clinicalgenome.org/docs/updated-recommendation-for-the-benign-stand-alone-acmg-amp-criterion/">https://www.clinicalgenome.org/docs/updated-recommendation-for-the-benign-stand-alone-acmg-amp-criterion/</a></li>
+<li>ClinGen SVI. Recommendation for de novo PS2/PM6 criteria v1.1. <a href="https://www.clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf">https://www.clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf</a></li>
+<li>Brnich et al., 2019 (Genome Medicine). Recommendations for application of the functional evidence PS3/BS3 criterion. <a href="https://clinicalgenome.org/docs/recommendations-for-application-of-the-functional-evidence-ps3-bs3-criterion-using-the-acmg-amp-sequence-variant-interpretation/">https://clinicalgenome.org/docs/recommendations-for-application-of-the-functional-evidence-ps3-bs3-criterion-using-the-acmg-amp-sequence-variant-interpretation/</a></li>
+<li>ClinGen SVI. PM2 recommendation for absence/rarity. <a href="https://www.clinicalgenome.org/docs/pm2-recommendation-for-absence-rarity/">https://www.clinicalgenome.org/docs/pm2-recommendation-for-absence-rarity/</a></li>
+<li>ClinGen SVI. PM3 recommendation for in trans criterion. <a href="https://clinicalgenome.org/docs/pm3-recommendation-for-in-trans-criterion-pm3-version-1.0/">https://clinicalgenome.org/docs/pm3-recommendation-for-in-trans-criterion-pm3-version-1.0/</a></li>
+<li>Pejaver et al., 2022 (American Journal of Human Genetics). Calibration of computational tools for PP3/BP4. <a href="https://pubmed.ncbi.nlm.nih.gov/36413997/">PubMed</a>, <a href="https://www.clinicalgenome.org/docs/calibration-of-computational-tools-for-missense-variant-pathogenicity-classification-and-clingen-recommendations-for-pp3-bp4-cri/">ClinGen</a></li>
+<li>Walker et al., 2023 (American Journal of Human Genetics). Splicing recommendations from the ClinGen SVI Splicing Subgroup. <a href="https://clinicalgenome.org/docs/application-of-the-acmg-amp-framework-to-capture-evidence-relevant-to-predicted-and-observed-impact-on-splicing-recommendations/">https://clinicalgenome.org/docs/application-of-the-acmg-amp-framework-to-capture-evidence-relevant-to-predicted-and-observed-impact-on-splicing-recommendations/</a></li>
+<li>Biesecker et al., 2024 (Genetics in Medicine). ClinGen guidance for PP1/BS4 and PP4. <a href="https://www.clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/">https://www.clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/</a></li>
+<li>Biesecker and Harrison, 2018 (Genetics in Medicine). The ACMG/AMP reputable source criteria for the interpretation of sequence variants. DOI: <code>10.1038/gim.2018.42</code>. <a href="https://www.clinicalgenome.org/docs/the-acmg-amp-reputable-source-criteria-for-the-interpretation-of-sequence-variants/">https://www.clinicalgenome.org/docs/the-acmg-amp-reputable-source-criteria-for-the-interpretation-of-sequence-variants/</a></li>
+<li>Bergquist et al., 2025 (Genetics in Medicine). Calibration of additional computational tools expands ClinGen recommendation options for PP3/BP4. <a href="https://pubmed.ncbi.nlm.nih.gov/40084623/">PubMed</a></li>
+</ul>
+  </article>
+</section>
+  </main>
+</div>
+  <div class="language-layer lang-panel" data-lang-panel="en">
+  <nav class="top-nav" aria-label="English page sections">
+    <a href="#en-overview">Overview</a>
+<a href="#en-criteria">28 Criteria</a>
+  </nav>
+
+  <main class="tracks">
+    <section class="track" data-track="cell" aria-labelledby="en-quick-start">
+      <header class="track-head">
+        <h2 class="track-title" id="en-quick-start">Start Here</h2>
+      </header>
+      <p class="track-blurb">
+        The core of this page is to keep the official baseline, current guidance, gene-specific specifications, and draft standards conceptually separate.
+      </p>
+      <div class="cards split">
+        <a class="card" href="#en-overview">
+  <span class="card-tag">baseline · guidance</span>
+  <h3 class="card-title">Official baseline and current guidance</h3>
+  <p class="card-desc">Separate the roles of the 2015 ACMG/AMP guideline, ClinGen Variant Classification Guidance, and CSpec/VCEP specifications first.</p>
+  <div class="card-cta"><span class="card-cta-text">View overview</span><span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span></div>
+</a>
+<a class="card" href="#en-criteria">
+  <span class="card-tag">criteria · rule-based</span>
+  <h3 class="card-title">28 criteria and combination rules</h3>
+  <p class="card-desc">Review PVS/PS/PM/PP and BA/BS/BP at a glance and learn how rule-based combinations lead to a final tier.</p>
+  <div class="card-cta"><span class="card-cta-text">View criteria</span><span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span></div>
+</a>
+      </div>
+    </section>
+
+    <section class="track" data-track="dna" aria-labelledby="en-criteria-map">
+      <header class="track-head">
+        <h2 class="track-title" id="en-criteria-map">Criteria Quick Map</h2>
+      </header>
+      <p class="track-blurb">
+        Click a card to jump to the detailed criterion section. PP3/BP4 cutoffs and the SpliceAI decision tree are included in the detailed document.
+      </p>
+      <div class="cards criteria-grid">
+        <a class="card mini-card" href="#en-criterion-pvs1">
+  <span class="card-tag">Very Strong</span>
+  <h3 class="card-title">PVS1</h3>
+  <p class="card-desc">Null variant in a gene where LOF is the disease mechanism</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-ps1">
+  <span class="card-tag">Strong</span>
+  <h3 class="card-title">PS1</h3>
+  <p class="card-desc">Same amino acid change as an established pathogenic variant</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-ps2">
+  <span class="card-tag">Strong</span>
+  <h3 class="card-title">PS2</h3>
+  <p class="card-desc">Confirmed de novo</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-ps3">
+  <span class="card-tag">Strong</span>
+  <h3 class="card-title">PS3</h3>
+  <p class="card-desc">Validated functional assay supports a damaging effect</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-ps4">
+  <span class="card-tag">Strong</span>
+  <h3 class="card-title">PS4</h3>
+  <p class="card-desc">Enriched in affected cases compared with controls</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-pm1">
+  <span class="card-tag">Moderate</span>
+  <h3 class="card-title">PM1</h3>
+  <p class="card-desc">Hotspot or critical functional domain</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-pm2">
+  <span class="card-tag">Moderate</span>
+  <h3 class="card-title">PM2</h3>
+  <p class="card-desc">Absent or very rare in population controls</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-pm3">
+  <span class="card-tag">Moderate</span>
+  <h3 class="card-title">PM3</h3>
+  <p class="card-desc">In trans with a pathogenic variant in a recessive disorder</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-pm4">
+  <span class="card-tag">Moderate</span>
+  <h3 class="card-title">PM4</h3>
+  <p class="card-desc">Protein length change from in-frame indel or stop-loss</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-pm5">
+  <span class="card-tag">Moderate</span>
+  <h3 class="card-title">PM5</h3>
+  <p class="card-desc">Different pathogenic missense change at the same residue</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-pm6">
+  <span class="card-tag">Moderate</span>
+  <h3 class="card-title">PM6</h3>
+  <p class="card-desc">Assumed de novo without confirmed parentage</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-pp1">
+  <span class="card-tag">Supporting</span>
+  <h3 class="card-title">PP1</h3>
+  <p class="card-desc">Cosegregation with disease in affected relatives</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-pp2">
+  <span class="card-tag">Supporting</span>
+  <h3 class="card-title">PP2</h3>
+  <p class="card-desc">Missense is a common disease mechanism for the gene</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-pp3">
+  <span class="card-tag">Supporting</span>
+  <h3 class="card-title">PP3</h3>
+  <p class="card-desc">Calibrated computational evidence supports deleteriousness</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-pp4">
+  <span class="card-tag">Supporting</span>
+  <h3 class="card-title">PP4</h3>
+  <p class="card-desc">Phenotype or family history is highly specific</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-pp5">
+  <span class="card-tag">Supporting</span>
+  <h3 class="card-title">PP5</h3>
+  <p class="card-desc">Reputable-source assertion; currently discouraged as stand-alone evidence</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-ba1">
+  <span class="card-tag">Stand-alone</span>
+  <h3 class="card-title">BA1</h3>
+  <p class="card-desc">Population allele frequency is too high</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-bs1">
+  <span class="card-tag">Strong benign</span>
+  <h3 class="card-title">BS1</h3>
+  <p class="card-desc">Allele frequency exceeds disease expectation</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-bs2">
+  <span class="card-tag">Strong benign</span>
+  <h3 class="card-title">BS2</h3>
+  <p class="card-desc">Observed in a healthy adult for a fully penetrant early-onset disorder</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-bs3">
+  <span class="card-tag">Strong benign</span>
+  <h3 class="card-title">BS3</h3>
+  <p class="card-desc">Functional assay supports no damaging effect</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-bs4">
+  <span class="card-tag">Strong benign</span>
+  <h3 class="card-title">BS4</h3>
+  <p class="card-desc">Lack of segregation in affected family members</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-bp1">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP1</h3>
+  <p class="card-desc">Missense variant in a gene where truncation is the main mechanism</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-bp2">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP2</h3>
+  <p class="card-desc">Phase supports a benign interpretation</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-bp3">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP3</h3>
+  <p class="card-desc">In-frame indel in a repetitive region without known function</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-bp4">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP4</h3>
+  <p class="card-desc">Calibrated computational evidence supports no impact</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-bp5">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP5</h3>
+  <p class="card-desc">Another molecular diagnosis explains the phenotype</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-bp6">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP6</h3>
+  <p class="card-desc">Reputable-source assertion; currently discouraged as stand-alone evidence</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+<a class="card mini-card" href="#en-criterion-bp7">
+  <span class="card-tag">Supporting benign</span>
+  <h3 class="card-title">BP7</h3>
+  <p class="card-desc">Synonymous variant with no predicted splice impact</p>
+  <div class="card-cta">
+    <span class="card-cta-text">View criterion</span>
+    <span class="card-cta-mark" aria-hidden="true"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+  </div>
+</a>
+      </div>
+    </section>
+
+    <section class="content-section" id="en-overview">
+  <header class="section-head">
+    <span class="section-kicker">ACMG GUIDE</span>
+    <h2>Overview</h2>
+  </header>
+  <article class="article-card">
+    <p>This English overview is for readers who are new to ACMG/AMP germline sequence variant interpretation. Its main goal is to keep the "official baseline," "current application guidance," and "gene/disease-specific specifications" conceptually separate.</p>
+<p>Review date: 2026-05-10.</p>
+<h2 id="en-overview-1-one-sentence-summary">1. One-sentence summary</h2>
+<p>ACMG/AMP variant interpretation is a framework for classifying a germline sequence variant as <code>Pathogenic</code>, <code>Likely pathogenic</code>, <code>VUS</code>, <code>Likely benign</code>, or <code>Benign</code> by combining multiple evidence types at predefined strengths.</p>
+<h2 id="en-overview-2-the-three-layers-to-understand-first">2. The three layers to understand first</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>What it is</th>
+<th>How to use it now</th>
+<th>Common source of confusion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2015 ACMG/AMP guideline</td>
+<td>The official published baseline from Richards et al., 2015 (Genetics in Medicine)</td>
+<td>The core framework for germline sequence variant interpretation</td>
+<td>It is old, but it remains the publicly verifiable official baseline</td>
+</tr>
+<tr>
+<td>ClinGen Variant Classification Guidance</td>
+<td>ClinGen recommendations for applying 2015 ACMG/AMP guideline criteria more consistently</td>
+<td>Check criterion-specific application for <code>PVS1</code>, <code>PM2</code>, <code>PS2/PM6</code>, <code>PP3/BP4</code>, <code>PS3/BS3</code>, and others</td>
+<td>It is not a new final guideline that replaces the entire 2015 ACMG/AMP guideline</td>
+</tr>
+<tr>
+<td>ClinGen VCEP/CSpec</td>
+<td>ACMG/AMP criteria specifications tailored to a specific gene/disease context</td>
+<td>Prioritize when the gene and disease scope match</td>
+<td>Do not generalize a gene/disease-specific rule to all variants</td>
+</tr>
+</tbody>
+</table>
+<h2 id="en-overview-3-what-acmgamp-actually-asks">3. What ACMG/AMP actually asks</h2>
+<p>ACMG/AMP classification is not an automated tool for deciding whether "this patient has this disease." The more precise question is:</p>
+<blockquote>
+<p>Does this specific variant, in this specific gene-disease context, have enough evidence to be considered disease-causing?</p>
+</blockquote>
+<p>Therefore, three items must be fixed before classification.</p>
+<table>
+<thead>
+<tr>
+<th>What to fix first</th>
+<th>Example</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Variant identity</td>
+<td>transcript, cDNA, protein notation</td>
+<td>Evidence differs variant by variant, even within the same gene</td>
+</tr>
+<tr>
+<td>Gene-disease context</td>
+<td><code>SCN1A</code> and developmental epileptic encephalopathy</td>
+<td>The same gene can have different disease mechanisms in different disorders</td>
+</tr>
+<tr>
+<td>Inheritance model</td>
+<td>autosomal dominant, autosomal recessive, X-linked</td>
+<td>Population frequency, segregation, and de novo evidence are interpreted differently</td>
+</tr>
+</tbody>
+</table>
+<p>If these three items are unclear, the logic remains unstable even if evidence codes are assigned.</p>
+<h2 id="en-overview-4-the-five-final-classifications">4. The five final classifications</h2>
+<table>
+<thead>
+<tr>
+<th>Classification</th>
+<th>Plain-language meaning</th>
+<th>Practical interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Pathogenic</code></td>
+<td>Disease-causing variant</td>
+<td>Evidence is sufficient to consider the variant causal</td>
+</tr>
+<tr>
+<td><code>Likely pathogenic</code></td>
+<td>Variant likely to be disease-causing</td>
+<td>The variant is likely causal but not as definitive as pathogenic</td>
+</tr>
+<tr>
+<td><code>VUS</code></td>
+<td>Variant of uncertain significance</td>
+<td>Evidence is insufficient or conflicting. It should not be overinterpreted as a diagnostic conclusion</td>
+</tr>
+<tr>
+<td><code>Likely benign</code></td>
+<td>Variant likely not disease-causing</td>
+<td>The variant is unlikely to be causal</td>
+</tr>
+<tr>
+<td><code>Benign</code></td>
+<td>Non-disease-causing variant</td>
+<td>Evidence is sufficient to consider the variant non-causal</td>
+</tr>
+</tbody>
+</table>
+<p>The most important message is <code>VUS</code>. A VUS is not "weakly benign" or "suspicious"; it means classification is deferred because the current evidence is insufficient.</p>
+<h2 id="en-overview-5-basic-structure-of-evidence-codes">5. Basic structure of evidence codes</h2>
+<p>ACMG/AMP evidence codes are divided into pathogenic-direction and benign-direction evidence.</p>
+<table>
+<thead>
+<tr>
+<th>Direction</th>
+<th>Strength</th>
+<th>Example codes</th>
+<th>Intuitive meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pathogenic</td>
+<td>Very Strong</td>
+<td><code>PVS1</code></td>
+<td>Very strong evidence such as loss-of-function consistent with the disease mechanism</td>
+</tr>
+<tr>
+<td>Pathogenic</td>
+<td>Strong</td>
+<td><code>PS1</code>, <code>PS2</code>, <code>PS3</code>, <code>PS4</code></td>
+<td>Same amino acid change, confirmed de novo, functional evidence, case enrichment, and similar evidence</td>
+</tr>
+<tr>
+<td>Pathogenic</td>
+<td>Moderate</td>
+<td><code>PM1</code>-<code>PM6</code></td>
+<td>Hotspot, rarity, in trans observation, protein length change, and similar evidence</td>
+</tr>
+<tr>
+<td>Pathogenic</td>
+<td>Supporting</td>
+<td><code>PP1</code>-<code>PP5</code></td>
+<td>Segregation, computational evidence, phenotype specificity, and similar evidence</td>
+</tr>
+<tr>
+<td>Benign</td>
+<td>Stand-alone</td>
+<td><code>BA1</code></td>
+<td>Too common to be pathogenic</td>
+</tr>
+<tr>
+<td>Benign</td>
+<td>Strong</td>
+<td><code>BS1</code>-<code>BS4</code></td>
+<td>High frequency, healthy adult observations, normal functional evidence, non-segregation, and similar evidence</td>
+</tr>
+<tr>
+<td>Benign</td>
+<td>Supporting</td>
+<td><code>BP1</code>-<code>BP7</code></td>
+<td>Weaker supporting evidence in the benign direction</td>
+</tr>
+</tbody>
+</table>
+<p>These codes are not a simple score sheet. Each criterion must be checked for applicability, independence from other evidence, and any strength modification in current ClinGen guidance.</p>
+<p>The full table of 28 criteria, the 2015 ACMG/AMP guideline combination rules, detailed criterion explanations, and PP3/BP4 cutoff examples are summarized separately in <a href="#en-criteria">2015 ACMG/AMP guideline criteria and later updates</a>. This overview provides the big picture, while the detailed criteria document is the core content of the HTML page.</p>
+<h2 id="en-overview-6-practical-classification-workflow">6. Practical classification workflow</h2>
+<p>As an educational simplification, ACMG/AMP variant interpretation follows this workflow.</p>
+<pre><code class="language-text">1. Define the variant precisely
+2. Check gene-disease validity and inheritance
+3. First evaluate benign evidence using population frequency
+4. Examine variant consequence and disease mechanism
+5. Collect computational, functional, segregation, de novo, and phenotype evidence
+6. Assign ACMG/AMP criteria and evidence strengths
+7. Check ClinGen general/criterion-specific guidance and VCEP/CSpec availability
+8. If an in-scope VCEP/CSpec exists, prioritize that specification
+9. Combine evidence to produce a 5-tier classification
+10. If the result is VUS, state what evidence is missing
+</code></pre>
+<p>Benign evidence is checked early for a simple reason: if a variant is too common given the disease prevalence and penetrance, it is unlikely to be pathogenic.</p>
+<h2 id="en-overview-7-common-points-of-confusion">7. Common points of confusion</h2>
+<table>
+<thead>
+<tr>
+<th>Confusion</th>
+<th>Correction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The newest file is the official guideline</td>
+<td>A recent draft and an official final guideline are different</td>
+</tr>
+<tr>
+<td>ACMG refers to only one document</td>
+<td>Baseline guideline, guidance, specification, and draft standard are distinct</td>
+</tr>
+<tr>
+<td>Gene-level evidence is variant-level evidence</td>
+<td>Gene-disease validity and variant pathogenicity are different</td>
+</tr>
+<tr>
+<td>Strong in silico results are enough for pathogenicity</td>
+<td>Computational evidence is usually supporting-level evidence</td>
+</tr>
+<tr>
+<td>VUS is almost pathogenic</td>
+<td>VUS means classification is deferred</td>
+</tr>
+<tr>
+<td>A VCEP rule applies to every gene</td>
+<td>It applies only within the specified gene/disease scope</td>
+</tr>
+</tbody>
+</table>
+<h2 id="en-overview-major-evidence-domains">Major evidence domains</h2>
+<h3 id="en-overview-1-population-frequency">1. Population Frequency</h3>
+<p>Question: Is this variant too common to be a plausible cause of disease?</p>
+<p>Check:</p>
+<ul>
+<li>What is the allele frequency in population databases such as gnomAD?</li>
+<li>Was the ancestry-matched population examined?</li>
+<li>Is the frequency allowable after considering disease prevalence, penetrance, and inheritance model?</li>
+<li>Does it meet benign evidence such as <code>BA1</code> or <code>BS1</code>?</li>
+<li>Are you overusing absence from population databases as pathogenic evidence?</li>
+</ul>
+<p>Caution: Absence from gnomAD is usually not strong pathogenic evidence. Very rare variants are common in human genomes.</p>
+<h3 id="en-overview-2-variant-consequence-and-gene-mechanism">2. Variant Consequence and Gene Mechanism</h3>
+<p>Question: What effect is the variant expected to have on the protein or splicing?</p>
+<p>Examples:</p>
+<ul>
+<li>nonsense or frameshift</li>
+<li>canonical splice donor/acceptor</li>
+<li>missense</li>
+<li>synonymous with possible splicing effect</li>
+<li>in-frame insertion/deletion</li>
+<li>start-loss or stop-loss</li>
+</ul>
+<p>The key issue is the gene mechanism. For example, even a truncating variant should receive strong <code>PVS1</code> only when loss-of-function is an established disease mechanism for that gene-disease pair.</p>
+<p>Caution: Do not automatically apply <code>PVS1</code> to every truncating variant. Check transcript relevance, nonsense-mediated decay, exon position, and gene mechanism.</p>
+<h3 id="en-overview-3-computational-prediction">3. Computational Prediction</h3>
+<p>Question: What direction do in silico predictors support?</p>
+<p>Examples:</p>
+<ul>
+<li>missense predictors: REVEL, BayesDel, AlphaMissense, and others</li>
+<li>splicing predictors: SpliceAI and others</li>
+<li>conservation, protein domain, and structural context</li>
+</ul>
+<p>Caution: Computational evidence is usually supporting-level evidence. Do not count several similar predictors as independent evidence.</p>
+<h3 id="en-overview-4-functional-evidence">4. Functional Evidence</h3>
+<p>Question: Does a functional assay convincingly show disease-relevant loss of function or normal function?</p>
+<p>Check:</p>
+<ul>
+<li>Is the assay directly relevant to the disease mechanism?</li>
+<li>Was it calibrated with known pathogenic and benign controls?</li>
+<li>Are thresholds clear and reproducible?</li>
+<li>Is the evidence strong enough for <code>PS3</code> or <code>BS3</code>, or only supporting-level?</li>
+</ul>
+<p>Caution: A wet-lab result is not automatically strong evidence. Assay validity is the core issue.</p>
+<h3 id="en-overview-5-segregation-and-de-novo-evidence">5. Segregation and De Novo Evidence</h3>
+<p>Question: Does the variant track with disease in a family, or did it arise de novo in an affected proband?</p>
+<p>Check:</p>
+<ul>
+<li>Was parentage confirmed?</li>
+<li>Does the phenotype fit the gene-disease relationship?</li>
+<li>Were penetrance and age-related expression considered?</li>
+<li>Are there unaffected carriers?</li>
+<li>Is there another pathogenic variant or alternate cause?</li>
+</ul>
+<p>Caution: "De novo" alone is not enough. Parentage, phenotype specificity, and alternate causes must be checked.</p>
+<h3 id="en-overview-6-case-observation-and-database-evidence">6. Case Observation and Database Evidence</h3>
+<p>Question: How has this variant been reported in affected individuals, ClinVar, the literature, or expert panels?</p>
+<p>Check:</p>
+<ul>
+<li>ClinVar review status and submitter confidence</li>
+<li>ClinGen expert panel classification</li>
+<li>phenotype and transcript consistency</li>
+<li>date of report and any later reclassification</li>
+<li>whether the evidence concerns the same variant, the same amino acid change, or merely the same gene</li>
+</ul>
+<p>Caution: Do not copy a ClinVar pathogenic assertion without reviewing evidence details and review status.</p>
+<h2 id="en-overview-intuition-for-criteria-combinations">Intuition for criteria combinations</h2>
+<p>ACMG/AMP produces the final classification by combining evidence codes. For education, start with these principles:</p>
+<ul>
+<li>Enough strong pathogenic evidence leads to <code>Pathogenic</code> or <code>Likely pathogenic</code>.</li>
+<li>Enough strong benign evidence leads to <code>Benign</code> or <code>Likely benign</code>.</li>
+<li>Insufficient or conflicting evidence usually remains <code>VUS</code>.</li>
+<li>Stand-alone benign evidence such as <code>BA1</code> outweighs weak pathogenic signals.</li>
+<li>Evidence derived from the same information must not be counted multiple times.</li>
+</ul>
+<p>In an HTML page, evidence blocks can visually accumulate toward a final class, but the page should not look like an automated diagnostic calculator.</p>
+<h2 id="en-overview-where-clingen-fits">Where ClinGen fits</h2>
+<p>ClinGen provides guidance and specifications to make the 2015 ACMG/AMP framework more consistent in practice.</p>
+<p>A practical and safe order is:</p>
+<ol>
+<li>Fix variant identity, gene-disease context, and inheritance model first.</li>
+<li>Use the 2015 ACMG/AMP guideline to define the major structure of evidence codes and the 5-tier classification.</li>
+<li>Check ClinGen Variant Classification Guidance for general recommendations and criterion-specific recommendations.</li>
+<li>Check whether an approved VCEP/CSpec specification exists for the gene/disease pair.</li>
+<li>If the scope matches, prioritize the gene/disease-specific VCEP/CSpec rule over general ClinGen guidance.</li>
+<li>Record primary evidence for each criterion, plus strength modification, version, and date.</li>
+<li>Produce the final tier using the 2015 ACMG/AMP guideline combination rules or an approved VCEP-specific combination rule.</li>
+</ol>
+<p>This order is an operational synthesis from the following sources.</p>
+<ul>
+<li>Richards et al., 2015 (Genetics in Medicine): basic evidence criteria and the 5-tier rule-based framework.</li>
+<li>ClinGen Variant Classification Guidance: lists of general recommendations, criterion-specific recommendations, and ClinGen-endorsed recommendations for ACMG/AMP criteria.</li>
+<li>ClinGen CSpec Registry: gene/disease-specific criteria specifications used by ClinGen VCEPs and biocurators.</li>
+<li>ClinGen General Sequence Variant Curation Process SOP v3.2: the VCI workflow for reviewing and assessing each criterion before deriving a provisional classification using ACMG/AMP combination rules.</li>
+</ul>
+<h2 id="en-overview-related-pages">Related Pages</h2>
+<ul>
+<li><a href="#en-criteria">2015 ACMG/AMP guideline criteria and later updates</a></li>
+</ul>
+<h2 id="en-overview-sources">Sources</h2>
+<ul>
+<li>Richards et al., 2015 (Genetics in Medicine). Standards and guidelines for the interpretation of sequence variants. DOI: <code>10.1038/gim.2015.30</code>.</li>
+<li>ClinGen Variant Classification Guidance: <a href="https://www.clinicalgenome.org/tools/clingen-variant-classification-guidance/">https://www.clinicalgenome.org/tools/clingen-variant-classification-guidance/</a></li>
+<li>ClinGen CSpec Registry: <a href="https://cspec.clinicalgenome.org/cspec/ui/">https://cspec.clinicalgenome.org/cspec/ui/</a></li>
+<li>ClinGen General Sequence Variant Curation Process SOP v3.2: <a href="https://clinicalgenome.org/site/assets/files/7438/variant_curation_sop_v3_2_oct_2022.pdf">https://clinicalgenome.org/site/assets/files/7438/variant_curation_sop_v3_2_oct_2022.pdf</a></li>
+</ul>
+  </article>
+</section>
+
+<section class="content-section" id="en-criteria">
+  <header class="section-head">
+    <span class="section-kicker">ACMG GUIDE</span>
+    <h2>28 Criteria</h2>
+  </header>
+  <article class="article-card">
+    <p>Review date: 2026-05-10.</p>
+<p>This is the core English note for the 28 evidence criteria in the 2015 ACMG/AMP guideline from Richards et al., 2015 (Genetics in Medicine), the foundational reference for germline sequence variant interpretation. It has three goals.</p>
+<ol>
+<li>Explain what each criterion means in the official 2015 ACMG/AMP guideline baseline.</li>
+<li>Summarize the conditions and common errors to check before applying each criterion.</li>
+<li>Distinguish later ClinGen guidance from the original 2015 ACMG/AMP guideline.</li>
+</ol>
+<p>The key conclusion is that the 2015 ACMG/AMP guideline remains the publicly verifiable official baseline. ClinGen Variant Classification Guidance is not a new final guideline that replaces it; it is a set of recommendations for applying the 2015 ACMG/AMP criteria more consistently.</p>
+<h2 id="en-criteria-1-official-baseline-and-current-guidance">1. Official baseline and current guidance</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Status</th>
+<th>How to use it</th>
+<th>Key links</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2015 ACMG/AMP guideline</td>
+<td>Official final baseline</td>
+<td>Starting point for all explanations</td>
+<td><a href="https://www.acmg.net/docs/standards_guidelines_for_the_interpretation_of_sequence_variants.pdf">ACMG PDF</a>, <a href="https://pubmed.ncbi.nlm.nih.gov/25741868/">PubMed</a>, <a href="https://www.nature.com/articles/gim201530">Nature/GIM</a></td>
+</tr>
+<tr>
+<td>ClinGen Variant Classification Guidance</td>
+<td>Current application recommendations</td>
+<td>Check criterion-specific application of the 2015 ACMG/AMP guideline criteria</td>
+<td><a href="https://www.clinicalgenome.org/tools/clingen-variant-classification-guidance/">ClinGen Guidance</a></td>
+</tr>
+<tr>
+<td>ClinGen SVI archived page</td>
+<td>Official but archived</td>
+<td>Check older SVI materials and document links</td>
+<td><a href="https://www.clinicalgenome.org/working-groups/sequence-variant-interpretation/">SVI archived page</a></td>
+</tr>
+<tr>
+<td>VCEP/CSpec specification</td>
+<td>Gene/disease-specific criteria</td>
+<td>Apply only to the relevant gene-disease pair</td>
+<td><a href="https://cspec.clinicalgenome.org/cspec/ui/">CSpec Registry</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="en-criteria-2-the-2015-acmgamp-guideline-is-a-rule-based-framework">2. The 2015 ACMG/AMP guideline is a rule-based framework</h2>
+<p>The 2015 ACMG/AMP guideline is not a simple additive score sheet. It is a rule-based combination framework. Each evidence criterion supports either the pathogenic or benign direction, and evidence strength is divided into <code>Very Strong</code>, <code>Strong</code>, <code>Moderate</code>, <code>Supporting</code>, and <code>Stand-alone</code>. The final classification is determined by predefined combination rules.</p>
+<p>Current recommendations and future application directions increasingly use point-based frameworks. Tavtigian et al., 2020 (Human Mutation) explained that the evidence strengths in the 2015 ACMG/AMP guideline can be abstracted into a point system proportional to Bayesian odds, and ClinGen Variant Classification Guidance lists that paper as a ClinGen-endorsed recommendation. The Table 1 footnote in Bergquist et al., 2025 (Genetics in Medicine) also states that the ACMG/AMP guideline is expected to transition to a point-based system.</p>
+<p>Three items must be fixed before classification.</p>
+<table>
+<thead>
+<tr>
+<th>What to fix first</th>
+<th>Example</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Variant identity</td>
+<td>transcript, cDNA, protein, genome build</td>
+<td>You must know whether you are evaluating the same variant</td>
+</tr>
+<tr>
+<td>Gene-disease context</td>
+<td><code>SCN1A</code> - developmental epileptic encephalopathy</td>
+<td>The same gene can have different mechanisms in different disorders</td>
+</tr>
+<tr>
+<td>Inheritance model</td>
+<td>AD, AR, X-linked</td>
+<td>Population frequency, segregation, de novo evidence, and phase are interpreted differently</td>
+</tr>
+</tbody>
+</table>
+<p>The basic decision tree is:</p>
+<pre><code class="language-text">Variant found
+  -&gt; Confirm HGVS and transcript
+  -&gt; Check gene-disease validity and inheritance
+  -&gt; First evaluate BA1/BS1/BS2 using population frequency
+  -&gt; Connect variant consequence with disease mechanism
+  -&gt; Review consequence-based criteria such as PVS1, PM4, BP3, BP7
+  -&gt; Gather functional, computational, segregation, de novo, and phenotype evidence
+  -&gt; Check applicability and independence of each criterion
+  -&gt; Adjust strength and cutoffs if ClinGen guidance or VCEP/CSpec exists
+  -&gt; Determine the final tier using 2015 ACMG/AMP combination rules or an approved gene-specific rule
+</code></pre>
+<h2 id="en-criteria-3-the-28-criteria-in-the-2015-acmgamp-guideline-at-a-glance">3. The 28 criteria in the 2015 ACMG/AMP guideline at a glance</h2>
+<h3 id="en-criteria-31-pathogenic-direction-16-criteria">3.1 Pathogenic direction: 16 criteria</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th style="text-align: right;">2015 ACMG/AMP guideline strength</th>
+<th>Short definition</th>
+<th>Key question</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PVS1</code></td>
+<td style="text-align: right;">Very Strong</td>
+<td>Null variant in a gene where LOF is a disease mechanism</td>
+<td>Is this truly LOF, and is LOF the disease mechanism for this condition?</td>
+</tr>
+<tr>
+<td><code>PS1</code></td>
+<td style="text-align: right;">Strong</td>
+<td>Same amino acid change as an established pathogenic variant</td>
+<td>Is the protein change the same despite a different nucleotide change? Could splicing differ?</td>
+</tr>
+<tr>
+<td><code>PS2</code></td>
+<td style="text-align: right;">Strong</td>
+<td>Confirmed de novo</td>
+<td>Is this a de novo variant with confirmed parental relationship and appropriate phenotype?</td>
+</tr>
+<tr>
+<td><code>PS3</code></td>
+<td style="text-align: right;">Strong</td>
+<td>Well-established functional assay supports damaging effect</td>
+<td>Does the assay measure the disease mechanism appropriately?</td>
+</tr>
+<tr>
+<td><code>PS4</code></td>
+<td style="text-align: right;">Strong</td>
+<td>Variant frequency is significantly higher in affected cases than controls</td>
+<td>Is there sufficient case-control or repeated case evidence?</td>
+</tr>
+<tr>
+<td><code>PM1</code></td>
+<td style="text-align: right;">Moderate</td>
+<td>Hotspot or critical domain without benign variation</td>
+<td>Is this truly a critical domain with little benign variation?</td>
+</tr>
+<tr>
+<td><code>PM2</code></td>
+<td style="text-align: right;">Moderate in the 2015 ACMG/AMP guideline</td>
+<td>Absent or very rare in controls</td>
+<td>Are you overvaluing rarity alone?</td>
+</tr>
+<tr>
+<td><code>PM3</code></td>
+<td style="text-align: right;">Moderate</td>
+<td>In trans with a pathogenic variant in a recessive disorder</td>
+<td>Is phase confirmed? Is the opposite-allele variant P/LP?</td>
+</tr>
+<tr>
+<td><code>PM4</code></td>
+<td style="text-align: right;">Moderate</td>
+<td>In-frame indel or stop-loss in a non-repeat region causing protein length change</td>
+<td>Is the protein length change likely functionally important?</td>
+</tr>
+<tr>
+<td><code>PM5</code></td>
+<td style="text-align: right;">Moderate</td>
+<td>Different missense variant at the same residue is pathogenic</td>
+<td>Is the same residue enough? Is the mechanism shared?</td>
+</tr>
+<tr>
+<td><code>PM6</code></td>
+<td style="text-align: right;">Moderate</td>
+<td>Assumed de novo without confirmed parentage</td>
+<td>Is there de novo evidence but insufficient parental relationship confirmation?</td>
+</tr>
+<tr>
+<td><code>PP1</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>Cosegregation in affected relatives</td>
+<td>Does the variant track with disease in the family?</td>
+</tr>
+<tr>
+<td><code>PP2</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>Missense is a common disease mechanism in a gene with low benign missense variation</td>
+<td>Is missense pathogenicity the main mechanism in this gene?</td>
+</tr>
+<tr>
+<td><code>PP3</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>Computational evidence supports a deleterious effect</td>
+<td>Were calibrated tools and cutoffs used? Was double counting avoided?</td>
+</tr>
+<tr>
+<td><code>PP4</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>Phenotype/family history is highly specific for a single genetic etiology</td>
+<td>Is phenotype specificity sufficient?</td>
+</tr>
+<tr>
+<td><code>PP5</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>Reputable source reports pathogenicity but evidence is not available</td>
+<td>Current recommendations discourage using this as independent evidence</td>
+</tr>
+</tbody>
+</table>
+<h3 id="en-criteria-32-benign-direction-12-criteria">3.2 Benign direction: 12 criteria</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th style="text-align: right;">2015 ACMG/AMP guideline strength</th>
+<th>Short definition</th>
+<th>Key question</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BA1</code></td>
+<td style="text-align: right;">Stand-alone</td>
+<td>Population allele frequency &gt;5%</td>
+<td>Is the variant too common to be a Mendelian pathogenic variant?</td>
+</tr>
+<tr>
+<td><code>BS1</code></td>
+<td style="text-align: right;">Strong</td>
+<td>Allele frequency is greater than expected for the disorder</td>
+<td>Is it too common after considering prevalence, penetrance, and inheritance?</td>
+</tr>
+<tr>
+<td><code>BS2</code></td>
+<td style="text-align: right;">Strong</td>
+<td>Observed in a healthy adult for a fully penetrant early-onset disorder</td>
+<td>Is the genotype present in someone who should have shown the phenotype?</td>
+</tr>
+<tr>
+<td><code>BS3</code></td>
+<td style="text-align: right;">Strong</td>
+<td>Well-established functional studies support no damaging effect</td>
+<td>Is the assay validated and does it show normal function?</td>
+</tr>
+<tr>
+<td><code>BS4</code></td>
+<td style="text-align: right;">Strong</td>
+<td>Lack of segregation in affected family members</td>
+<td>Were phenocopy, reduced penetrance, and locus heterogeneity considered?</td>
+</tr>
+<tr>
+<td><code>BP1</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>Missense variant in a gene where truncating variants are the main mechanism</td>
+<td>Is missense usually not a disease mechanism in this gene?</td>
+</tr>
+<tr>
+<td><code>BP2</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>Observed in trans with a pathogenic variant in a fully penetrant dominant disorder, or in cis with a pathogenic variant under any inheritance pattern</td>
+<td>Do phase and disease model fit?</td>
+</tr>
+<tr>
+<td><code>BP3</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>In-frame indel in a repetitive region without known function</td>
+<td>Is the repeat-region variant likely less functionally important?</td>
+</tr>
+<tr>
+<td><code>BP4</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>Computational evidence supports no impact</td>
+<td>Does it meet calibrated benign cutoffs?</td>
+</tr>
+<tr>
+<td><code>BP5</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>Found in a case with an alternate molecular basis</td>
+<td>Does another causal variant explain the phenotype?</td>
+</tr>
+<tr>
+<td><code>BP6</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>Reputable source reports benignity but evidence is not available</td>
+<td>Current recommendations discourage using this as independent evidence</td>
+</tr>
+<tr>
+<td><code>BP7</code></td>
+<td style="text-align: right;">Supporting</td>
+<td>Synonymous variant with no predicted splice impact and non-highly conserved nucleotide</td>
+<td>Is splice risk low for the silent/intronic variant?</td>
+</tr>
+</tbody>
+</table>
+<h2 id="en-criteria-4-2015-acmgamp-guideline-combination-rules">4. 2015 ACMG/AMP guideline combination rules</h2>
+<h3 id="en-criteria-41-pathogenic">4.1 Pathogenic</h3>
+<p><code>Pathogenic</code> is reached by any of the following.</p>
+<pre><code class="language-text">1 Very Strong AND
+  &gt;=1 Strong OR
+  &gt;=2 Moderate OR
+  1 Moderate + 1 Supporting OR
+  &gt;=2 Supporting
+
+OR
+
+&gt;=2 Strong
+
+OR
+
+1 Strong AND
+  &gt;=3 Moderate OR
+  2 Moderate + &gt;=2 Supporting OR
+  1 Moderate + &gt;=4 Supporting
+</code></pre>
+<h3 id="en-criteria-42-likely-pathogenic">4.2 Likely pathogenic</h3>
+<p><code>Likely pathogenic</code> is reached by any of the following.</p>
+<pre><code class="language-text">1 Very Strong + 1 Moderate
+1 Strong + 1-2 Moderate
+1 Strong + &gt;=2 Supporting
+&gt;=3 Moderate
+2 Moderate + &gt;=2 Supporting
+1 Moderate + &gt;=4 Supporting
+</code></pre>
+<h3 id="en-criteria-43-benign-and-likely-benign">4.3 Benign and likely benign</h3>
+<pre><code class="language-text">Benign:
+  BA1 alone
+  OR &gt;=2 Strong benign criteria
+
+Likely benign:
+  1 Strong benign + 1 Supporting benign
+  OR &gt;=2 Supporting benign
+</code></pre>
+<h3 id="en-criteria-44-vus">4.4 VUS</h3>
+<p>The result is <code>VUS</code> when:</p>
+<pre><code class="language-text">The above combinations are not met
+OR pathogenic and benign evidence conflict
+</code></pre>
+<p>VUS does not mean "slightly pathogenic." It means the current evidence set is insufficient to classify the variant as either pathogenic or benign.</p>
+<h2 id="en-criteria-5-detailed-explanation-of-each-criterion">5. Detailed explanation of each criterion</h2>
+<h3 id="en-criterion-pvs1">5.1 <code>PVS1</code>: null variant in a gene where LOF is the disease mechanism</h3>
+<p>2015 ACMG/AMP guideline definition: apply when there is a null variant, such as nonsense, frameshift, canonical +/-1 or 2 splice site, initiation codon, or single/multiexon deletion, and loss-of-function is a known disease mechanism for the gene.</p>
+<p>Check before applying:</p>
+<ul>
+<li>Is LOF an established disease mechanism for this gene-disease pair?</li>
+<li>Is the variant located where nonsense-mediated decay is expected?</li>
+<li>Could it escape NMD because it is in the last exon or within the last 50 bp of the penultimate exon?</li>
+<li>If a splice variant causes exon skipping, is the skipped exon in-frame and is a critical domain preserved?</li>
+<li>Is the clinically relevant transcript being interpreted?</li>
+<li>Is the gene dominated by dominant-negative or gain-of-function mechanisms, making truncation a poor proxy for LOF?</li>
+</ul>
+<p>ClinGen update: PVS1 is one of the most elaborated criteria in the 2018 ClinGen SVI recommendation. The key point is that PVS1 should not always be fixed at Very Strong. Depending on variant type, NMD prediction, exon position, critical region, transcript relevance, and gene mechanism, it can be used as <code>PVS1</code>, <code>PVS1_Strong</code>, <code>PVS1_Moderate</code>, <code>PVS1_Supporting</code>, or not met.</p>
+<p>Simplified decision tree:</p>
+<pre><code class="language-text">Is this a null-like variant?
+  No -&gt; not a PVS1 candidate
+  Yes -&gt; is LOF an established mechanism for this gene-disease pair?
+        No -&gt; do not apply PVS1
+        Yes -&gt; is it likely to trigger NMD or remove a critical protein region?
+              Yes -&gt; PVS1 or PVS1_Strong
+              Uncertain -&gt; PVS1_Moderate or PVS1_Supporting
+              No -&gt; do not apply PVS1, or consider other criteria
+</code></pre>
+<h3 id="en-criterion-ps1">5.2 <code>PS1</code>: same amino acid change</h3>
+<p>2015 ACMG/AMP guideline definition: apply when a different nucleotide change results in the same amino acid change as a variant already established as pathogenic.</p>
+<p>Example: if an existing <code>p.Val600Glu</code> is pathogenic, and a different nucleotide change produces the same <code>p.Val600Glu</code>, review PS1.</p>
+<p>Check:</p>
+<ul>
+<li>Confirm that the comparator variant is truly pathogenic or likely pathogenic.</li>
+<li>The same amino acid change can still have a different splicing impact.</li>
+<li>Confirm transcript and codon context.</li>
+<li>If the comparator is a different amino acid change at the same residue, evaluate PM5 rather than PS1.</li>
+</ul>
+<p>Splicing update: ClinGen SVI splicing guidance discusses how to think about PS1 when predicted or observed RNA effects are equivalent. In some cases, protein-level sameness is not enough; the equivalence of splicing effects must also be considered.</p>
+<h3 id="en-criterion-ps2">5.3 <code>PS2</code>: confirmed de novo</h3>
+<p>2015 ACMG/AMP guideline definition: apply when the patient has the disease, there is no family history, and the variant is de novo with confirmed maternity and paternity.</p>
+<p>Check:</p>
+<ul>
+<li>Was the absence of the variant confirmed in parental samples?</li>
+<li>Was parental relationship confirmed?</li>
+<li>Does the phenotype match the gene-disease relationship?</li>
+<li>Were mosaicism, nonpaternity, egg donation, or embryo transfer considered?</li>
+<li>Are there multiple independent de novo observations of the same variant?</li>
+</ul>
+<p>ClinGen update: PS2/PM6 were specified using a point-based approach in the 2018 recommendation and 2021 v1.1 update. Each de novo observation receives points according to phenotype specificity and confirmed or assumed parental relationship, and the total score determines <code>Supporting</code>, <code>Moderate</code>, <code>Strong</code>, or <code>Very Strong</code>.</p>
+<p>Simplified decision tree:</p>
+<pre><code class="language-text">Does the proband phenotype fit the gene-disease relationship?
+  No -&gt; do not use PS2/PM6
+  Yes -&gt; are both parents variant-negative?
+        No or parents not tested -&gt; no de novo evidence
+        Yes -&gt; was parental relationship confirmed?
+              Yes -&gt; PS2 family
+              No -&gt; PM6 family
+        Then determine strength from phenotype specificity and number of independent observations
+</code></pre>
+<h3 id="en-criterion-ps3">5.4 <code>PS3</code>: functional evidence supports a damaging effect</h3>
+<p>2015 ACMG/AMP guideline definition: apply when well-established in vitro or in vivo functional studies support a damaging effect on the gene or gene product.</p>
+<p>Check:</p>
+<ul>
+<li>Does the assay directly measure the disease mechanism?</li>
+<li>Is the variant effect linked to clinical pathogenicity?</li>
+<li>Are there sufficient known pathogenic and benign controls?</li>
+<li>Were assay thresholds predefined and reproducible?</li>
+<li>Does the experiment measure protein function, splicing, expression, localization, or another property?</li>
+</ul>
+<p>ClinGen update: Brnich et al., 2019 (Genome Medicine) PS3/BS3 guidance recommends evaluating functional assays in four steps: define the disease mechanism, assess assay class relevance, validate the assay instance, and then apply it to the individual variant. Without sufficient controls and a statistical framework, Strong should be downgraded to Moderate or Supporting.</p>
+<h3 id="en-criterion-ps4">5.5 <code>PS4</code>: significant enrichment in affected cases</h3>
+<p>2015 ACMG/AMP guideline definition: apply when variant prevalence is significantly higher in affected individuals than controls. The 2015 ACMG/AMP guideline gives an example of strong evidence when relative risk or odds ratio is greater than 5 and the confidence interval does not include 1. For very rare variants, repeated observations in unrelated patients with absence from controls may be used as moderate evidence.</p>
+<p>Check:</p>
+<ul>
+<li>Are case and control ascertainment appropriate?</li>
+<li>Was ancestry matching performed?</li>
+<li>Are phenotype and disease definitions consistent?</li>
+<li>Were duplicate patients or related family members avoided?</li>
+<li>Were publication bias and duplicate ClinVar reports checked?</li>
+</ul>
+<p>Caution: "Observed in one patient" is not PS4. Statistical comparison or repeated independent observations are needed.</p>
+<h3 id="en-criterion-pm1">5.6 <code>PM1</code>: mutational hotspot or critical functional domain</h3>
+<p>2015 ACMG/AMP guideline definition: apply when a variant lies in a mutational hot spot or well-established critical functional domain without benign variation.</p>
+<p>Check:</p>
+<ul>
+<li>Is the domain established by functional assays, structural biology, or curated disease mechanism?</li>
+<li>Is benign missense variation rare in the same domain?</li>
+<li>Is residue-level or domain-level constraint connected to the disease?</li>
+<li>Is "hotspot" being misused to mean simply a site where variants have been reported?</li>
+</ul>
+<p>Caution: Do not apply PM1 only because a protein domain has a database name.</p>
+<h3 id="en-criterion-pm2">5.7 <code>PM2</code>: absent or very rare in population controls</h3>
+<p>2015 ACMG/AMP guideline definition: apply when a variant is absent from controls such as the Exome Sequencing Project, 1000 Genomes, or ExAC, or when it is at extremely low frequency for a recessive disorder.</p>
+<p>Current recommendations:</p>
+<ul>
+<li>Use larger population databases such as gnomAD.</li>
+<li>Check ancestry-specific allele frequency.</li>
+<li>Check coverage, low-complexity regions, and CNV/indel calling limitations.</li>
+<li>Consider disease prevalence, penetrance, inheritance, and allelic heterogeneity.</li>
+</ul>
+<p>ClinGen update: the 2020 SVI PM2 recommendation proposed downgrading PM2 from <code>Moderate</code> to <code>Supporting</code> by default. The reason is that absence or rarity alone often does not provide moderate odds for pathogenicity. Many ClinGen/VCEP specifications therefore use <code>PM2_Supporting</code>.</p>
+<p>Caution: "Absent from gnomAD" is a common rare-variant observation. It should not create a pathogenic conclusion by itself.</p>
+<h3 id="en-criterion-pm3">5.8 <code>PM3</code>: in trans in a recessive disorder</h3>
+<p>2015 ACMG/AMP guideline definition: apply when the variant under evaluation is observed in trans with another pathogenic variant in a recessive disorder.</p>
+<p>Check:</p>
+<ul>
+<li>Was phase confirmed through parental or offspring testing?</li>
+<li>Is the opposite-allele variant pathogenic or likely pathogenic?</li>
+<li>Was the observation made in an affected patient?</li>
+<li>Distinguish homozygous observation from compound heterozygosity.</li>
+<li>Do both variants fit the same gene-disease mechanism?</li>
+</ul>
+<p>ClinGen update: the 2019 SVI PM3 recommendation proposed a point-based system. Points are assigned per proband based on confirmed in trans status, unknown phase, homozygous occurrence, and classification of the opposite-allele variant; total points determine <code>PM3_Supporting</code>, <code>PM3</code>, <code>PM3_Strong</code>, or <code>PM3_VeryStrong</code>.</p>
+<h3 id="en-criterion-pm4">5.9 <code>PM4</code>: protein length change</h3>
+<p>2015 ACMG/AMP guideline definition: apply to an in-frame deletion/insertion in a non-repeat region or a stop-loss variant that changes protein length.</p>
+<p>Check:</p>
+<ul>
+<li>Is the in-frame indel in a repetitive region?</li>
+<li>Is the location related to a critical domain, structural motif, or active site?</li>
+<li>Does the stop-loss plausibly create a functionally meaningful C-terminal extension?</li>
+<li>Is splicing effect a more appropriate primary mechanism?</li>
+</ul>
+<p>Caution: An in-frame indel in a repeat region may be evaluated under benign-direction <code>BP3</code>.</p>
+<h3 id="en-criterion-pm5">5.10 <code>PM5</code>: different pathogenic missense variant at the same residue</h3>
+<p>2015 ACMG/AMP guideline definition: apply when a different missense change at the same amino acid residue is established as pathogenic and a new missense variant is observed.</p>
+<p>Example: if <code>p.Arg156His</code> is pathogenic and the new variant is <code>p.Arg156Cys</code>, review PM5.</p>
+<p>Check:</p>
+<ul>
+<li>Confirm that the existing variant is pathogenic based on sufficient evidence.</li>
+<li>Determine whether the residue-level mechanism is important regardless of substitution type.</li>
+<li>Consider whether the new amino acid change is conservative or radical.</li>
+<li>Check whether splicing effects differ.</li>
+</ul>
+<p>Caution: The same residue is not always pathogenic. Do not confuse this with a synonymous or splicing variant at the same codon.</p>
+<h3 id="en-criterion-pm6">5.11 <code>PM6</code>: assumed de novo</h3>
+<p>2015 ACMG/AMP guideline definition: apply when the variant is assumed de novo but paternity and maternity are not confirmed.</p>
+<p>ClinGen update: PS2 and PM6 are handled together in the 2018/2021 SVI de novo guidance using a point-based method. Confirmed parental relationship leads to the PS2 family; unconfirmed parental relationship leads to the PM6 family with lower points. If the phenotype does not fit the gene-disease relationship, no points should be assigned.</p>
+<h3 id="en-criterion-pp1">5.12 <code>PP1</code>: cosegregation</h3>
+<p>2015 ACMG/AMP guideline definition: apply when the variant cosegregates with disease in multiple affected family members in a gene established to cause the disease. The guideline also states that more segregation data can support stronger evidence.</p>
+<p>Check:</p>
+<ul>
+<li>Are phenotypes in family members accurately diagnosed?</li>
+<li>Were penetrance and age of onset considered?</li>
+<li>Is an unaffected carrier truly unaffected, or possibly presymptomatic?</li>
+<li>Is the phenotype common enough for phenocopies?</li>
+<li>Does the disease have high locus heterogeneity?</li>
+</ul>
+<p>ClinGen update: 2023/2024 PP1/BS4/PP4 guidance proposes a point-based heuristic that considers phenotype specificity and cosegregation together. It is not just a count of family members; gene-phenotype specificity, locus heterogeneity, and segregation information should be integrated.</p>
+<h3 id="en-criterion-pp2">5.13 <code>PP2</code>: missense is a major disease mechanism in the gene</h3>
+<p>2015 ACMG/AMP guideline definition: apply when a missense variant is found in a gene with a low rate of benign missense variation and where missense variants are a common disease mechanism.</p>
+<p>Check:</p>
+<ul>
+<li>Is gene-level missense constraint connected to the disease mechanism?</li>
+<li>Is the gene instead primarily driven by truncating, splice, or CNV mechanisms?</li>
+<li>Does ClinGen/VCEP allow use of PP2 for this gene?</li>
+</ul>
+<p>Caution: Do not apply PP2 to every missense variant. It is a gene-specific mechanism criterion.</p>
+<h3 id="en-criterion-pp3">5.14 <code>PP3</code>: computational evidence supports a deleterious effect</h3>
+<p>2015 ACMG/AMP guideline definition: apply when multiple computational lines, such as conservation, evolutionary evidence, or splicing impact, support a deleterious effect on the gene or gene product.</p>
+<p>2015 ACMG/AMP guideline caveat: many in silico algorithms use the same or similar inputs, so several predictors must not be counted as independent evidence. PP3 should be used only once per variant evaluation.</p>
+<p>Current recommendations:</p>
+<ul>
+<li>For missense variants, use ClinGen-calibrated tools and cutoffs when possible.</li>
+<li>For splicing, predictors such as SpliceAI may be used, but canonical +/-1,2 splice-site variants usually require the PVS1 splicing decision tree first.</li>
+<li>Tools that include population frequency in the score create double-counting risk with PM2/BA1/BS1.</li>
+<li>If a VCEP/CSpec specifies a tool and cutoff, prioritize it within that scope.</li>
+</ul>
+<p>Detailed cutoffs are summarized below in the <code>PP3/BP4 computational evidence</code> section.</p>
+<h3 id="en-criterion-pp4">5.15 <code>PP4</code>: highly specific phenotype</h3>
+<p>2015 ACMG/AMP guideline definition: apply when the patient phenotype or family history is highly specific for a disease with a single genetic etiology.</p>
+<p>Check:</p>
+<ul>
+<li>How specific is the phenotype to this gene-disease relationship?</li>
+<li>Was the clinical diagnosis established by objective criteria?</li>
+<li>Is the disease low in locus heterogeneity?</li>
+<li>Are you overvaluing a broad or nonspecific phenotype?</li>
+</ul>
+<p>ClinGen update: PP1/BS4/PP4 guidance notes that PP4 can be difficult to separate from segregation evidence and proposes an approach that quantifies gene-phenotype specificity and cosegregation together.</p>
+<h3 id="en-criterion-pp5">5.16 <code>PP5</code>: reputable source reports pathogenicity</h3>
+<p>2015 ACMG/AMP guideline definition: apply when a reputable source reports the variant as pathogenic but the laboratory cannot independently evaluate the evidence.</p>
+<p>Current recommendations:</p>
+<ul>
+<li>ClinGen SVI recommended avoiding "reputable source assertion without evidence" criteria such as PP5/BP6. The supporting sources are Biesecker and Harrison, 2018 (Genetics in Medicine; DOI <code>10.1038/gim.2018.42</code>) and the "Reputable source section" in ClinGen General Sequence Variant Curation Process SOP v3.2.</li>
+<li>Do not simply copy conclusions from ClinVar, HGMD, or locus-specific databases. Reconstruct the underlying evidence as ACMG/AMP criteria.</li>
+<li>If evidence is public, as in a ClinGen expert panel assertion, evaluate the underlying evidence codes instead of using PP5.</li>
+</ul>
+<p>Practical note: In this educational page, PP5/BP6 should be shown as criteria included in the 2015 ACMG/AMP guideline but currently discouraged as independent codes.</p>
+<h3 id="en-criterion-ba1">5.17 <code>BA1</code>: allele frequency is too high</h3>
+<p>2015 ACMG/AMP guideline definition: apply benign stand-alone evidence when allele frequency exceeds 5% in resources such as the Exome Sequencing Project, 1000 Genomes, or ExAC.</p>
+<p>Check:</p>
+<ul>
+<li>Is ancestry-specific frequency high in current population databases such as gnomAD?</li>
+<li>Are variant calling quality and coverage sufficient?</li>
+<li>Is this a common low-penetrance risk allele rather than a Mendelian high-penetrance disease variant?</li>
+<li>Is the variant an exception such as a founder pathogenic variant or pseudodeficiency allele?</li>
+</ul>
+<p>ClinGen update: the 2018 BA1 recommendation specified BA1 use together with a BA1 exception list. Even if <code>MAF &gt; 0.05</code>, check the exception list and disease context.</p>
+<h3 id="en-criterion-bs1">5.18 <code>BS1</code>: allele frequency exceeds disease expectation</h3>
+<p>2015 ACMG/AMP guideline definition: apply when allele frequency is greater than expected for a pathogenic variant in the disorder.</p>
+<p>Check:</p>
+<ul>
+<li>disease prevalence</li>
+<li>penetrance</li>
+<li>inheritance model</li>
+<li>allelic and locus heterogeneity</li>
+<li>maximum credible allele frequency</li>
+<li>ancestry-specific frequency</li>
+</ul>
+<p>Caution: BS1 does not mean "some frequency exists." The frequency must be high enough that pathogenicity is implausible under the disease model.</p>
+<h3 id="en-criterion-bs2">5.19 <code>BS2</code>: observed in a healthy adult</h3>
+<p>2015 ACMG/AMP guideline definition: apply when a healthy adult is observed with the relevant genotype for a recessive, dominant, or X-linked disorder expected to have full penetrance at an early age.</p>
+<p>Examples:</p>
+<ul>
+<li>recessive disorder: homozygous healthy adult</li>
+<li>dominant disorder: heterozygous healthy adult</li>
+<li>X-linked disorder: hemizygous healthy adult</li>
+</ul>
+<p>Check:</p>
+<ul>
+<li>Is the disorder truly early-onset and fully penetrant?</li>
+<li>Is the observed individual old enough and phenotypically evaluated?</li>
+<li>Were reduced penetrance, variable expressivity, and mild phenotype considered?</li>
+<li>Are you overtrusting "healthy" labels in population databases?</li>
+</ul>
+<h3 id="en-criterion-bs3">5.20 <code>BS3</code>: functional evidence supports no damaging effect</h3>
+<p>2015 ACMG/AMP guideline definition: apply when well-established functional studies show no damaging effect on protein function or splicing.</p>
+<p>ClinGen update: follow the same Brnich et al., 2019 (Genome Medicine) PS3/BS3 guidance. The assay must match the disease mechanism and be calibrated with benign/pathogenic controls. If the assay only shows one function is normal but cannot rule out the disease-relevant mechanism overall, downgrade the strength or do not apply.</p>
+<h3 id="en-criterion-bs4">5.21 <code>BS4</code>: lack of segregation</h3>
+<p>2015 ACMG/AMP guideline definition: apply benign strong evidence when a variant does not segregate with disease in affected family members.</p>
+<p>Check:</p>
+<ul>
+<li>Is the disease prone to phenocopy?</li>
+<li>Could there be a second pathogenic variant or another locus cause in the family?</li>
+<li>Were penetrance and age of onset considered?</li>
+<li>Were family relationships and sample identity confirmed?</li>
+</ul>
+<p>ClinGen update: PP1/BS4/PP4 guidance recommends treating non-segregation using formal linkage or a point-based heuristic. Do not mechanically apply BS4 only because one affected individual does not carry the variant.</p>
+<h3 id="en-criterion-bp1">5.22 <code>BP1</code>: missense in a gene where truncating variants are the main mechanism</h3>
+<p>2015 ACMG/AMP guideline definition: apply benign supporting evidence when the variant is missense in a gene where disease is primarily caused by truncating variants.</p>
+<p>Check:</p>
+<ul>
+<li>Are pathogenic missense variants rare for this gene-disease relationship?</li>
+<li>Is LOF haploinsufficiency the main mechanism?</li>
+<li>Are missense gain-of-function or dominant-negative mechanisms known?</li>
+</ul>
+<p>Caution: Do not automate "LOF gene means missense is benign." Some LOF genes still have pathogenic missense variants.</p>
+<h3 id="en-criterion-bp2">5.23 <code>BP2</code>: phase supports a benign interpretation</h3>
+<p>2015 ACMG/AMP guideline definition:</p>
+<ul>
+<li>apply when the variant is observed in trans with a pathogenic variant in a fully penetrant dominant gene/disorder, or</li>
+<li>when it is observed in cis with a pathogenic variant under any inheritance pattern.</li>
+</ul>
+<p>Intuition:</p>
+<ul>
+<li>In a fully penetrant dominant disorder, two pathogenic hits in trans may not fit the phenotype or viability expectation and can support benign interpretation.</li>
+<li>If a pathogenic variant in cis already explains the phenotype, the variant being evaluated becomes less suspicious.</li>
+</ul>
+<p>Check:</p>
+<ul>
+<li>Was phase experimentally confirmed?</li>
+<li>Is the opposite-allele or same-allele variant truly pathogenic?</li>
+<li>Is the disease model fully penetrant dominant?</li>
+</ul>
+<h3 id="en-criterion-bp3">5.24 <code>BP3</code>: in-frame indel in a repetitive region</h3>
+<p>2015 ACMG/AMP guideline definition: apply when there is an in-frame deletion/insertion in a repetitive region without known function.</p>
+<p>Check:</p>
+<ul>
+<li>Is the repeat region low-complexity or tolerant?</li>
+<li>Is there no domain, motif, active site, or known pathogenic repeat mechanism?</li>
+<li>Is indel calling quality good?</li>
+</ul>
+<p>Caution: Do not apply this simplistically to repeat expansion disorders where the repeat itself is the disease mechanism.</p>
+<h3 id="en-criterion-bp4">5.25 <code>BP4</code>: computational evidence supports no impact</h3>
+<p>2015 ACMG/AMP guideline definition: apply when computational evidence such as conservation, evolutionary evidence, or splicing impact supports no effect on the gene or gene product.</p>
+<p>2015 ACMG/AMP guideline caveat: as with PP3, multiple predictors should not be counted as independent evidence. Use BP4 only once per variant evaluation.</p>
+<p>Current recommendations:</p>
+<ul>
+<li>For missense variants, use calibrated benign thresholds.</li>
+<li>For splicing, use thresholds such as the SpliceAI lower cutoff.</li>
+<li>If strong pathogenic-direction evidence exists but BP4 is weakly met, review evidence conflict and tool limitations.</li>
+</ul>
+<p>Detailed cutoffs are summarized in the PP3/BP4 section below.</p>
+<h3 id="en-criterion-bp5">5.26 <code>BP5</code>: alternate molecular basis</h3>
+<p>2015 ACMG/AMP guideline definition: apply when the variant is found in a case with another molecular basis that can explain the patient's phenotype.</p>
+<p>Check:</p>
+<ul>
+<li>Is the alternate variant P/LP and sufficient to explain the phenotype?</li>
+<li>Is dual diagnosis unlikely?</li>
+<li>Could the phenotype be split across two disorders?</li>
+<li>In a recessive disease, is only one allele explained?</li>
+</ul>
+<p>Caution: Do not apply BP5 merely because another candidate variant exists. The alternate molecular diagnosis must be convincing.</p>
+<h3 id="en-criterion-bp6">5.27 <code>BP6</code>: reputable source reports benignity</h3>
+<p>2015 ACMG/AMP guideline definition: apply when a reputable source reports the variant as benign but the laboratory cannot independently evaluate the evidence.</p>
+<p>Current recommendations:</p>
+<ul>
+<li>As with PP5, current recommendations discourage using this as an independent criterion. The supporting sources are Biesecker and Harrison, 2018 (Genetics in Medicine; DOI <code>10.1038/gim.2018.42</code>) and the "Reputable source section" in ClinGen General Sequence Variant Curation Process SOP v3.2.</li>
+<li>Instead of using a ClinVar benign assertion as BP6, evaluate the underlying evidence directly, such as frequency, functional evidence, or segregation.</li>
+</ul>
+<h3 id="en-criterion-bp7">5.28 <code>BP7</code>: synonymous variant with no splicing impact</h3>
+<p>2015 ACMG/AMP guideline definition: apply when a synonymous variant has no predicted effect on the splice consensus sequence, does not create a new splice site, and the nucleotide is not highly conserved.</p>
+<p>Current recommendations:</p>
+<ul>
+<li>BP7-like reasoning can be extended to some intronic variants under VCEP/ClinGen splicing guidance, not only synonymous variants.</li>
+<li>Be cautious around donor/acceptor splice regions, especially the first base of an exon or the last three bases of an exon.</li>
+<li>If a variant also has a missense effect, do not use "no splicing impact" alone to push the whole variant toward benign.</li>
+</ul>
+<p>ClinGen splicing guidance:</p>
+<ul>
+<li>For canonical donor/acceptor +/-1,2 variants, the PVS1 splicing decision tree comes first.</li>
+<li>After applying BP4 using a SpliceAI lower cutoff, review BP7 if the synonymous/intronic context and position conditions are met.</li>
+</ul>
+<h2 id="en-criteria-6-pp3bp4-computational-evidence-in-detail">6. PP3/BP4 computational evidence in detail</h2>
+<p>PP3/BP4 are commonly used in practice and commonly misused. The four core principles are:</p>
+<ol>
+<li>Do not add several predictors with shared inputs as independent evidence.</li>
+<li>Prefer tools with calibrated cutoffs.</li>
+<li>Separate missense prediction from splicing prediction.</li>
+<li>Follow gene/disease-specific VCEP specifications when they exist.</li>
+</ol>
+<h3 id="en-criteria-61-missense-predictor-cutoff-examples">6.1 Missense predictor cutoff examples</h3>
+<p>The first table below summarizes selected tools from the ClinGen SVI PP3/BP4 calibration by Pejaver et al., 2022 (American Journal of Human Genetics) for educational use. These cutoffs are calibrated for missense variant pathogenicity prediction and should not be automatically applied to every variant type.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Example BP4-direction cutoff</th>
+<th>Example PP3-direction cutoff</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>REVEL</td>
+<td><code>&lt;=0.003</code> very strong, <code>(0.003,0.016]</code> strong, <code>(0.016,0.183]</code> moderate, <code>(0.183,0.290]</code> supporting</td>
+<td><code>[0.644,0.773)</code> supporting, <code>[0.773,0.932)</code> moderate, <code>&gt;=0.932</code> strong</td>
+<td>One of the most commonly specified missense meta-predictors in VCEPs</td>
+</tr>
+<tr>
+<td>BayesDel</td>
+<td><code>&lt;=-0.36</code> moderate, <code>(-0.36,-0.18]</code> supporting</td>
+<td><code>[0.13,0.27)</code> supporting, <code>[0.27,0.50)</code> moderate, <code>&gt;=0.50</code> strong</td>
+<td>Calibrated meta-predictor; watch population-frequency inclusion and double counting</td>
+</tr>
+<tr>
+<td>MutPred2</td>
+<td><code>&lt;=0.010</code> strong, <code>(0.010,0.197]</code> moderate, <code>(0.197,0.391]</code> supporting</td>
+<td><code>[0.737,0.829)</code> supporting, <code>[0.829,0.932)</code> moderate, <code>&gt;=0.932</code> strong</td>
+<td>Strong cutoff possible in the pathogenic direction</td>
+</tr>
+<tr>
+<td>VEST4</td>
+<td><code>&lt;=0.302</code> moderate, <code>(0.302,0.449]</code> supporting</td>
+<td><code>[0.764,0.861)</code> supporting, <code>[0.861,0.965)</code> moderate, <code>&gt;=0.965</code> strong</td>
+<td>Calibrated in Pejaver et al., 2022 (American Journal of Human Genetics)</td>
+</tr>
+<tr>
+<td>CADD</td>
+<td><code>&lt;=0.15</code> strong, <code>(0.15,17.3]</code> moderate, <code>(17.3,22.7]</code> supporting</td>
+<td><code>[25.3,28.1)</code> supporting, <code>&gt;=28.1</code> moderate</td>
+<td>Broad score; check scope and double-counting risk</td>
+</tr>
+</tbody>
+</table>
+<p>Bergquist et al., 2025 (Genetics in Medicine) additionally calibrated AlphaMissense, ESM1b, and VARITY_R, and Table 1 presents both several previously calibrated tools from Pejaver et al., 2022 (American Journal of Human Genetics) and the new tools as point-based strength intervals. The table below reproduces the key educational values from Bergquist et al., 2025 (Genetics in Medicine) Table 1.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>BP4-direction interval</th>
+<th>Indeterminate</th>
+<th>PP3-direction interval</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BayesDel</td>
+<td><code>&lt;=-0.520</code> 3 points, <code>[-0.519,-0.360]</code> 2 points, <code>[-0.359,-0.180]</code> 1 point</td>
+<td><code>[-0.179,0.129]</code></td>
+<td><code>[0.130,0.269]</code> 1 point, <code>[0.270,0.409]</code> 2 points, <code>[0.410,0.499]</code> 3 points, <code>&gt;=0.500</code> 4 points</td>
+<td>Bergquist et al., 2025 Table 1; reprinted from Pejaver et al., 2022</td>
+</tr>
+<tr>
+<td>MutPred2</td>
+<td><code>&lt;=0.010</code> 4 points, <code>[0.011,0.031]</code> 3 points, <code>[0.032,0.197]</code> 2 points, <code>[0.198,0.391]</code> 1 point</td>
+<td><code>[0.392,0.736]</code></td>
+<td><code>[0.737,0.828]</code> 1 point, <code>[0.829,0.894]</code> 2 points, <code>[0.895,0.931]</code> 3 points, <code>&gt;=0.932</code> 4 points</td>
+<td>Bergquist et al., 2025 Table 1; reprinted from Pejaver et al., 2022</td>
+</tr>
+<tr>
+<td>REVEL</td>
+<td><code>&lt;=0.016</code> 4 points, <code>[0.017,0.052]</code> 3 points, <code>[0.053,0.183]</code> 2 points, <code>[0.184,0.290]</code> 1 point</td>
+<td><code>[0.291,0.643]</code></td>
+<td><code>[0.644,0.772]</code> 1 point, <code>[0.773,0.878]</code> 2 points, <code>[0.879,0.931]</code> 3 points, <code>&gt;=0.932</code> 4 points</td>
+<td>Bergquist et al., 2025 Table 1; reprinted from Pejaver et al., 2022</td>
+</tr>
+<tr>
+<td>VEST4</td>
+<td><code>&lt;=0.077</code> 3 points, <code>[0.078,0.302]</code> 2 points, <code>[0.303,0.449]</code> 1 point</td>
+<td><code>[0.450,0.763]</code></td>
+<td><code>[0.764,0.860]</code> 1 point, <code>[0.861,0.908]</code> 2 points, <code>[0.909,0.964]</code> 3 points, <code>&gt;=0.965</code> 4 points</td>
+<td>Bergquist et al., 2025 Table 1; reprinted from Pejaver et al., 2022</td>
+</tr>
+<tr>
+<td>AlphaMissense</td>
+<td><code>&lt;=0.070</code> 3 points, <code>[0.071,0.099]</code> 2 points, <code>[0.100,0.169]</code> 1 point</td>
+<td><code>[0.170,0.791]</code></td>
+<td><code>[0.792,0.905]</code> 1 point, <code>[0.906,0.971]</code> 2 points, <code>[0.972,0.989]</code> 3 points, <code>&gt;=0.990</code> 4 points</td>
+<td>Bergquist et al., 2025 Table 1</td>
+</tr>
+<tr>
+<td>ESM1b</td>
+<td><code>&gt;=8.8</code> 3 points, <code>[-3.1,8.7]</code> 2 points, <code>[-6.3,-3.2]</code> 1 point</td>
+<td><code>[-10.6,-6.4]</code></td>
+<td><code>[-12.1,-10.7]</code> 1 point, <code>[-13.9,-12.2]</code> 2 points, <code>[-23.9,-14.0]</code> 3 points, <code>&lt;=-24.0</code> 4 points</td>
+<td>Bergquist et al., 2025 Table 1</td>
+</tr>
+<tr>
+<td>VARITY_R</td>
+<td><code>&lt;=0.036</code> 4 points, <code>[0.037,0.063]</code> 3 points, <code>[0.064,0.116]</code> 2 points, <code>[0.117,0.251]</code> 1 point</td>
+<td><code>[0.252,0.674]</code></td>
+<td><code>[0.675,0.841]</code> 1 point, <code>[0.842,0.914]</code> 2 points, <code>[0.915,0.964]</code> 3 points, <code>&gt;=0.965</code> 4 points</td>
+<td>Bergquist et al., 2025 Table 1</td>
+</tr>
+</tbody>
+</table>
+<p>Caution: The 1/2/3/4 point notation follows the point-based strength intervals in Bergquist et al., 2025 (Genetics in Medicine). In the original 2015 ACMG/AMP guideline terminology, these roughly correspond to Supporting, Moderate, intermediate 3-point strength, and Strong; however, a 3-point strength was not part of the original 2015 ACMG/AMP strength categories and reflects a future point-based framework.</p>
+<h3 id="en-criteria-62-splicing-predictor-cutoff-example">6.2 Splicing predictor cutoff example</h3>
+<p>ClinGen SVI Splicing Subgroup guidance uses SpliceAI maximum delta score as an example and presents a decision tree for non-canonical splice-site variants.</p>
+<pre><code class="language-text">Is this a canonical +/-1,2 splice-site variant?
+  Yes -&gt; review the PVS1 splicing decision tree before PP3/BP4
+  No -&gt; check SpliceAI max delta score
+        &gt;=0.20 -&gt; review PP3 splicing evidence
+        &lt;=0.10 -&gt; review BP4 splicing evidence
+        0.10-0.20 -&gt; do not apply PP3/BP4 splicing evidence
+</code></pre>
+<p>Caution:</p>
+<ul>
+<li>SpliceAI <code>&gt;=0.20</code> is evidence of spliceogenicity, not automatic proof that the splicing change causes disease-causing LOF.</li>
+<li>SpliceAI <code>&lt;=0.10</code> is close to evidence for no splice impact, but it does not rule out protein-level missense effects.</li>
+<li>BP7 should be applied conservatively to synonymous variants near donor/acceptor splice regions.</li>
+</ul>
+<h2 id="en-criteria-7-major-update-map-after-the-2015-acmgamp-guideline">7. Major update map after the 2015 ACMG/AMP guideline</h2>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Update or recommendation</th>
+<th>Status</th>
+<th>Key meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BA1</code></td>
+<td>Ghosh et al., 2018 (Human Mutation) BA1 update and exception list</td>
+<td>ClinGen SVI recommendation</td>
+<td>Specifies exceptions and conditions for the MAF &gt;5% rule</td>
+</tr>
+<tr>
+<td><code>PVS1</code></td>
+<td>Abou Tayoun et al., 2018 (Human Mutation) PVS1 decision tree</td>
+<td>ClinGen SVI recommendation</td>
+<td>Adjusts LOF strength by location and mechanism</td>
+</tr>
+<tr>
+<td><code>PP5/BP6</code></td>
+<td>Biesecker and Harrison, 2018 (Genetics in Medicine) reputable source criteria</td>
+<td>ClinGen SVI recommendation</td>
+<td>Discourages unsupported database assertions as independent criteria</td>
+</tr>
+<tr>
+<td><code>PS2/PM6</code></td>
+<td>SVI de novo recommendation v1.1</td>
+<td>Supporting document, updated 2021</td>
+<td>Determines strength from phenotype specificity, parentage, and observation count</td>
+</tr>
+<tr>
+<td><code>PS3/BS3</code></td>
+<td>Brnich et al., 2019 (Genome Medicine) functional evidence framework</td>
+<td>ClinGen SVI publication</td>
+<td>Adjusts strength according to assay validity and controls</td>
+</tr>
+<tr>
+<td><code>PM2</code></td>
+<td>SVI PM2 absence/rarity recommendation 2020</td>
+<td>Supporting document</td>
+<td>Downgrades PM2 to <code>PM2_Supporting</code> by default</td>
+</tr>
+<tr>
+<td><code>PM3</code></td>
+<td>SVI in trans criterion recommendation 2019</td>
+<td>Supporting document</td>
+<td>Sums trans observations using a point-based approach</td>
+</tr>
+<tr>
+<td><code>PP3/BP4</code></td>
+<td>Pejaver et al., 2022 (American Journal of Human Genetics) computational calibration; Bergquist et al., 2025 (Genetics in Medicine) additional tools</td>
+<td>ClinGen SVI publication</td>
+<td>Provides calibrated predictor thresholds and strength levels</td>
+</tr>
+<tr>
+<td><code>PVS1/PS1/PP3/BP4/BP7</code></td>
+<td>Walker et al., 2023 (American Journal of Human Genetics) splicing guidance</td>
+<td>ClinGen SVI publication</td>
+<td>Connects splicing prediction/RNA evidence to criteria</td>
+</tr>
+<tr>
+<td><code>PP1/BS4/PP4</code></td>
+<td>Biesecker et al., 2024 (Genetics in Medicine) co-segregation/phenotype guidance</td>
+<td>ClinGen SVI publication</td>
+<td>Quantifies phenotype specificity and segregation together</td>
+</tr>
+<tr>
+<td>Multiple criteria</td>
+<td>VCEP/CSpec gene/disease-specific specifications</td>
+<td>Apply only within approved scope</td>
+<td>Redefines cutoffs and strength for specific gene/disease contexts</td>
+</tr>
+</tbody>
+</table>
+<h2 id="en-criteria-8-key-memory-points">8. Key memory points</h2>
+<table>
+<thead>
+<tr>
+<th>Point to remember</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACMG/AMP is a variant-level pathogenicity framework</td>
+<td>Do not mix it with gene-disease validity or patient diagnosis</td>
+</tr>
+<tr>
+<td>The 2015 ACMG/AMP guideline framework is rule-based</td>
+<td>It was not originally a simple additive score sheet</td>
+</tr>
+<tr>
+<td>Current recommendations increasingly use Bayesian/point-based interpretation</td>
+<td>See Tavtigian et al., 2020 (Human Mutation) and Bergquist et al., 2025 (Genetics in Medicine)</td>
+</tr>
+<tr>
+<td>ClinGen guidance refines application of the 2015 ACMG/AMP guideline criteria</td>
+<td>It is current guidance, not a full replacement</td>
+</tr>
+<tr>
+<td>VCEP/CSpec applies only when scope matches</td>
+<td>Generalizing gene/disease-specific rules causes errors</td>
+</tr>
+<tr>
+<td>PM2 is usually Supporting in current ClinGen application</td>
+<td>Rarity alone is weak evidence</td>
+</tr>
+<tr>
+<td>PP3/BP4 depends on calibrated cutoffs</td>
+<td>Adding multiple predictors is wrong</td>
+</tr>
+<tr>
+<td>PP5/BP6 require great caution today</td>
+<td>Evaluate underlying evidence instead of source assertions</td>
+</tr>
+</tbody>
+</table>
+<h2 id="en-criteria-related-pages">Related Pages</h2>
+<ul>
+<li><a href="#en-overview">ACMG variant interpretation guideline</a></li>
+</ul>
+<h2 id="en-criteria-sources">Sources</h2>
+<ul>
+<li>Richards et al., 2015 (Genetics in Medicine). Standards and guidelines for the interpretation of sequence variants. DOI: <code>10.1038/gim.2015.30</code>. <a href="https://www.acmg.net/docs/standards_guidelines_for_the_interpretation_of_sequence_variants.pdf">ACMG PDF</a>, <a href="https://pubmed.ncbi.nlm.nih.gov/25741868/">PubMed</a>, <a href="https://www.nature.com/articles/gim201530">Nature/GIM</a></li>
+<li>ClinGen Variant Classification Guidance. <a href="https://www.clinicalgenome.org/tools/clingen-variant-classification-guidance/">https://www.clinicalgenome.org/tools/clingen-variant-classification-guidance/</a></li>
+<li>ClinGen Sequence Variant Interpretation archived page. <a href="https://www.clinicalgenome.org/working-groups/sequence-variant-interpretation/">https://www.clinicalgenome.org/working-groups/sequence-variant-interpretation/</a></li>
+<li>ClinGen Criteria Specification Registry. <a href="https://cspec.clinicalgenome.org/cspec/ui/">https://cspec.clinicalgenome.org/cspec/ui/</a></li>
+<li>ClinGen General Sequence Variant Curation Process SOP v3.2. <a href="https://clinicalgenome.org/site/assets/files/7438/variant_curation_sop_v3_2_oct_2022.pdf">https://clinicalgenome.org/site/assets/files/7438/variant_curation_sop_v3_2_oct_2022.pdf</a></li>
+<li>Tavtigian et al., 2020 (Human Mutation). Fitting a naturally scaled point system to the ACMG/AMP variant classification guidelines. <a href="https://pubmed.ncbi.nlm.nih.gov/32720330/">PubMed</a></li>
+<li>Abou Tayoun et al., 2018 (Human Mutation). Recommendations for interpreting the loss of function PVS1 ACMG/AMP variant criterion. <a href="https://www.clinicalgenome.org/docs/recommendations-for-interpreting-the-loss-of-function-pvs1-acmg-amp-variant-criterion/">https://www.clinicalgenome.org/docs/recommendations-for-interpreting-the-loss-of-function-pvs1-acmg-amp-variant-criterion/</a></li>
+<li>Ghosh et al., 2018 (Human Mutation). Updated recommendation for the benign stand-alone ACMG/AMP criterion. <a href="https://www.clinicalgenome.org/docs/updated-recommendation-for-the-benign-stand-alone-acmg-amp-criterion/">https://www.clinicalgenome.org/docs/updated-recommendation-for-the-benign-stand-alone-acmg-amp-criterion/</a></li>
+<li>ClinGen SVI. Recommendation for de novo PS2/PM6 criteria v1.1. <a href="https://www.clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf">https://www.clinicalgenome.org/site/assets/files/3461/svi_proposal_for_de_novo_criteria_v1_1.pdf</a></li>
+<li>Brnich et al., 2019 (Genome Medicine). Recommendations for application of the functional evidence PS3/BS3 criterion. <a href="https://clinicalgenome.org/docs/recommendations-for-application-of-the-functional-evidence-ps3-bs3-criterion-using-the-acmg-amp-sequence-variant-interpretation/">https://clinicalgenome.org/docs/recommendations-for-application-of-the-functional-evidence-ps3-bs3-criterion-using-the-acmg-amp-sequence-variant-interpretation/</a></li>
+<li>ClinGen SVI. PM2 recommendation for absence/rarity. <a href="https://www.clinicalgenome.org/docs/pm2-recommendation-for-absence-rarity/">https://www.clinicalgenome.org/docs/pm2-recommendation-for-absence-rarity/</a></li>
+<li>ClinGen SVI. PM3 recommendation for in trans criterion. <a href="https://clinicalgenome.org/docs/pm3-recommendation-for-in-trans-criterion-pm3-version-1.0/">https://clinicalgenome.org/docs/pm3-recommendation-for-in-trans-criterion-pm3-version-1.0/</a></li>
+<li>Pejaver et al., 2022 (American Journal of Human Genetics). Calibration of computational tools for PP3/BP4. <a href="https://pubmed.ncbi.nlm.nih.gov/36413997/">PubMed</a>, <a href="https://www.clinicalgenome.org/docs/calibration-of-computational-tools-for-missense-variant-pathogenicity-classification-and-clingen-recommendations-for-pp3-bp4-cri/">ClinGen</a></li>
+<li>Walker et al., 2023 (American Journal of Human Genetics). Splicing recommendations from the ClinGen SVI Splicing Subgroup. <a href="https://clinicalgenome.org/docs/application-of-the-acmg-amp-framework-to-capture-evidence-relevant-to-predicted-and-observed-impact-on-splicing-recommendations/">https://clinicalgenome.org/docs/application-of-the-acmg-amp-framework-to-capture-evidence-relevant-to-predicted-and-observed-impact-on-splicing-recommendations/</a></li>
+<li>Biesecker et al., 2024 (Genetics in Medicine). ClinGen guidance for PP1/BS4 and PP4. <a href="https://www.clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/">https://www.clinicalgenome.org/docs/clingen-guidance-for-use-of-the-pp1-bs4-co-segregation-and-pp4-phenotype-specificity-criteria-for-sequence-variant/</a></li>
+<li>Biesecker and Harrison, 2018 (Genetics in Medicine). The ACMG/AMP reputable source criteria for the interpretation of sequence variants. DOI: <code>10.1038/gim.2018.42</code>. <a href="https://www.clinicalgenome.org/docs/the-acmg-amp-reputable-source-criteria-for-the-interpretation-of-sequence-variants/">https://www.clinicalgenome.org/docs/the-acmg-amp-reputable-source-criteria-for-the-interpretation-of-sequence-variants/</a></li>
+<li>Bergquist et al., 2025 (Genetics in Medicine). Calibration of additional computational tools expands ClinGen recommendation options for PP3/BP4. <a href="https://pubmed.ncbi.nlm.nih.gov/40084623/">PubMed</a></li>
+</ul>
+  </article>
+</section>
+  </main>
+</div>
+
+  <footer class="foot">
+    <div class="foot-row">
+      <div>
+        <strong>joonan-lab</strong> · ACMG/AMP variant interpretation guide<br>
+        Korean and English educational synthesis based on public ACMG/AMP and ClinGen materials · 확인 기준일 2026-05-10
+      </div>
+      <div>
+        Source MD: acmg_guidelines/content
+      </div>
+    </div>
+  </footer>
+</div>
+<script>
+const langButtons = [...document.querySelectorAll('[data-lang-toggle]')];
+let observer = null;
+
+function activeLang() {
+  return document.body.dataset.lang || 'ko';
+}
+
+function activeNavLinks() {
+  return [...document.querySelectorAll(`.language-layer[data-lang-panel="${activeLang()}"] .top-nav a`)];
+}
+
+function setupSectionObserver() {
+  if (observer) observer.disconnect();
+  const navLinks = activeNavLinks();
+  const sections = navLinks.map(link => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+  observer = new IntersectionObserver((entries) => {
+    const visible = entries.filter(entry => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    if (!visible) return;
+    navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + visible.target.id));
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: [0, 0.1, 0.4, 0.7] });
+  sections.forEach(section => observer.observe(section));
+}
+
+function setLanguage(lang) {
+  if (!['ko', 'en'].includes(lang)) lang = 'ko';
+  document.body.dataset.lang = lang;
+  document.documentElement.lang = lang;
+  localStorage.setItem('acmg-guide-lang', lang);
+  langButtons.forEach(button => {
+    const active = button.dataset.langToggle === lang;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+  setupSectionObserver();
+}
+
+langButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const x = window.scrollX;
+    const y = window.scrollY;
+    setLanguage(button.dataset.langToggle);
+    requestAnimationFrame(() => window.scrollTo(x, y));
+  });
+});
+
+const hashLang = location.hash.startsWith('#en-') ? 'en' : location.hash.startsWith('#ko-') ? 'ko' : null;
+const initialLang = hashLang || localStorage.getItem('acmg-guide-lang') || 'ko';
+setLanguage(initialLang);
+requestAnimationFrame(() => {
+  const target = location.hash ? document.querySelector(location.hash) : null;
+  if (target) target.scrollIntoView({ block: 'start' });
+});
+
+window.addEventListener('hashchange', () => {
+  if (location.hash.startsWith('#en-')) setLanguage('en');
+  if (location.hash.startsWith('#ko-')) setLanguage('ko');
+  requestAnimationFrame(() => {
+    const target = location.hash ? document.querySelector(location.hash) : null;
+    if (target) target.scrollIntoView({ block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
