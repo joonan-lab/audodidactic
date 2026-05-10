@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASD 유전 아키텍처 인터랙티브 시각화</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.plot.ly/plotly-2.35.0.min.js" charset="utf-8"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f0f1a;--bg2:#181828;--bg3:#1e1e32;
+  --text:#e0e0e8;--text2:#a0a0b8;--accent:#64b5f6;
+  --blue1:#1565c0;--blue2:#1e88e5;--blue3:#42a5f5;
+  --teal:#26a69a;--amber:#ffb74d;--pink:#f48fb1;
+  --green:#81c784;--purple:#b39ddb;--red:#ef5350;
+  --gray:#616178;--gray2:#44445a;
+}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.6;overflow-x:hidden;
+}
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(15,15,26,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--gray2);
+  display:flex;align-items:center;padding:0 24px;height:56px;
+}
+nav .logo{font-weight:700;font-size:16px;color:var(--accent);white-space:nowrap}
+nav .links{display:flex;gap:4px;margin-left:32px;overflow-x:auto}
+nav .links a{
+  color:var(--text2);text-decoration:none;font-size:13px;font-weight:500;
+  padding:8px 14px;border-radius:8px;white-space:nowrap;transition:all .2s;
+}
+nav .links a:hover,nav .links a.active{color:var(--accent);background:rgba(100,181,246,0.1)}
+.container{max-width:1200px;margin:0 auto;padding:80px 24px 48px}
+section{min-height:80vh;padding:48px 0;border-bottom:1px solid var(--gray2)}
+section:last-child{border-bottom:none}
+h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
+.subtitle{color:var(--text2);font-size:15px;margin-bottom:32px}
+.chart-wrap{position:relative;width:100%;margin-bottom:24px}
+.detail-panel{
+  background:var(--bg2);border:1px solid var(--gray2);border-radius:12px;
+  padding:24px;margin-top:16px;min-height:120px;
+  transition:all .3s ease;
+}
+.detail-panel h3{font-size:18px;color:var(--accent);margin-bottom:12px}
+.detail-panel .meta{color:var(--text2);font-size:13px;margin-bottom:8px}
+.detail-panel p{font-size:14px;line-height:1.7}
+.detail-panel .tag{
+  display:inline-block;padding:3px 10px;border-radius:12px;
+  font-size:12px;margin-right:6px;margin-bottom:4px;
+  background:rgba(100,181,246,0.15);color:var(--accent);
+}
+.detail-panel .stat{
+  display:inline-block;background:var(--bg3);border-radius:8px;
+  padding:8px 16px;margin:4px;text-align:center;
+}
+.detail-panel .stat .val{font-size:22px;font-weight:700;color:#fff}
+.detail-panel .stat .label{font-size:11px;color:var(--text2)}
+.gene-table{width:100%;border-collapse:collapse;margin-top:16px}
+.gene-table th{
+  text-align:left;padding:10px 12px;font-size:13px;font-weight:500;
+  color:var(--text2);border-bottom:2px solid var(--gray2);
+}
+.gene-table td{
+  padding:10px 12px;font-size:14px;border-bottom:1px solid var(--gray2);
+}
+.gene-table tr:hover td{background:rgba(100,181,246,0.05)}
+.gene-table .gene-name{color:var(--accent);font-weight:700;font-family:monospace;font-size:15px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.card{background:var(--bg2);border:1px solid var(--gray2);border-radius:12px;padding:20px}
+.card h4{font-size:15px;color:var(--amber);margin-bottom:12px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0;justify-content:center}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+.legend-dot{width:12px;height:12px;border-radius:50%}
+.hero{text-align:center;padding:80px 0 40px}
+.hero h1{font-size:36px;font-weight:700;color:#fff;margin-bottom:16px}
+.hero p{font-size:16px;color:var(--text2);max-width:640px;margin:0 auto}
+.hero .stats-row{display:flex;justify-content:center;gap:32px;margin-top:32px;flex-wrap:wrap}
+.hero .stat-box{text-align:center}
+.hero .stat-box .num{font-size:36px;font-weight:700;color:var(--accent)}
+.hero .stat-box .lbl{font-size:13px;color:var(--text2)}
+.placeholder-msg{
+  text-align:center;padding:40px;color:var(--text2);font-size:14px;
+  background:var(--bg2);border-radius:12px;
+}
+#loading{
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:999;
+  background:var(--bg);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  transition:opacity .5s;
+}
+#loading .spinner{
+  width:40px;height:40px;border:3px solid var(--gray2);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+#loading p{margin-top:16px;color:var(--text2);font-size:14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.source-ref{font-size:12px;color:var(--text2);font-style:italic;margin-top:8px}
+.xi-diagram{
+  background:var(--bg3);border-radius:12px;padding:24px;margin-top:16px;
+  text-align:center;
+}
+@media(max-width:768px){
+  nav .logo{font-size:14px}
+  nav .links a{font-size:12px;padding:6px 10px}
+  h2{font-size:22px}
+  .hero h1{font-size:26px}
+  .hero .stats-row{gap:16px}
+  .hero .stat-box .num{font-size:28px}
+  .two-col{grid-template-columns:1fr}
+  .detail-panel .stat{padding:6px 12px}
+  .detail-panel .stat .val{font-size:18px}
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <p>시각화를 불러오는 중...</p>
+</div>
+
+<nav>
+  <div class="logo">ASD Genetic Architecture</div>
+  <div class="links">
+    <a href="#heritability" class="active">유전율 구조</a>
+    <a href="#timeline">발견의 역사</a>
+    <a href="#network">유전자 네트워크</a>
+    <a href="#sex">성별 차이</a>
+    <a href="#resolution">해상도 진화</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- Hero -->
+<div class="hero">
+  <h1>자폐 스펙트럼 장애의 유전 아키텍처</h1>
+  <p>146편의 연구 논문을 종합한 ASD 유전학의 정량적 구조. 변이 유형별 기여도부터 유전자 네트워크, 성별 차이, 기술 진화까지.</p>
+  <div class="stats-row">
+    <div class="stat-box"><div class="num">~80%</div><div class="lbl">전체 유전율</div></div>
+    <div class="stat-box"><div class="num">~1,000+</div><div class="lbl">추정 위험 유전자</div></div>
+    <div class="stat-box"><div class="num">5</div><div class="lbl">수렴 분자 경로</div></div>
+    <div class="stat-box"><div class="num">146</div><div class="lbl">종합 논문 수</div></div>
+  </div>
+</div>
+
+<!-- Section 1: Heritability -->
+<section id="heritability">
+  <h2>1. 변이 유형별 기여도</h2>
+  <p class="subtitle">ASD 유전율 ~80% 중 약 30-40%만 현재 설명됨. 나머지는 "Missing Heritability"로 남아 있다.</p>
+  <div class="chart-wrap">
+    <div id="sunburst-chart" style="width:100%;height:560px"></div>
+  </div>
+  <div class="detail-panel" id="heritability-detail">
+    <h3>변이 유형을 클릭하세요</h3>
+    <p>각 세그먼트를 클릭하면 해당 변이 유형의 상세 정보가 여기에 표시됩니다.</p>
+  </div>
+</section>
+
+<!-- Section 2: Timeline -->
+<section id="timeline">
+  <h2>2. 발견의 역사: 2006-2026</h2>
+  <p class="subtitle">20년간 ASD 유전학이 어떻게 축적되어 왔는지, 핵심 이정표를 시간순으로 추적한다.</p>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#ef5350"></div>열성/유전</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#42a5f5"></div>De novo CNV</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#66bb6a"></div>De novo 코딩</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ffb74d"></div>GWAS/공통</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#b39ddb"></div>기능 검증/통합</div>
+  </div>
+  <div class="chart-wrap">
+    <div id="timeline-chart" style="width:100%;height:520px"></div>
+  </div>
+  <div class="detail-panel" id="timeline-detail">
+    <h3>이벤트를 클릭하세요</h3>
+    <p>타임라인의 점을 클릭하면 해당 연구의 상세 정보가 표시됩니다.</p>
+  </div>
+</section>
+
+<!-- Section 3: Gene Network -->
+<section id="network">
+  <h2>3. 유전자 네트워크와 경로 수렴</h2>
+  <p class="subtitle">~1,000개의 이질적 위험 유전자가 5개 핵심 경로로 수렴한다. 경로를 클릭하여 구성 유전자를 확인하세요.</p>
+  <div class="chart-wrap">
+    <div id="pathway-chart" style="width:100%;height:520px"></div>
+  </div>
+  <div class="detail-panel" id="network-detail">
+    <h3>경로를 클릭하세요</h3>
+    <p>경로 또는 유전자를 클릭하면 상세 정보가 표시됩니다.</p>
+  </div>
+  <h3 style="margin-top:40px;color:var(--amber)">다수 코호트에서 반복 확인된 열성 핵심 유전자</h3>
+  <table class="gene-table">
+    <thead>
+      <tr><th>유전자</th><th>확인 코호트 수</th><th>기능</th><th>분자 경로</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="gene-name">VPS13B</td><td>4</td><td>소포 수송, 골지체 기능 (Cohen 증후군)</td><td>소포 수송/트래피킹</td></tr>
+      <tr><td class="gene-name">CNTNAP2</td><td>3+</td><td>뉴런 접착, K+ 채널 clustering</td><td>시냅스 구조/기능</td></tr>
+      <tr><td class="gene-name">ZNF335</td><td>2+</td><td>뉴런 분화, 크로마틴 리모델링</td><td>크로마틴/전사 조절</td></tr>
+      <tr><td class="gene-name">UBR1</td><td>2+</td><td>유비퀴틴-프로테아솜 경로</td><td>유비퀴틴-프로테아솜</td></tr>
+      <tr><td class="gene-name">DNAH3</td><td>2+</td><td>다이네인, 섬모 기능</td><td>세포 구조/운동성</td></tr>
+      <tr><td class="gene-name">CC2D1A</td><td>1+</td><td>NF-kB 신호전달, 지적 장애</td><td>세포 신호전달</td></tr>
+      <tr><td class="gene-name">BCKDK</td><td>1</td><td>BCAA 대사 (BCAA 보충으로 치료 가능)</td><td>대사/미토콘드리아</td></tr>
+      <tr><td class="gene-name">PCDH10</td><td>1</td><td>시냅스 기능, 활동 의존적 발현</td><td>시냅스 구조/기능</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Section 4: Sex Differences -->
+<section id="sex">
+  <h2>4. 성별 차이와 여성 보호 효과</h2>
+  <p class="subtitle">ASD 남:녀 비율 ~4:1의 분자적 기전. 열성 유전이 우세한 코호트에서 비율이 2.6:1로 감소한다.</p>
+  <div class="two-col">
+    <div>
+      <div class="chart-wrap">
+        <div id="sex-chart" style="width:100%;height:420px"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h4>Xi 보호 모델 (Talukdar 2026)</h4>
+        <div class="xi-diagram">
+          <svg viewBox="0 0 400 200" style="width:100%;max-width:400px">
+            <!-- X chromosome bar -->
+            <rect x="40" y="50" width="320" height="30" rx="15" fill="#1565c0" opacity="0.4"/>
+            <text x="200" y="70" text-anchor="middle" fill="#64b5f6" font-size="13" font-weight="bold">비활성 X 염색체 (Xi)</text>
+            <!-- Escape genes -->
+            <circle cx="80" cy="65" r="6" fill="#66bb6a"/>
+            <circle cx="120" cy="65" r="6" fill="#66bb6a"/>
+            <circle cx="160" cy="65" r="6" fill="#66bb6a"/>
+            <circle cx="200" cy="65" r="6" fill="#66bb6a"/>
+            <circle cx="240" cy="65" r="6" fill="#66bb6a"/>
+            <circle cx="280" cy="65" r="6" fill="#66bb6a"/>
+            <circle cx="320" cy="65" r="6" fill="#66bb6a"/>
+            <!-- Label -->
+            <text x="200" y="110" text-anchor="middle" fill="#81c784" font-size="12">60+ 탈출 유전자 (escape genes)</text>
+            <!-- Arrows -->
+            <line x1="200" y1="120" x2="200" y2="145" stroke="#81c784" stroke-width="2" marker-end="url(#arrow)"/>
+            <text x="200" y="165" text-anchor="middle" fill="#e0e0e8" font-size="12">상염색체 위험 변이의 표현형 영향을 완충</text>
+            <text x="200" y="185" text-anchor="middle" fill="#a0a0b8" font-size="11">17개 남성 편향 소아 질환에서도 동일 메커니즘</text>
+            <defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#81c784"/></marker></defs>
+          </svg>
+        </div>
+        <p class="source-ref">Talukdar 2026, Nature Genetics</p>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h4>후성유전적 증거</h4>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:8px">여성 ASD에서 X 염색체의 후성유전 변화가 특히 두드러짐:</p>
+        <ul style="font-size:13px;color:var(--text);padding-left:20px">
+          <li><strong>Mordaunt 2020:</strong> 여성 ASD 제대혈에서 X 연관 정상크로마틴의 "X 침식" 관찰</li>
+          <li><strong>Mouat 2025:</strong> 여성 ASD DMR이 X 염색체에 유의하게 집중</li>
+          <li><strong>Doan 2019:</strong> 여성 ASD에서 열성 기여 ~10% (남성보다 높음)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 5: Resolution Evolution -->
+<section id="resolution">
+  <h2>5. 해상도의 진화: 벌크에서 단일세포로</h2>
+  <p class="subtitle">2011년 마이크로어레이부터 2025년 단일세포 메틸화+전사체 동시 측정까지, ASD 뇌 연구의 해상도 혁명.</p>
+  <div class="chart-wrap">
+    <div id="resolution-chart" style="width:100%;height:480px"></div>
+  </div>
+  <div class="detail-panel" id="resolution-detail">
+    <h3>기술 단계를 클릭하세요</h3>
+    <p>각 포인트를 클릭하면 해당 기술이 가능케 한 발견이 표시됩니다.</p>
+  </div>
+</section>
+
+<footer style="text-align:center;padding:40px 0;color:var(--text2);font-size:13px">
+  <p>LLM Wiki 프로젝트 | 146편의 연구 논문 종합 | 2026</p>
+  <p style="margin-top:8px">데이터 출처: ASC, SSC, SPARK, MSSNG, iPSYCH, PsychENCODE</p>
+</footer>
+
+</div><!-- /container -->
+
+<script>
+// ===== DATA =====
+
+const VARIANT_DATA = {
+  labels: [
+    'ASD 유전율<br>(~80%)',
+    '설명됨<br>(~35%)', '미설명<br>(~50%)', '비유전<br>(~15%)',
+    '공통 변이 (GWAS)', 'De novo 코딩 SNV', 'De novo CNV', '구조변이/TRE',
+    '열성 이중대립유전자', '유전 희귀 LoF', '모자이크 CNV',
+    '비코딩 조절 변이', '에피스타시스', '유전자x환경', '복잡 SV/기타'
+  ],
+  parents: [
+    '',
+    'ASD 유전율<br>(~80%)', 'ASD 유전율<br>(~80%)', 'ASD 유전율<br>(~80%)',
+    '설명됨<br>(~35%)', '설명됨<br>(~35%)', '설명됨<br>(~35%)', '설명됨<br>(~35%)',
+    '설명됨<br>(~35%)', '설명됨<br>(~35%)', '설명됨<br>(~35%)',
+    '미설명<br>(~50%)', '미설명<br>(~50%)', '미설명<br>(~50%)', '미설명<br>(~50%)'
+  ],
+  values: [
+    80,
+    35, 30, 15,
+    12, 4, 7.5, 6, 4, 1.3, 0.2,
+    10, 8, 7, 5
+  ],
+  colors: [
+    '#2a2a40',
+    '#1565c0', '#44445a', '#333350',
+    '#1e88e5', '#42a5f5', '#64b5f6', '#90caf9', '#26a69a', '#4db6ac', '#80cbc4',
+    '#616178', '#555568', '#4a4a5e', '#404055'
+  ],
+  details: {
+    '공통 변이 (GWAS)': {
+      title: '공통 변이 (Common Variants)',
+      stats: [{val:'~12%',label:'SNP 유전율'},{val:'OR 1.05-1.10',label:'효과 크기'},{val:'5',label:'유의 유전자좌'},{val:'18,381',label:'ASD 사례 (Grove 2019)'}],
+      desc: 'GWAS로 발견되는 빈도 높은 변이. 개별 효과는 극히 작으나 집합적으로 가장 큰 기여. 발달 중인 뇌의 인핸서 마크(H3K4me1)에 enriched.',
+      genes: 'KCNN2, KMT2E-SRPK2, MACROD2, PTBP2, CADPS',
+      source: 'Grove 2019 (Nat Genet), Anney 2010 (Hum Mol Genet)'
+    },
+    'De novo 코딩 SNV': {
+      title: 'De Novo 코딩 변이 (SNV/Indel)',
+      stats: [{val:'~3-5%',label:'진단 기여도'},{val:'OR 2-20+',label:'효과 크기'},{val:'102',label:'확립 유전자'},{val:'~1,000',label:'추정 총 유전자'}],
+      desc: '부모에게 없는 새로운 코딩 돌연변이. LoF(기능상실)일수록 효과가 크고 지적 장애 동반 빈도가 높음. 부계 연령과 양의 상관.',
+      genes: 'SCN2A (OR>20), CHD8 (OR>20), SHANK3 (OR>10), ARID1B (OR>10), PTEN (OR>5)',
+      source: 'Satterstrom 2020 (Cell), Iossifov 2014 (Nature), Sanders 2012 (Nature)'
+    },
+    'De novo CNV': {
+      title: 'De Novo 복제수변이 (CNV)',
+      stats: [{val:'~5-10%',label:'진단 기여도'},{val:'OR 2-50',label:'효과 크기'},{val:'10%',label:'산발적 ASD 빈도'},{val:'1%',label:'대조군 빈도'}],
+      desc: '대형 염색체 구조 변이. 산발적 ASD에서 10% vs 대조군 1% (p=0.0005). 대형일수록 효과가 크고 지적 장애/간질 동반.',
+      genes: '16p11.2 del (OR~8), 15q11-13 dup (OR~3-5), 22q11.2 del (OR~3-5), 1q21.1 del/dup (OR~3), 7q11.23 dup (OR~5)',
+      source: 'Sebat 2007 (Science)'
+    },
+    '구조변이/TRE': {
+      title: '구조변이 및 탠덤반복확장 (SV/TRE)',
+      stats: [{val:'~6%',label:'추가 설명'},{val:'134',label:'위험 유전자'},{val:'5,100+',label:'WGS 분석 개인'},{val:'+18%',label:'WES 대비 유전자 증가'}],
+      desc: 'WES로는 탐지 불가능한 변이 유형. WGS로 전환하면서 SV(구조변이)와 TRE(탠덤반복확장)이 새로운 위험 변이 유형으로 부상.',
+      genes: 'DMPK, SYNGAP1 (TRE), 기타 134개 MSSNG 유전자',
+      source: 'Trost 2022 (Cell, MSSNG)'
+    },
+    '열성 이중대립유전자': {
+      title: '열성 (이중대립유전자) 유전',
+      stats: [{val:'3-5%',label:'비혈족결혼'},{val:'14-53%',label:'혈족결혼'},{val:'~10%',label:'여성 기여'},{val:'200+',label:'후보 유전자'}],
+      desc: '부모 양쪽에서 유전받은 변이가 양쪽 대립유전자 모두를 파괴. 혈족결혼 인구에서 5-6배 증가. 대사 유전자 enrichment → 일부 치료 가능 (BCKDK).',
+      genes: 'VPS13B (4코호트), CNTNAP2 (3+), BCKDK (치료가능), PAH, ZNF335, UBR1',
+      source: 'Doan 2019 (Nat Genet), Morrow 2008 (Science)'
+    },
+    '유전 희귀 LoF': {
+      title: '유전 희귀 LoF (중간 위험 유전자)',
+      stats: [{val:'PAR ~6%',label:'인구기여위험도'},{val:'RR ~4',label:'상대위험도 (NAV3)'},{val:'42,607',label:'ASD 사례'},{val:'60',label:'유의 유전자'}],
+      desc: '부모에서 유전된 희귀 LoF 변이. PAR이 de novo LoF와 동등(~6%). 기존 ASD/NDD 유전자가 overtransmission의 <20%만 설명 → 대부분의 유전 위험 유전자가 미발견.',
+      genes: 'NAV3, ITSN1, MARK2, SCAF1, HNRNPUL2',
+      source: 'Zhou 2022 (Nat Genet, 42,607 ASD)'
+    },
+    '모자이크 CNV': {
+      title: '모자이크 변이 (Mosaic CNV)',
+      stats: [{val:'~0.2%',label:'기여도'},{val:'OR ~2',label:'효과 크기'}],
+      desc: '수정 후 체세포 분열에서 발생한 CNV. 영향 세포 비율이 낮아 효과 크기가 작으나 통계적으로 유의.',
+      genes: '다양한 유전자좌',
+      source: 'Sherman 2021'
+    },
+    '비코딩 조절 변이': {
+      title: '비코딩 조절 변이 (인핸서, 프로모터, UTR)',
+      stats: [{val:'??',label:'기여도 미정량'},{val:'HAR',label:'인간가속영역'},{val:'MPRA',label:'실험 검증'}],
+      desc: 'Missing heritability의 상당 부분을 차지할 것으로 추정. HAR(인간 가속 영역)의 희귀 변이가 가장 강한 기여. MPRA로 인핸서 활성 변화를 실험 입증.',
+      genes: 'HAR3091, HAR3094, HAR3134 영역 인접 유전자 (IL1RAPL1, OTX1, SIM1)',
+      source: 'Shin 2024 (Cell Genomics)'
+    },
+    '에피스타시스': {
+      title: '에피스타시스 (유전자 간 상호작용)',
+      stats: [{val:'??',label:'기여도 미정량'}],
+      desc: '두 개 이상 변이의 조합 효과. 현재 코호트 크기로는 탐지가 통계적으로 불가능. Cirnigliaro 2023의 희귀 PTV + PGS 가산 모델이 간접 증거.',
+      genes: '특정 유전자 미확인',
+      source: 'Cirnigliaro 2023 (PNAS)'
+    },
+    '유전자x환경': {
+      title: '유전자 x 환경 상호작용 (GxE)',
+      stats: [{val:'??',label:'기여도 미정량'}],
+      desc: '태아기 감염, 독소 노출 등의 환경 인자가 유전적 취약성과 상호작용. 후성유전적 매개가 유력한 경로.',
+      genes: '이가 인핸서(EnhBiv) 관련 유전자',
+      source: 'LaSalle 2023'
+    },
+    '복잡 SV/기타': {
+      title: '복잡 구조변이 및 기타',
+      stats: [{val:'??',label:'기여도 미정량'}],
+      desc: '역위, 전좌, 복합 SV 등 짧은 읽기 시퀀싱의 한계로 미탐지된 변이 유형. 장기 읽기 시퀀싱으로 해결 가능.',
+      genes: '미확인',
+      source: '향후 장기 읽기 시퀀싱 연구'
+    }
+  }
+};
+
+const TIMELINE_EVENTS = [
+  {year:2006, track:0, title:'CNTNAP2 Amish CDFE', author:'Strauss', importance:2,
+   detail:'Amish 가계에서 CNTNAP2 동형접합 프레임시프트 발견. 피질 이형성-초점 간질 증후군(CDFE)의 원인. ASD 열성 유전학의 시작점.', color:'#ef5350'},
+  {year:2007, track:1, title:'최초 de novo CNV 10%', author:'Sebat', importance:3,
+   detail:'산발적 ASD에서 de novo CNV 10% vs 대조군 1% (p=0.0005). ASD 유전학에 CNV 패러다임을 도입한 랜드마크 연구.', color:'#42a5f5'},
+  {year:2008, track:0, title:'104 혈족결혼 가족', author:'Morrow', importance:2,
+   detail:'PCDH10, DIA1, NHE9 발견. 혈족결혼 코호트에서 남녀 비율이 4:1 → 2.6:1로 감소 관찰.', color:'#ef5350'},
+  {year:2010, track:3, title:'AGP GWAS MACROD2', author:'Anney', importance:2,
+   detail:'MACROD2 rs4141463 유의 연관 (P=2.1x10⁻⁸). 공통 변이의 효과 크기가 OR 1.1-1.3으로 극히 작음을 확인.', color:'#ffb74d'},
+  {year:2011, track:4, title:'Cntnap2 KO 마우스', author:'Peñagarikano', importance:2,
+   detail:'Cntnap2⁻/⁻ 마우스가 ASD 3대 행동 결함(사회적 상호작용, 의사소통, 반복행동) + 뉴런 이동 이상 + 간질 모두 재현.', color:'#b39ddb'},
+  {year:2011, track:4, title:'전사체 수렴 발견', author:'Voineagu', importance:2,
+   detail:'마이크로어레이로 ASD 뇌의 전사체가 시냅스(M12, 하향) + 면역(M16, 상향) 두 모듈로 수렴함을 최초 발견.', color:'#b39ddb'},
+  {year:2012, track:2, title:'WES SCN2A 확인', author:'Sanders', importance:3,
+   detail:'225 가족 WES에서 SCN2A에 독립적 nonsense 변이가 2명에서 반복. De novo 변이율과 부계 연령의 상관 확인.', color:'#66bb6a'},
+  {year:2012, track:0, title:'BCKDK 치료 가능 ASD', author:'Novarino', importance:2,
+   detail:'BCKDK 동형접합 null → BCAA 감소 → BCAA 보충으로 마우스 표현형 정상화. 유전자→기전→치료의 완결된 파이프라인.', color:'#ef5350'},
+  {year:2014, track:2, title:'2,500 가족 de novo', author:'Iossifov', importance:3,
+   detail:'대규모 WES에서 de novo 코딩 변이가 산발적 ASD 진단의 ~30%에 기여. 여성에서는 ~45%.', color:'#66bb6a'},
+  {year:2019, track:3, title:'GWAS 5 유전자좌', author:'Grove', importance:3,
+   detail:'18,381 ASD + 27,969 대조군. 5개 유전자좌 도달. ASD 공통 변이가 교육 수준/지능과 양의 유전적 상관.', color:'#ffb74d'},
+  {year:2019, track:0, title:'열성 3-5% 정량', author:'Doan', importance:2,
+   detail:'ASC 2,343 ASD에서 희귀 이중대립유전자 LOF 62% 과잉 (p=0.0003). 전체 3-5%, 여성 ~10%.', color:'#ef5350'},
+  {year:2019, track:4, title:'snRNA-seq 최초 적용', author:'Velmeshev', importance:2,
+   detail:'ASD 뇌에 단일세포 전사체학을 최초 적용. 표층 흥분성 뉴런(L2/3)이 가장 영향받는 세포 유형으로 확인.', color:'#b39ddb'},
+  {year:2020, track:4, title:'다중오믹스 수렴', author:'Ramaswami', importance:2,
+   detail:'"수렴형" vs "비수렴형" ASD 아형 식별. 수렴형에서 4배 많은 DEG. 다중 오믹스 통합의 가치를 입증.', color:'#b39ddb'},
+  {year:2020, track:2, title:'102 위험 유전자 확립', author:'Satterstrom', importance:3,
+   detail:'대규모 엑솜 데이터 메타분석으로 102개 고신뢰도 ASD 위험 유전자 확립 (FDR<0.01). 30개는 ASD 신규.', color:'#66bb6a'},
+  {year:2022, track:2, title:'MSSNG WGS 134 유전자', author:'Trost', importance:3,
+   detail:'5,100+ ASD WGS로 134 유전자 확인. SV/TRE 탐지로 WES 대비 진단율 ~6% 향상.', color:'#66bb6a'},
+  {year:2022, track:0, title:'42,607 ASD 통합 분석', author:'Zhou', importance:3,
+   detail:'최대 규모 ASD 코호트. 60개 엑솜 유의 유전자. NAV3 등 중간 위험 유전자 발견. 유전 LoF PAR ~6%.', color:'#ef5350'},
+  {year:2022, track:3, title:'16p 공통/희귀 수렴', author:'Weiner', importance:2,
+   detail:'16p에서 GWAS 공통 변이와 희귀 CNV가 크로마틴 접촉을 통해 기능적으로 수렴. 다층 유전 구조의 증거.', color:'#ffb74d'},
+  {year:2023, track:0, title:'1,004 다중발생 가족', author:'Cirnigliaro', importance:2,
+   detail:'PLEKHA8 등 7개 신규 유전자. 희귀 유전 PTV (OR=1.73) + PGS overtransmission = 가산 모델.', color:'#ef5350'},
+  {year:2023, track:4, title:'오가노이드 CHOOSE', author:'Li', importance:2,
+   detail:'36개 ASD 유전자를 오가노이드에서 CRISPR 풀 스크리닝. ARID1B가 중간전구세포 증가를 유발함을 검증.', color:'#b39ddb'},
+  {year:2024, track:2, title:'HAR 비코딩 변이', author:'Shin', importance:3,
+   detail:'HAR(인간 가속 영역)의 희귀 비코딩 변이가 ASD에 가장 강하게 기여. MPRA + in vivo 검증.', color:'#66bb6a'},
+  {year:2024, track:4, title:'PsychENCODE2 35 세포유형', author:'Wamsley', importance:3,
+   detail:'snRNA-seq + snATAC-seq + 공간 전사체학으로 35개 세포 유형에서 GRN 매핑. 최고 해상도 ASD 뇌 아틀라스.', color:'#b39ddb'},
+  {year:2025, track:4, title:'단일세포 메틸화 아틀라스', author:'Eyring', importance:2,
+   detail:'snmCT-seq으로 단일세포 수준에서 메틸화+전사체 동시 측정. 연령 효과 >> 진단 효과 확인.', color:'#b39ddb'},
+  {year:2025, track:3, title:'표현형 분해', author:'Litman/Zhang', importance:2,
+   detail:'표현형 혼합 모델링으로 4개 ASD 클래스 분해 (Litman). 진단 시기별 다유전자 구조 차이 확인 (Zhang).', color:'#ffb74d'},
+  {year:2026, track:0, title:'Xi 보호 유전자 60+', author:'Talukdar', importance:3,
+   detail:'비활성 X에서 발현되는 60+ 유전자가 상염색체 위험 변이를 완충. 17개 남성 편향 소아 질환으로 확장.', color:'#ef5350'}
+];
+
+const TRACK_LABELS = ['열성/유전', 'De novo CNV', 'De novo 코딩', 'GWAS/공통', '기능 검증/통합'];
+
+const PATHWAY_DATA = {
+  labels: [
+    'ASD 위험 유전자<br>(~1,000+)',
+    '크로마틴 리모델링', '시냅스 기능', '전사 조절', '뉴런 이동/축삭', '세포 신호전달',
+    'CHD8', 'ARID1B', 'KMT2A', 'ASH1L', 'KDM5B',
+    'SHANK3', 'NRXN1', 'GRIN2B', 'SYNGAP1', 'NLGN3',
+    'TBR1', 'FOXP2', 'CUX1', 'ADNP', 'BCL11A',
+    'PTEN', 'DYRK1A', 'KATNAL2', 'RELN', 'CTNNA2',
+    'SCN2A', 'CACNA1E', 'ANK2', 'CACNA1D', 'GRIA2'
+  ],
+  parents: [
+    '',
+    'ASD 위험 유전자<br>(~1,000+)', 'ASD 위험 유전자<br>(~1,000+)', 'ASD 위험 유전자<br>(~1,000+)', 'ASD 위험 유전자<br>(~1,000+)', 'ASD 위험 유전자<br>(~1,000+)',
+    '크로마틴 리모델링','크로마틴 리모델링','크로마틴 리모델링','크로마틴 리모델링','크로마틴 리모델링',
+    '시냅스 기능','시냅스 기능','시냅스 기능','시냅스 기능','시냅스 기능',
+    '전사 조절','전사 조절','전사 조절','전사 조절','전사 조절',
+    '뉴런 이동/축삭','뉴런 이동/축삭','뉴런 이동/축삭','뉴런 이동/축삭','뉴런 이동/축삭',
+    '세포 신호전달','세포 신호전달','세포 신호전달','세포 신호전달','세포 신호전달'
+  ],
+  values: [
+    0,
+    20, 20, 20, 20, 20,
+    4,4,4,4,4, 4,4,4,4,4, 4,4,4,4,4, 4,4,4,4,4, 4,4,4,4,4
+  ],
+  colors: [
+    '#2a2a40',
+    '#1565c0', '#26a69a', '#7b1fa2', '#ef6c00', '#c62828',
+    '#1e88e5','#1e88e5','#1e88e5','#1e88e5','#1e88e5',
+    '#2bbbad','#2bbbad','#2bbbad','#2bbbad','#2bbbad',
+    '#9c27b0','#9c27b0','#9c27b0','#9c27b0','#9c27b0',
+    '#ff9800','#ff9800','#ff9800','#ff9800','#ff9800',
+    '#e53935','#e53935','#e53935','#e53935','#e53935'
+  ],
+  details: {
+    '크로마틴 리모델링': {
+      desc: '히스톤 변형, 뉴클레오솜 재배치를 통해 유전자 발현 프로그램을 조절. 인핸서/프로모터 접근성 변화 → 다수 하위 유전자 동시 교란.',
+      genes: 'CHD8, ARID1B, KMT2A, ASH1L, KDM5B'
+    },
+    '시냅스 기능': {
+      desc: '시냅스 구조, 가소성, 신경전달물질 수용체 관련. 흥분성/억제성(E/I) 불균형 → 피질 회로 기능 이상의 핵심 메커니즘.',
+      genes: 'SHANK3, NRXN1, GRIN2B, SYNGAP1, NLGN3'
+    },
+    '전사 조절': {
+      desc: '전사인자가 세포 유형 특이적 유전자 발현을 조절. 뉴런 분화, 성숙 프로그램이 교란되면 피질 세포 유형 정체성에 영향.',
+      genes: 'TBR1, FOXP2, CUX1, ADNP, BCL11A'
+    },
+    '뉴런 이동/축삭': {
+      desc: 'PI3K/mTOR 경로, 세포골격, 피질 층 형성 관련. 피질 구조 이상과 거두증을 유발할 수 있음.',
+      genes: 'PTEN, DYRK1A, KATNAL2, RELN, CTNNA2'
+    },
+    '세포 신호전달': {
+      desc: '이온 채널, 칼슘 신호, 세포내 수송 관련. 신경 흥분성과 활동전위 조절에 직접 영향.',
+      genes: 'SCN2A, CACNA1E, ANK2, CACNA1D, GRIA2'
+    },
+    'CHD8': {desc:'가장 강력한 ASD 위험 유전자 중 하나. OR>20. 거두증 동반. 수천 개 하위 표적 유전자를 조절하는 크로마틴 리모델러.',genes:''},
+    'SCN2A': {desc:'가장 강력한 ASD 위험 유전자. OR>20. LoF → ASD, GoF → 간질. 나트륨 채널 서브유닛.',genes:''},
+    'SHANK3': {desc:'22q13.3 결실 증후군의 핵심 유전자. OR>10. 시냅스 후밀도(PSD)의 비계 단백질.',genes:''},
+    'ARID1B': {desc:'BAF 복합체 서브유닛. OR>10. 오가노이드에서 중간전구세포 증가 검증 (Li 2023).',genes:''},
+    'PTEN': {desc:'PI3K/mTOR 경로. OR>5. 거두증+ASD. 종양 억제 유전자의 이중 역할.',genes:''}
+  }
+};
+
+const SEX_DATA = {
+  categories: ['일반 ASD', '혈족결혼 코호트', '여성 de novo LGD 부담', '여성 열성 기여'],
+  male: [4, 2.6, 1, 3],
+  female: [1, 1, 1.5, 10],
+  labels_male: ['남 4', '남 2.6', '기준선', '~3%'],
+  labels_female: ['녀 1', '녀 1', '높음', '~10%']
+};
+
+const RESOLUTION_DATA = [
+  {year:2011, level:1, tech:'Microarray (벌크 조직)', study:'Voineagu 2011',
+   detail:'마이크로어레이로 ASD 뇌의 전사체를 최초 분석. 시냅스(M12) + 면역(M16) 두 모듈로의 수렴 발견. 벌크 조직 수준 → 세포 유형 구별 불가.'},
+  {year:2014, level:2, tech:'450K Array (벌크 조직)', study:'Ladd-Acosta / Wong 2014',
+   detail:'450K 메틸화 어레이로 ASD 뇌/혈액의 메틸화 차이 분석. 벌크 조직 수준이나 후성유전체 데이터 추가.'},
+  {year:2017, level:3, tech:'450K + FACS (뉴런 분리)', study:'Nardone 2017',
+   detail:'FACS로 뉴런을 물리적으로 분리 후 메틸화 분석. 세포 유형 혼합 효과를 제거한 최초 시도. 뉴런 특이적 메틸화 서명 확인.'},
+  {year:2019, level:4, tech:'snRNA-seq (단일세포 전사체)', study:'Velmeshev 2019',
+   detail:'ASD 뇌에 단일세포 전사체학을 최초 적용. 표층 흥분성 뉴런(L2/3)이 가장 영향받는 세포 유형으로 확인. 미세아교세포도 반복적으로 관찰.'},
+  {year:2024, level:5, tech:'snRNA+snATAC+Spatial (세포유형별 GRN)', study:'Wamsley/PsychENCODE2 2024',
+   detail:'35개 세포 유형에서 유전자 조절 네트워크(GRN) 매핑. snATAC-seq 크로마틴 접근성 + 공간 전사체학 통합. 최고 해상도 ASD 뇌 아틀라스.'},
+  {year:2025, level:6, tech:'snmCT-seq (단일세포 메틸화+전사체)', study:'Eyring 2025',
+   detail:'단일세포 수준에서 메틸화와 전사체를 동시 측정. 연령 효과가 진단 효과보다 훨씬 큼을 확인. 조절 메커니즘의 직접 관찰이 가능해짐.'}
+];
+
+// ===== CHARTS =====
+
+const plotlyConfig = {responsive:true, displayModeBar:false};
+const darkLayout = {
+  paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
+  font:{family:'Noto Sans KR', color:'#e0e0e8'},
+  margin:{l:60,r:30,t:30,b:60}
+};
+
+// --- Section 1: Sunburst ---
+function initSunburst(){
+  const trace = {
+    type:'sunburst',
+    labels: VARIANT_DATA.labels,
+    parents: VARIANT_DATA.parents,
+    values: VARIANT_DATA.values,
+    marker:{colors: VARIANT_DATA.colors, line:{width:2, color:'#0f0f1a'}},
+    branchvalues:'total',
+    textinfo:'label+percent parent',
+    insidetextorientation:'radial',
+    hovertemplate:'<b>%{label}</b><br>기여도: %{value}%<extra></extra>',
+    textfont:{size:11}
+  };
+  const layout = {
+    ...darkLayout,
+    margin:{l:10,r:10,t:10,b:10},
+    sunburstcolorway:['#1565c0','#44445a','#333350']
+  };
+  Plotly.newPlot('sunburst-chart', [trace], layout, plotlyConfig);
+
+  document.getElementById('sunburst-chart').on('plotly_click', function(data){
+    const label = data.points[0].label.replace(/<br>/g,' ');
+    const info = VARIANT_DATA.details[label];
+    if(!info) return;
+    const panel = document.getElementById('heritability-detail');
+    let statsHtml = info.stats.map(s=>`<div class="stat"><div class="val">${s.val}</div><div class="label">${s.label}</div></div>`).join('');
+    panel.innerHTML = `
+      <h3>${info.title}</h3>
+      <div style="margin:12px 0">${statsHtml}</div>
+      <p>${info.desc}</p>
+      <p style="margin-top:12px"><strong>주요 유전자:</strong> <span style="font-family:monospace;color:var(--accent)">${info.genes}</span></p>
+      <p class="source-ref">${info.source}</p>
+    `;
+  });
+}
+
+// --- Section 2: Timeline ---
+function initTimeline(){
+  const traces = [];
+  const trackColors = ['#ef5350','#42a5f5','#66bb6a','#ffb74d','#b39ddb'];
+
+  for(let t=0; t<5; t++){
+    const events = TIMELINE_EVENTS.filter(e=>e.track===t);
+    traces.push({
+      x: events.map(e=>e.year),
+      y: events.map(e=>TRACK_LABELS[e.track]),
+      mode:'markers',
+      marker:{
+        size: events.map(e=>e.importance===3?18:e.importance===2?13:9),
+        color: trackColors[t],
+        line:{width:2, color:'#0f0f1a'},
+        opacity:0.9
+      },
+      text: events.map(e=>`<b>${e.title}</b><br>${e.author} ${e.year}`),
+      hovertemplate:'%{text}<extra></extra>',
+      customdata: events,
+      name: TRACK_LABELS[t],
+      showlegend:false
+    });
+  }
+
+  const eraLines = [
+    {x:2007.5, label:'CNV 혁명'},
+    {x:2011.5, label:'엑솜 시대'},
+    {x:2016.5, label:'WGS 확장'},
+    {x:2019.5, label:'단일세포/후성유전'}
+  ];
+
+  const shapes = eraLines.map(e=>({
+    type:'line',x0:e.x,x1:e.x,y0:-0.5,y1:4.5,
+    line:{color:'rgba(255,255,255,0.15)',width:1,dash:'dot'}
+  }));
+
+  const annotations = eraLines.map(e=>({
+    x:e.x, y:4.8, text:e.label, showarrow:false,
+    font:{size:10, color:'rgba(255,255,255,0.4)'}
+  }));
+
+  const layout = {
+    ...darkLayout,
+    xaxis:{
+      range:[2004.5, 2027.5], dtick:2, gridcolor:'rgba(255,255,255,0.05)',
+      title:{text:'연도', font:{size:13}}
+    },
+    yaxis:{
+      categoryorder:'array', categoryarray:[...TRACK_LABELS].reverse(),
+      gridcolor:'rgba(255,255,255,0.05)'
+    },
+    shapes, annotations,
+    hovermode:'closest',
+    margin:{l:130,r:30,t:40,b:60}
+  };
+
+  Plotly.newPlot('timeline-chart', traces, layout, plotlyConfig);
+
+  document.getElementById('timeline-chart').on('plotly_click', function(data){
+    const evt = data.points[0].customdata;
+    const panel = document.getElementById('timeline-detail');
+    panel.innerHTML = `
+      <h3>${evt.title} (${evt.year})</h3>
+      <div class="meta">${evt.author} ${evt.year} | ${TRACK_LABELS[evt.track]}</div>
+      <p>${evt.detail}</p>
+    `;
+  });
+}
+
+// --- Section 3: Pathway Bar Chart ---
+function initPathway(){
+  const pathways = [
+    {name:'크로마틴 리모델링', genes:'CHD8, ARID1B, KMT2A, ASH1L, KDM5B', color:'#1565c0', count:20, key:'크로마틴 리모델링'},
+    {name:'시냅스 기능', genes:'SHANK3, NRXN1, GRIN2B, SYNGAP1, NLGN3', color:'#26a69a', count:30, key:'시냅스 기능'},
+    {name:'전사 조절', genes:'TBR1, FOXP2, CUX1, ADNP, BCL11A', color:'#7b1fa2', count:25, key:'전사 조절'},
+    {name:'뉴런 이동/축삭', genes:'PTEN, DYRK1A, KATNAL2, RELN, CTNNA2', color:'#ef6c00', count:20, key:'뉴런 이동/축삭'},
+    {name:'세포 신호전달', genes:'SCN2A, CACNA1E, ANK2, CACNA1D, GRIA2', color:'#c62828', count:25, key:'세포 신호전달'}
+  ];
+
+  const trace = {
+    type:'bar',
+    orientation:'h',
+    y: pathways.map(p=>p.name),
+    x: pathways.map(p=>p.count),
+    marker:{color: pathways.map(p=>p.color), line:{width:0}},
+    text: pathways.map(p=>`${p.count}+ 유전자`),
+    textposition:'outside',
+    textfont:{size:13, color:'#e0e0e8'},
+    hovertemplate:'<b>%{y}</b><br>%{x}+ 관련 유전자<extra></extra>',
+    customdata: pathways
+  };
+
+  const geneAnnotations = pathways.map((p,i)=>({
+    x: p.count + 12,
+    y: p.name,
+    text: `<span style="color:${p.color}">${p.genes}</span>`,
+    showarrow: false,
+    font:{size:11, family:'monospace', color:'#a0a0b8'},
+    xanchor:'left'
+  }));
+
+  const layout = {
+    ...darkLayout,
+    xaxis:{
+      range:[0, 70], gridcolor:'rgba(255,255,255,0.05)',
+      title:{text:'관련 유전자 수 (추정)', font:{size:13}}
+    },
+    yaxis:{automargin:true, categoryorder:'array', categoryarray:[...pathways.map(p=>p.name)].reverse()},
+    annotations: geneAnnotations,
+    margin:{l:140,r:250,t:20,b:60},
+    hovermode:'closest'
+  };
+
+  Plotly.newPlot('pathway-chart', [trace], layout, plotlyConfig);
+
+  document.getElementById('pathway-chart').on('plotly_click', function(data){
+    const p = data.points[0].customdata;
+    const info = PATHWAY_DATA.details[p.key];
+    if(!info) return;
+    const panel = document.getElementById('network-detail');
+    panel.innerHTML = `
+      <h3>${p.name}</h3>
+      <p>${info.desc}</p>
+      <p style="margin-top:8px"><strong>대표 유전자:</strong> <span style="font-family:monospace;color:var(--accent)">${p.genes}</span></p>
+    `;
+  });
+}
+
+// --- Section 4: Sex Differences ---
+function initSex(){
+  const trace1 = {
+    type:'bar', orientation:'h',
+    y: ['진단 성비: 일반 ASD', '진단 성비: 혈족결혼', 'De novo LGD 부담', '열성 기여도'],
+    x: [4, 2.6, 1, 3],
+    name: '남성',
+    marker:{color:'#42a5f5'},
+    text: ['4:1', '2.6:1', '기준선', '~3%'],
+    textposition:'outside',
+    textfont:{size:13, color:'#e0e0e8'},
+    hovertemplate:'남성: %{x}<extra></extra>'
+  };
+  const trace2 = {
+    type:'bar', orientation:'h',
+    y: ['진단 성비: 일반 ASD', '진단 성비: 혈족결혼', 'De novo LGD 부담', '열성 기여도'],
+    x: [1, 1, 1.5, 10],
+    name: '여성',
+    marker:{color:'#f48fb1'},
+    text: ['', '', '더 높음', '~10%'],
+    textposition:'outside',
+    textfont:{size:13, color:'#e0e0e8'},
+    hovertemplate:'여성: %{x}<extra></extra>'
+  };
+  const layout = {
+    ...darkLayout,
+    barmode:'group',
+    xaxis:{title:{text:'상대 수치',font:{size:13}}, gridcolor:'rgba(255,255,255,0.05)'},
+    yaxis:{automargin:true},
+    legend:{orientation:'h', y:1.1, x:0.5, xanchor:'center', font:{size:13}},
+    margin:{l:180,r:60,t:40,b:60}
+  };
+  Plotly.newPlot('sex-chart', [trace1, trace2], layout, plotlyConfig);
+}
+
+// --- Section 5: Resolution Evolution ---
+function initResolution(){
+  const trace = {
+    x: RESOLUTION_DATA.map(d=>d.year),
+    y: RESOLUTION_DATA.map(d=>d.level),
+    mode:'lines+markers+text',
+    line:{shape:'hv', color:'#64b5f6', width:3},
+    marker:{size:14, color:'#1e88e5', line:{width:2, color:'#64b5f6'}},
+    text: RESOLUTION_DATA.map(d=>d.tech),
+    textposition: RESOLUTION_DATA.map((_,i)=>i%2===0?'top right':'bottom right'),
+    textfont:{size:11, color:'#a0a0b8'},
+    hovertemplate:'<b>%{text}</b><br>%{customdata}<extra></extra>',
+    customdata: RESOLUTION_DATA.map(d=>d.study)
+  };
+  const layout = {
+    ...darkLayout,
+    xaxis:{
+      range:[2009.5, 2026.5], dtick:2, gridcolor:'rgba(255,255,255,0.05)',
+      title:{text:'연도',font:{size:13}}
+    },
+    yaxis:{
+      range:[0.3, 6.8],
+      tickvals:[1,2,3,4,5,6],
+      ticktext:['벌크 조직<br>(Microarray)','벌크 조직<br>(450K)','뉴런 분리<br>(FACS)','단일세포<br>(snRNA-seq)','세포유형 GRN<br>(PsychENCODE2)','단일세포 메틸화<br>(snmCT-seq)'],
+      gridcolor:'rgba(255,255,255,0.05)',
+      title:{text:'해상도 수준',font:{size:13}}
+    },
+    margin:{l:150,r:30,t:30,b:60}
+  };
+  Plotly.newPlot('resolution-chart', [trace], layout, plotlyConfig);
+
+  document.getElementById('resolution-chart').on('plotly_click', function(data){
+    const idx = data.points[0].pointIndex;
+    const d = RESOLUTION_DATA[idx];
+    const panel = document.getElementById('resolution-detail');
+    panel.innerHTML = `
+      <h3>${d.tech}</h3>
+      <div class="meta">${d.study}</div>
+      <p>${d.detail}</p>
+    `;
+  });
+}
+
+// ===== NAVIGATION =====
+function initNav(){
+  const links = document.querySelectorAll('nav .links a');
+  const sections = document.querySelectorAll('section');
+  window.addEventListener('scroll', ()=>{
+    let current = '';
+    sections.forEach(s=>{
+      if(window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    links.forEach(a=>{
+      a.classList.toggle('active', a.getAttribute('href') === '#'+current);
+    });
+  });
+  links.forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+}
+
+// ===== INIT =====
+window.addEventListener('load', ()=>{
+  initSunburst();
+  initTimeline();
+  initPathway();
+  initSex();
+  initResolution();
+  initNav();
+  setTimeout(()=>{
+    const loader = document.getElementById('loading');
+    loader.style.opacity = '0';
+    setTimeout(()=>loader.style.display='none', 500);
+  }, 300);
+});
+</script>
+<footer style="text-align:center;padding:32px 24px;border-top:1px solid var(--gray2);color:var(--text2);font-size:13px">
+  Data sourced from the <a href="https://github.com/pwy02221-dev/asd-genetic-architecture" style="color:var(--accent);text-decoration:none">LLM Wiki project</a> (146 studies).
+  <br>
+  Related: <a href="https://pwy02221-dev.github.io/asd-brain-enhancer-landscape/" style="color:var(--accent);text-decoration:none">싱글셀 뇌 인핸서 랜드스케이프</a> · <a href="https://pwy02221-dev.github.io/genome-foundation-model-landscape/" style="color:var(--accent);text-decoration:none">Genome FM 진화 지도</a>
+</footer>
+</body>
+</html>

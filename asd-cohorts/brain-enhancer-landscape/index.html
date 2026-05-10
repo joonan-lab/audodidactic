@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>싱글셀 뇌 인핸서/조절 요소 랜드스케이프</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.plot.ly/plotly-2.35.0.min.js" charset="utf-8"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f0f1a;--bg2:#181828;--bg3:#1e1e32;
+  --text:#e0e0e8;--text2:#a0a0b8;--accent:#64b5f6;
+  --blue1:#1565c0;--blue2:#1e88e5;--blue3:#42a5f5;
+  --teal:#26a69a;--amber:#ffb74d;--pink:#f48fb1;
+  --green:#81c784;--purple:#b39ddb;--red:#ef5350;
+  --gray:#616178;--gray2:#44445a;
+}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.6;overflow-x:hidden;
+}
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(15,15,26,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--gray2);
+  display:flex;align-items:center;padding:0 24px;height:56px;
+}
+nav .logo{font-weight:700;font-size:15px;color:var(--accent);white-space:nowrap}
+nav .links{display:flex;gap:4px;margin-left:24px;overflow-x:auto}
+nav .links a{
+  color:var(--text2);text-decoration:none;font-size:13px;font-weight:500;
+  padding:8px 14px;border-radius:8px;white-space:nowrap;transition:all .2s;
+}
+nav .links a:hover,nav .links a.active{color:var(--accent);background:rgba(100,181,246,0.1)}
+.container{max-width:1200px;margin:0 auto;padding:80px 24px 48px}
+section{min-height:80vh;padding:48px 0;border-bottom:1px solid var(--gray2)}
+section:last-child{border-bottom:none}
+h2{font-size:28px;font-weight:700;margin-bottom:8px;color:#fff}
+.subtitle{color:var(--text2);font-size:15px;margin-bottom:32px}
+.chart-wrap{position:relative;width:100%;margin-bottom:24px}
+.detail-panel{
+  background:var(--bg2);border:1px solid var(--gray2);border-radius:12px;
+  padding:24px;margin-top:16px;min-height:120px;
+  transition:all .3s ease;
+}
+.detail-panel h3{font-size:18px;color:var(--accent);margin-bottom:12px}
+.detail-panel .meta{color:var(--text2);font-size:13px;margin-bottom:8px}
+.detail-panel p{font-size:14px;line-height:1.7}
+.detail-panel .tag{
+  display:inline-block;padding:3px 10px;border-radius:12px;
+  font-size:12px;margin-right:6px;margin-bottom:4px;
+  background:rgba(100,181,246,0.15);color:var(--accent);
+}
+.detail-panel .stat{
+  display:inline-block;background:var(--bg3);border-radius:8px;
+  padding:8px 16px;margin:4px;text-align:center;
+}
+.detail-panel .stat .val{font-size:22px;font-weight:700;color:#fff}
+.detail-panel .stat .label{font-size:11px;color:var(--text2)}
+.hero{text-align:center;padding:80px 0 40px}
+.hero h1{font-size:36px;font-weight:700;color:#fff;margin-bottom:16px}
+.hero p{font-size:16px;color:var(--text2);max-width:700px;margin:0 auto}
+.hero .stats-row{display:flex;justify-content:center;gap:32px;margin-top:32px;flex-wrap:wrap}
+.hero .stat-box{text-align:center}
+.hero .stat-box .num{font-size:36px;font-weight:700;color:var(--accent)}
+.hero .stat-box .lbl{font-size:13px;color:var(--text2)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0;justify-content:center}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+.legend-dot{width:12px;height:12px;border-radius:50%}
+.source-ref{font-size:12px;color:var(--text2);font-style:italic;margin-top:8px}
+.convergence-diagram{
+  background:var(--bg3);border-radius:12px;padding:24px;margin-top:16px;
+  text-align:center;
+}
+.convergence-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.conv-card{
+  background:var(--bg2);border:1px solid var(--gray2);border-radius:12px;
+  padding:20px;text-align:center;
+}
+.conv-card .cv{font-size:32px;font-weight:700;color:var(--accent)}
+.conv-card .cl{font-size:12px;color:var(--text2);margin-top:4px}
+footer{
+  text-align:center;padding:32px 24px;border-top:1px solid var(--gray2);
+  color:var(--text2);font-size:13px;
+}
+footer a{color:var(--accent);text-decoration:none}
+footer a:hover{text-decoration:underline}
+#loading{
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:999;
+  background:var(--bg);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  transition:opacity .5s;
+}
+#loading .spinner{
+  width:40px;height:40px;border:3px solid var(--gray2);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+#loading p{margin-top:16px;color:var(--text2);font-size:14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:768px){
+  nav .logo{font-size:13px}
+  nav .links a{font-size:12px;padding:6px 10px}
+  h2{font-size:22px}
+  .hero h1{font-size:26px}
+  .hero .stats-row{gap:16px}
+  .hero .stat-box .num{font-size:28px}
+  .convergence-cards{grid-template-columns:repeat(2,1fr)}
+  .detail-panel .stat{padding:6px 12px}
+  .detail-panel .stat .val{font-size:18px}
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <p>시각화를 불러오는 중...</p>
+</div>
+
+<nav>
+  <div class="logo">Brain Enhancer Landscape</div>
+  <div class="links">
+    <a href="#resolution" class="active">기술-해상도</a>
+    <a href="#elements">조절 요소</a>
+    <a href="#celltype">세포 유형</a>
+    <a href="#techevo">기술 진화</a>
+    <a href="#convergence">수렴 증거</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<div class="hero">
+  <h1>싱글셀 뇌 인핸서/조절 요소 랜드스케이프</h1>
+  <p>8편의 핵심 연구를 종합하여, ASD 뇌에서 조절 요소(인핸서, DMR, CRE)가 어떤 세포 유형에서 어떻게 변화하는지 추적한다.</p>
+  <div class="stats-row">
+    <div class="stat-box"><div class="num">591,043</div><div class="lbl">최대 프로파일 핵 수</div></div>
+    <div class="stat-box"><div class="num">5,000+</div><div class="lbl">발견된 CRE</div></div>
+    <div class="stat-box"><div class="num">35</div><div class="lbl">PE2 세포 유형</div></div>
+    <div class="stat-box"><div class="num">8</div><div class="lbl">종합 연구 수</div></div>
+  </div>
+</div>
+
+<!-- Section 1: Resolution Bubble Chart -->
+<section id="resolution">
+  <h2>1. 연구별 기술-해상도 비교</h2>
+  <p class="subtitle">14년간(2011-2025) ASD 뇌 조절 요소 연구의 기술적 해상도가 어떻게 진화했는지 한눈에 비교한다. 버블 크기는 샘플 수, 색상은 기술 유형.</p>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#ef5350"></div>Microarray/벌크</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#42a5f5"></div>후성유전학</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#66bb6a"></div>싱글셀 RNA</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#b39ddb"></div>멀티오믹스 통합</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ffb74d"></div>싱글셀 멀티오믹스</div>
+  </div>
+  <div class="chart-wrap">
+    <div id="bubble-chart" style="width:100%;height:520px"></div>
+  </div>
+  <div class="detail-panel" id="resolution-detail">
+    <h3>연구를 클릭하세요</h3>
+    <p>버블을 클릭하면 해당 연구의 기술, 샘플 규모, 핵심 발견이 표시됩니다.</p>
+  </div>
+</section>
+
+<!-- Section 2: Regulatory Elements Bar -->
+<section id="elements">
+  <h2>2. 조절 요소 규모 비교</h2>
+  <p class="subtitle">각 연구에서 발견된 조절 요소의 수와 유형. DMR 58개부터 CRE 5,000+개까지, 기술 발전에 따른 발견 규모의 확대.</p>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#ef5350"></div>DMR (차별메틸화영역)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#42a5f5"></div>CRE (시스-조절요소)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#66bb6a"></div>haQTL</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ffb74d"></div>크로마틴 영역</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#b39ddb"></div>모듈/네트워크</div>
+  </div>
+  <div class="chart-wrap">
+    <div id="elements-chart" style="width:100%;height:480px"></div>
+  </div>
+  <div class="detail-panel" id="elements-detail">
+    <h3>막대를 클릭하세요</h3>
+    <p>각 조절 요소 유형의 의미, 측정 방법, 그리고 ASD와의 관련성이 표시됩니다.</p>
+  </div>
+</section>
+
+<!-- Section 3: Cell Type Heatmap -->
+<section id="celltype">
+  <h2>3. 세포 유형별 ASD 영향 히트맵</h2>
+  <p class="subtitle">행은 뇌 세포 유형, 열은 연구(시간순). L2/3 흥분성 뉴런과 미세아교세포가 3개 이상의 독립 연구에서 반복적으로 ASD 영향을 확인.</p>
+  <div class="chart-wrap">
+    <div id="heatmap-chart" style="width:100%;height:520px"></div>
+  </div>
+  <div class="detail-panel" id="celltype-detail">
+    <h3>세포 유형을 클릭하세요</h3>
+    <p>히트맵의 셀을 클릭하면 해당 세포 유형의 ASD 관련 발견 상세가 표시됩니다.</p>
+  </div>
+</section>
+
+<!-- Section 4: Tech Evolution -->
+<section id="techevo">
+  <h2>4. 기술 스택 진화: 한계의 극복</h2>
+  <p class="subtitle">각 기술이 이전 세대의 어떤 한계를 극복했는지, 그리고 어떤 새로운 발견을 가능하게 했는지 추적한다.</p>
+  <div class="chart-wrap">
+    <div id="techevo-chart" style="width:100%;height:520px"></div>
+  </div>
+  <div class="detail-panel" id="techevo-detail">
+    <h3>기술 노드를 클릭하세요</h3>
+    <p>"이 기술 이전에는 불가능했던 것"과 "이 기술이 가능케 한 발견"이 표시됩니다.</p>
+  </div>
+</section>
+
+<!-- Section 5: Convergence Evidence -->
+<section id="convergence">
+  <h2>5. 수렴 증거: 모든 길은 인핸서로 통한다</h2>
+  <p class="subtitle">코딩 변이, 비코딩 변이, 환경 요인 — 세 경로가 "인핸서 상태 변화"라는 공통 노드에서 수렴하여 세포유형별 발현 이상을 유발한다.</p>
+
+  <div class="convergence-cards">
+    <div class="conv-card"><div class="cv">68%</div><div class="cl">ASD 공유 아세틸롬<br>(Sun 2016)</div></div>
+    <div class="conv-card"><div class="cv">4x</div><div class="cl">수렴형 DEG 배수<br>(Ramaswami 2020)</div></div>
+    <div class="conv-card"><div class="cv">L2/3</div><div class="cl">최영향 세포 유형<br>(3+ 독립 연구)</div></div>
+    <div class="conv-card"><div class="cv">35</div><div class="cl">PE2 세포 유형<br>(Wamsley 2024)</div></div>
+  </div>
+
+  <div class="convergence-diagram" id="convergence-svg">
+    <svg viewBox="0 0 800 420" style="max-width:800px;width:100%">
+      <!-- Path 1: Coding variants -->
+      <rect x="40" y="20" width="200" height="44" rx="8" fill="#1565c0" opacity="0.9"/>
+      <text x="140" y="47" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">코딩 변이 (de novo)</text>
+
+      <line x1="140" y1="64" x2="140" y2="110" stroke="#42a5f5" stroke-width="2" stroke-dasharray="6,4"/>
+      <polygon points="134,106 140,116 146,106" fill="#42a5f5"/>
+
+      <rect x="40" y="116" width="200" height="44" rx="8" fill="#1e88e5" opacity="0.8"/>
+      <text x="140" y="143" text-anchor="middle" fill="#fff" font-size="13" font-weight="500">크로마틴 조절자 변이</text>
+      <text x="140" y="157" text-anchor="middle" fill="#a0c4ff" font-size="10">CHD8, ARID1B, KMT2A</text>
+
+      <line x1="140" y1="160" x2="400" y2="220" stroke="#42a5f5" stroke-width="2" stroke-dasharray="6,4"/>
+      <polygon points="394,216 404,222 396,226" fill="#42a5f5"/>
+
+      <!-- Path 2: Non-coding variants -->
+      <rect x="300" y="20" width="200" height="44" rx="8" fill="#7b1fa2" opacity="0.9"/>
+      <text x="400" y="47" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">비코딩 변이 (GWAS)</text>
+
+      <line x1="400" y1="64" x2="400" y2="110" stroke="#b39ddb" stroke-width="2" stroke-dasharray="6,4"/>
+      <polygon points="394,106 400,116 406,106" fill="#b39ddb"/>
+
+      <rect x="300" y="116" width="200" height="44" rx="8" fill="#9c27b0" opacity="0.7"/>
+      <text x="400" y="143" text-anchor="middle" fill="#fff" font-size="13" font-weight="500">인핸서 서열 변화</text>
+      <text x="400" y="157" text-anchor="middle" fill="#ce93d8" font-size="10">haQTL, CRE 변이</text>
+
+      <line x1="400" y1="160" x2="400" y2="214" stroke="#b39ddb" stroke-width="2" stroke-dasharray="6,4"/>
+      <polygon points="394,210 400,220 406,210" fill="#b39ddb"/>
+
+      <!-- Path 3: Environment -->
+      <rect x="560" y="20" width="200" height="44" rx="8" fill="#ef6c00" opacity="0.9"/>
+      <text x="660" y="47" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">환경 요인</text>
+
+      <line x1="660" y1="64" x2="660" y2="110" stroke="#ffb74d" stroke-width="2" stroke-dasharray="6,4"/>
+      <polygon points="654,106 660,116 666,106" fill="#ffb74d"/>
+
+      <rect x="560" y="116" width="200" height="44" rx="8" fill="#f57c00" opacity="0.7"/>
+      <text x="660" y="143" text-anchor="middle" fill="#fff" font-size="13" font-weight="500">후성유전 변화</text>
+      <text x="660" y="157" text-anchor="middle" fill="#ffe0b2" font-size="10">DNA 메틸화, 히스톤 변형</text>
+
+      <line x1="660" y1="160" x2="400" y2="220" stroke="#ffb74d" stroke-width="2" stroke-dasharray="6,4"/>
+      <polygon points="394,216 404,222 396,226" fill="#ffb74d"/>
+
+      <!-- Convergence node: Enhancer -->
+      <rect x="280" y="216" width="240" height="52" rx="12" fill="#c62828" opacity="0.95" stroke="#ef5350" stroke-width="2"/>
+      <text x="400" y="239" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">인핸서 상태 변화</text>
+      <text x="400" y="257" text-anchor="middle" fill="#ffcdd2" font-size="11">5,000+ CRE | 2,365 크로마틴 영역</text>
+
+      <line x1="400" y1="268" x2="400" y2="310" stroke="#ef5350" stroke-width="2.5"/>
+      <polygon points="394,306 400,316 406,306" fill="#ef5350"/>
+
+      <!-- Cell-type expression -->
+      <rect x="250" y="316" width="300" height="44" rx="8" fill="#1b5e20" opacity="0.85"/>
+      <text x="400" y="343" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">세포유형별 발현 이상</text>
+
+      <line x1="320" y1="360" x2="240" y2="390" stroke="#81c784" stroke-width="2"/>
+      <line x1="480" y1="360" x2="560" y2="390" stroke="#81c784" stroke-width="2"/>
+
+      <!-- Final convergent cell types -->
+      <rect x="140" y="388" width="200" height="32" rx="8" fill="#26a69a" opacity="0.9"/>
+      <text x="240" y="409" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">L2/3 흥분성 뉴런</text>
+
+      <rect x="460" y="388" width="200" height="32" rx="8" fill="#26a69a" opacity="0.9"/>
+      <text x="560" y="409" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">미세아교세포</text>
+    </svg>
+    <p class="source-ref">코딩 변이, 비코딩 변이, 환경 요인이 인핸서 상태 변화를 거쳐 L2/3 흥분성 뉴런과 미세아교세포에 수렴. 8편의 독립 연구에서 반복 확인.</p>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  Data sourced from <a href="https://github.com/pwy02221-dev/asd-brain-enhancer-landscape">LLM Wiki project</a> (8 studies, 2011-2025).
+  <br>
+  Related: <a href="https://pwy02221-dev.github.io/asd-genetic-architecture/">ASD 유전 아키텍처</a> · <a href="https://pwy02221-dev.github.io/genome-foundation-model-landscape/">Genome FM 진화 지도</a>
+</footer>
+
+<script>
+// ===== DATA =====
+const STUDIES = [
+  {
+    id:'voineagu2011', author:'Voineagu et al.', year:2011, tech:'Microarray + WGCNA',
+    techType:'bulk', resolution:1, samples:36, asd:19, ctrl:17, nuclei:0,
+    cellTypes:0, journal:'Nature',
+    elements:'2 분자 모듈 (M12 시냅스, M16 면역)',
+    findings:'전전두-측두엽 전사체 기울기가 ASD에서 소실. M12(시냅스) 하향, M16(면역) 상향 조절. RBFOX1/A2BP1이 핵심 허브 유전자.',
+    genes:'RBFOX1, MET, SLC17A6, ANK1, GRIN1',
+    limitation:'벌크 조직 — 세포유형 분해 불가',
+    color:'#ef5350'
+  },
+  {
+    id:'sun2016', author:'Sun et al.', year:2016, tech:'H3K27ac ChIP-seq',
+    techType:'epigenetic', resolution:2, samples:257, asd:45, ctrl:49, nuclei:0,
+    cellTypes:0, journal:'Cell',
+    elements:'5,000+ CRE, 2,000+ haQTL',
+    findings:'ASD 사례의 ~68%가 5,000+ 조절 영역에서 공유 아세틸롬 서명. haQTL 발견으로 인과 변이 우선순위화 가능. 시냅스, 이온 수송, 면역 유전자에 이상 집중.',
+    genes:'CNTNAP2, HDAC4',
+    limitation:'벌크 ChIP-seq — 세포유형 해상도 없음',
+    color:'#42a5f5'
+  },
+  {
+    id:'nardone2017', author:'Nardone et al.', year:2017, tech:'FACS + 450K BeadArray',
+    techType:'epigenetic', resolution:3, samples:31, asd:15, ctrl:16, nuclei:0,
+    cellTypes:1, journal:'Cerebral Cortex',
+    elements:'58 DMR',
+    findings:'뉴런 핵 분리(FACS) 후 메틸화 분석. 58개 유의미 DMR 발견. GABAergic 시스템 유전자 조절 이상. 태아기 뇌 메틸화 리모델링 영역과 겹침.',
+    genes:'ABAT, GABBR1, Mir124-1, FAM124B, NEAT1',
+    limitation:'450K 어레이 — 게놈 커버리지 제한, 단일 세포유형만',
+    color:'#42a5f5'
+  },
+  {
+    id:'koberstein2018', author:'Koberstein et al.', year:2018, tech:'Sono-seq + GWAS',
+    techType:'epigenetic', resolution:2, samples:768, asd:554, ctrl:214, nuclei:0,
+    cellTypes:0, journal:'Science Signaling',
+    elements:'2,365 크로마틴 영역',
+    findings:'학습이 해마 크로마틴 접근성을 조절. 2,365개 학습-조절 영역 발견. SFARI ASD 위험 유전자가 학습-조절 영역에 >3배 농축. SHANK3 프로모터 6 SNP가 ASD와 유의미 연관.',
+    genes:'SHANK3, Shank1, Shank2, Rai1, Rere',
+    limitation:'마우스 모델 + 인간 유전 분석 — 직접적 뇌 조직 아님',
+    color:'#ffb74d'
+  },
+  {
+    id:'velmeshev2019', author:'Velmeshev et al.', year:2019, tech:'snRNA-seq',
+    techType:'singlecell', resolution:4, samples:31, asd:15, ctrl:16, nuclei:100000,
+    cellTypes:10, journal:'Science',
+    elements:'세포유형별 DEG 세트',
+    findings:'최초의 ASD 뇌 싱글셀 전사체 분석. 상층 흥분성 뉴런(L2/3)과 미세아교세포에서 가장 유의미한 변화. 시냅스 유전자 하향(뉴런), 면역 유전자 상향(아교세포). 전사체 이상 정도가 임상 중증도와 상관.',
+    genes:'시냅스 유전자군, 면역 반응 유전자군',
+    limitation:'전사체만 — 크로마틴/메틸화 정보 없음',
+    color:'#66bb6a'
+  },
+  {
+    id:'ramaswami2020', author:'Ramaswami et al.', year:2020, tech:'다중오믹스 + SNF',
+    techType:'multiomics', resolution:3, samples:93, asd:48, ctrl:45, nuclei:0,
+    cellTypes:0, journal:'Nature Communications',
+    elements:'수렴형 인핸서 및 프로모터 영역',
+    findings:'"수렴" vs "비수렴" 분자 아형 발견. 수렴 아형에서 DEG 4배 증가. ASD 유전 위험이 원위 과아세틸화 인핸서에 집중. 면역 과정은 프로모터/유전자체 저메틸화와 연관.',
+    genes:'REST, DMTN, STX1B, MYT1L, RBFOX1',
+    limitation:'벌크 다중오믹스 — 세포유형 해상도 제한',
+    color:'#b39ddb'
+  },
+  {
+    id:'wamsley2024', author:'Wamsley et al. (PE2)', year:2024, tech:'snRNA+snATAC+spatial',
+    techType:'multiomics', resolution:6, samples:63, asd:33, ctrl:30, nuclei:591043,
+    cellTypes:35, journal:'Science',
+    elements:'세포유형별 GRN 전체 매핑',
+    findings:'591,043개 핵 프로파일링. 35개 세포유형 식별. 표층 회로 뉴런과 아교세포(ASTRO1/3, MG2)에서 GRN 조절 이상. 드라이버 TF가 희귀+공통 유전 위험 변이 양쪽에 농축. 공간전사체로 검증.',
+    genes:'CUX1, RUNX1, FOXP2, STAT3',
+    limitation:'PFC 한정 — 다른 뇌 영역 미포함',
+    color:'#ffb74d'
+  },
+  {
+    id:'eyring2025', author:'Eyring et al.', year:2025, tech:'snmCT-seq',
+    techType:'multiomics', resolution:6, samples:49, asd:26, ctrl:23, nuclei:50000,
+    cellTypes:10, journal:'bioRxiv (프리프린트)',
+    elements:'수천 세포유형별 ASD-DMR',
+    findings:'싱글핵 메틸화+전사체 동시 프로파일링. ASD-DMR이 상층 흥분성 뉴런과 미세아교세포에 집중. 연령 관련 메틸화 효과가 ASD 진단 효과보다 압도적. 억제 뉴런 비율이 ASD에서 연령과 함께 감소.',
+    genes:'PDGFD, LINC01500, COL5A2, YWHAG, STXBP1, CUX2',
+    limitation:'프리프린트 — 동료 심사 미완',
+    color:'#ffb74d'
+  }
+];
+
+const REG_ELEMENTS = [
+  {study:'Voineagu 2011', type:'모듈', count:2, color:'#b39ddb',
+    desc:'M12(시냅스)와 M16(면역) 두 공발현 모듈. WGCNA로 식별. ASD 특이적 전사체 패턴의 최초 체계적 정의.'},
+  {study:'Nardone 2017', type:'DMR', count:58, color:'#ef5350',
+    desc:'차별메틸화영역(DMR). FACS로 뉴런 핵을 분리한 후 450K 어레이로 측정. GABAergic 시스템 유전자의 저메틸화가 핵심 발견.'},
+  {study:'Koberstein 2018', type:'크로마틴 영역', count:2365, color:'#ffb74d',
+    desc:'학습-유도 크로마틴 접근성 변화 영역. Sono-seq으로 마우스 해마에서 측정. 대부분 대안 인트론 프로모터에 위치. SFARI 유전자 3배 농축.'},
+  {study:'Sun 2016 (haQTL)', type:'haQTL', count:2000, color:'#66bb6a',
+    desc:'히스톤 아세틸화 QTL. 유전 변이가 히스톤 아세틸화 수준에 미치는 영향을 정량화. 인과 변이 우선순위화에 활용.'},
+  {study:'Sun 2016 (CRE)', type:'CRE', count:5000, color:'#42a5f5',
+    desc:'시스-조절요소(CRE). H3K27ac ChIP-seq으로 식별. ASD의 68%에서 공유 아세틸롬 서명을 보이는 활성 인핸서/프로모터 영역.'},
+  {study:'Eyring 2025', type:'ASD-DMR', count:3000, color:'#ef5350',
+    desc:'세포유형별 ASD 차별메틸화영역. snmCT-seq으로 싱글핵 수준에서 측정. 상층 흥분성 뉴런과 미세아교세포에 집중.'},
+  {study:'Wamsley 2024', type:'GRN', count:35, color:'#b39ddb',
+    desc:'세포유형별 유전자 조절 네트워크(GRN). snRNA+snATAC+spatial로 35개 세포유형 각각의 조절 회로를 매핑. 드라이버 TF와 타겟 유전자 식별.'}
+];
+
+// Cell type x study heatmap
+// Values: 0=unmeasured, 1=measured/no effect, 2=significant, 3=major impact
+const CELL_TYPES = ['L2/3 흥분성 뉴런','L4 흥분성 뉴런','L5/6 흥분성 뉴런','미세아교세포','성상교세포','억제 뉴런(PV)','억제 뉴런(SST)','억제 뉴런(VIP)','희소돌기교세포','OPC'];
+const STUDY_LABELS = ['Voineagu 2011','Sun 2016','Nardone 2017','Koberstein 2018','Velmeshev 2019','Ramaswami 2020','Wamsley 2024','Eyring 2025'];
+
+const HEATMAP_DATA = [
+  [0,0,0,0,3,2,3,3], // L2/3
+  [0,0,0,0,2,0,2,1], // L4
+  [0,0,0,0,2,0,2,1], // L5/6
+  [0,0,0,0,3,2,3,3], // Microglia
+  [0,0,0,0,1,1,3,1], // Astrocyte
+  [0,0,2,0,1,0,2,2], // PV
+  [0,0,0,0,1,0,2,1], // SST
+  [0,0,0,0,1,0,1,1], // VIP
+  [0,0,0,0,1,0,1,1], // Oligo
+  [0,0,0,0,1,0,1,1]  // OPC
+];
+
+const CELL_TYPE_INFO = {
+  'L2/3 흥분성 뉴런': '대뇌 피질 표층(Layer 2/3)의 흥분성 뉴런. Velmeshev(2019), Wamsley(2024), Eyring(2025) 3개 독립 연구에서 ASD 최대 영향 세포유형으로 반복 확인. 시냅스 유전자 하향 조절, ASD-DMR 집중, GRN 조절 이상 확인.',
+  'L4 흥분성 뉴런': 'Layer 4 흥분성 뉴런. 감각 입력의 주요 수신 층. Velmeshev(2019)에서 유의미한 변화, Wamsley(2024)에서 GRN 이상 확인.',
+  'L5/6 흥분성 뉴런': 'Layer 5/6 심층 흥분성 뉴런. 피질 출력의 주요 경로. L2/3보다 ASD 영향이 상대적으로 적지만, PE2에서 GRN 변화 관찰.',
+  '미세아교세포': '뇌의 상주 면역 세포. Voineagu(2011)의 M16 면역 모듈, Velmeshev(2019), Wamsley(2024, MG2 반응성), Eyring(2025) 4개 연구에서 ASD 영향 확인. 염증-구동 반응 상태 식별.',
+  '성상교세포': '뉴런 지원 아교세포. Wamsley(2024)에서 ASTRO1/3 아형의 GRN 조절 이상 확인. 반응성 성상교세포 상태 식별.',
+  '억제 뉴런(PV)': 'Parvalbumin 양성 억제 뉴런. Nardone(2017)에서 GABAergic 시스템의 메틸화 이상 확인. Eyring(2025)에서 ASD 환자의 연령별 억제 뉴런 비율 감소 관찰.',
+  '억제 뉴런(SST)': 'Somatostatin 양성 억제 뉴런. PE2에서 GRN 이상 관찰되나, PV보다 효과 크기 작음.',
+  '억제 뉴런(VIP)': 'VIP 양성 억제 뉴런. 싱글셀 연구에서 측정되었으나 ASD 특이적 변화는 상대적으로 미미.',
+  '희소돌기교세포': '축삭 수초화 담당. 싱글셀 연구에서 측정, 경미한 변화 관찰.',
+  'OPC': '희소돌기교세포 전구세포. 싱글셀 연구에서 측정, 경미한 변화 관찰.'
+};
+
+const TECH_PROGRESSION = [
+  {year:2011, tech:'Microarray', level:1, study:'Voineagu',
+    before:'유전자 발현의 체계적 뇌 조직 분석 부재',
+    enabled:'전전두-측두엽 전사체 기울기 소실 발견. 2개 ASD 핵심 모듈(M12, M16) 최초 정의.'},
+  {year:2016, tech:'H3K27ac ChIP-seq', level:2, study:'Sun',
+    before:'전사체만으로는 조절 메커니즘 파악 불가',
+    enabled:'활성 인핸서/프로모터를 직접 매핑. 5,000+ CRE와 2,000+ haQTL 발견. 68% ASD 공유 아세틸롬 서명.'},
+  {year:2017, tech:'FACS + 450K', level:3, study:'Nardone',
+    before:'벌크 조직에서 뉴런 vs 아교세포 신호 구분 불가',
+    enabled:'FACS로 뉴런 핵 분리 후 메틸화 분석. 뉴런 특이적 58 DMR 발견. GABAergic 시스템 조절 이상 확인.'},
+  {year:2018, tech:'Sono-seq + GWAS', level:2, study:'Koberstein',
+    before:'학습/활동에 의한 크로마틴 동적 변화 미탐구',
+    enabled:'학습-유도 크로마틴 리모델링 최초 매핑. 2,365 조절 영역. ASD 유전자가 학습-조절 영역에 3배 농축된다는 기능적 연결 발견.'},
+  {year:2019, tech:'snRNA-seq', level:4, study:'Velmeshev',
+    before:'벌크 또는 FACS 분리로는 수십 개 세포유형 동시 분석 불가',
+    enabled:'ASD 뇌 최초 싱글셀 해상도. L2/3 흥분성 뉴런과 미세아교세포가 최대 영향 세포유형임을 최초로 식별.'},
+  {year:2020, tech:'다중오믹스 SNF', level:3, study:'Ramaswami',
+    before:'단일 오믹스로는 분자 아형 구분 불가',
+    enabled:'mRNA+miRNA+메틸화+아세틸화 통합. "수렴" vs "비수렴" 분자 아형 발견. 수렴 아형에서 DEG 4배 증가.'},
+  {year:2024, tech:'snRNA+snATAC+spatial', level:6, study:'Wamsley (PE2)',
+    before:'싱글셀 전사체만으로는 조절 회로 매핑 불가',
+    enabled:'591,043 핵, 35 세포유형의 GRN 전체 매핑. 크로마틴 접근성+전사체+공간정보 동시 통합. 드라이버 TF 식별.'},
+  {year:2025, tech:'snmCT-seq', level:6, study:'Eyring',
+    before:'싱글셀 메틸화와 전사체의 동시 프로파일링 미실현',
+    enabled:'메틸화+전사체 동시 측정. 연령 효과 >> ASD 효과 발견. 세포유형별 ASD-DMR 매핑. 억제 뉴런 연령별 비율 감소 확인.'}
+];
+
+// ===== CHART FUNCTIONS =====
+const darkLayout = {
+  paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
+  font:{family:'Noto Sans KR, sans-serif', color:'#e0e0e8', size:13},
+  margin:{l:60,r:30,t:40,b:60},
+  xaxis:{gridcolor:'rgba(100,100,140,0.2)', zerolinecolor:'rgba(100,100,140,0.3)'},
+  yaxis:{gridcolor:'rgba(100,100,140,0.2)', zerolinecolor:'rgba(100,100,140,0.3)'}
+};
+const plotConfig = {responsive:true, displayModeBar:false};
+
+function showDetail(panelId, html){
+  document.getElementById(panelId).innerHTML = html;
+}
+
+// Section 1: Bubble Chart
+function initBubble(){
+  const techColors = {bulk:'#ef5350', epigenetic:'#42a5f5', singlecell:'#66bb6a', multiomics:'#ffb74d'};
+  const resLabels = {1:'벌크 전사체',2:'벌크 후성유전',3:'세포유형 분리',4:'싱글셀 전사체',5:'싱글셀 멀티옴',6:'싱글셀+공간'};
+
+  const trace = {
+    type:'scatter', mode:'markers+text',
+    x: STUDIES.map(s=>s.year),
+    y: STUDIES.map(s=>s.resolution),
+    text: STUDIES.map(s=>s.author.split(' ')[0]),
+    textposition: STUDIES.map((_,i)=>i%2===0?'top center':'bottom center'),
+    textfont:{size:11, color:'#e0e0e8'},
+    marker:{
+      size: STUDIES.map(s=>Math.max(20, Math.log(s.samples+1)*12)),
+      color: STUDIES.map(s=>techColors[s.techType]),
+      opacity:0.85,
+      line:{width:2, color:'rgba(255,255,255,0.3)'}
+    },
+    customdata: STUDIES,
+    hovertemplate:'%{customdata.author} (%{customdata.year})<br>기술: %{customdata.tech}<br>샘플: %{customdata.samples}<extra></extra>'
+  };
+
+  const layout = Object.assign({}, darkLayout, {
+    xaxis:{...darkLayout.xaxis, title:'연도', range:[2009,2027], dtick:2},
+    yaxis:{...darkLayout.yaxis, title:'해상도 수준', range:[0,7], tickvals:[1,2,3,4,5,6], ticktext:Object.values(resLabels), automargin:true},
+    margin:{l:140,r:30,t:40,b:60},
+    showlegend:false
+  });
+
+  Plotly.newPlot('bubble-chart',[trace],layout,plotConfig);
+
+  document.getElementById('bubble-chart').on('plotly_click',function(data){
+    const s = data.points[0].customdata;
+    showDetail('resolution-detail',`
+      <h3>${s.author} (${s.year})</h3>
+      <div class="meta">${s.journal} | ${s.tech}</div>
+      <div style="margin:12px 0">
+        <div class="stat"><div class="val">${s.samples}</div><div class="label">샘플 수</div></div>
+        <div class="stat"><div class="val">${s.nuclei>0?s.nuclei.toLocaleString():'-'}</div><div class="label">프로파일 핵</div></div>
+        <div class="stat"><div class="val">${s.cellTypes||'-'}</div><div class="label">세포 유형</div></div>
+      </div>
+      <p><strong>조절 요소:</strong> ${s.elements}</p>
+      <p style="margin-top:8px">${s.findings}</p>
+      <p style="margin-top:8px"><span class="tag">핵심 유전자</span> ${s.genes}</p>
+      <p class="source-ref">한계: ${s.limitation}</p>
+    `);
+  });
+}
+
+// Section 2: Regulatory Elements Bar
+function initElements(){
+  const sorted = [...REG_ELEMENTS].sort((a,b)=>a.count-b.count);
+  const trace = {
+    type:'bar', orientation:'h',
+    y: sorted.map(e=>`${e.study} (${e.type})`),
+    x: sorted.map(e=>e.count),
+    marker:{color: sorted.map(e=>e.color)},
+    text: sorted.map(e=>e.count>=1000?`${(e.count/1000).toFixed(0)}K+`:`${e.count}`),
+    textposition:'outside',
+    textfont:{color:'#e0e0e8', size:12},
+    customdata: sorted,
+    hovertemplate:'%{y}: %{x}<extra></extra>'
+  };
+
+  const layout = Object.assign({}, darkLayout, {
+    xaxis:{...darkLayout.xaxis, title:'발견된 조절 요소 수', type:'log', range:[0.5,4.2]},
+    yaxis:{...darkLayout.yaxis, automargin:true},
+    margin:{l:200,r:60,t:20,b:60},
+    showlegend:false
+  });
+
+  Plotly.newPlot('elements-chart',[trace],layout,plotConfig);
+
+  document.getElementById('elements-chart').on('plotly_click',function(data){
+    const e = data.points[0].customdata;
+    showDetail('elements-detail',`
+      <h3>${e.study} — ${e.type}</h3>
+      <div style="margin:12px 0">
+        <div class="stat"><div class="val">${e.count.toLocaleString()}</div><div class="label">발견 수</div></div>
+      </div>
+      <p>${e.desc}</p>
+    `);
+  });
+}
+
+// Section 3: Cell Type Heatmap
+function initHeatmap(){
+  const colorscale = [
+    [0,'#2a2a3e'],
+    [0.33,'#1a3a5c'],
+    [0.66,'#1e88e5'],
+    [1,'#ef5350']
+  ];
+
+  const annotations = [];
+  const valLabels = ['미측정','측정','유의미','최대 영향'];
+  for(let i=0;i<CELL_TYPES.length;i++){
+    for(let j=0;j<STUDY_LABELS.length;j++){
+      annotations.push({
+        x:j, y:i,
+        text: valLabels[HEATMAP_DATA[i][j]],
+        font:{color: HEATMAP_DATA[i][j]===0?'#555':'#fff', size:10},
+        showarrow:false
+      });
+    }
+  }
+
+  const trace = {
+    type:'heatmap',
+    z: HEATMAP_DATA,
+    x: STUDY_LABELS,
+    y: CELL_TYPES,
+    colorscale: colorscale,
+    showscale:false,
+    hovertemplate:'세포유형: %{y}<br>연구: %{x}<br>영향 수준: %{z}<extra></extra>',
+    xgap:3, ygap:3
+  };
+
+  const layout = Object.assign({}, darkLayout, {
+    annotations: annotations,
+    xaxis:{...darkLayout.xaxis, side:'top', tickangle:-35, automargin:true},
+    yaxis:{...darkLayout.yaxis, autorange:'reversed', automargin:true},
+    margin:{l:140,r:40,t:100,b:30}
+  });
+
+  Plotly.newPlot('heatmap-chart',[trace],layout,plotConfig);
+
+  document.getElementById('heatmap-chart').on('plotly_click',function(data){
+    const ct = data.points[0].y;
+    const info = CELL_TYPE_INFO[ct] || '상세 정보 없음';
+    const val = data.points[0].z;
+    const studyName = data.points[0].x;
+    showDetail('celltype-detail',`
+      <h3>${ct}</h3>
+      <div class="meta">${studyName} | 영향 수준: ${valLabels[val]}</div>
+      <p style="margin-top:12px">${info}</p>
+    `);
+  });
+}
+
+// Section 4: Tech Evolution
+function initTechEvo(){
+  const trace1 = {
+    type:'scatter', mode:'lines',
+    x: TECH_PROGRESSION.map(t=>t.year),
+    y: TECH_PROGRESSION.map(t=>t.level),
+    line:{color:'rgba(100,181,246,0.3)', width:2, shape:'hv'},
+    hoverinfo:'skip',
+    showlegend:false
+  };
+
+  const trace2 = {
+    type:'scatter', mode:'markers+text',
+    x: TECH_PROGRESSION.map(t=>t.year),
+    y: TECH_PROGRESSION.map(t=>t.level),
+    text: TECH_PROGRESSION.map(t=>t.tech),
+    textposition: TECH_PROGRESSION.map((_,i)=>i%2===0?'top center':'bottom center'),
+    textfont:{size:11, color:'#e0e0e8'},
+    marker:{size:14, color:'#64b5f6', line:{width:2, color:'#fff'}},
+    customdata: TECH_PROGRESSION,
+    hovertemplate:'%{customdata.tech} (%{customdata.year})<br>연구: %{customdata.study}<extra></extra>',
+    showlegend:false
+  };
+
+  const levelLabels = {1:'벌크 전사체',2:'벌크 후성유전학',3:'세포유형 분리',4:'싱글셀 전사체',5:'싱글셀 후성유전학',6:'싱글셀+공간 통합'};
+
+  const layout = Object.assign({}, darkLayout, {
+    xaxis:{...darkLayout.xaxis, title:'연도', range:[2009,2027], dtick:2},
+    yaxis:{...darkLayout.yaxis, title:'해상도 수준', range:[0,7], tickvals:[1,2,3,4,5,6], ticktext:Object.values(levelLabels)},
+    margin:{l:160,r:30,t:40,b:60}
+  });
+
+  Plotly.newPlot('techevo-chart',[trace1,trace2],layout,plotConfig);
+
+  document.getElementById('techevo-chart').on('plotly_click',function(data){
+    if(!data.points[0].customdata) return;
+    const t = data.points[0].customdata;
+    showDetail('techevo-detail',`
+      <h3>${t.tech} (${t.year})</h3>
+      <div class="meta">연구: ${t.study}</div>
+      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div style="background:var(--bg3);padding:16px;border-radius:8px">
+          <h4 style="color:var(--red);font-size:14px;margin-bottom:8px">이전에는 불가능했던 것</h4>
+          <p style="font-size:13px">${t.before}</p>
+        </div>
+        <div style="background:var(--bg3);padding:16px;border-radius:8px">
+          <h4 style="color:var(--green);font-size:14px;margin-bottom:8px">이 기술이 가능케 한 발견</h4>
+          <p style="font-size:13px">${t.enabled}</p>
+        </div>
+      </div>
+    `);
+  });
+}
+
+// ===== INIT =====
+function initAll(){
+  initBubble();
+  initElements();
+  initHeatmap();
+  initTechEvo();
+
+  // Nav active state
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('nav .links a');
+  window.addEventListener('scroll',()=>{
+    let current = '';
+    sections.forEach(s=>{
+      if(window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(a=>{
+      a.classList.toggle('active', a.getAttribute('href')==='#'+current);
+    });
+  });
+}
+
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.getElementById('loading').style.opacity='0';
+    setTimeout(()=>{document.getElementById('loading').style.display='none'},500);
+    initAll();
+  },300);
+});
+</script>
+</body>
+</html>
