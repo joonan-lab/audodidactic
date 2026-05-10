@@ -41,6 +41,10 @@
   --t-omic-glow: oklch(0.78 0.16 295);
   --t-omic-tint: oklch(0.96 0.025 295);
 
+  --t-splice: oklch(0.52 0.15 70);        /* amber · alternative splicing */
+  --t-splice-glow: oklch(0.78 0.14 70);
+  --t-splice-tint: oklch(0.97 0.025 70);
+
   /* shadow — layered low-opacity */
   --shadow-1: 0 1px 2px oklch(0.2 0.02 250 / 0.04), 0 2px 6px oklch(0.2 0.02 250 / 0.04);
   --shadow-2: 0 2px 4px oklch(0.2 0.02 250 / 0.05), 0 8px 20px oklch(0.2 0.02 250 / 0.05);
@@ -263,6 +267,7 @@ body::after {
 .track[data-track="dna"]   { --tc: var(--t-dna);  --tc-glow: var(--t-dna-glow);  --tc-tint: var(--t-dna-tint);  }
 .track[data-track="model"] { --tc: var(--t-model); --tc-glow: var(--t-model-glow); --tc-tint: var(--t-model-tint); }
 .track[data-track="omic"]  { --tc: var(--t-omic); --tc-glow: var(--t-omic-glow); --tc-tint: var(--t-omic-tint); }
+.track[data-track="splice"] { --tc: var(--t-splice); --tc-glow: var(--t-splice-glow); --tc-tint: var(--t-splice-tint); }
 
 .track-head {
   display: flex;
@@ -824,6 +829,82 @@ body::after {
         <h3 class="card-title">암 × 공간전사체 랜드스케이프</h3>
         <p class="card-desc">
           Visium, Visium HD, Xenium, MERSCOPE 등 RNA 기반 공간전사체 플랫폼의 암 조직 적용 현황을 10편 논문 기반으로 정리한 인터랙티브 시각화. 플랫폼별 샘플 규모, 공간 해상도, 유전자 패널, L-R (리간드-수용체) 분석 도구와 주요 L-R pair를 비교합니다.
+        </p>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+  <!-- ALTERNATIVE SPLICING -->
+  <section class="track" data-track="splice" aria-labelledby="t06">
+    <header class="track-head">
+      <div class="track-title-group">
+        <h2 class="track-title" id="t06">Alternative Splicing</h2>
+      </div>
+    </header>
+    <p class="track-blurb">
+      pre-mRNA에서 인트론을 제거하고 엑손을 이어붙이는 스플라이싱은 단일 유전자에서 수만 가지 단백질 이소폼을 만드는 핵심 기전입니다. 스플라이소좀 조립과 반응 메커니즘에서 출발해, alternative splicing 유형과 이소폼 다양성, 변이 분류 기준(ACMG/ClinGen), AI 예측 모델(SpliceAI·AbSplice·CADD-Splice)까지 네 카드로 이어서 읽습니다.
+    </p>
+    <div class="cards split">
+      <a class="card" href="alternative-splicing/splicing-mechanism/index.html">
+        <span class="card-tag">mechanism · spliceosome</span>
+        <h3 class="card-title">스플라이싱 메커니즘 — 스플라이소좀과 두 단계 반응</h3>
+        <p class="card-desc">
+          GU-AG·AT-AC·GC-AG splice site consensus, 5'SS·BP·PPT·3'SS 네 요소, U1~U6 snRNP 조립 순서(E→A→B→Bact→C→C*→P), 두 단계 트랜스에스터화(lariat 형성 → exon ligation), U2-type vs U12(minor) spliceosome, recursive splicing을 인터랙티브 다이어그램으로 익힙니다.
+        </p>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+      <a class="card" href="alternative-splicing/splicing-isoform/index.html">
+        <span class="card-tag">isoform · NMD · therapeutics</span>
+        <h3 class="card-title">스플라이싱과 이소폼 다양성 — exon skipping부터 NMD까지</h3>
+        <p class="card-desc">
+          Exon Skipping(~40%)·Alt 5'/3' SS(~25%)·Intron Retention(~15%)·MEE(~5%) 유형 비교, ESE/ESS/ISE/ISS 조절 요소, DSCAM 38,016 이소폼 조합, SMN2 exon 7 skipping과 SMA 기전, NMD 55 nt 규칙과 EJC, ataluren PTC readthrough, ASO/SSO 치료 전략을 다룹니다.
+        </p>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+      <a class="card" href="alternative-splicing/splicing-variant-classification/index.html">
+        <span class="card-tag">ACMG · ClinGen · variant scoring</span>
+        <h3 class="card-title">스플라이싱 변이 분류 — ACMG/ClinGen 기준과 임상 워크플로우</h3>
+        <p class="card-desc">
+          PVS1·PS3·PM2·PP3·BS3·BP7·BA1 기준 해설, SpliceAI delta score 임계값(0.2/0.5/0.8), 동의어 변이·인트로닉 변이의 ESE/ESS 효과, canonical splice site vs deep intronic 분류 흐름, RNA assay 증거 통합, 임상 분류 시뮬레이터를 한 페이지로 정리합니다.
+        </p>
+        <div class="card-cta">
+          <span class="card-cta-text">페이지로 들어가기</span>
+          <span class="card-cta-mark" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+      <a class="card" href="alternative-splicing/splicing-ai-models/index.html">
+        <span class="card-tag">SpliceAI · AbSplice · CADD-Splice</span>
+        <h3 class="card-title">스플라이싱 AI 모델 — SpliceAI, AbSplice, CADD-Splice 비교</h3>
+        <p class="card-desc">
+          SpliceAI(DS_AG·DS_AL·DS_DG·DS_DL 4개 delta score), AbSplice(Wagner et al. 2023 Nat Genet 55:107, 조직별 이상 스플라이싱 확률), CADD-Splice(Rentzsch et al. 2021 Genome Medicine, PHRED 스케일 통합 점수)의 아키텍처, 학습 데이터, 출력 해석, 임상 적용 범위를 비교합니다.
         </p>
         <div class="card-cta">
           <span class="card-cta-text">페이지로 들어가기</span>
