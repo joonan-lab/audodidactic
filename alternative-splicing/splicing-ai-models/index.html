@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스플라이싱 변이 예측 AI 모델 — Homangla</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#fff;
+  --ink:#17202a;
+  --muted:#667085;
+  --line:#d9dee7;
+  --soft:#f6f8fb;
+  --soft2:#fff8f0;
+  --accent:#b85c00;
+  --r:10px;
+}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Segoe UI",sans-serif;line-height:1.5}
+button{font:inherit}
+a{color:var(--accent)}
+
+.page{max-width:1320px;margin:0 auto;padding:28px 24px 60px}
+.mast{padding-bottom:20px;border-bottom:2px solid var(--line);margin-bottom:28px}
+.breadcrumb{font-size:12px;color:var(--muted);margin-bottom:12px}
+.breadcrumb a{color:var(--muted);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+.eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:8px}
+h1{font-size:clamp(28px,3.5vw,44px);line-height:1.1;font-weight:850;letter-spacing:-.02em;margin:0 0 12px;word-break:keep-all}
+.dek{font-size:15px;color:#3f4b5d;max-width:760px;line-height:1.7}
+
+.tabs{display:flex;gap:4px;margin:28px 0 20px;flex-wrap:wrap}
+.tab-btn{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.tab-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tab-btn.active{border-color:var(--accent);background:var(--accent);color:#fff}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+.panel{border:1px solid var(--line);border-radius:var(--r);background:#fff;overflow:hidden;margin-bottom:20px}
+.panel-head{padding:13px 16px 11px;border-bottom:1px solid var(--line);background:var(--soft)}
+.panel-title{font-size:14px;font-weight:800;color:var(--ink)}
+.panel-body{padding:16px}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid-3{grid-template-columns:1fr}}
+
+/* ── MODEL SELECTOR ── */
+.model-strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.model-btn{border:2px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px 14px;font-size:12.5px;font-weight:700;cursor:pointer;transition:all .18s;white-space:nowrap}
+.model-btn:hover{transform:translateY(-1px)}
+.model-btn.active{color:#fff;border-color:var(--accent);background:var(--accent)}
+
+.model-detail{border:1px solid var(--line);border-radius:var(--r);padding:20px;min-height:260px;background:var(--soft2)}
+.model-detail .model-year{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.model-detail h3{font-size:20px;font-weight:850;margin:0 0 4px}
+.model-detail .model-org{font-size:13px;color:var(--muted);margin-bottom:14px}
+.model-detail .dl{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;font-size:13px;margin-bottom:14px}
+.model-detail .dl dt{font-weight:700;color:var(--muted);text-transform:uppercase;font-size:11px;letter-spacing:.05em;padding-top:2px}
+.model-detail .dl dd{margin:0;color:#273246;line-height:1.5}
+.model-detail .pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.model-detail .pros,.model-detail .cons{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:#fff}
+.model-detail .pros h4{font-size:12px;font-weight:800;color:#2e7d32;margin:0 0 6px;text-transform:uppercase;letter-spacing:.05em}
+.model-detail .cons h4{font-size:12px;font-weight:800;color:#c62828;margin:0 0 6px;text-transform:uppercase;letter-spacing:.05em}
+.model-detail .pros ul,.model-detail .cons ul{font-size:12px;color:#3a4a5e;line-height:1.8;padding-left:14px;margin:0}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:var(--soft);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:9px 12px;border-bottom:2px solid var(--line);text-align:left;white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--soft)}
+
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.03em;margin:1px;white-space:nowrap}
+.t-dl{background:#e3f2fd;color:#0d47a1}
+.t-ml{background:#e8f5e9;color:#1b5e20}
+.t-rule{background:#f3e5f5;color:#4a148c}
+.t-ens{background:#fff3e0;color:#e65100}
+.t-obs{background:#fce4ec;color:#880e4f}
+
+.score-pill{display:inline-block;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700;border:1px solid currentColor}
+.score-high{color:#2e7d32;background:#e8f5e9}
+.score-med{color:#e65100;background:#fff3e0}
+.score-low{color:#c62828;background:#ffebee}
+.score-na{color:var(--muted);background:var(--soft)}
+
+.info-box{background:var(--soft2);border:1px solid #ffcc80;border-radius:8px;padding:13px 16px;font-size:13px;color:#5d4037;line-height:1.7;margin:12px 0}
+.info-box strong{color:#bf360c}
+
+.card-sm{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:#fff}
+.card-sm h4{font-size:14px;font-weight:800;margin:0 0 6px}
+.card-sm p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.6}
+
+/* bar chart */
+.bar-wrap{display:grid;grid-template-columns:160px 1fr 50px;align-items:center;gap:8px;margin:5px 0;font-size:12px}
+.bar-wrap .bar-label{color:#3a4a5e;font-weight:600;text-align:right}
+.bar-track{background:#f0f0f0;border-radius:4px;height:14px;position:relative}
+.bar-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .4s}
+.bar-val{color:var(--muted);font-size:11px;font-family:ui-monospace,monospace}
+
+/* ── REFS ── */
+.refs{margin-top:28px;padding-top:20px;border-top:2px solid var(--line)}
+.refs-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px}
+.refs-list{list-style:decimal;padding-left:20px;margin:0;display:flex;flex-direction:column;gap:6px}
+.refs-list li{font-size:11.5px;color:#4a5568;line-height:1.6}
+.refs-list a{color:var(--accent);text-decoration:none}
+.refs-list a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="mast">
+  <div class="breadcrumb"><a href="../index.html">← homangla</a> / 스플라이싱 변이 예측 AI 모델</div>
+  <div class="eyebrow">deep learning · SpliceAI · Pangolin · MMSplice</div>
+  <h1>스플라이싱 변이 예측 AI 모델</h1>
+  <p class="dek">규칙 기반 MaxEntScan부터 딥러닝 SpliceAI, 다조직 Pangolin, 조직 특이적 AbSplice까지. 각 모델의 아키텍처, 입출력, 장단점을 비교하고 임상 적용 가이드를 제공합니다.</p>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('models')">모델 선택기</button>
+  <button class="tab-btn" onclick="showTab('comparison')">성능 비교표</button>
+  <button class="tab-btn" onclick="showTab('architecture')">아키텍처 개념</button>
+  <button class="tab-btn" onclick="showTab('guide')">임상 활용 가이드</button>
+</div>
+
+<!-- TAB 1: MODEL SELECTOR -->
+<div class="tab-panel active" id="tab-models">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">스플라이싱 예측 모델 선택기</div></div>
+    <div class="panel-body">
+      <div class="model-strip">
+        <button class="model-btn active" onclick="selectModel('maxentscan',this)">MaxEntScan</button>
+        <button class="model-btn" onclick="selectModel('spliceai',this)">SpliceAI</button>
+        <button class="model-btn" onclick="selectModel('pangolin',this)">Pangolin</button>
+        <button class="model-btn" onclick="selectModel('mmsplice',this)">MMSplice</button>
+        <button class="model-btn" onclick="selectModel('absplice',this)">AbSplice</button>
+        <button class="model-btn" onclick="selectModel('cadd',this)">CADD-Splice</button>
+        <button class="model-btn" onclick="selectModel('spliceai2',this)">SpliceAI-10k</button>
+        <button class="model-btn" onclick="selectModel('squirls',this)">SQUIRLS</button>
+      </div>
+      <div class="model-detail" id="model-detail"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: COMPARISON -->
+<div class="tab-panel" id="tab-comparison">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">스플라이싱 예측 모델 비교표</div></div>
+    <div class="panel-body">
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>모델</th>
+              <th>유형</th>
+              <th>출시</th>
+              <th>입력 윈도우</th>
+              <th>출력</th>
+              <th>다조직</th>
+              <th>Canonical 성능</th>
+              <th>Deep Intronic</th>
+              <th>오픈소스</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>MaxEntScan</strong></td>
+              <td><span class="tag t-rule">Rule</span></td>
+              <td>2004</td>
+              <td>9 nt (5'SS)<br>23 nt (3'SS)</td>
+              <td>Splice site 강도 점수</td>
+              <td><span class="score-low">없음</span></td>
+              <td><span class="score-high">높음</span></td>
+              <td><span class="score-low">불가</span></td>
+              <td><span class="score-high">Yes</span></td>
+            </tr>
+            <tr>
+              <td><strong>SpliceAI</strong></td>
+              <td><span class="tag t-dl">Deep CNN</span></td>
+              <td>2019</td>
+              <td>10,000 nt</td>
+              <td>DS_AG/AL/DG/DL (0–1)</td>
+              <td><span class="score-low">없음</span></td>
+              <td><span class="score-high">높음</span></td>
+              <td><span class="score-high">가능</span></td>
+              <td><span class="score-high">Yes</span></td>
+            </tr>
+            <tr>
+              <td><strong>Pangolin</strong></td>
+              <td><span class="tag t-dl">Deep CNN</span></td>
+              <td>2022</td>
+              <td>10,000 nt</td>
+              <td>조직별 splice score (53조직)</td>
+              <td><span class="score-high">있음</span></td>
+              <td><span class="score-high">높음</span></td>
+              <td><span class="score-high">가능</span></td>
+              <td><span class="score-high">Yes</span></td>
+            </tr>
+            <tr>
+              <td><strong>MMSplice</strong></td>
+              <td><span class="tag t-ml">Modular ML</span></td>
+              <td>2019</td>
+              <td>모듈별 (5'SS, 3'SS, exon, intron)</td>
+              <td>exon inclusion rate 변화</td>
+              <td><span class="score-low">없음</span></td>
+              <td><span class="score-med">중간</span></td>
+              <td><span class="score-med">제한적</span></td>
+              <td><span class="score-high">Yes</span></td>
+            </tr>
+            <tr>
+              <td><strong>AbSplice</strong></td>
+              <td><span class="tag t-ens">Ensemble</span></td>
+              <td>2022</td>
+              <td>—</td>
+              <td>조직별 aberrant splicing 확률</td>
+              <td><span class="score-high">있음</span></td>
+              <td><span class="score-med">중간</span></td>
+              <td><span class="score-med">제한적</span></td>
+              <td><span class="score-high">Yes</span></td>
+            </tr>
+            <tr>
+              <td><strong>CADD-Splice</strong></td>
+              <td><span class="tag t-ens">Ensemble</span></td>
+              <td>2021</td>
+              <td>다양</td>
+              <td>PHRED-scaled CADD score</td>
+              <td><span class="score-low">없음</span></td>
+              <td><span class="score-med">중간</span></td>
+              <td><span class="score-med">제한적</span></td>
+              <td><span class="score-high">Score 공개</span></td>
+            </tr>
+            <tr>
+              <td><strong>SQUIRLS</strong></td>
+              <td><span class="tag t-ml">ML</span></td>
+              <td>2021</td>
+              <td>±100 nt</td>
+              <td>병원성 스플라이싱 확률</td>
+              <td><span class="score-low">없음</span></td>
+              <td><span class="score-med">중간</span></td>
+              <td><span class="score-low">불가</span></td>
+              <td><span class="score-high">Yes</span></td>
+            </tr>
+            <tr>
+              <td><strong>SpliceVault</strong></td>
+              <td><span class="tag t-obs">Observational</span></td>
+              <td>2022</td>
+              <td>—</td>
+              <td>정상인 스플라이싱 레퍼런스</td>
+              <td><span class="score-high">있음</span></td>
+              <td><span class="score-na">해당없음</span></td>
+              <td><span class="score-na">해당없음</span></td>
+              <td><span class="score-high">Web tool</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box" style="margin-top:16px">
+        <strong>권장 조합:</strong> 임상 스플라이싱 변이 분석 시 <strong>SpliceAI</strong> (기본) + <strong>MaxEntScan</strong> (near-splice site 정량) + <strong>Pangolin</strong> (조직 맥락) + <strong>SpliceVault</strong> (정상인 비교) 조합이 가장 포괄적입니다. 계산 결과는 반드시 RNA 실험(RT-PCR)으로 검증해야 합니다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: ARCHITECTURE -->
+<div class="tab-panel" id="tab-architecture">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">SpliceAI 아키텍처 개념 — Residual CNN</div></div>
+    <div class="panel-body">
+      <div class="grid-2">
+        <div>
+          <p style="font-size:14px;color:#3a4a5e;line-height:1.7;margin-bottom:14px">
+            SpliceAI (Jaganathan et al. 2019 Cell)는 잔차 희석 합성곱 신경망(Residual Dilated CNN)을 사용합니다. 10,000 nt의 DNA 서열을 원-핫 인코딩하여 각 위치가 donor, acceptor, neither일 확률을 예측합니다.
+          </p>
+          <div class="card-sm" style="margin-bottom:10px">
+            <h4>입력 표현</h4>
+            <p>10,000 nt 서열을 4×L 원-핫 행렬로 인코딩 (A/C/G/T). 변이를 삽입한 돌연변이 서열에서 동일하게 예측 → delta score 계산.</p>
+          </div>
+          <div class="card-sm" style="margin-bottom:10px">
+            <h4>Dilated Convolution</h4>
+            <p>팽창 합성곱으로 long-range 서열 문맥을 효율적으로 포착. dilation factor를 증가시키며 1→4→10→25→... 순으로 수용 영역 확대. 10,000 nt 전체를 커버하면서 파라미터 수 절약.</p>
+          </div>
+          <div class="card-sm">
+            <h4>Residual Connection</h4>
+            <p>Skip connection으로 깊은 네트워크(32개 residual block)의 기울기 소실 방지. 각 블록: Conv → BN → ReLU → Conv → BN + Skip → ReLU.</p>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel" style="margin-bottom:16px">
+            <div class="panel-head"><div class="panel-title">학습 데이터 및 목표</div></div>
+            <div class="panel-body">
+              <ul style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:18px;margin:0">
+                <li>GENCODE 어노테이션 기반 donor/acceptor 위치 레이블</li>
+                <li>인간 게놈 전체 훈련 (GRCh37/38)</li>
+                <li>3-class classification: donor / acceptor / neither</li>
+                <li>Position-wise softmax 출력 → 각 nt의 splice site 확률</li>
+                <li>참조 vs 변이 서열 차이 → delta score</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-bottom:0">
+            <div class="panel-head"><div class="panel-title">MMSplice — 모듈형 접근</div></div>
+            <div class="panel-body">
+              <p style="font-size:13px;color:#3a4a5e;line-height:1.7;margin-bottom:10px">
+                MMSplice (Cheng et al. 2019)는 스플라이싱을 모듈로 분해합니다:
+              </p>
+              <ul style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:18px;margin:0">
+                <li><strong>5'SS 모듈:</strong> donor 부위 강도 예측</li>
+                <li><strong>3'SS 모듈:</strong> acceptor 부위 강도 예측</li>
+                <li><strong>Exon 모듈:</strong> 엑손 내 enhancer/silencer 예측</li>
+                <li><strong>Intron 모듈:</strong> 인트론 내 조절 서열 예측</li>
+                <li>각 모듈 출력 → 선형 모델로 통합 → psi (exon inclusion rate) 예측</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">AbSplice — 조직 특이적 이상 스플라이싱 예측</div></div>
+    <div class="panel-body">
+      <div class="grid-2">
+        <div>
+          <p style="font-size:13px;color:#3a4a5e;line-height:1.7;margin-bottom:12px">
+            AbSplice (Wagner et al. 2022 Nature Genetics)는 여러 스플라이싱 예측 모델의 점수를 통합하여 조직별로 이상 스플라이싱이 일어날 확률을 예측합니다.
+          </p>
+          <ul style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:18px;margin:0">
+            <li>입력: SpliceAI delta score + MMSplice delta_logit_psi + 조직 특이적 발현 정보</li>
+            <li>GTEx v8 RNA-seq 기반 이상 스플라이싱 사례로 훈련</li>
+            <li>49개 조직에 대한 이상 스플라이싱 확률 출력</li>
+            <li>0–1 범위, 높을수록 해당 조직에서 이상 스플라이싱 가능성 높음</li>
+          </ul>
+        </div>
+        <div>
+          <div class="card-sm" style="margin-bottom:10px">
+            <h4>SpliceAI vs AbSplice 비교</h4>
+            <p>SpliceAI는 splice site 변화 확률, AbSplice는 실제 이상 스플라이싱 발생 확률. AbSplice가 false positive 감소에 유리. 단, 훈련 데이터가 GTEx 성인 조직에 편향.</p>
+          </div>
+          <div class="card-sm">
+            <h4>신경 발달 질환 적용 시 주의</h4>
+            <p>GTEx에는 태아 뇌 및 신경 발달 단계 데이터가 부족. 뇌 특이적 isoform이나 신경 분화 관련 스플라이싱은 AbSplice보다 Pangolin 뇌 조직 점수가 더 관련성 높을 수 있음.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 4: GUIDE -->
+<div class="tab-panel" id="tab-guide">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">임상 상황별 모델 활용 가이드</div></div>
+    <div class="panel-body">
+      <table style="margin-bottom:20px">
+        <thead>
+          <tr>
+            <th>임상 상황</th>
+            <th>1순위 도구</th>
+            <th>보조 도구</th>
+            <th>RNA 검증 필요성</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Canonical ±1,2 변이</strong><br><small>ACMG PVS1 평가</small></td>
+            <td>SpliceAI DS_AL/DS_DL</td>
+            <td>MaxEntScan (정량), SpliceVault</td>
+            <td>확인 권장 (NMD 감수성, rescue isoform)</td>
+          </tr>
+          <tr>
+            <td><strong>Near-splice ±3–8 변이</strong><br><small>병원성 불명확</small></td>
+            <td>SpliceAI + MaxEntScan (MES 변화 %)</td>
+            <td>MMSplice delta_logit_psi</td>
+            <td>SpliceAI &gt;0.2 또는 MES 감소 &gt;20% 시 강력 권장</td>
+          </tr>
+          <tr>
+            <td><strong>Deep intronic 변이</strong><br><small>Cryptic exon 의심</small></td>
+            <td>SpliceAI (DS_AG/DG 확인)</td>
+            <td>Pangolin, MMSplice</td>
+            <td>SpliceAI &gt;0.2 시 반드시 RT-PCR 검증</td>
+          </tr>
+          <tr>
+            <td><strong>엑손 내 동의어 변이</strong><br><small>ESE 파괴 의심</small></td>
+            <td>SpliceAI DS_AL/DL</td>
+            <td>ESEfinder, CADD-Splice</td>
+            <td>SpliceAI &gt;0.1 또는 임상적 의심 시</td>
+          </tr>
+          <tr>
+            <td><strong>조직 특이적 스플라이싱 의심</strong><br><small>신경계 질환</small></td>
+            <td>Pangolin (뇌 조직 점수)</td>
+            <td>AbSplice (뇌 조직), SpliceAI</td>
+            <td>해당 조직 RNA (또는 iPSC-유래 신경세포) 권장</td>
+          </tr>
+          <tr>
+            <td><strong>변이 필터링 / 우선순위화</strong><br><small>다수 VUS 처리</small></td>
+            <td>SpliceAI (빠른 게놈 전체 적용)</td>
+            <td>CADD-Splice (종합 점수)</td>
+            <td>상위 변이에 대해서만 선별적 검증</td>
+          </tr>
+          <tr>
+            <td><strong>Leaky splicing / 정상 변이체 확인</strong></td>
+            <td>SpliceVault (GTEx 관찰 기반)</td>
+            <td>—</td>
+            <td>SpliceVault에서 정상 패턴 확인 후 병원성 하향 가능</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="grid-3">
+        <div class="card-sm">
+          <h4>SpliceAI 실행 방법</h4>
+          <p>pip install spliceai. 입력: VCF + 참조 게놈. 출력: 각 변이에 DS_AG/AL/DG/DL + 위치 정보. 사전계산 점수 (Illumina BaseSpace)도 활용 가능.</p>
+        </div>
+        <div class="card-sm">
+          <h4>MaxEntScan 온라인 사용</h4>
+          <p>http://genes.mit.edu/burgelab/maxent/Xmaxentscan_scoreseq.html. 5'SS: 9 nt 서열 입력 (MAG|GURAGU). 3'SS: 23 nt 서열 입력. 점수 10 이상: 강함, 0 미만: 매우 약함.</p>
+        </div>
+        <div class="card-sm">
+          <h4>SpliceVault 사용</h4>
+          <p>splicevault.broadinstitute.org. 유전자 + 스플라이스 이벤트 입력 → GTEx/정상 RNA-seq에서 해당 패턴 관찰 빈도 확인. 낮은 빈도면 이상 스플라이싱 지지.</p>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:16px">
+        <strong>모델 한계 공통 주의사항:</strong> (1) 모든 예측 모델은 훈련 데이터에 편향 — 희귀 스플라이싱 패턴 놓칠 수 있음. (2) 모델 점수는 스플라이싱 변화 확률이지 병원성 확률이 아님. (3) 긴 인트론 (>100 kb)의 딥 인트로닉 변이는 현재 모델들이 미처 커버 못할 수 있음. (4) Tissue-specific AS를 다루는 모델들도 GTEx 성인 조직에 편향 — 태아 발달 단계의 isoform은 과소예측 가능.
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">ASD/신경발달 질환 스플라이싱 변이 분석 추천 파이프라인</div></div>
+    <div class="panel-body">
+      <ol style="font-size:13.5px;color:#3a4a5e;line-height:2;padding-left:20px;margin:0">
+        <li><strong>변이 필터링:</strong> SpliceAI Δmax ≥ 0.1로 1차 필터 → 의미있는 스플라이싱 변이 후보 추출</li>
+        <li><strong>위치 분류:</strong> 각 변이를 canonical / near-splice / deep intronic / exonic으로 분류</li>
+        <li><strong>점수 통합:</strong> SpliceAI + MaxEntScan + Pangolin 뇌 조직 점수 조합</li>
+        <li><strong>전사체 분석:</strong> 영향받는 전사체가 MANE Select인지, NMD 감수성인지 확인</li>
+        <li><strong>SpliceVault 확인:</strong> 정상인에서 해당 스플라이싱 패턴 관찰 빈도 체크</li>
+        <li><strong>우선순위 변이 검증:</strong> RT-PCR (환자 혈액 또는 환자-유래 iPSC/신경세포)</li>
+        <li><strong>ACMG 분류:</strong> 위 증거를 종합하여 PVS1/PS3/PM2/PP3 기준 적용</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<section class="refs">
+  <div class="refs-title">참고 문헌</div>
+  <ol class="refs-list">
+    <li>Yeo G & Burge CB. "Maximum entropy modeling of short sequence motifs with applications to RNA splicing signals." <em>J Comput Biol.</em> 2004. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/15285897/" target="_blank" rel="noopener">15285897</a></li>
+    <li>Jaganathan K et al. "Predicting Splicing from Primary Sequence with Deep Learning." <em>Cell.</em> 2019. doi:10.1016/j.cell.2018.12.015. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/30661751/" target="_blank" rel="noopener">30661751</a></li>
+    <li>Zeng T & Li YI. "Predicting RNA splicing from DNA sequence using Pangolin." <em>Genome Biol.</em> 2022. doi:10.1186/s13059-022-02664-4. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/35449021/" target="_blank" rel="noopener">35449021</a></li>
+    <li>Wagner N et al. "Aberrant splicing prediction across human tissues." <em>Nat Genet.</em> 2023. doi:10.1038/s41588-023-01373-3. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/37142848/" target="_blank" rel="noopener">37142848</a></li>
+    <li>Smith et al. "Benchmarking splice variant prediction algorithms using massively parallel splicing assays." 2023. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/37205456/" target="_blank" rel="noopener">37205456</a></li>
+    <li>You N et al. "SpliceTransformer predicts tissue-specific splicing linked to human diseases." <em>Nat Commun.</em> 2024. doi:10.1038/s41467-024-53088-6. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/39443442/" target="_blank" rel="noopener">39443442</a></li>
+    <li>Jónsson BA et al. "Transformers significantly improve splice site prediction." <em>Commun Biol.</em> 2024. doi:10.1038/s42003-024-07298-9. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/39633146/" target="_blank" rel="noopener">39633146</a></li>
+    <li>Walker LC et al. "Using the ACMG/AMP framework to capture evidence related to predicted and observed impact on splicing." <em>Am J Hum Genet.</em> 2023. doi:10.1016/j.ajhg.2023.06.002. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/37352859/" target="_blank" rel="noopener">37352859</a></li>
+    <li>Cheng J et al. "MMSplice: modular modeling improves the predictions of genetic variant effects on splicing." <em>Genome Biol.</em> 2019. doi:10.1186/s13059-019-1653-z. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/30823901/" target="_blank" rel="noopener">30823901</a></li>
+    <li>Rentzsch P et al. "CADD-Splice—improving genome-wide variant effect prediction using deep learning-derived splice scores." <em>Genome Med.</em> 2021. doi:10.1186/s13073-021-00835-9. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/33618777/" target="_blank" rel="noopener">33618777</a></li>
+    <li>Danis D et al. "Interpretable prioritization of splice variants in diagnostic next-generation sequencing." <em>Am J Hum Genet.</em> 2021. doi:10.1016/j.ajhg.2021.06.015. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/34289339/" target="_blank" rel="noopener">34289339</a></li>
+  </ol>
+</section>
+
+</div>
+
+<script>
+const models = {
+  maxentscan: {
+    year: "2004 · MIT Burge Lab",
+    name: "MaxEntScan",
+    org: "Yeo & Burge 2004, J Comput Biol · 규칙 기반 Maximum Entropy 모델",
+    fields: {
+      "유형": "규칙 기반 (Maximum Entropy)",
+      "입력": "9 nt (5'SS) / 23 nt (3'SS) 서열",
+      "출력": "스플라이스 부위 강도 점수 (log-odds 기반)",
+      "학습 데이터": "인간 게놈 annotated splice sites",
+      "접근 방법": "뉴클레오타이드 위치별 최대 엔트로피 모델 (positional dependencies 포착)"
+    },
+    pros: ["계산 빠르고 해석 직관적", "스플라이스 부위 강도 정량화에 표준 도구", "±1,2 및 near-splice site 변이 정량에 최적", "오랜 임상 사용으로 임계값 잘 정립"],
+    cons: ["9–23 nt만 고려, 장거리 문맥 전혀 포착 안 함", "ESE/ESS, 딥 인트로닉 변이 예측 불가", "조직 특이성 없음", "새 cryptic site 생성 예측 불가"]
+  },
+  spliceai: {
+    year: "2019 · Illumina (Jaganathan et al. Cell)",
+    name: "SpliceAI",
+    org: "Jaganathan et al. 2019 Cell 176:535 · Deep Residual CNN",
+    fields: {
+      "유형": "딥러닝 — Residual Dilated CNN",
+      "입력": "10,000 nt DNA 서열 (변이 중심)",
+      "출력": "DS_AG/AL/DG/DL (각 0–1), Δmax = max(4 scores)",
+      "학습 데이터": "GENCODE 어노테이션 기반 인간 splice sites",
+      "임계값": "0.2 (low), 0.5 (moderate), 0.8 (high) — ClinGen 2021"
+    },
+    pros: ["10,000 nt 장거리 문맥 포착 (딥 인트로닉 변이 가능)", "4가지 delta score로 스플라이싱 변화 방향 파악", "임상 스플라이싱 분석의 de facto 표준", "전체 게놈 사전계산 점수 이용 가능"],
+    cons: ["단일 '평균' 조직 예측, 조직 특이성 없음", "높은 점수가 항상 병원성을 의미하지 않음", "10,000 nt 윈도우 밖 변이 포착 불가", "in silico 도구 — 반드시 RNA로 검증 필요"]
+  },
+  pangolin: {
+    year: "2022 · Zeng et al. Genome Biology",
+    name: "Pangolin",
+    org: "Zeng et al. 2022 Genome Biology 23:1 · Multi-tissue SpliceAI",
+    fields: {
+      "유형": "딥러닝 — Multi-tissue CNN (SpliceAI 확장)",
+      "입력": "10,000 nt DNA 서열",
+      "출력": "53개 GTEx 조직별 splice site 확률 변화",
+      "학습 데이터": "GTEx v8 RNA-seq — 조직별 splice site 사용률",
+      "장점": "조직 특이적 스플라이싱 예측 — SpliceAI 대비 조직 맥락 추가"
+    },
+    pros: ["53개 조직 특이적 예측 — 신경계 질환에서 유용", "SpliceAI보다 조직 맥락 정보 풍부", "딥 인트로닉 변이도 SpliceAI와 동등 수준 예측", "오픈소스, 사전계산 점수 이용 가능"],
+    cons: ["GTEx 성인 조직 기반 — 태아/발달 특이적 isoform 놓칠 수 있음", "53개 조직 점수 해석 시 여러 결과 중 관련 조직 선택 필요", "SpliceAI보다 계산 비용 높음"]
+  },
+  mmsplice: {
+    year: "2019 · Cheng et al. Genome Biology",
+    name: "MMSplice",
+    org: "Cheng et al. 2019 Genome Biology 20:1 · Modular Splicing Model",
+    fields: {
+      "유형": "모듈형 딥러닝 (CNN per module)",
+      "입력": "엑손/인트론/스플라이스 부위 서열 (모듈별)",
+      "출력": "delta_logit_psi (exon inclusion rate 변화)",
+      "학습 데이터": "MPRA, endogenous splicing 측정값",
+      "모듈": "5'SS / 3'SS / exon / intron / reference 모듈 통합"
+    },
+    pros: ["exon inclusion rate 변화 정량화", "각 모듈의 기여도 분리 분석 가능", "SpliceAI와 보완적 (ESE/exon 내 변이)", "AbSplice의 입력 모델로 사용"],
+    cons: ["short-range 문맥만 포착 — 딥 인트로닉 변이 예측 제한", "SpliceAI보다 less validated in clinical setting", "사용 복잡도 SpliceAI보다 높음"]
+  },
+  absplice: {
+    year: "2023 · Wagner et al. Nature Genetics",
+    name: "AbSplice",
+    org: "Wagner et al. 2023 Nature Genetics 55:107 · Tissue-specific Aberrant Splicing",
+    fields: {
+      "유형": "앙상블 (SpliceAI + MMSplice + 조직 발현 통합)",
+      "입력": "VCF 변이 (내부적으로 SpliceAI/MMSplice 점수 계산)",
+      "출력": "조직별 이상 스플라이싱 확률 (0–1)",
+      "학습 데이터": "GTEx v8 이상 스플라이싱 사례 (rare variants)",
+      "임계값": "0.01 (모든 조직), 0.2 (높은 신뢰도)"
+    },
+    pros: ["이상 스플라이싱 발생 확률 직접 추정", "조직별 점수로 임상 관련 조직 선택 가능", "SpliceAI 단독보다 false positive 감소"],
+    cons: ["GTEx 성인 조직 편향 — 발달 단계 데이터 부족", "훈련 데이터가 GTEx 희귀변이 기반 — 임상 변이와 차이 가능", "SpliceAI보다 계산 파이프라인 복잡"]
+  },
+  cadd: {
+    year: "2021 · Rentzsch et al. Genome Medicine",
+    name: "CADD-Splice",
+    org: "Rentzsch et al. 2021 Genome Med · CADD v1.6 스플라이싱 특화 버전",
+    fields: {
+      "유형": "앙상블 (SVM + 다수 특성 통합)",
+      "입력": "VCF 변이",
+      "출력": "PHRED-scaled CADD score (높을수록 해로움)",
+      "학습 데이터": "이미 알려진 병원성/양성 변이 집합",
+      "스플라이싱 특성": "MaxEntScan, dbscSNV, ESEfinder, SPIDEX 점수 포함"
+    },
+    pros: ["단일 종합 점수로 편리한 필터링", "스플라이싱 + 기타 기능적 점수 통합", "전체 게놈 사전계산 점수 이용 가능"],
+    cons: ["단일 점수로 스플라이싱 방향/메커니즘 구분 불가", "SpliceAI보다 딥 인트로닉 변이 포착 약함", "해석 시 구성 특성 중 어떤 것이 기여하는지 불명확"]
+  },
+  spliceai2: {
+    year: "2023 · Jaganathan et al. (확장 버전)",
+    name: "SpliceAI-10k / SpliceAI-visual",
+    org: "SpliceAI 확장 버전들 — 더 넓은 윈도우 또는 시각화 지원",
+    fields: {
+      "유형": "SpliceAI 변형",
+      "윈도우": "10,000 nt (표준) or 50,000 nt (확장 실험적)",
+      "출력": "SpliceAI와 동일",
+      "특이사항": "Illumina DRAGEN 파이프라인 내장, BaseSpace Variant Interpreter 통합"
+    },
+    pros: ["표준 SpliceAI와 동일한 검증된 성능", "DRAGEN 임상 파이프라인과 통합", "더 넓은 윈도우 버전으로 먼 딥 인트로닉 변이 가능"],
+    cons: ["확장 윈도우 버전은 아직 실험적", "표준 SpliceAI 대비 임상 검증 부족"]
+  },
+  squirls: {
+    year: "2021 · Danis et al. American Journal of Human Genetics",
+    name: "SQUIRLS",
+    org: "Danis et al. 2021 AJHG 108:924 · Splicing Variant Classifier",
+    fields: {
+      "유형": "머신러닝 (Random Forest + feature engineering)",
+      "입력": "VCF 변이 (± 100 nt 고려)",
+      "출력": "병원성 스플라이싱 변이 확률 (0–1)",
+      "특성": "MaxEntScan, GERP, phyloP, ESEfinder, SSF-like 점수 등",
+      "대상": "주로 canonical + near-splice site 변이"
+    },
+    pros: ["병원성 확률 직접 출력 — 임상 해석 용이", "기존 도구들을 통합한 효율적인 분류기", "계산 빠름"],
+    cons: ["±100 nt만 고려 — 딥 인트로닉 변이 예측 불가", "SpliceAI보다 성능 제한적", "엑손 내 ESE 교란 예측 약함"]
+  }
+};
+
+function selectModel(id, btn) {
+  document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const m = models[id];
+  const dl = Object.entries(m.fields).map(([k,v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+  document.getElementById('model-detail').innerHTML = `
+    <div class="model-year">${m.year}</div>
+    <h3>${m.name}</h3>
+    <div class="model-org">${m.org}</div>
+    <dl class="dl">${dl}</dl>
+    <div class="pros-cons">
+      <div class="pros"><h4>장점</h4><ul>${m.pros.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+      <div class="cons"><h4>한계</h4><ul>${m.cons.map(c=>`<li>${c}</li>`).join('')}</ul></div>
+    </div>
+  `;
+}
+
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+selectModel('maxentscan', document.querySelector('.model-btn'));
+</script>
+</body>
+</html>

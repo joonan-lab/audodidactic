@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스플라이싱 메커니즘 — Homangla</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#fff;
+  --ink:#17202a;
+  --muted:#667085;
+  --line:#d9dee7;
+  --soft:#f6f8fb;
+  --soft2:#fff8f0;
+  --accent:#b85c00;
+  --accent-light:#fff3e0;
+  --shadow:0 10px 30px rgba(23,32,42,.08);
+  --r:10px;
+}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Segoe UI",sans-serif;line-height:1.5}
+button,input,select{font:inherit}
+a{color:var(--accent)}
+
+.page{max-width:1320px;margin:0 auto;padding:28px 24px 60px}
+
+/* ── MAST ── */
+.mast{padding-bottom:20px;border-bottom:2px solid var(--line);margin-bottom:28px}
+.breadcrumb{font-size:12px;color:var(--muted);margin-bottom:12px}
+.breadcrumb a{color:var(--muted);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+.eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:8px}
+h1{font-size:clamp(28px,3.5vw,44px);line-height:1.1;font-weight:850;letter-spacing:-.02em;margin:0 0 12px;word-break:keep-all}
+.dek{font-size:15px;color:#3f4b5d;max-width:760px;line-height:1.7}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;margin:28px 0 20px;flex-wrap:wrap}
+.tab-btn{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.tab-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tab-btn.active{border-color:var(--accent);background:var(--accent);color:#fff}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ── GRID ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid-3{grid-template-columns:1fr}}
+
+/* ── PANEL ── */
+.panel{border:1px solid var(--line);border-radius:var(--r);background:#fff;overflow:hidden;margin-bottom:20px}
+.panel-head{padding:13px 16px 11px;border-bottom:1px solid var(--line);background:var(--soft)}
+.panel-title{font-size:14px;font-weight:800;color:var(--ink)}
+.panel-body{padding:16px}
+
+/* ── SEQUENCE BOX ── */
+.seq-box{background:#1a1a2e;color:#e0e0e0;border-radius:8px;padding:16px 20px;font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13.5px;line-height:2;overflow-x:auto;margin:12px 0}
+.seq-box .gu{color:#ff9800;font-weight:700}
+.seq-box .ag{color:#4caf50;font-weight:700}
+.seq-box .bp{color:#64b5f6;font-weight:700}
+.seq-box .exon{color:#ce93d8;font-weight:700}
+.seq-box .label{color:#9e9e9e;font-size:11px;letter-spacing:.06em}
+
+/* ── STEP SELECTOR ── */
+.step-strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.step-btn{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:7px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;transition:all .18s;min-width:52px;text-align:center}
+.step-btn:hover{border-color:var(--accent);color:var(--accent)}
+.step-btn.active{border-color:var(--accent);background:var(--accent);color:#fff}
+.step-detail{border:1px solid var(--line);border-radius:var(--r);padding:18px;background:var(--soft2);min-height:180px}
+.step-detail h3{font-size:17px;font-weight:800;margin:0 0 8px;color:var(--ink)}
+.step-detail .step-sub{font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.step-detail p{font-size:13.5px;color:#3a4a5e;line-height:1.7;margin:0 0 10px}
+.step-detail ul{font-size:13px;color:#3a4a5e;line-height:1.8;padding-left:18px;margin:0}
+
+/* ── COMPARE TABLE ── */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--soft);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:10px 12px;border-bottom:2px solid var(--line);text-align:left}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--soft)}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.04em}
+.tag-u2{background:#fff3e0;color:#e65100}
+.tag-u12{background:#e8f5e9;color:#2e7d32}
+.tag-yes{background:#e8f5e9;color:#2e7d32}
+.tag-no{background:#fce4ec;color:#c62828}
+
+/* ── REACTION DIAGRAM ── */
+.rxn{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0;font-size:13px}
+.rxn-box{border:1.5px solid var(--line);border-radius:7px;padding:7px 12px;background:#fff;font-family:ui-monospace,monospace;font-size:12.5px;line-height:1.4;min-width:80px;text-align:center}
+.rxn-arrow{color:var(--accent);font-size:18px;font-weight:700}
+
+/* ── CARD SMALL ── */
+.card-sm{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:#fff}
+.card-sm h4{font-size:14px;font-weight:800;margin:0 0 6px}
+.card-sm p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.6}
+.card-sm .val{font-size:20px;font-weight:800;color:var(--accent);display:block;margin:4px 0}
+
+/* ── CONSENSUS ── */
+.consensus{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}
+.cons-item{border:1.5px solid var(--line);border-radius:9px;padding:13px 14px;background:var(--soft)}
+.cons-item .cons-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}
+.cons-item .cons-seq{font-family:ui-monospace,monospace;font-size:15px;font-weight:700;color:var(--accent);letter-spacing:.08em;margin-bottom:4px}
+.cons-item .cons-desc{font-size:12px;color:var(--muted);line-height:1.5}
+
+.info-box{background:var(--soft2);border:1px solid #ffcc80;border-radius:8px;padding:13px 16px;font-size:13px;color:#5d4037;line-height:1.7;margin:12px 0}
+.info-box strong{color:#bf360c}
+
+/* ── SPLICE DIAGRAM ── */
+.splice-diagram{background:#1a1a2e;border-radius:10px;padding:22px 24px;margin:16px 0;overflow-x:auto}
+.sd-row{display:flex;align-items:flex-start;gap:0;min-width:max-content}
+.sd-exon{background:rgba(206,147,216,.12);color:#ce93d8;border:1.5px solid #ce93d8;border-radius:6px;padding:5px 12px;font-family:ui-monospace,monospace;font-weight:700;font-size:12.5px;white-space:nowrap;margin-top:2px;align-self:flex-start}
+.sd-hline{height:2px;width:22px;background:#3a3a5c;margin-top:14px;flex-shrink:0;align-self:flex-start}
+.sd-intron{color:#3a3a5c;font-family:ui-monospace,monospace;font-size:13px;padding:0 10px;align-self:flex-start;margin-top:8px;letter-spacing:3px;flex-shrink:0}
+.sd-site{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.sd-motif{border:2px solid;border-radius:6px;padding:5px 13px;font-family:ui-monospace,monospace;font-size:13px;font-weight:700;background:#1a1a2e;white-space:nowrap;line-height:1.4}
+.sd-vline{width:0;border-left:2px dashed;margin:5px auto;height:24px;flex-shrink:0}
+.sd-name{font-size:11.5px;font-weight:700;color:#c8d0dc;text-align:center;line-height:1.3}
+.sd-factor{font-size:10.5px;color:#6a7a8c;text-align:center;font-style:italic;margin-top:2px}
+
+/* ── REFS ── */
+.refs{margin-top:28px;padding-top:20px;border-top:2px solid var(--line)}
+.refs-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px}
+.refs-list{list-style:decimal;padding-left:20px;margin:0;display:flex;flex-direction:column;gap:6px}
+.refs-list li{font-size:11.5px;color:#4a5568;line-height:1.6}
+.refs-list a{color:var(--accent);text-decoration:none}
+.refs-list a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="mast">
+  <div class="breadcrumb"><a href="../index.html">← homangla</a> / 스플라이싱 메커니즘</div>
+  <div class="eyebrow">mechanism · spliceosome</div>
+  <h1>스플라이싱 메커니즘</h1>
+  <p class="dek">pre-mRNA에서 인트론이 제거되고 엑손이 연결되는 과정을 분자 수준으로 이해합니다. 스플라이소좀의 조립 단계, 두 번의 트랜스에스테르화 반응, 그리고 Major·Minor 스플라이소좀의 차이를 살펴봅니다.</p>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('splice-sites')">스플라이스 부위 인식</button>
+  <button class="tab-btn" onclick="showTab('assembly')">스플라이소좀 조립</button>
+  <button class="tab-btn" onclick="showTab('reaction')">트랜스에스테르화 반응</button>
+  <button class="tab-btn" onclick="showTab('major-minor')">Major vs Minor</button>
+  <button class="tab-btn" onclick="showTab('cotranscriptional')">공전사 스플라이싱</button>
+</div>
+
+<!-- TAB 1: SPLICE SITES -->
+<div class="tab-panel active" id="tab-splice-sites">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">스플라이스 부위 인식 — 네 가지 신호 서열</div></div>
+    <div class="panel-body">
+      <p style="font-size:14px;color:#3a4a5e;margin-bottom:16px;line-height:1.7">
+        스플라이소좀이 인트론을 정확히 인식하려면 네 가지 cis-acting 서열 요소가 필요합니다. 이 신호들은 각각 특정 snRNA와 단백질에 의해 인식됩니다.
+      </p>
+      <div class="consensus">
+        <div class="cons-item">
+          <div class="cons-label">5' 스플라이스 부위 (Donor)</div>
+          <div class="cons-seq">MAG|GURAGU</div>
+          <div class="cons-desc">엑손/인트론 경계. 인트론은 항상 <strong>GU</strong>로 시작. U1 snRNA가 상보적 염기쌍으로 인식. | = 경계</div>
+        </div>
+        <div class="cons-item">
+          <div class="cons-label">분지점 (Branch Point)</div>
+          <div class="cons-seq">YNYURAY</div>
+          <div class="cons-desc">3'SS 상류 18–40 nt. 중심 <strong>A</strong>(아데노신)가 친핵체로 작용. U2 snRNA가 인식.</div>
+        </div>
+        <div class="cons-item">
+          <div class="cons-label">폴리피리미딘 트랙 (PPT)</div>
+          <div class="cons-seq">UUUUUUCCCC</div>
+          <div class="cons-desc">BP와 3'SS 사이의 피리미딘 풍부 구간. U2AF65가 결합. 길이와 강도가 3'SS 선택에 영향.</div>
+        </div>
+        <div class="cons-item">
+          <div class="cons-label">3' 스플라이스 부위 (Acceptor)</div>
+          <div class="cons-seq">YAG|</div>
+          <div class="cons-desc">인트론 말단은 항상 <strong>AG</strong>. U2AF35가 AG를 직접 인식. | = 경계</div>
+        </div>
+      </div>
+
+      <div class="splice-diagram">
+        <div class="sd-row">
+          <div class="sd-exon">EXON 1</div>
+          <div class="sd-hline"></div>
+          <div class="sd-site">
+            <div class="sd-motif" style="border-color:#ff9800;color:#ff9800">MAG|GU·RAGU</div>
+            <div class="sd-vline" style="border-color:#ff9800"></div>
+            <div class="sd-name">5′ Splice Site</div>
+            <div class="sd-factor">U1 snRNA</div>
+          </div>
+          <div class="sd-intron">· · · · · · · ·</div>
+          <div class="sd-site">
+            <div class="sd-motif" style="border-color:#64b5f6;color:#64b5f6">YNYURAY</div>
+            <div class="sd-vline" style="border-color:#64b5f6"></div>
+            <div class="sd-name">Branch Point (BP)</div>
+            <div class="sd-factor">U2 snRNA</div>
+          </div>
+          <div class="sd-intron">· · · · ·</div>
+          <div class="sd-site">
+            <div class="sd-motif" style="border-color:#90a4ae;color:#b0bec5">UUUUUUCC</div>
+            <div class="sd-vline" style="border-color:#90a4ae"></div>
+            <div class="sd-name">폴리피리미딘 트랙</div>
+            <div class="sd-factor">U2AF65</div>
+          </div>
+          <div class="sd-intron">· · · ·</div>
+          <div class="sd-site">
+            <div class="sd-motif" style="border-color:#4caf50;color:#4caf50">Y·AG|</div>
+            <div class="sd-vline" style="border-color:#4caf50"></div>
+            <div class="sd-name">3′ Splice Site</div>
+            <div class="sd-factor">U2AF35</div>
+          </div>
+          <div class="sd-hline"></div>
+          <div class="sd-exon">EXON 2</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>중요:</strong> 인간 게놈에서 ~98.5%의 인트론이 GU-AG 규칙을 따릅니다(U2-type). ~1%는 GC-AG 인트론으로 역시 U2-type spliceosome이 처리합니다. 인간 게놈의 ~700–800개 인트론은 AT-AC 또는 GT-AG consensus를 가진 U12-type 인트론으로, minor spliceosome에 의해 처리됩니다.
+      </div>
+
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">조절 서열 요소 (Splicing Regulatory Elements)</div></div>
+    <div class="panel-body">
+      <p style="font-size:13.5px;color:#3a4a5e;margin-bottom:16px;line-height:1.7">
+        스플라이소좀의 4가지 핵심 신호만으로는 스플라이싱 결과를 완전히 예측할 수 없습니다. <strong>RNA 결합 단백질(RBP)</strong>이 결합하는 보조 서열 요소가 스플라이싱 효율과 대안 스플라이싱을 미세 조정합니다.
+      </p>
+      <div class="grid-3">
+        <div class="card-sm">
+          <h4>ESE (Exonic Splicing Enhancer)</h4>
+          <p>엑손 내 SR 단백질 결합 서열. 인접 스플라이스 부위의 사용을 촉진하여 엑손 포함을 강화. 변이로 인한 ESE 파괴 → 엑손 스킵.</p>
+        </div>
+        <div class="card-sm">
+          <h4>ESS (Exonic Splicing Silencer)</h4>
+          <p>엑손 내 hnRNP 결합 서열. 스플라이싱을 억제하여 엑손 제외 유도. 변이가 새 ESS를 생성하거나 ESE를 파괴하면 엑손 스킵 유발.</p>
+        </div>
+        <div class="card-sm">
+          <h4>ISE / ISS (Intronic)</h4>
+          <p>인트론 내 enhancer/silencer. 딥 인트로닉 변이가 ISS를 파괴하거나 새 ISE를 만들면 cryptic exon 활성화. SpliceAI 등 AI 모델의 주요 예측 타깃.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: ASSEMBLY -->
+<div class="tab-panel" id="tab-assembly">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">스플라이소좀 조립 단계 — E → A → B → B<sup>act</sup> → C → C* → P</div></div>
+    <div class="panel-body">
+      <div class="step-strip" id="assembly-steps"></div>
+      <div class="step-detail" id="assembly-detail"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">스플라이소좀 조립 경로 — 전체 개요</div></div>
+    <div class="panel-body">
+      <figure style="margin:0;text-align:center">
+        <img src="https://www.frontiersin.org/files/Articles/652129/xml-images/fgene-12-652129-g002.webp"
+             alt="Spliceosome assembly pathway: E, A, B, Bact, C complexes"
+             style="max-width:100%;border-radius:8px;border:1px solid var(--line)">
+        <figcaption style="margin-top:10px;font-size:11.5px;color:var(--muted);line-height:1.6">
+          스플라이소좀 조립 경로. U1 snRNP(E complex)→ U2 snRNP(A complex) → U4/U5/U6 tri-snRNP(B complex) → 활성화(B<sup>act</sup>) → Step 1(C complex) 순서로 진행된다.<br>
+          <span style="font-size:10.5px">
+            Fig. 2 from: Seo H &amp; Bhatt DL (2021). Spliceosomal snRNA Epitranscriptomics.
+            <em>Frontiers in Genetics</em> 12:652129.
+            <a href="https://doi.org/10.3389/fgene.2021.652129" target="_blank" rel="noopener">doi:10.3389/fgene.2021.652129</a> — CC BY 4.0
+          </span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: REACTION -->
+<div class="tab-panel" id="tab-reaction">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">스플라이싱 트랜스에스테르화 반응</div></div>
+    <div class="panel-body">
+      <p style="font-size:14px;color:#3a4a5e;margin-bottom:18px;line-height:1.7">
+        스플라이싱은 두 번의 <strong>SN2 트랜스에스테르화(transesterification)</strong> 반응으로 이루어집니다. 에너지 소비 없이(ATP 불필요) 인산이에스테르 결합의 위치만 바뀝니다.
+      </p>
+
+      <div class="grid-2">
+        <div>
+          <div class="panel" style="margin-bottom:0">
+            <div class="panel-head"><div class="panel-title" style="color:#e65100">Step 1: 분지화 반응 (Branching)</div></div>
+            <div class="panel-body">
+              <p style="font-size:13px;color:#3a4a5e;line-height:1.7;margin-bottom:12px">
+                분지점(BP) 아데노신의 <strong>2'-OH</strong>가 친핵체로 작용하여 5' 스플라이스 부위의 인산이에스테르 결합을 공격합니다.
+              </p>
+              <div class="rxn">
+                <div class="rxn-box">BP-A<br><small>2'-OH</small></div>
+                <div class="rxn-arrow">→</div>
+                <div class="rxn-box">5'SS<br><small>공격</small></div>
+                <div class="rxn-arrow">→</div>
+                <div class="rxn-box" style="background:#fff3e0">Lariat<br><small>형성</small></div>
+              </div>
+              <ul style="font-size:12.5px;color:#3a4a5e;line-height:1.8;padding-left:16px;margin-top:10px">
+                <li>5' 엑손의 3'-OH 유리</li>
+                <li>인트론 5' 말단이 BP-A의 2' 위치에 연결</li>
+                <li>올가미(lariat) 중간체 형성 — 2'-5' 인산이에스테르 결합</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="panel" style="margin-bottom:0">
+            <div class="panel-head"><div class="panel-title" style="color:#2e7d32">Step 2: 엑손 연결 반응 (Exon Ligation)</div></div>
+            <div class="panel-body">
+              <p style="font-size:13px;color:#3a4a5e;line-height:1.7;margin-bottom:12px">
+                유리된 5' 엑손의 <strong>3'-OH</strong>가 친핵체로 작용하여 3' 스플라이스 부위를 공격합니다.
+              </p>
+              <div class="rxn">
+                <div class="rxn-box">5' 엑손<br><small>3'-OH</small></div>
+                <div class="rxn-arrow">→</div>
+                <div class="rxn-box">3'SS<br><small>공격</small></div>
+                <div class="rxn-arrow">→</div>
+                <div class="rxn-box" style="background:#e8f5e9">엑손<br><small>연결</small></div>
+              </div>
+              <ul style="font-size:12.5px;color:#3a4a5e;line-height:1.8;padding-left:16px;margin-top:10px">
+                <li>엑손 1 + 엑손 2 연결</li>
+                <li>인트론 lariat 방출</li>
+                <li>Lariat는 DBR1 효소에 의해 linearize → 분해</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top:16px">
+        <strong>핵심:</strong> 두 트랜스에스테르화 반응 모두 에너지(ATP)를 소비하지 않습니다. 인산이에스테르 결합의 수는 변하지 않고, 위치만 바뀝니다. ATP는 스플라이소좀의 재배열과 RNA 언와인딩(DEAD-box helicase: Prp5, Prp28, Brr2, Prp2, Prp16, Prp22, Prp43)에 필요합니다.
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">트랜스에스테르화 반응 경로 — 전체 개요</div></div>
+    <div class="panel-body">
+      <figure style="margin:0;text-align:center">
+        <img src="https://www.frontiersin.org/files/Articles/652129/xml-images/fgene-12-652129-g001.webp"
+             alt="Pre-mRNA splicing: two-step transesterification pathway showing lariat formation and exon ligation"
+             style="max-width:100%;border-radius:8px;border:1px solid var(--line)">
+        <figcaption style="margin-top:10px;font-size:11.5px;color:var(--muted);line-height:1.6">
+          pre-mRNA 스플라이싱 트랜스에스테르화 반응 경로. Step 1: 분지점 아데노신의 2'-OH가 5' SS 인산이에스테르 결합을 공격 → Lariat-3' exon 중간체 형성. Step 2: 유리된 5' 엑손의 3'-OH가 3' SS를 공격 → 성숙 mRNA 생성 및 Lariat 방출.<br>
+          <span style="font-size:10.5px">
+            Fig. 1 from: Seo H &amp; Bhatt DL (2021). Spliceosomal snRNA Epitranscriptomics.
+            <em>Frontiers in Genetics</em> 12:652129.
+            <a href="https://doi.org/10.3389/fgene.2021.652129" target="_blank" rel="noopener">doi:10.3389/fgene.2021.652129</a> — CC BY 4.0
+          </span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 4: MAJOR vs MINOR -->
+<div class="tab-panel" id="tab-major-minor">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">Major (U2-type) vs Minor (U12-type) 스플라이소좀</div></div>
+    <div class="panel-body">
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="card-sm">
+          <h4>Major 스플라이소좀 (U2-type)</h4>
+          <span class="val">~99.5%</span>
+          <p>대부분의 인트론 처리. U1, U2, U4, U5, U6 snRNP + 수백 종 단백질. GT-AG 규칙.</p>
+        </div>
+        <div class="card-sm">
+          <h4>Minor 스플라이소좀 (U12-type)</h4>
+          <span class="val">~0.5%</span>
+          <p>소수의 특수 인트론 처리. U11, U12, U4atac, U6atac, U5 snRNP. AT-AC 또는 GT-AG 규칙. 신경계·발달 유전자에 집중.</p>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>특성</th>
+            <th>Major (U2-type)</th>
+            <th>Minor (U12-type)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>snRNP 구성</td>
+            <td>U1, U2, U4, U5, U6</td>
+            <td>U11, U12, U4atac, U6atac, U5</td>
+          </tr>
+          <tr>
+            <td>5'SS 컨센서스</td>
+            <td><code>GU|RAGU</code></td>
+            <td><code>AU|AUCCUU</code> (AT-AC) 또는 <code>GU|AUCC</code></td>
+          </tr>
+          <tr>
+            <td>3'SS 컨센서스</td>
+            <td><code>YAG|</code></td>
+            <td><code>AC|</code> (AT-AC) 또는 <code>AG|</code></td>
+          </tr>
+          <tr>
+            <td>분지점 컨센서스</td>
+            <td>YNYURAY (약한 컨센서스)</td>
+            <td>UCCUURAY (강한 컨센서스)</td>
+          </tr>
+          <tr>
+            <td>인트론 수 (인간)</td>
+            <td>~200,000+</td>
+            <td>~700–800</td>
+          </tr>
+          <tr>
+            <td>관련 질환</td>
+            <td>다양한 스플라이싱 질환</td>
+            <td>MOPD1, Roifman syndrome (RNU4ATAC 변이)</td>
+          </tr>
+          <tr>
+            <td>속도</td>
+            <td>빠름 (수 분)</td>
+            <td>느림 (major보다 느림)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 5: CO-TRANSCRIPTIONAL -->
+<div class="tab-panel" id="tab-cotranscriptional">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">공전사 스플라이싱 (Co-transcriptional Splicing)</div></div>
+    <div class="panel-body">
+      <p style="font-size:14px;color:#3a4a5e;margin-bottom:18px;line-height:1.7">
+        대부분의 스플라이싱은 전사가 완료된 후가 아니라, <strong>RNA 중합효소 II가 DNA를 읽으면서 동시에</strong> 일어납니다. 전사 속도와 스플라이싱 결과 사이에는 밀접한 연결이 있습니다.
+      </p>
+
+      <div class="grid-2">
+        <div>
+          <div class="panel" style="margin-bottom:16px">
+            <div class="panel-head"><div class="panel-title">키네틱 커플링 (Kinetic Coupling)</div></div>
+            <div class="panel-body">
+              <ul style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:16px;margin:0">
+                <li><strong>느린 전사:</strong> 약한 스플라이스 부위를 가진 엑손도 스플라이소좀이 조립할 시간을 얻음 → 엑손 포함↑</li>
+                <li><strong>빠른 전사:</strong> 강한 스플라이스 부위만 사용, 약한 스플라이스 부위는 건너뜀 → 엑손 스킵↑</li>
+                <li>RNAPII의 elongation rate (~2 kb/min)와 스플라이소좀 조립 속도가 경쟁</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-bottom:0">
+            <div class="panel-head"><div class="panel-title">CTD 커플링</div></div>
+            <div class="panel-body">
+              <ul style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:16px;margin:0">
+                <li>RNAPII의 C-terminal domain (CTD)이 스플라이싱 인자를 모집</li>
+                <li>인산화 패턴(Ser2-P, Ser5-P)이 전사 단계에 따라 달라짐</li>
+                <li>CTD가 스플라이소좀과 직접 상호작용하여 공전사 스플라이싱 촉진</li>
+                <li>히스톤 변형(H3K36me3)도 국소적 스플라이싱 조절에 기여</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel" style="margin-bottom:0">
+            <div class="panel-head"><div class="panel-title">임상적 의미</div></div>
+            <div class="panel-body">
+              <div class="info-box" style="margin-bottom:12px">
+                <strong>Splicing Effects of Synonymous Variants:</strong> 코딩 서열의 동의어 변이(synonymous)도 공전사 스플라이싱을 교란할 수 있습니다. 아미노산이 바뀌지 않더라도 ESE를 파괴하거나 전사 일시정지(polymerase pausing)를 변화시켜 대안적 스플라이싱을 유도.
+              </div>
+              <div class="card-sm" style="margin-bottom:10px">
+                <h4>Exon Definition</h4>
+                <p>포유류에서 엑손은 상대적으로 짧고(평균 ~150 nt), 인트론은 매우 김(수 kb). 스플라이소좀은 인트론 전체를 한꺼번에 정의하는 대신 <strong>엑손 단위로</strong> 양쪽 스플라이스 부위를 인식합니다.</p>
+              </div>
+              <div class="card-sm">
+                <h4>Recursive Splicing</h4>
+                <p>매우 긴 인트론(>100 kb)에서 일어나는 단계적 스플라이싱. 중간 "RS 부위"에서 순차적으로 인트론을 제거. 신경계 유전자에서 흔함 (예: DSCAM, NRXN1).</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<section class="refs">
+  <div class="refs-title">참고 문헌</div>
+  <ol class="refs-list">
+    <li>McKeown M. "The role of small nuclear RNAs in RNA splicing." <em>Annu Rev Cell Biol.</em> 1993. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/8352962/" target="_blank" rel="noopener">8352962</a></li>
+    <li>Townsend C, Agafonov DE, Dybkov O et al. "Mechanism of protein-guided folding of the active site U2/U6 RNA during spliceosome activation." <em>Science.</em> 2020. doi:10.1126/science.abc3753. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/33243851/" target="_blank" rel="noopener">33243851</a></li>
+    <li>Yeo G & Burge CB. "Maximum entropy modeling of short sequence motifs with applications to RNA splicing signals." <em>J Comput Biol.</em> 2004. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/15285897/" target="_blank" rel="noopener">15285897</a></li>
+    <li>"Activation of a cryptic 5' splice site by U1 snRNA." 1991. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/11333015/" target="_blank" rel="noopener">11333015</a></li>
+    <li>He H et al. "Mutations in U4atac snRNA, a Component of the Minor Spliceosome, in the Developmental Disorder MOPD I." <em>Science.</em> 2011. doi:10.1126/science.1200587. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/21474760/" target="_blank" rel="noopener">21474760</a></li>
+    <li>Wang Y et al. "Intronic Splicing Enhancers, Cognate Splicing Factors and Context Dependent Regulation Rules." <em>Nat Struct Mol Biol.</em> 2012. doi:10.1038/nsmb.2377. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/22983564/" target="_blank" rel="noopener">22983564</a></li>
+    <li>Sibley CR et al. "Recursive splicing in long vertebrate genes." <em>Nature.</em> 2015. doi:10.1038/nature14466. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/25970246/" target="_blank" rel="noopener">25970246</a></li>
+    <li>Ochoa S et al. "A deep intronic splice–altering AIRE variant causes APECED syndrome through antisense oligonucleotide-targetable pseudoexon inclusion." <em>Sci Transl Med.</em> 2024. doi:10.1126/scitranslmed.adk0845. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/39292801/" target="_blank" rel="noopener">39292801</a></li>
+  </ol>
+</section>
+
+</div><!-- /page -->
+
+<script>
+const assemblyData = [
+  {
+    id: "E",
+    label: "E 복합체",
+    sub: "Early complex",
+    desc: "스플라이싱의 첫 단계. 스플라이스 부위들이 처음으로 인식됩니다.",
+    details: [
+      "U1 snRNP → 5' 스플라이스 부위(GU)에 결합 (base pairing)",
+      "SF1/mBBP → 분지점(branch point) 인식",
+      "U2AF65 → 폴리피리미딘 트랙(PPT) 결합",
+      "U2AF35 → 3' 스플라이스 부위(AG) 인식",
+      "이 단계에서 스플라이스 부위 쌍이 결정되기 시작 (commitment)"
+    ]
+  },
+  {
+    id: "A",
+    label: "A 복합체",
+    sub: "Pre-spliceosome",
+    desc: "U2 snRNP가 분지점 서열에 안정적으로 결합합니다.",
+    details: [
+      "U2 snRNP → BP 서열과 base pairing (BP-A가 bulge 형성, 이후 친핵체로 작용)",
+      "SF1 제거, U2AF가 U2 결합을 촉진",
+      "BBP → U2 snRNA의 BP 결합에 ATP 필요",
+      "SR 단백질이 A 복합체 조립을 촉진",
+      "첫 번째 ATP 의존 단계"
+    ]
+  },
+  {
+    id: "B",
+    label: "B 복합체",
+    sub: "Pre-catalytic spliceosome",
+    desc: "U4/U6·U5 tri-snRNP이 합류하여 완전한 스플라이소좀을 형성합니다.",
+    details: [
+      "U4/U6·U5 tri-snRNP 전체가 A 복합체에 합류",
+      "U4와 U6 snRNA는 base pairing으로 연결된 채 진입",
+      "U5 snRNP의 Prp8 단백질이 두 스플라이스 부위 근처에 위치",
+      "스플라이소좀은 아직 촉매 활성이 없는 상태"
+    ]
+  },
+  {
+    id: "Bact",
+    label: "B<sup>act</sup> 복합체",
+    sub: "Activated spliceosome",
+    desc: "U1과 U4 snRNA가 제거되고 촉매 활성화가 시작됩니다.",
+    details: [
+      "Prp28 helicase → U1 snRNA·5'SS 결합 분리",
+      "Brr2 helicase → U4·U6 base pairing 분리",
+      "U6 snRNA → 5'SS와 새로운 base pairing 형성",
+      "U4 snRNP 방출, U1 snRNP 방출",
+      "U6 snRNA의 ACAGAGA 모티프 = 촉매 중심",
+      "아직 Step 1(분지화 반응)은 일어나지 않음"
+    ]
+  },
+  {
+    id: "C",
+    label: "C 복합체",
+    sub: "Step 1 completed",
+    desc: "첫 번째 트랜스에스테르화 반응이 완료됩니다. Lariat 형성.",
+    details: [
+      "Prp2 helicase → 스플라이소좀 재배열로 Step 1 활성화",
+      "BP-A 2'-OH → 5'SS 인산이에스테르 결합 공격",
+      "Lariat-3' exon 중간체 형성",
+      "5' 엑손의 3'-OH 유리",
+      "C 복합체 = 5'엑손 + lariat-3'엑손 중간체가 결합된 상태"
+    ]
+  },
+  {
+    id: "C*",
+    label: "C* 복합체",
+    sub: "Step 2 ready",
+    desc: "Step 2(엑손 연결)를 위한 재배열이 일어납니다.",
+    details: [
+      "Prp16 helicase → C 복합체를 C*로 재배열",
+      "5' 엑손의 3'-OH가 촉매 중심에 정렬",
+      "Lariat-3'SS 결합이 촉매 위치에 놓임",
+      "이 재배열은 Step 2의 정확성을 보장"
+    ]
+  },
+  {
+    id: "P",
+    label: "P 복합체",
+    sub: "Post-catalytic",
+    desc: "Step 2 완료. 엑손이 연결되고 Lariat가 방출됩니다.",
+    details: [
+      "5' 엑손 3'-OH → 3'SS 인산이에스테르 결합 공격",
+      "엑손 1·2 연결, Lariat 방출",
+      "Prp22 helicase → 성숙 mRNA 방출",
+      "Prp43 helicase → Lariat 스플라이소좀 분해",
+      "snRNP 재활용: U2, U5, U6는 다음 스플라이싱 사이클로",
+      "DBR1 효소가 Lariat의 2'-5' 결합 분해 → 선형 인트론 분해"
+    ]
+  }
+];
+
+function renderAssembly(){
+  const strip = document.getElementById('assembly-steps');
+  const detail = document.getElementById('assembly-detail');
+  strip.innerHTML = assemblyData.map((s,i) =>
+    `<button class="step-btn${i===0?' active':''}" onclick="selectStep(${i})">${s.label}</button>`
+  ).join('');
+  renderStep(0);
+}
+
+function selectStep(i){
+  document.querySelectorAll('#assembly-steps .step-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+  renderStep(i);
+}
+
+function renderStep(i){
+  const s = assemblyData[i];
+  document.getElementById('assembly-detail').innerHTML = `
+    <div class="step-sub">${s.label} — ${s.sub}</div>
+    <h3>${s.desc}</h3>
+    <ul>${s.details.map(d=>`<li>${d}</li>`).join('')}</ul>
+  `;
+}
+
+function showTab(id){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+renderAssembly();
+</script>
+</body>
+</html>

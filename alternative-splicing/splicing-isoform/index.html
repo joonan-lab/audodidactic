@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스플라이싱과 Isoform — Homangla</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#fff;
+  --ink:#17202a;
+  --muted:#667085;
+  --line:#d9dee7;
+  --soft:#f6f8fb;
+  --soft2:#fff8f0;
+  --accent:#b85c00;
+  --accent-light:#fff3e0;
+  --r:10px;
+  --exon:#4caf50;
+  --intron:#bdbdbd;
+  --skip:#f44336;
+  --alt5:#2196f3;
+  --alt3:#9c27b0;
+  --ir:#ff9800;
+  --me:#00bcd4;
+}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Segoe UI",sans-serif;line-height:1.5}
+button{font:inherit}
+a{color:var(--accent)}
+
+.page{max-width:1320px;margin:0 auto;padding:28px 24px 60px}
+.mast{padding-bottom:20px;border-bottom:2px solid var(--line);margin-bottom:28px}
+.breadcrumb{font-size:12px;color:var(--muted);margin-bottom:12px}
+.breadcrumb a{color:var(--muted);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+.eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:8px}
+h1{font-size:clamp(28px,3.5vw,44px);line-height:1.1;font-weight:850;letter-spacing:-.02em;margin:0 0 12px;word-break:keep-all}
+.dek{font-size:15px;color:#3f4b5d;max-width:760px;line-height:1.7}
+
+.tabs{display:flex;gap:4px;margin:28px 0 20px;flex-wrap:wrap}
+.tab-btn{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.tab-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tab-btn.active{border-color:var(--accent);background:var(--accent);color:#fff}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+.panel{border:1px solid var(--line);border-radius:var(--r);background:#fff;overflow:hidden;margin-bottom:20px}
+.panel-head{padding:13px 16px 11px;border-bottom:1px solid var(--line);background:var(--soft)}
+.panel-title{font-size:14px;font-weight:800;color:var(--ink)}
+.panel-body{padding:16px}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid-3{grid-template-columns:1fr}}
+
+/* ── AS TYPE SELECTOR ── */
+.as-strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.as-btn{border:2px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px 14px;font-size:12.5px;font-weight:700;cursor:pointer;transition:all .2s}
+.as-btn:hover{transform:translateY(-1px)}
+.as-btn.active{color:#fff}
+.as-btn[data-type="ES"].active{border-color:var(--skip);background:var(--skip)}
+.as-btn[data-type="A5"].active{border-color:var(--alt5);background:var(--alt5)}
+.as-btn[data-type="A3"].active{border-color:var(--alt3);background:var(--alt3)}
+.as-btn[data-type="IR"].active{border-color:var(--ir);background:var(--ir)}
+.as-btn[data-type="ME"].active{border-color:var(--me);background:var(--me)}
+
+/* ── GENE DIAGRAM (SVG-based) ── */
+.diagram-area{background:var(--soft);border-radius:9px;padding:20px;margin-bottom:16px;min-height:160px}
+.diagram-row{display:flex;flex-direction:column;gap:10px}
+.diagram-label{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.06em;margin-bottom:4px}
+
+/* Exon/intron blocks */
+.gene-track{display:flex;align-items:center;gap:0;height:28px;position:relative}
+.ex{height:28px;background:var(--exon);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;min-width:36px;flex-shrink:0}
+.ex.skip{background:var(--skip)}
+.ex.alt{background:var(--alt5)}
+.ex.retained{background:var(--ir)}
+.ex.me-a{background:var(--me)}
+.ex.me-b{background:#006064}
+.in{height:3px;background:var(--intron);flex:1;position:relative;margin:0 2px}
+.in::before,.in::after{content:"";position:absolute;top:50%;width:8px;height:8px;border-right:2px solid #999;border-top:2px solid #999;transform:translateY(-50%) rotate(45deg)}
+.in::before{left:30%}
+.in::after{left:60%}
+
+.as-detail{border:1px solid var(--line);border-radius:var(--r);padding:18px;min-height:200px}
+.as-detail h3{font-size:17px;font-weight:800;margin:0 0 6px}
+.as-detail .as-freq{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:12px}
+.as-detail p{font-size:13.5px;color:#3a4a5e;line-height:1.7;margin:0 0 10px}
+.as-detail ul{font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:18px;margin:0}
+
+/* ── STATS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:12px 0}
+.stat-card{border:1px solid var(--line);border-radius:9px;padding:13px;background:#fff;text-align:center}
+.stat-card .val{font-size:26px;font-weight:850;color:var(--accent);display:block;line-height:1.1}
+.stat-card .lbl{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--soft);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:10px 12px;border-bottom:2px solid var(--line);text-align:left}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--soft)}
+
+.info-box{background:var(--soft2);border:1px solid #ffcc80;border-radius:8px;padding:13px 16px;font-size:13px;color:#5d4037;line-height:1.7;margin:12px 0}
+.info-box strong{color:#bf360c}
+
+.card-sm{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:#fff}
+.card-sm h4{font-size:14px;font-weight:800;margin:0 0 6px}
+.card-sm p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.6}
+
+/* ── REFS ── */
+.refs{margin-top:28px;padding-top:20px;border-top:2px solid var(--line)}
+.refs-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px}
+.refs-list{list-style:decimal;padding-left:20px;margin:0;display:flex;flex-direction:column;gap:6px}
+.refs-list li{font-size:11.5px;color:#4a5568;line-height:1.6}
+.refs-list a{color:var(--accent);text-decoration:none}
+.refs-list a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="mast">
+  <div class="breadcrumb"><a href="../index.html">← homangla</a> / 스플라이싱과 Isoform</div>
+  <div class="eyebrow">alternative splicing · isoform diversity</div>
+  <h1>스플라이싱과 Isoform</h1>
+  <p class="dek">하나의 유전자에서 어떻게 수십, 수천 개의 단백질이 만들어질 수 있을까요? Alternative splicing의 다섯 가지 유형과, 이를 통해 생겨나는 Isoform 다양성의 생물학적 의미를 살펴봅니다.</p>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('as-types')">AS 유형</button>
+  <button class="tab-btn" onclick="showTab('diversity')">Isoform 다양성</button>
+  <button class="tab-btn" onclick="showTab('tissue')">조직 특이적 스플라이싱</button>
+  <button class="tab-btn" onclick="showTab('microexon')">Neuronal Microexon</button>
+  <button class="tab-btn" onclick="showTab('nmd')">NMD와의 연결</button>
+</div>
+
+<!-- TAB 1: AS TYPES -->
+<div class="tab-panel active" id="tab-as-types">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">Alternative Splicing 유형 선택기</div></div>
+    <div class="panel-body">
+      <div class="as-strip">
+        <button class="as-btn active" data-type="ES" onclick="selectAS('ES',this)">Exon Skipping</button>
+        <button class="as-btn" data-type="A5" onclick="selectAS('A5',this)">Alt 5' SS</button>
+        <button class="as-btn" data-type="A3" onclick="selectAS('A3',this)">Alt 3' SS</button>
+        <button class="as-btn" data-type="IR" onclick="selectAS('IR',this)">Intron Retention</button>
+        <button class="as-btn" data-type="ME" onclick="selectAS('ME',this)">Mutually Exclusive</button>
+      </div>
+
+      <div class="diagram-area" id="as-diagram"></div>
+      <div class="as-detail" id="as-detail"></div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong>비율:</strong> 인간 다중 엑손 유전자의 ~95%가 alternative splicing을 거칩니다. Exon skipping이 가장 흔한 유형(~40%)이며, 그 다음이 alt 5'/3' SS (~25%), intron retention (~15%) 순입니다.
+  </div>
+</div>
+
+<!-- TAB 2: ISOFORM DIVERSITY -->
+<div class="tab-panel" id="tab-diversity">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">Isoform 다양성 — 하나의 유전자, 여러 단백질</div></div>
+    <div class="panel-body">
+      <div class="stat-grid">
+        <div class="stat-card"><span class="val">~20,000</span><div class="lbl">인간 단백질 코딩 유전자</div></div>
+        <div class="stat-card"><span class="val">~100,000+</span><div class="lbl">추정 mRNA isoform</div></div>
+        <div class="stat-card"><span class="val">95%</span><div class="lbl">AS를 거치는 다중엑손 유전자</div></div>
+        <div class="stat-card"><span class="val">38,016</span><div class="lbl">DSCAM isoform (초파리)</div></div>
+      </div>
+
+      <table style="margin-top:16px">
+        <thead>
+          <tr>
+            <th>유전자</th>
+            <th>isoform 수</th>
+            <th>메커니즘</th>
+            <th>기능적 의미</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>DSCAM</strong> (초파리)</td>
+            <td>~38,000개</td>
+            <td>Mutually exclusive exon 조합 (3군 × 12 × 48 × 33)</td>
+            <td>신경 배선 특이성 — 각 뉴런이 고유한 DSCAM isoform으로 자기-반발</td>
+          </tr>
+          <tr>
+            <td><strong>NRXN1</strong> (인간)</td>
+            <td>>1,000개</td>
+            <td>6개의 alternative splicing 부위 조합 (SS1–SS6)</td>
+            <td>시냅스 파트너 선택 — 서로 다른 isoform이 다른 neuroligin과 결합</td>
+          </tr>
+          <tr>
+            <td><strong>NRXN3</strong> (인간)</td>
+            <td>~2,000개</td>
+            <td>7개 SS 조합</td>
+            <td>시냅스 가소성, AMPA 수용체 조절</td>
+          </tr>
+          <tr>
+            <td><strong>PTPRD</strong></td>
+            <td>수십 개</td>
+            <td>Microexon 조합 (meA, meB)</td>
+            <td>시냅스 조직 — IL1RAPL1, SLITRK와의 결합 특이성</td>
+          </tr>
+          <tr>
+            <td><strong>FN1</strong> (fibronectin)</td>
+            <td>~20개</td>
+            <td>EDA, EDB, V exon 조합</td>
+            <td>세포 접착, ECM 구성 — 조직마다 다른 조합 사용</td>
+          </tr>
+          <tr>
+            <td><strong>TP63</strong></td>
+            <td>≥6개</td>
+            <td>Alt promoter + alt 3' end + AS</td>
+            <td>ΔN vs TA isoform: 발달 vs 종양억제 기능</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: TISSUE SPECIFIC -->
+<div class="tab-panel" id="tab-tissue">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">조직 특이적 스플라이싱</div></div>
+    <div class="panel-body">
+      <p style="font-size:14px;color:#3a4a5e;margin-bottom:16px;line-height:1.7">
+        같은 유전자라도 세포 유형에 따라 다른 isoform이 만들어집니다. 이는 조직마다 다른 스플라이싱 조절인자(RNA-binding proteins, SR proteins, hnRNPs)가 발현되기 때문입니다.
+      </p>
+
+      <div class="grid-2">
+        <div>
+          <div class="panel" style="margin-bottom:16px">
+            <div class="panel-head"><div class="panel-title">주요 조직 특이적 조절인자</div></div>
+            <div class="panel-body">
+              <table>
+                <thead>
+                  <tr><th>단백질</th><th>발현 조직</th><th>조절 대상</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>NOVA1/2</strong></td><td>뇌 뉴런</td><td>GABAA 수용체, glycine 수용체 AS</td></tr>
+                  <tr><td><strong>RBFOX1/2/3</strong></td><td>뇌, 심장, 근육</td><td>신경 특이적 exon 포함</td></tr>
+                  <tr><td><strong>PTBP1/2</strong></td><td>PTBP2: 신경</td><td>PTBP2 발현 시 신경 특이적 AS 유도</td></tr>
+                  <tr><td><strong>MBNL1/2/3</strong></td><td>근육, 심장</td><td>EMT-관련 AS; 근긴장성 이영양증 연관</td></tr>
+                  <tr><td><strong>nSR100/SRRM4</strong></td><td>뇌 뉴런</td><td>Neuronal microexon 포함 촉진</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel" style="margin-bottom:0">
+            <div class="panel-head"><div class="panel-title">신경 분화 중 스플라이싱 전환</div></div>
+            <div class="panel-body">
+              <p style="font-size:13px;color:#3a4a5e;line-height:1.7;margin-bottom:10px">
+                줄기세포 → 신경세포 분화 과정에서 수백 개의 스플라이싱 이벤트가 체계적으로 전환됩니다.
+              </p>
+              <div class="card-sm" style="margin-bottom:10px">
+                <h4>PTBP1 → PTBP2 전환</h4>
+                <p>줄기세포에서 PTBP1이 신경 특이적 엑손을 억제. 신경 분화 시 miR-124가 PTBP1을 억제 → PTBP2로 교체 → 신경 특이적 AS 프로그램 활성화.</p>
+              </div>
+              <div class="card-sm" style="margin-bottom:10px">
+                <h4>SRRM4 발현</h4>
+                <p>신경세포 특이적 스플라이싱 인자 nSR100/SRRM4가 발현되면 수십–수백 개 neuronal microexon이 포함됨. ASD에서 이 과정이 교란됨(Irimia 2014).</p>
+              </div>
+              <div class="card-sm">
+                <h4>exon skipping → inclusion</h4>
+                <p>NRXN1 SS4, SHANK3 미공개 exon 등 다수의 시냅스 단백질 유전자에서 신경 분화 시 특정 exon의 포함이 증가.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 4: MICROEXON -->
+<div class="tab-panel" id="tab-microexon">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">Neuronal Microexon</div></div>
+    <div class="panel-body">
+      <p style="font-size:14px;color:#3a4a5e;margin-bottom:16px;line-height:1.7">
+        <strong>Microexon</strong>은 길이가 3–27 nt인 매우 짧은 exon입니다. 신경계에서 특히 많이 발견되며, 작은 크기에도 단백질 기능에 결정적인 영향을 미칩니다.
+      </p>
+
+      <div class="stat-grid">
+        <div class="stat-card"><span class="val">3–27 nt</span><div class="lbl">Microexon 정의 (길이)</div></div>
+        <div class="stat-card"><span class="val">1–9 aa</span><div class="lbl">삽입되는 아미노산 수</div></div>
+        <div class="stat-card"><span class="val">~250개</span><div class="lbl">신경 특이적 microexon (인간)</div></div>
+        <div class="stat-card"><span class="val">ASD</span><div class="lbl">microexon 교란과의 연관</div></div>
+      </div>
+
+      <div class="grid-2" style="margin-top:16px">
+        <div>
+          <div class="panel" style="margin-bottom:0">
+            <div class="panel-head"><div class="panel-title">왜 microexon이 중요한가?</div></div>
+            <div class="panel-body">
+              <ul style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:16px;margin:0">
+                <li><strong>단백질 상호작용 도메인 내에 위치:</strong> 작은 아미노산 삽입이 단백질-단백질 상호작용 면을 바꿈</li>
+                <li><strong>SHANK3, NRXN1, APBB1, CAMK2B</strong> 등 시냅스 단백질 유전자에 집중</li>
+                <li><strong>진화적 보존:</strong> 척추동물 전체에서 보존 → 기능적 중요성</li>
+                <li><strong>ASD 연관:</strong> nSR100 감소 시 microexon 포함 감소 → 시냅스 단백질 isoform 변화 (Irimia et al. 2014 Cell)</li>
+                <li>단 1–2개 아미노산이 PDZ 도메인 결합 특이성, 인산화 부위, 핵 국소화를 결정</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel" style="margin-bottom:0">
+            <div class="panel-head"><div class="panel-title">예시 유전자</div></div>
+            <div class="panel-body">
+              <table>
+                <thead><tr><th>유전자</th><th>Microexon</th><th>기능</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>SHANK3</strong></td><td>exon 11 (6 nt)</td><td>Homer 단백질 결합 — 포함 시 PSD 국소화 증가</td></tr>
+                  <tr><td><strong>NRXN1/2/3</strong></td><td>SS4 (12 nt)</td><td>Neuroligin-1 결합 특이성 결정 — 포함 시 NL-1B에만 결합</td></tr>
+                  <tr><td><strong>PTPRD</strong></td><td>meA (9 nt), meB (6 nt)</td><td>IL1RAPL1, SLITRK 결합 특이성</td></tr>
+                  <tr><td><strong>APBB1</strong></td><td>exon 7 (18 nt)</td><td>핵 내 APP 신호전달</td></tr>
+                  <tr><td><strong>CAMK2B</strong></td><td>exon 13 (27 nt)</td><td>기억 형성, LTP</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 5: NMD -->
+<div class="tab-panel" id="tab-nmd">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">AS와 Nonsense-Mediated Decay (NMD) 연결</div></div>
+    <div class="panel-body">
+      <p style="font-size:14px;color:#3a4a5e;margin-bottom:16px;line-height:1.7">
+        Alternative splicing은 NMD와 결합하여 유전자 발현을 정밀하게 조절하는 <strong>AS-NMD</strong> 메커니즘을 만듭니다.
+      </p>
+
+      <div class="grid-2">
+        <div>
+          <div class="panel" style="margin-bottom:16px">
+            <div class="panel-head"><div class="panel-title">NMD 기본 원리</div></div>
+            <div class="panel-body">
+              <ul style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:16px;margin:0">
+                <li>정지코돈(stop codon)이 마지막 exon junction(EJC)보다 &gt;50–55 nt 상류에 있으면 NMD 유발</li>
+                <li>UPF1, SMG1, SMG5-7이 핵심 NMD 인자</li>
+                <li>PTC(premature termination codon)-containing mRNA를 분해</li>
+                <li>세포 내 isoform 비율을 조절하는 품질관리 메커니즘</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-bottom:0">
+            <div class="panel-head"><div class="panel-title">AS-NMD를 이용한 자가 조절</div></div>
+            <div class="panel-body">
+              <p style="font-size:13px;color:#3a4a5e;line-height:1.7;margin-bottom:10px">
+                많은 스플라이싱 조절인자들이 자신의 mRNA를 AS-NMD로 조절합니다 (autoregulation).
+              </p>
+              <ul style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:16px;margin:0">
+                <li><strong>PTBP1:</strong> 자신의 엑손 11을 억제 → PTC 삽입 → NMD → PTBP1 수준 감소</li>
+                <li><strong>SR 단백질 (SRSF1, SRSF2):</strong> 과발현 시 자신의 독성 isoform 생성 → NMD</li>
+                <li><strong>hnRNP A1:</strong> 비효율적 스플라이싱 → intron retention → NMD</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel" style="margin-bottom:0">
+            <div class="panel-head"><div class="panel-title">임상적 의미 — Intron Retention과 NMD</div></div>
+            <div class="panel-body">
+              <div class="info-box">
+                <strong>Intron retention + NMD = 효과적인 유전자 발현 감소.</strong> 많은 LOF 변이가 스플라이싱을 교란 → intron retention → PTC → NMD 경로를 통해 haploinsufficiency를 유발합니다.
+              </div>
+              <div class="card-sm" style="margin-bottom:10px">
+                <h4>IR 기반 유전자 조절</h4>
+                <p>분화·발달 중 특정 인트론이 retention되면 → NMD로 mRNA 감소. 역으로, intron이 효율적으로 제거되면 mRNA 증가. 이는 "AS-NMD 스위치"로 작동.</p>
+              </div>
+              <div class="card-sm" style="margin-bottom:10px">
+                <h4>NMD Rescue 치료 전략</h4>
+                <p>아미노글리코사이드(gentamicin) 또는 ataluren으로 PTC readthrough 유도 (NMD 경로 억제가 아닌 리보솜의 PTC 통과 촉진). 스플라이싱 교정 ASO와 병용 시 효과 증폭 가능.</p>
+              </div>
+              <div class="card-sm">
+                <h4>Cryptic Exon과 NMD</h4>
+                <p>딥 인트로닉 변이가 새로운 exon을 활성화 → 대부분 NMD 유발. SpliceAI로 예측, RT-PCR로 확인 가능.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="refs">
+  <div class="refs-title">참고 문헌</div>
+  <ol class="refs-list">
+    <li>Irimia M et al. "A Highly Conserved Program of Neuronal Microexons Is Misregulated in Autistic Brains." <em>Cell.</em> 2014. doi:10.1016/j.cell.2014.11.035. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/25525873/" target="_blank" rel="noopener">25525873</a></li>
+    <li>"Cartography of neurexin alternative splicing mapped by single-molecule long-read mRNA sequencing." <em>PNAS.</em> 2014. doi:10.1073/pnas.1403244111. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/24639501/" target="_blank" rel="noopener">24639501</a></li>
+    <li>Sibley CR et al. "Recursive splicing in long vertebrate genes." <em>Nature.</em> 2015. doi:10.1038/nature14466. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/25970246/" target="_blank" rel="noopener">25970246</a></li>
+    <li>Wang Y et al. "Intronic Splicing Enhancers, Cognate Splicing Factors and Context Dependent Regulation Rules." <em>Nat Struct Mol Biol.</em> 2012. doi:10.1038/nsmb.2377. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/22983564/" target="_blank" rel="noopener">22983564</a></li>
+    <li>He H et al. "Mutations in U4atac snRNA, a Component of the Minor Spliceosome, in the Developmental Disorder MOPD I." <em>Science.</em> 2011. doi:10.1126/science.1200587. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/21474760/" target="_blank" rel="noopener">21474760</a></li>
+    <li>Patowary A et al. "Developmental isoform diversity in the human neocortex informs neuropsychiatric risk mechanisms." <em>Science.</em> 2024. doi:10.1126/science.adh7688. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/38781356/" target="_blank" rel="noopener">38781356</a></li>
+    <li>De Paoli-Iseppi R et al. "Long-read sequencing reveals the RNA isoform repertoire of neuropsychiatric risk genes in human brain." <em>Genome Biol.</em> 2025. doi:10.1186/s13059-025-03724-1. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/40988056/" target="_blank" rel="noopener">40988056</a></li>
+    <li>Yeo G & Burge CB. "Maximum entropy modeling of short sequence motifs with applications to RNA splicing signals." <em>J Comput Biol.</em> 2004. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/15285897/" target="_blank" rel="noopener">15285897</a></li>
+    <li>Chih B et al. "Alternative Splicing Controls Selective Trans-Synaptic Interactions of the Neuroligin-Neurexin Complex." <em>Neuron.</em> 2006. doi:10.1016/j.neuron.2006.06.005. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/16846852/" target="_blank" rel="noopener">16846852</a></li>
+    <li>"An alternative splicing switch shapes neurexin repertoires in principal neurons versus interneurons in the mouse hippocampus." <em>eLife.</em> 2016. doi:10.7554/eLife.22757. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/27960072/" target="_blank" rel="noopener">27960072</a></li>
+    <li>"Control of neuronal synapse specification by a highly dedicated alternative splicing program." <em>Science.</em> 2016. doi:10.1126/science.aaf1092. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/27174676/" target="_blank" rel="noopener">27174676</a></li>
+    <li>"Single-cell isoform RNA sequencing characterizes isoforms in thousands of cerebellar cells." <em>Nat Biotechnol.</em> 2018. doi:10.1038/nbt.4259. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/30320766/" target="_blank" rel="noopener">30320766</a></li>
+    <li>Joglekar A et al. "A spatially resolved brain region- and cell type-specific isoform atlas of the postnatal mouse brain." <em>Nat Commun.</em> 2021. doi:10.1038/s41467-020-20343-5. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/33469025/" target="_blank" rel="noopener">33469025</a></li>
+    <li>Yang Y et al. "Single-cell long-read sequencing in human cerebral organoids uncovers cell-type-specific and autism-associated exons." <em>Cell Rep.</em> 2023. doi:10.1016/j.celrep.2023.113335. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/37889749/" target="_blank" rel="noopener">37889749</a></li>
+    <li>Wen C et al. "Cross-ancestry atlas of gene, isoform, and splicing regulation in the developing human brain." <em>Science.</em> 2024. doi:10.1126/science.adh0829. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/38781368/" target="_blank" rel="noopener">38781368</a></li>
+    <li>Joglekar A et al. "Single-cell long-read sequencing-based mapping reveals specialized splicing patterns in developing and adult mouse and human brain." <em>Nat Neurosci.</em> 2024. doi:10.1038/s41593-024-01616-4. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/38594596/" target="_blank" rel="noopener">38594596</a></li>
+    <li>Belchikov N et al. "A single-cell, long-read, isoform-resolved case-control study of FTD reveals cell-type-specific and broad splicing dysregulation in human brain." <em>Cell Rep.</em> 2025. doi:10.1016/j.celrep.2025.116198. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/40913764/" target="_blank" rel="noopener">40913764</a></li>
+  </ol>
+</section>
+
+</div>
+
+<script>
+const asData = {
+  ES: {
+    name: "Exon Skipping",
+    freq: "가장 흔한 AS 유형 · ~40%",
+    color: "var(--skip)",
+    desc: "특정 exon이 mRNA에서 완전히 제외되는 유형입니다. 스플라이소좀이 해당 exon의 스플라이스 부위를 건너뛰어 인접 exon들을 직접 연결합니다.",
+    points: [
+      "가장 흔한 alternative splicing 유형 (인간 AS의 ~40%)",
+      "ESE(Exonic Splicing Enhancer) 변이가 엑손 스킵의 주요 원인",
+      "exon 내 변이가 ESE를 파괴하거나 ESS를 만들면 → 스킵 유발",
+      "예: DMD exon 51 skipping (antisense oligonucleotide 치료 대상)",
+      "예: SMN2 exon 7 skipping → SMA (exon 7 c.840C>T: SRSF1 ESE 파괴 + hnRNP A1/A2 ESS 생성)"
+    ],
+    diagrams: [
+      { label: "Constitutive (전체 포함)", exons: ["E1","E2","E3"], type: "full" },
+      { label: "Exon 2 Skipping", exons: ["E1","✕E2","E3"], type: "skip" }
+    ]
+  },
+  A5: {
+    name: "Alternative 5' Splice Site",
+    freq: "두 번째 흔한 AS 유형 · ~25%",
+    color: "var(--alt5)",
+    desc: "인트론의 5' 끝(donor site)이 두 가지 이상의 위치에서 사용됩니다. 엑손의 3' 말단 길이가 달라지거나, 인트론 5' 말단이 달라집니다.",
+    points: [
+      "5' SS (GU) 위치가 달라져 엑손의 3' 경계가 변화",
+      "엑손에 추가 서열 포함 또는 제외 → 아미노산 변화",
+      "대안적 5'SS가 더 강한 스플라이스 신호를 가지면 채택",
+      "프레임시프트를 일으키거나 기능 도메인에 영향 가능",
+      "U1 snRNA 결합 친화도가 두 사이트 간 경쟁을 결정"
+    ],
+    diagrams: []
+  },
+  A3: {
+    name: "Alternative 3' Splice Site",
+    freq: "Alt 5'SS와 비슷한 빈도 · ~25%",
+    color: "var(--alt3)",
+    desc: "인트론의 3' 끝(acceptor site, AG)이 두 가지 이상의 위치에서 사용됩니다. 엑손의 5' 말단 길이가 달라집니다.",
+    points: [
+      "3' SS (AG) 위치 변화 → 엑손 5' 경계 변화",
+      "PPT 길이와 강도, U2AF 결합 친화도가 사이트 선택 결정",
+      "엑손에 추가 서열 또는 단축 발생",
+      "프레임시프트 또는 N-terminal 도메인 변화 초래 가능",
+      "Polypyrimidine tract binding protein (PTBP1)이 억제 조절"
+    ],
+    diagrams: []
+  },
+  IR: {
+    name: "Intron Retention",
+    freq: "식물·효모에서 흔함 · 인간 ~15%",
+    color: "var(--ir)",
+    desc: "인트론이 제거되지 않고 mRNA에 남아있는 유형입니다. 보통 NMD를 유발하거나 단백질 기능을 변화시킵니다.",
+    points: [
+      "인트론이 그대로 mRNA에 포함",
+      "대부분의 경우 PTC(premature stop codon) 도입 → NMD 유발 → 유전자 발현 감소",
+      "약한 스플라이스 부위 (weak 5'SS, short PPT) 또는 짧은 인트론에서 흔함",
+      "세포 분화·스트레스 반응 중 특이적 intron retention이 조절 메커니즘으로 사용",
+      "임상: 많은 LOF 변이가 IR → NMD 경로를 통해 haploinsufficiency 유발"
+    ],
+    diagrams: []
+  },
+  ME: {
+    name: "Mutually Exclusive Exons",
+    freq: "드물지만 기능적으로 중요 · ~5%",
+    color: "var(--me)",
+    desc: "두 엑손 중 하나만 포함되는 유형입니다. 두 엑손이 함께 포함되지 않으며, 항상 정확히 하나가 선택됩니다.",
+    points: [
+      "두 개(이상)의 exon이 상호 배타적으로 선택",
+      "두 exon이 같은 프레임을 유지 → 아미노산만 달라짐",
+      "DSCAM(초파리), ACTN1(actinin), MYH(myosin), TPM1(tropomyosin) 등에서 발견",
+      "스플라이싱 인자와 RNA 구조(이중가닥 형성)가 선택을 결정",
+      "매우 정밀한 기능적 다양성 생성 — 단백질 결합 파트너, 효소 활성, 근육 수축 특성 조절"
+    ],
+    diagrams: []
+  }
+};
+
+function renderDiagram(type) {
+  const d = asData[type];
+  let html = '<div class="diagram-row">';
+
+  if (type === 'ES') {
+    html += `
+      <div>
+        <div class="diagram-label">Constitutive (전체 포함)</div>
+        <div class="gene-track">
+          <div class="ex" style="width:60px">E1</div>
+          <div class="in" style="width:40px"></div>
+          <div class="ex" style="width:60px">E2</div>
+          <div class="in" style="width:40px"></div>
+          <div class="ex" style="width:60px">E3</div>
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <div class="diagram-label" style="color:var(--skip)">Exon 2 Skipped</div>
+        <div class="gene-track">
+          <div class="ex" style="width:60px">E1</div>
+          <div class="in" style="width:40px"></div>
+          <div class="ex skip" style="width:60px;opacity:.35;text-decoration:line-through">E2</div>
+          <div class="in" style="width:40px"></div>
+          <div class="ex" style="width:60px">E3</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px">→ mRNA: E1–E3 직접 연결 (E2 제외)</div>
+      </div>`;
+  } else if (type === 'A5') {
+    html += `
+      <div>
+        <div class="diagram-label">Alt 5' SS — Exon 1의 3' 경계가 두 가지</div>
+        <div class="gene-track" style="margin-bottom:8px">
+          <div class="ex" style="width:80px">E1 (긴)</div>
+          <div class="in" style="width:50px;background:var(--alt5);height:3px"></div>
+          <div class="ex" style="width:60px">E2</div>
+        </div>
+        <div class="gene-track">
+          <div class="ex" style="width:55px">E1 (짧)</div>
+          <div class="in" style="width:75px;background:var(--alt5);height:3px"></div>
+          <div class="ex" style="width:60px">E2</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px">5'SS 위치에 따라 엑손 3' 말단의 길이 변화</div>
+      </div>`;
+  } else if (type === 'A3') {
+    html += `
+      <div>
+        <div class="diagram-label">Alt 3' SS — Exon 2의 5' 경계가 두 가지</div>
+        <div class="gene-track" style="margin-bottom:8px">
+          <div class="ex" style="width:60px">E1</div>
+          <div class="in" style="width:50px;background:var(--alt3);height:3px"></div>
+          <div class="ex" style="width:80px;background:var(--alt3)">E2 (긴)</div>
+        </div>
+        <div class="gene-track">
+          <div class="ex" style="width:60px">E1</div>
+          <div class="in" style="width:75px;background:var(--alt3);height:3px"></div>
+          <div class="ex" style="width:55px;background:var(--alt3)">E2 (짧)</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px">3'SS 위치에 따라 엑손 5' 말단의 길이 변화</div>
+      </div>`;
+  } else if (type === 'IR') {
+    html += `
+      <div>
+        <div class="diagram-label">Canonical (intron 제거됨)</div>
+        <div class="gene-track" style="margin-bottom:8px">
+          <div class="ex" style="width:60px">E1</div>
+          <div class="in" style="width:60px"></div>
+          <div class="ex" style="width:60px">E2</div>
+        </div>
+        <div style="margin-top:12px">
+          <div class="diagram-label" style="color:var(--ir)">Intron Retained</div>
+          <div class="gene-track">
+            <div class="ex" style="width:60px">E1</div>
+            <div class="ex retained" style="width:80px;border-radius:4px;font-size:10px">intron</div>
+            <div class="ex" style="width:60px">E2</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">→ intron이 mRNA에 남음 → PTC 가능 → NMD</div>
+        </div>
+      </div>`;
+  } else if (type === 'ME') {
+    html += `
+      <div>
+        <div class="diagram-label">Mutually Exclusive — 둘 중 하나만 포함</div>
+        <div class="gene-track" style="margin-bottom:8px">
+          <div class="ex" style="width:50px">E1</div>
+          <div class="in" style="width:20px"></div>
+          <div class="ex me-a" style="width:50px">E2a</div>
+          <div class="in" style="width:20px"></div>
+          <div class="ex" style="width:50px;opacity:.3">E2b</div>
+          <div class="in" style="width:20px"></div>
+          <div class="ex" style="width:50px">E3</div>
+        </div>
+        <div class="gene-track">
+          <div class="ex" style="width:50px">E1</div>
+          <div class="in" style="width:20px"></div>
+          <div class="ex" style="width:50px;opacity:.3">E2a</div>
+          <div class="in" style="width:20px"></div>
+          <div class="ex me-b" style="width:50px">E2b</div>
+          <div class="in" style="width:20px"></div>
+          <div class="ex" style="width:50px">E3</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:8px">E2a 또는 E2b 중 하나만 포함 — 동시에 두 개 포함 불가</div>
+      </div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function selectAS(type, btn) {
+  document.querySelectorAll('.as-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const d = asData[type];
+  document.getElementById('as-diagram').innerHTML = renderDiagram(type);
+  document.getElementById('as-detail').innerHTML = `
+    <div class="as-freq" style="color:${d.color}">${d.freq}</div>
+    <h3>${d.name}</h3>
+    <p>${d.desc}</p>
+    <ul>${d.points.map(p => `<li>${p}</li>`).join('')}</ul>
+  `;
+}
+
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+selectAS('ES', document.querySelector('.as-btn[data-type="ES"]'));
+</script>
+</body>
+</html>

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스플라이싱 변이 분류 — Homangla</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#fff;
+  --ink:#17202a;
+  --muted:#667085;
+  --line:#d9dee7;
+  --soft:#f6f8fb;
+  --soft2:#fff8f0;
+  --accent:#b85c00;
+  --r:10px;
+  --c-canonical:#c62828;
+  --c-near:#e65100;
+  --c-deep:#1565c0;
+  --c-exonic:#2e7d32;
+  --c-benign:#424242;
+}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Segoe UI",sans-serif;line-height:1.5}
+button{font:inherit}
+a{color:var(--accent)}
+
+.page{max-width:1320px;margin:0 auto;padding:28px 24px 60px}
+.mast{padding-bottom:20px;border-bottom:2px solid var(--line);margin-bottom:28px}
+.breadcrumb{font-size:12px;color:var(--muted);margin-bottom:12px}
+.breadcrumb a{color:var(--muted);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+.eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:8px}
+h1{font-size:clamp(28px,3.5vw,44px);line-height:1.1;font-weight:850;letter-spacing:-.02em;margin:0 0 12px;word-break:keep-all}
+.dek{font-size:15px;color:#3f4b5d;max-width:760px;line-height:1.7}
+
+.tabs{display:flex;gap:4px;margin:28px 0 20px;flex-wrap:wrap}
+.tab-btn{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.tab-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tab-btn.active{border-color:var(--accent);background:var(--accent);color:#fff}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+.panel{border:1px solid var(--line);border-radius:var(--r);background:#fff;overflow:hidden;margin-bottom:20px}
+.panel-head{padding:13px 16px 11px;border-bottom:1px solid var(--line);background:var(--soft)}
+.panel-title{font-size:14px;font-weight:800;color:var(--ink)}
+.panel-body{padding:16px}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid-3{grid-template-columns:1fr}}
+
+/* ── VARIANT POSITION MAP ── */
+.var-map{background:#1a1a2e;border-radius:10px;padding:20px;overflow-x:auto;margin:12px 0}
+.var-map-inner{min-width:600px}
+.pos-track{display:flex;align-items:center;height:34px;position:relative;margin:8px 0}
+.pos-exon{height:34px;background:#4caf50;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;min-width:80px;flex-shrink:0}
+.pos-intron{height:3px;background:#555;flex:1;position:relative;margin:0 4px}
+.pos-label{font-size:10px;color:#aaa;font-family:ui-monospace,monospace;letter-spacing:.05em;text-align:center;margin-bottom:4px}
+
+.var-zone{height:20px;border-radius:3px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:opacity .2s;margin:3px 2px}
+.var-zone:hover{opacity:.8}
+.zone-canonical{background:var(--c-canonical)}
+.zone-near{background:var(--c-near)}
+.zone-deep{background:var(--c-deep)}
+.zone-exonic{background:var(--c-exonic)}
+
+/* ── CLASS BUTTONS ── */
+.class-strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.class-btn{border:2px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer;transition:all .18s}
+.class-btn:hover{transform:translateY(-1px)}
+.class-btn.active{color:#fff}
+.class-btn[data-c="canonical"].active{border-color:var(--c-canonical);background:var(--c-canonical)}
+.class-btn[data-c="near"].active{border-color:var(--c-near);background:var(--c-near)}
+.class-btn[data-c="deep"].active{border-color:var(--c-deep);background:var(--c-deep)}
+.class-btn[data-c="exonic"].active{border-color:var(--c-exonic);background:var(--c-exonic)}
+.class-btn[data-c="benign"].active{border-color:var(--c-benign);background:var(--c-benign)}
+
+.class-detail{border:1px solid var(--line);border-radius:var(--r);padding:18px;min-height:180px;background:var(--soft2)}
+.class-detail h3{font-size:17px;font-weight:800;margin:0 0 6px}
+.class-detail .freq{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:12px}
+.class-detail p{font-size:13.5px;color:#3a4a5e;line-height:1.7;margin:0 0 10px}
+.class-detail ul{font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:18px;margin:0}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--soft);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:10px 12px;border-bottom:2px solid var(--line);text-align:left}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--soft)}
+
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;letter-spacing:.03em;margin:1px}
+.pvs1{background:#ffcdd2;color:#b71c1c}
+.ps3{background:#ffe0b2;color:#bf360c}
+.pm2{background:#fff9c4;color:#f57f17}
+.pp3{background:#e8f5e9;color:#2e7d32}
+.bs3{background:#e3f2fd;color:#0d47a1}
+.bp7{background:#ede7f6;color:#4a148c}
+.ba1{background:#f3e5f5;color:#6a1b9a}
+
+.score-bar{display:flex;height:28px;border-radius:6px;overflow:hidden;margin:8px 0;border:1px solid var(--line)}
+.score-seg{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.s-low{background:#4caf50}
+.s-mid{background:#ff9800}
+.s-high{background:#f44336}
+.s-vhigh{background:#b71c1c}
+
+.info-box{background:var(--soft2);border:1px solid #ffcc80;border-radius:8px;padding:13px 16px;font-size:13px;color:#5d4037;line-height:1.7;margin:12px 0}
+.info-box strong{color:#bf360c}
+
+.card-sm{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:#fff;margin-bottom:10px}
+.card-sm h4{font-size:14px;font-weight:800;margin:0 0 6px}
+.card-sm p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.6}
+
+/* ── REFS ── */
+.refs{margin-top:28px;padding-top:20px;border-top:2px solid var(--line)}
+.refs-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px}
+.refs-list{list-style:decimal;padding-left:20px;margin:0;display:flex;flex-direction:column;gap:6px}
+.refs-list li{font-size:11.5px;color:#4a5568;line-height:1.6}
+.refs-list a{color:var(--accent);text-decoration:none}
+.refs-list a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="mast">
+  <div class="breadcrumb"><a href="../index.html">← homangla</a> / 스플라이싱 변이 분류</div>
+  <div class="eyebrow">variant classification · ACMG · SpliceAI</div>
+  <h1>스플라이싱 변이 분류</h1>
+  <p class="dek">유전체 변이가 스플라이싱에 어떤 영향을 미치는지, 위치와 기능적 증거에 따라 어떻게 분류하는지 이해합니다. 위치 기반 분류에서 ACMG 기준, SpliceAI 점수 해석까지.</p>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('position')">위치 기반 분류</button>
+  <button class="tab-btn" onclick="showTab('spliceai')">SpliceAI 점수</button>
+  <button class="tab-btn" onclick="showTab('acmg')">ACMG/ClinGen 기준</button>
+  <button class="tab-btn" onclick="showTab('rna-outcome')">RNA 결과 유형</button>
+  <button class="tab-btn" onclick="showTab('workflow')">해석 워크플로우</button>
+</div>
+
+<!-- TAB 1: POSITION -->
+<div class="tab-panel active" id="tab-position">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">스플라이싱 변이 위치 기반 분류</div></div>
+    <div class="panel-body">
+      <div class="class-strip">
+        <button class="class-btn active" data-c="canonical" onclick="selectClass('canonical',this)">Canonical ±1,2</button>
+        <button class="class-btn" data-c="near" onclick="selectClass('near',this)">Near-splice ±3–8</button>
+        <button class="class-btn" data-c="deep" onclick="selectClass('deep',this)">Deep Intronic</button>
+        <button class="class-btn" data-c="exonic" onclick="selectClass('exonic',this)">Exonic ESE/ESS</button>
+        <button class="class-btn" data-c="benign" onclick="selectClass('benign',this)">Benign 지표</button>
+      </div>
+      <div class="class-detail" id="class-detail"></div>
+
+      <div class="info-box" style="margin-top:20px">
+        <strong>핵심 원칙:</strong> 변이 위치는 분류의 출발점이지 결론이 아닙니다. 같은 canonical ±1,2 위치라도 RNA 기능 실험, SpliceAI 점수, 해당 전사체의 NMD 감수성, 질환과의 연관성을 종합해야 최종 분류가 가능합니다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: SPLICEAI -->
+<div class="tab-panel" id="tab-spliceai">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">SpliceAI 점수 해석</div></div>
+    <div class="panel-body">
+      <p style="font-size:14px;color:#3a4a5e;margin-bottom:16px;line-height:1.7">
+        SpliceAI는 deep neural network (잔차 CNN, 10,000 nt 수용 영역)를 이용해 각 뉴클레오타이드 위치가 donor 또는 acceptor 자리로 사용될 확률을 예측합니다. 변이의 delta score는 참조 서열 대비 스플라이싱 변화량을 나타냅니다.
+      </p>
+
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-head"><div class="panel-title">Delta Score 구성 (4가지)</div></div>
+        <div class="panel-body">
+          <table>
+            <thead><tr><th>Score</th><th>의미</th><th>해석</th></tr></thead>
+            <tbody>
+              <tr><td><strong>DS_AG</strong></td><td>Acceptor Gain delta score</td><td>새로운 acceptor 부위 생성 가능성 (cryptic 3'SS)</td></tr>
+              <tr><td><strong>DS_AL</strong></td><td>Acceptor Loss delta score</td><td>기존 acceptor 부위 약화/소실 가능성</td></tr>
+              <tr><td><strong>DS_DG</strong></td><td>Donor Gain delta score</td><td>새로운 donor 부위 생성 가능성 (cryptic 5'SS)</td></tr>
+              <tr><td><strong>DS_DL</strong></td><td>Donor Loss delta score</td><td>기존 donor 부위 약화/소실 가능성</td></tr>
+            </tbody>
+          </table>
+          <p style="font-size:13px;color:var(--muted);margin-top:10px">
+            최종 보고 점수 = MAX(DS_AG, DS_AL, DS_DG, DS_DL). 각 점수는 0–1 범위.
+          </p>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-head"><div class="panel-title">점수 임계값 해석 기준 (ClinGen/Jaganathan 2019)</div></div>
+        <div class="panel-body">
+          <div class="score-bar">
+            <div class="score-seg s-low" style="flex:20">0–0.2<br><small>낮음</small></div>
+            <div class="score-seg s-mid" style="flex:30">0.2–0.5<br><small>중간</small></div>
+            <div class="score-seg s-high" style="flex:30">0.5–0.8<br><small>높음</small></div>
+            <div class="score-seg s-vhigh" style="flex:20">0.8–1.0<br><small>매우 높음</small></div>
+          </div>
+
+          <table style="margin-top:12px">
+            <thead><tr><th>Delta Score</th><th>ClinGen 해석</th><th>임상적 의미</th><th>ACMG 기준 지원</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>&lt; 0.2</strong></td>
+                <td>Low impact</td>
+                <td>스플라이싱 영향 가능성 낮음</td>
+                <td><span class="tag bp7">BP4 지원</span></td>
+              </tr>
+              <tr>
+                <td><strong>0.2 – 0.5</strong></td>
+                <td>Moderate impact</td>
+                <td>스플라이싱 영향 가능성 있음 — RNA 검증 권장</td>
+                <td>단독으로는 분류 기준 미충족</td>
+              </tr>
+              <tr>
+                <td><strong>0.5 – 0.8</strong></td>
+                <td>High impact</td>
+                <td>스플라이싱 영향 높음</td>
+                <td><span class="tag pp3">PP3 지원</span></td>
+              </tr>
+              <tr>
+                <td><strong>≥ 0.8</strong></td>
+                <td>Very high impact</td>
+                <td>스플라이싱 강하게 교란 — 병원성 가능성 높음</td>
+                <td><span class="tag ps3">PS3 수준 지원</span> (RNA 실험 병행 시)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="info-box" style="margin-top:12px">
+            <strong>주의:</strong> SpliceAI는 splicing change probability만 예측하며, 그 변화가 병원성인지(NMD 여부, 단백질 기능 영향)는 직접 예측하지 않습니다. 높은 점수라도 비병원성일 수 있고, 낮은 점수라도 ESE 파괴를 통한 스킵이 일어날 수 있습니다.
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-bottom:0">
+        <div class="panel-head"><div class="panel-title">Pangolin — 다조직 확장 버전</div></div>
+        <div class="panel-body">
+          <div class="grid-2">
+            <div>
+              <p style="font-size:13px;color:#3a4a5e;line-height:1.7;margin-bottom:10px">
+                Pangolin (Zeng et al. 2022)은 GTEx 53개 조직의 조직 특이적 스플라이싱 데이터로 훈련된 SpliceAI의 확장 모델입니다.
+              </p>
+              <ul style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:18px;margin:0">
+                <li>조직별 스플라이싱 영향 예측 가능</li>
+                <li>뇌, 심장, 근육 등 조직 특이적 isoform 고려</li>
+                <li>SpliceAI보다 조직 맥락 정보 풍부</li>
+                <li>희귀 조직 특이적 변이 해석에 유용</li>
+              </ul>
+            </div>
+            <div class="card-sm">
+              <h4>사용 시나리오</h4>
+              <p>질환과 해당 조직의 스플라이싱이 다를 때. 예: 뇌 특이적 isoform이 임상적 의의가 있는 신경 발달 질환 변이. Pangolin 뇌 조직 점수가 SpliceAI보다 더 관련성 높은 예측 제공 가능.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: ACMG -->
+<div class="tab-panel" id="tab-acmg">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">ACMG/ClinGen 스플라이싱 변이 해석 기준</div></div>
+    <div class="panel-body">
+      <p style="font-size:14px;color:#3a4a5e;margin-bottom:16px;line-height:1.7">
+        Richards et al. 2015 ACMG 기준과 Abou Tayoun et al. 2018 (ClinGen Splicing Subcommittee) 가이드라인에 기반합니다. 스플라이싱 변이는 PVS1 기준이 핵심입니다.
+      </p>
+
+      <table style="margin-bottom:16px">
+        <thead>
+          <tr>
+            <th>기준</th>
+            <th>이름</th>
+            <th>강도</th>
+            <th>스플라이싱 변이 적용</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag pvs1">PVS1</span></td>
+            <td>Null variant</td>
+            <td>Very Strong Pathogenic</td>
+            <td>Canonical ±1,2 변이 + NMD 감수성 전사체 + LOF 질환 메커니즘 확인 시. 조건에 따라 VS/S/M으로 등급 조정 (Abou Tayoun 플로우차트)</td>
+          </tr>
+          <tr>
+            <td><span class="tag ps3">PS3</span></td>
+            <td>Functional studies</td>
+            <td>Strong Pathogenic</td>
+            <td>RT-PCR, minigene, RNA-seq 등으로 스플라이싱 이상 실험적 확인</td>
+          </tr>
+          <tr>
+            <td><span class="tag pm2">PM2</span></td>
+            <td>Absent from controls</td>
+            <td>Moderate Pathogenic</td>
+            <td>gnomAD 등 대조군 데이터베이스에서 극히 드문 변이</td>
+          </tr>
+          <tr>
+            <td><span class="tag pp3">PP3</span></td>
+            <td>Computational evidence</td>
+            <td>Supporting Pathogenic</td>
+            <td>SpliceAI ≥ 0.5, MaxEntScan 점수 감소, CADD-Splice 높음 등</td>
+          </tr>
+          <tr>
+            <td><span class="tag bs3">BS3</span></td>
+            <td>Functional — benign</td>
+            <td>Strong Benign</td>
+            <td>실험으로 정상 스플라이싱 확인</td>
+          </tr>
+          <tr>
+            <td><span class="tag bp7">BP7</span></td>
+            <td>Synonymous — no splice impact</td>
+            <td>Supporting Benign</td>
+            <td>동의어 변이 + SpliceAI &lt; 0.1 + 스플라이스 부위와 무관</td>
+          </tr>
+          <tr>
+            <td><span class="tag ba1">BA1</span></td>
+            <td>Common in population</td>
+            <td>Stand-alone Benign</td>
+            <td>gnomAD MAF &gt; 5% → 단독으로 양성 분류</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="panel" style="margin-bottom:0">
+        <div class="panel-head"><div class="panel-title">PVS1 적용 플로우차트 (Abou Tayoun 2018 기반)</div></div>
+        <div class="panel-body">
+          <div class="grid-2">
+            <div>
+              <p style="font-size:13px;color:#3a4a5e;line-height:1.7;margin-bottom:12px"><strong>PVS1 강도 결정 순서:</strong></p>
+              <ol style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:18px;margin:0">
+                <li>변이가 canonical ±1,2 또는 스플라이싱 영향 높음(SpliceAI≥0.8) 확인</li>
+                <li>해당 유전자가 LOF 질환 메커니즘인가? (haploinsufficiency)</li>
+                <li>영향받는 전사체가 NMD 감수성인가? (PTC 위치 확인)</li>
+                <li>해당 전사체가 임상적으로 관련 있는 전사체인가?</li>
+                <li>이전 exon의 마지막 코딩 영역이 중요한가?</li>
+              </ol>
+            </div>
+            <div>
+              <table>
+                <thead><tr><th>조건</th><th>PVS1 강도</th></tr></thead>
+                <tbody>
+                  <tr><td>NMD 감수성 + LOF 유전자 + 관련 전사체</td><td><strong style="color:var(--c-canonical)">Very Strong (PVS1)</strong></td></tr>
+                  <tr><td>NMD 감수성이지만 전사체 관련성 불확실</td><td><strong style="color:var(--c-near)">Strong (PVS1_Strong)</strong></td></tr>
+                  <tr><td>Skip이지만 in-frame + 중요 도메인 포함</td><td><strong style="color:var(--c-near)">Strong</strong></td></tr>
+                  <tr><td>Skip이지만 in-frame + 도메인 중요성 불명</td><td><strong style="color:var(--c-deep)">Moderate (PVS1_Moderate)</strong></td></tr>
+                  <tr><td>Cryptic SS + NMD 불확실</td><td><strong style="color:var(--c-exonic)">Supporting (PVS1_Supporting)</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 4: RNA OUTCOME -->
+<div class="tab-panel" id="tab-rna-outcome">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">스플라이싱 변이의 RNA 결과 유형</div></div>
+    <div class="panel-body">
+      <p style="font-size:14px;color:#3a4a5e;margin-bottom:16px;line-height:1.7">
+        스플라이싱 변이 하나가 여러 RNA 결과를 동시에 만들 수 있습니다. RT-PCR 또는 RNA-seq으로 실제 결과를 확인하는 것이 중요합니다.
+      </p>
+
+      <div class="grid-3">
+        <div class="card-sm">
+          <h4 style="color:var(--c-canonical)">Exon Skipping</h4>
+          <p>해당 exon 전체가 mRNA에서 제외. Out-of-frame skipping → NMD, in-frame skipping → 단백질 기능 변화. 가장 흔한 스플라이싱 변이 결과.</p>
+        </div>
+        <div class="card-sm">
+          <h4 style="color:var(--c-near)">Intron Retention</h4>
+          <p>인트론이 mRNA에 남음. 보통 PTC 도입 → NMD. 약한 스플라이스 부위 변이 또는 ESE 파괴 시 발생. 일부 경우 IR이 기능적 단백질 변이체 생성.</p>
+        </div>
+        <div class="card-sm">
+          <h4 style="color:var(--c-deep)">Cryptic Splice Site 활성화</h4>
+          <p>기존에 사용되지 않던 스플라이스 부위가 활성화. 딥 인트로닉 변이의 주요 메커니즘. 새로운 exon(pseudoexon) 삽입 또는 exon 연장/단축.</p>
+        </div>
+        <div class="card-sm">
+          <h4>Cryptic Exon (Pseudoexon)</h4>
+          <p>딥 인트로닉 변이가 새로운 exon을 만들거나 기존 억제된 exon을 활성화. 보통 out-of-frame → NMD. ATM, BRCA2, DMD에서 다수 보고.</p>
+        </div>
+        <div class="card-sm">
+          <h4>Exon Extension / Truncation</h4>
+          <p>Alt 5'SS 또는 alt 3'SS 변이로 인해 엑손의 한쪽 경계가 변화. In-frame이면 단백질에 아미노산 추가/제거. Out-of-frame이면 NMD 가능.</p>
+        </div>
+        <div class="card-sm">
+          <h4>Multiple Isoforms</h4>
+          <p>하나의 변이가 여러 스플라이싱 결과를 동시에 만드는 경우. 일부 전사체에서 skipping, 다른 전사체에서 retention. 유전자별 전사체 분석 필요.</p>
+        </div>
+      </div>
+
+      <table style="margin-top:16px">
+        <thead><tr><th>RNA 결과</th><th>NMD 감수성</th><th>단백질 영향</th><th>ACMG PVS1 적용</th></tr></thead>
+        <tbody>
+          <tr><td>Out-of-frame exon skipping</td><td>대부분 YES</td><td>truncated protein (NMD 탈출 시)</td><td>PVS1 Very Strong 가능</td></tr>
+          <tr><td>In-frame exon skipping</td><td>아니오</td><td>도메인 결실, 기능 손실 가능</td><td>PVS1 Moderate/Strong (도메인 중요도 따라)</td></tr>
+          <tr><td>Intron retention (PTC 도입)</td><td>대부분 YES</td><td>truncated (NMD 탈출 시)</td><td>PVS1 Strong/Very Strong</td></tr>
+          <tr><td>Pseudoexon 삽입 (out-of-frame)</td><td>YES</td><td>NMD → LOF</td><td>PVS1 Strong</td></tr>
+          <tr><td>Exon extension (minor, in-frame)</td><td>아니오</td><td>추가 아미노산 → 기능 변화</td><td>별도 평가 필요</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 5: WORKFLOW -->
+<div class="tab-panel" id="tab-workflow">
+  <div class="panel">
+    <div class="panel-head"><div class="panel-title">스플라이싱 변이 해석 워크플로우</div></div>
+    <div class="panel-body">
+      <div class="grid-2">
+        <div>
+          <div class="panel" style="margin-bottom:16px">
+            <div class="panel-head"><div class="panel-title" style="color:var(--c-canonical)">STEP 1 — 위치 확인</div></div>
+            <div class="panel-body">
+              <ul style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:18px;margin:0">
+                <li>Canonical ±1,2 → PVS1 가능성 바로 평가</li>
+                <li>Near-splice ±3–8 → 컨센서스 서열 점수 계산 (MaxEntScan)</li>
+                <li>Deep intronic → SpliceAI, MMSplice로 스크린</li>
+                <li>Exonic → SpliceAI ESE/ESS 영향, 동의어 변이인지 확인</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-bottom:16px">
+            <div class="panel-head"><div class="panel-title" style="color:var(--c-near)">STEP 2 — 계산 도구 적용</div></div>
+            <div class="panel-body">
+              <ul style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:18px;margin:0">
+                <li><strong>SpliceAI</strong> delta score 계산 (최우선)</li>
+                <li><strong>MaxEntScan</strong> 스플라이스 부위 점수 (5'SS: MES5, 3'SS: MES3)</li>
+                <li><strong>Pangolin</strong> 조직 특이적 점수 (해당 시)</li>
+                <li><strong>MMSplice</strong> modular splice score</li>
+                <li><strong>CADD-Splice</strong> 앙상블 점수</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-bottom:0">
+            <div class="panel-head"><div class="panel-title" style="color:var(--c-deep)">STEP 3 — RNA 실험 (필요 시)</div></div>
+            <div class="panel-body">
+              <ul style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:18px;margin:0">
+                <li><strong>RT-PCR</strong> 환자/대조군 cDNA → 이상 밴드 확인</li>
+                <li><strong>Sanger 서열분석</strong> 이상 밴드 동정</li>
+                <li><strong>RNA-seq</strong> 전장 스플라이싱 프로파일</li>
+                <li><strong>Minigene assay</strong> 세포주에서 스플라이싱 재현</li>
+                <li><strong>환자 조직 RNA</strong> (혈액 → NMD 억제 후 분석)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel" style="margin-bottom:16px">
+            <div class="panel-head"><div class="panel-title" style="color:var(--c-exonic)">STEP 4 — 전사체 분석</div></div>
+            <div class="panel-body">
+              <ul style="font-size:13px;color:#3a4a5e;line-height:1.9;padding-left:18px;margin:0">
+                <li>영향받는 전사체가 임상적으로 관련 있는가? (MANE Select 등)</li>
+                <li>해당 전사체가 NMD 감수성인가?<br><small style="color:var(--muted)">(PTC가 마지막 exon junction보다 &gt;50-55 nt 상류)</small></li>
+                <li>Skip/retention된 영역이 단백질 기능 도메인인가?</li>
+                <li>Rescue isoform이 존재하는가?</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-bottom:0">
+            <div class="panel-head"><div class="panel-title">STEP 5 — 최종 분류 통합</div></div>
+            <div class="panel-body">
+              <table>
+                <thead><tr><th>증거 조합</th><th>분류</th></tr></thead>
+                <tbody>
+                  <tr><td>PVS1 + PM2 + PP3</td><td><strong style="color:var(--c-canonical)">Pathogenic</strong></td></tr>
+                  <tr><td>PVS1_Strong + PM2 + PP3</td><td><strong style="color:var(--c-canonical)">Likely Pathogenic</strong></td></tr>
+                  <tr><td>PP3 + PM2 (PS3 없음)</td><td><strong style="color:var(--c-near)">VUS (P 경향)</strong></td></tr>
+                  <tr><td>BS3 (정상 스플라이싱 확인)</td><td><strong style="color:var(--c-exonic)">Likely Benign</strong></td></tr>
+                  <tr><td>BP7 + BA1</td><td><strong style="color:var(--c-benign)">Benign</strong></td></tr>
+                </tbody>
+              </table>
+              <div class="info-box" style="margin-top:10px">
+                <strong>SpliceVault 활용:</strong> 해당 변이와 동일한 스플라이싱 패턴이 정상인에서 관찰되면 병원성 가능성 감소. SpliceVault (GTEx RNA-seq 데이터 기반)로 leaky splicing 여부 확인.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="refs">
+  <div class="refs-title">참고 문헌</div>
+  <ol class="refs-list">
+    <li>Walker LC et al. "Using the ACMG/AMP framework to capture evidence related to predicted and observed impact on splicing: Recommendations from the ClinGen SVI Splicing Subgroup." <em>Am J Hum Genet.</em> 2023. doi:10.1016/j.ajhg.2023.06.002. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/37352859/" target="_blank" rel="noopener">37352859</a></li>
+    <li>Jaganathan K et al. "Predicting Splicing from Primary Sequence with Deep Learning." <em>Cell.</em> 2019. doi:10.1016/j.cell.2018.12.015. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/30661751/" target="_blank" rel="noopener">30661751</a></li>
+    <li>Smith et al. "Benchmarking splice variant prediction algorithms using massively parallel splicing assays." 2023. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/37205456/" target="_blank" rel="noopener">37205456</a></li>
+    <li>Wagner N et al. "Aberrant splicing prediction across human tissues." <em>Nat Genet.</em> 2023. doi:10.1038/s41588-023-01373-3. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/37142848/" target="_blank" rel="noopener">37142848</a></li>
+    <li>Ochoa S et al. "A deep intronic splice–altering AIRE variant causes APECED syndrome through antisense oligonucleotide-targetable pseudoexon inclusion." <em>Sci Transl Med.</em> 2024. doi:10.1126/scitranslmed.adk0845. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/39292801/" target="_blank" rel="noopener">39292801</a></li>
+    <li>Yeo G & Burge CB. "Maximum entropy modeling of short sequence motifs with applications to RNA splicing signals." <em>J Comput Biol.</em> 2004. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/15285897/" target="_blank" rel="noopener">15285897</a></li>
+    <li>Zeng T & Li YI. "Predicting RNA splicing from DNA sequence using Pangolin." <em>Genome Biol.</em> 2022. doi:10.1186/s13059-022-02664-4. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/35449021/" target="_blank" rel="noopener">35449021</a></li>
+  </ol>
+</section>
+
+</div>
+
+<script>
+const classData = {
+  canonical: {
+    name: "Canonical Splice Site 변이 (±1, ±2)",
+    freq: "가장 강한 병원성 증거 · PVS1 직접 적용 가능",
+    color: "var(--c-canonical)",
+    desc: "인트론의 처음 두 뉴클레오타이드(+1, +2 = GU) 또는 마지막 두 뉴클레오타이드(-1, -2 = AG)에 위치한 변이입니다. 스플라이스 부위를 직접 파괴합니다.",
+    points: [
+      "5'SS: c.IVS+1G&gt;A/T/C, c.IVS+2T&gt;A/G/C",
+      "3'SS: c.IVS-1G&gt;A/T/C, c.IVS-2A&gt;G/C/T",
+      "GU/AG 변화 → 스플라이소좀 U1/U2AF 인식 불가 → 스플라이싱 실패",
+      "PVS1 기준 직접 적용 가능 (NMD 감수성, LOF 질환 메커니즘 전제)",
+      "예외: 일부 c.+1G&gt;A 변이가 근처 cryptic site 사용 → in-frame 결과 시 PVS1 하향",
+      "SpliceAI DS_AL 또는 DS_DL이 보통 ≥0.8"
+    ]
+  },
+  near: {
+    name: "Near-Splice Site 변이 (±3 ~ ±8)",
+    freq: "병원성 증거 다양 · 계산 도구 + RNA 검증 필요",
+    color: "var(--c-near)",
+    desc: "스플라이스 부위에서 3–8 뉴클레오타이드 떨어진 위치의 변이입니다. 컨센서스 서열 손상 정도가 병원성을 결정합니다.",
+    points: [
+      "5'SS: c.IVS+3 ~ +8, c.IVS-3 ~ -8 위치",
+      "3'SS의 폴리피리미딘 트랙(PPT) 포함 (-3 ~ -15 범위)",
+      "MaxEntScan, GenSplicer 등으로 스플라이스 부위 강도 변화 정량",
+      "MES score 감소 ≥ 30% → 유의미한 영향 가능",
+      "SpliceAI delta score &gt; 0.2이면 RNA 검증 권장",
+      "일부 near-splice 변이가 완전한 exon skipping 유발 (PVS1 가능)"
+    ]
+  },
+  deep: {
+    name: "Deep Intronic 변이",
+    freq: "전통적으로 과소평가 · SpliceAI 발견 증가",
+    color: "var(--c-deep)",
+    desc: "엑손 경계에서 멀리 떨어진 인트론 내부의 변이입니다. Cryptic exon(pseudoexon)을 활성화하거나 intronic silencer를 파괴합니다.",
+    points: [
+      "정의: 스플라이스 부위에서 &gt;20 nt (또는 &gt;8 nt) 떨어진 인트론 변이",
+      "메커니즘 1: 새로운 스플라이스 부위 생성 → cryptic exon 삽입",
+      "메커니즘 2: ISS(Intronic Splicing Silencer) 파괴 → 억제된 pseudoexon 활성화",
+      "메커니즘 3: RNA 이차구조 변화 → 스플라이싱 조절 교란",
+      "SpliceAI 10,000 nt 수용 영역으로 예측 가능 (단, 먼 거리 변이는 놓칠 수 있음)",
+      "대표 사례: ATM c.5763-1164A&gt;T (유방암), BRCA2 딥 인트로닉 변이, DMD pseudoexon"
+    ]
+  },
+  exonic: {
+    name: "엑손 내 변이 — ESE/ESS 교란",
+    freq: "동의어 변이도 포함 · 흔히 과소평가",
+    color: "var(--c-exonic)",
+    desc: "엑손 내에 위치하지만 단백질 서열 변화 대신 또는 추가로 스플라이싱에 영향을 주는 변이입니다. ESE 파괴 또는 ESS 생성이 주 메커니즘입니다.",
+    points: [
+      "동의어(synonymous) 변이가 ESE를 파괴하거나 ESS를 생성 → exon skipping",
+      "비동의어 변이도 아미노산 변화 외에 스플라이싱 변화 동반 가능",
+      "SpliceAI delta score로 1차 스크린 (DS_AL 또는 DS_DL 확인)",
+      "ESEfinder, RBPmap으로 SR 단백질 결합 부위 변화 분석",
+      "대표 예시: BRCA1 c.4308T&gt;C (p.T1436=) — 동의어 변이지만 exon 22 skipping 유발",
+      "SMN2 exon 7: c.840C&gt;T 동의어 변이가 SRSF1 ESE를 파괴하고 hnRNP A1 ESS를 생성하여 엑손 스킵 → SMA"
+    ]
+  },
+  benign: {
+    name: "양성 스플라이싱 변이 지표",
+    freq: "병원성 하향 조정 기준",
+    color: "var(--c-benign)",
+    desc: "변이가 스플라이싱에 미치는 영향이 없거나 미미함을 지지하는 증거들입니다.",
+    points: [
+      "SpliceAI delta score &lt; 0.1 → BP4 지원",
+      "gnomAD에서 높은 빈도 (MAF &gt; 1%) → 일반 인구에서 흔함",
+      "MaxEntScan 점수 변화 없음 (5'SS MES 변화 &lt; 5%)",
+      "정상 스플라이싱을 RT-PCR 또는 RNA-seq로 확인 → BS3",
+      "SpliceVault에서 해당 스플라이싱 패턴이 정상인에서 관찰됨",
+      "마지막 엑손에 위치 (NMD 영향 없음) + 동의어 변이 → BP7 가능"
+    ]
+  }
+};
+
+function selectClass(type, btn) {
+  document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const d = classData[type];
+  document.getElementById('class-detail').innerHTML = `
+    <div class="freq" style="color:${d.color}">${d.freq}</div>
+    <h3 style="color:${d.color}">${d.name}</h3>
+    <p>${d.desc}</p>
+    <ul>${d.points.map(p => `<li>${p}</li>`).join('')}</ul>
+  `;
+}
+
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+selectClass('canonical', document.querySelector('.class-btn[data-c="canonical"]'));
+</script>
+</body>
+</html>
